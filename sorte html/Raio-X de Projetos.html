@@ -1,0 +1,985 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Raio-X de Projetos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: bancada em abas (Projetos, Diagnóstico, Comparar, Histórico); achados como listas agrupadas por arquivo, com faixa de gravidade */
+:root{
+  --bg:#EEF1EF; --panel:#FBFCFB; --sunk:#E4E9E6; --ink:#17211D; --muted:#5A6862; --line:#CFD8D4;
+  --accent:#1E6B57; --accent-ink:#F4FBF8; --accent-soft:#D5E9E2;
+  --sev-hi:#B42318; --sev-md:#9A5B06; --sev-lo:#4B5A55; --ok:#1C7A3E;
+  --add:#1C7A3E; --del:#B42318; --scrim:rgba(10,18,15,.5); --code-bg:#F3F5F4;
+  --a:#1F5FB8; --b:#8A4A0B;
+  --f-display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --f-body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,'Cascadia Code',Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1513; --panel:#161E1B; --sunk:#1C2622; --ink:#E4ECE8; --muted:#95A59E; --line:#2A3632;
+  --accent:#5CC4A3; --accent-ink:#082019; --accent-soft:#1D3A31;
+  --sev-hi:#F2877C; --sev-md:#E7A93B; --sev-lo:#A6B5AE; --ok:#5FD68A;
+  --add:#5FD68A; --del:#F2877C; --scrim:rgba(0,0,0,.6); --code-bg:#111916;
+  --a:#7FB1F5; --b:#F0A868; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0F1513; --panel:#161E1B; --sunk:#1C2622; --ink:#E4ECE8; --muted:#95A59E; --line:#2A3632;
+  --accent:#5CC4A3; --accent-ink:#082019; --accent-soft:#1D3A31;
+  --sev-hi:#F2877C; --sev-md:#E7A93B; --sev-lo:#A6B5AE; --ok:#5FD68A;
+  --add:#5FD68A; --del:#F2877C; --scrim:rgba(0,0,0,.6); --code-bg:#111916;
+  --a:#7FB1F5; --b:#F0A868; color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:0 64px}
+header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px 24px;padding-block:24px 14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4.2vw,38px);letter-spacing:-.015em;line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:700;font-size:20px;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h3{font-size:15px;font-weight:600;margin:0}
+.sub{color:var(--muted);margin:6px 0 0;max-width:64ch}
+nav.steps{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:22px}
+nav.steps button{font:inherit;font-weight:500;background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:12px 14px 10px;cursor:pointer;white-space:nowrap}
+nav.steps button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.steps button:hover{color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lead{color:var(--muted);margin:0 0 16px;max-width:72ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.stack{display:grid;gap:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.between{justify-content:space-between}
+.btn{font:inherit;font-size:14px;font-weight:500;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer;line-height:1.2}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.small{padding:5px 9px;font-size:13px;border-radius:6px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+input[type=text],select{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:7px 10px;min-width:0}
+.mono{font-family:var(--f-mono)}
+.note{font-size:13px;color:var(--muted)}
+.banner{border:1px solid var(--line);background:var(--accent-soft);border-radius:8px;padding:10px 12px;font-size:14px}
+
+.slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.slots{grid-template-columns:minmax(0,1fr)}}
+.slot{display:grid;gap:12px;align-content:start;border-top:4px solid var(--c)}
+.slot[data-s="A"]{--c:var(--a)} .slot[data-s="B"]{--c:var(--b)}
+.tag{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;font-family:var(--f-mono);font-weight:600;font-size:14px;color:var(--panel);background:var(--c)}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:18px 16px;display:grid;gap:6px;cursor:pointer;transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--c);background:var(--sunk)}
+.drop strong{font-family:var(--f-display);font-size:17px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--f-mono);font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--ink);background:var(--sunk)}
+.chip.warn{color:var(--sev-md);border-color:currentColor;background:transparent}
+.chip.bad{color:var(--sev-hi);border-color:currentColor;background:transparent}
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;border:0;background:var(--panel);color:var(--muted);padding:6px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+
+.summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.sumitem{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;font:inherit;color:var(--ink)}
+.sumitem:hover{border-color:var(--muted)}
+.sumitem .n{font-family:var(--f-mono);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--sev-lo)}
+.dot.hi{background:var(--sev-hi)} .dot.md{background:var(--sev-md)} .dot.ok{background:var(--ok)}
+details.sec{border:1px solid var(--line);border-radius:10px;background:var(--panel);scroll-margin-top:60px}
+details.sec>summary{cursor:pointer;padding:13px 16px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;list-style:none}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::before{content:"▸";color:var(--muted);font-size:12px;transition:transform .15s}
+details.sec[open]>summary::before{transform:rotate(90deg)}
+details.sec>summary h2{font-size:17px}
+.count{font-family:var(--f-mono);font-size:12px;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid currentColor;font-variant-numeric:tabular-nums}
+.count.hi{color:var(--sev-hi)} .count.md{color:var(--sev-md)} .count.lo{color:var(--sev-lo)} .count.ok{color:var(--ok)}
+.secbody{padding:0 16px 16px;display:grid;gap:12px}
+.why{font-size:14px;color:var(--muted);margin:0;max-width:78ch}
+.fgroup{border-left:3px solid var(--line);padding-left:12px;display:grid;gap:4px}
+.fgroup.hi{border-left-color:var(--sev-hi)} .fgroup.md{border-left-color:var(--sev-md)}
+.fname{font-family:var(--f-mono);font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.hit{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;align-items:baseline;font-size:13px;padding:3px 0}
+.hit .ln{font-family:var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums;min-width:4.5ch;text-align:right}
+.hit .lab{font-size:12px;color:var(--muted);white-space:nowrap}
+.hit code{font-family:var(--f-mono);font-size:12.5px;overflow-wrap:anywhere;white-space:pre-wrap;min-width:0}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:var(--accent);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.big{border:1px solid var(--sev-hi);border-radius:8px;padding:12px 14px;color:var(--ink);background:color-mix(in srgb,var(--sev-hi) 9%,transparent)}
+.big b{color:var(--sev-hi)}
+.more{font-size:13px;color:var(--muted)}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;background:var(--sunk);white-space:nowrap}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+td.p{font-family:var(--f-mono);font-size:12.5px;overflow-wrap:anywhere;min-width:180px}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--sunk)}
+.st{font-size:12px;font-weight:600;white-space:nowrap}
+.st.del{color:var(--del)} .st.add{color:var(--add)} .st.chg{color:var(--sev-md)} .st.eq{color:var(--muted)}
+.bar{height:8px;border-radius:4px;background:var(--sunk);overflow:hidden;min-width:80px;position:relative}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--b)}
+.lost{font-family:var(--f-mono);font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.lost.hi{color:var(--sev-hi)}
+.headline{display:flex;flex-wrap:wrap;gap:8px 28px;align-items:baseline}
+.headline .big-n{font-family:var(--f-display);font-weight:700;font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.headline .lbl{color:var(--muted);font-size:13px}
+.fnwrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.fnwrap{grid-template-columns:minmax(0,1fr)}}
+.fnlist{font-family:var(--f-mono);font-size:12.5px;max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:7px;padding:8px 10px;background:var(--code-bg);display:grid;gap:2px}
+.fnlist span{overflow-wrap:anywhere} .fnlist small{color:var(--muted)}
+.commits{display:grid}
+.commit{display:grid;grid-template-columns:minmax(120px,auto) minmax(0,1fr) auto;gap:4px 14px;padding:9px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.commit .d{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.commit .m{overflow-wrap:anywhere}
+.commit .h{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.commit.fix .m{font-weight:600}
+@media (max-width:560px){.commit{grid-template-columns:minmax(0,1fr)} }
+mark{background:color-mix(in srgb,var(--sev-md) 30%,transparent);color:inherit;border-radius:2px}
+
+.overlay{position:fixed;inset:0;background:var(--scrim);display:grid;place-items:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30}
+.dialog{background:var(--panel);border:1px solid var(--line);border-radius:12px;width:min(1080px,100%);max-height:100%;display:flex;flex-direction:column;min-height:0}
+.dialog>header{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.dialog>.body{overflow:auto;padding:12px 14px;min-height:0}
+.code{font-family:var(--f-mono);font-size:12.5px;line-height:1.5;background:var(--code-bg);border:1px solid var(--line);border-radius:7px;padding:10px 0;margin:0;overflow:auto;white-space:pre;tab-size:2;color:var(--ink)}
+.code>span{display:block;padding:0 12px}
+.code>span::before{content:attr(data-n);display:inline-block;width:4em;margin-right:12px;text-align:right;color:var(--muted);opacity:.7;user-select:none}
+.code>span.focus{background:color-mix(in srgb,var(--sev-md) 22%,transparent)}
+.code>span.a{background:color-mix(in srgb,var(--add) 15%,transparent)}
+.code>span.d{background:color-mix(in srgb,var(--del) 15%,transparent)}
+.code>span.s{color:var(--muted);font-style:italic}
+.code>span.s::before{content:""}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:40;max-width:calc(100% - 32px)}
+.empty{padding:24px 16px;color:var(--muted);border:1px dashed var(--line);border-radius:9px}
+.busy{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Raio-X de Projetos</h1>
+      <p class="sub">Abre duas versões do mesmo projeto e mostra o que está ligado à Replit, as chaves expostas, as rotas que faltam no servidor, os arquivos que sumiram e o que mudou de uma versão para a outra.</p>
+    </div>
+    <div class="row"><button class="btn" id="reportCopy">Copiar relatório</button><button class="btn primary" id="reportDl">Baixar relatório (.md)</button></div>
+  </header>
+
+  <nav class="steps" role="tablist" aria-label="Etapas">
+    <button role="tab" data-tab="projetos" aria-selected="true">Projetos</button>
+    <button role="tab" data-tab="diag" aria-selected="false">Diagnóstico</button>
+    <button role="tab" data-tab="comparar" aria-selected="false">Comparar A × B</button>
+    <button role="tab" data-tab="git" aria-selected="false">Histórico (.git)</button>
+  </nav>
+
+  <section id="tab-projetos" class="stack">
+    <div class="banner" id="exBanner" hidden>Você está vendo <b>dois projetos de exemplo</b> (uma versão completa e uma “consertada” que cortou o servidor). Carregue os seus zips e eles substituem o exemplo.</div>
+    <div class="slots">
+      <div class="panel slot" data-s="A">
+        <div class="row"><span class="tag">A</span><h2>Versão base</h2><span class="note">ex.: a 1.7 completa</span></div>
+        <label class="drop" data-drop="A" for="zipA"><strong>Solte o .zip aqui</strong><span class="note">ou clique para escolher. node_modules é ignorada sozinha.</span></label>
+        <input type="file" id="zipA" accept=".zip" hidden>
+        <div class="row"><label class="btn small" for="dirA">Escolher pasta (computador)</label><input type="file" id="dirA" webkitdirectory multiple hidden></div>
+        <div data-info="A"></div>
+      </div>
+      <div class="panel slot" data-s="B">
+        <div class="row"><span class="tag">B</span><h2>Versão para comparar</h2><span class="note">ex.: a que corrigiu a tela azul</span></div>
+        <label class="drop" data-drop="B" for="zipB"><strong>Solte o .zip aqui</strong><span class="note">ou clique para escolher. Pode ser o build baixado do Netlify.</span></label>
+        <input type="file" id="zipB" accept=".zip" hidden>
+        <div class="row"><label class="btn small" for="dirB">Escolher pasta (computador)</label><input type="file" id="dirB" webkitdirectory multiple hidden></div>
+        <div data-info="B"></div>
+      </div>
+    </div>
+    <div class="row"><button class="btn" id="swapBtn">Trocar A ↔ B</button><button class="btn" id="exBtn">Carregar exemplo</button><span class="note">Tudo é lido no seu navegador. Nenhum arquivo sai do seu aparelho.</span></div>
+    <div class="panel stack">
+      <h3>O que cada aba faz</h3>
+      <div class="kv" style="grid-template-columns:auto 1fr;gap:8px 16px">
+        <dt>Diagnóstico</dt><dd style="font-family:var(--f-body);font-size:14px">Lista os problemas de um projeto: ligações com a Replit, chaves expostas, chamadas para rotas que não existem no servidor (a tela azul), arquivos importados que sumiram, pacotes faltando, variáveis de ambiente e código original escondido em arquivos .map.</dd>
+        <dt>Comparar</dt><dd style="font-family:var(--f-body);font-size:14px">Mostra o que mudou de A para B: arquivos e pastas cortados, quanto código cada pasta perdeu, funções que sumiram ou apareceram. Clique num arquivo para ver as linhas que mudaram.</dd>
+        <dt>Histórico</dt><dd style="font-family:var(--f-body);font-size:14px">Se o zip trouxe a pasta .git, lista cada alteração com data e descrição, e destaca as que falam em correção (fix).</dd>
+      </div>
+    </div>
+  </section>
+
+  <section id="tab-diag" hidden>
+    <div class="row between" style="margin-bottom:14px">
+      <div class="seg" id="diagSeg"><button data-p="A" aria-pressed="true">Projeto A</button><button data-p="B" aria-pressed="false">Projeto B</button></div>
+      <span class="note" id="diagName"></span>
+    </div>
+    <div id="diagOut" class="stack"></div>
+  </section>
+
+  <section id="tab-comparar" hidden>
+    <div id="cmpOut" class="stack"></div>
+  </section>
+
+  <section id="tab-git" hidden>
+    <div class="row between" style="margin-bottom:14px">
+      <div class="seg" id="gitSeg"><button data-p="A" aria-pressed="true">Projeto A</button><button data-p="B" aria-pressed="false">Projeto B</button></div>
+      <input type="text" id="gitQ" placeholder="Buscar (ex.: save, blank, fix, neon)" style="flex:1 1 240px;max-width:360px">
+    </div>
+    <div id="gitOut" class="stack"></div>
+  </section>
+</div>
+
+<div class="overlay" id="ov" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <header><div style="min-width:0"><h3 id="ovTitle" class="mono" style="overflow-wrap:anywhere"></h3><div class="note" id="ovMeta"></div></div><div class="row" id="ovActs"></div></header>
+  <div class="body" id="ovBody"></div>
+</div></div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.2.0/diff.min.js"></script>
+<script>
+/* =====================================================================
+   MÓDULO 1 — LEITURA DE PROJETOS (zip ou pasta)
+   ===================================================================== */
+const TEXT_EXT = new Set('js mjs cjs jsx ts tsx mts cts vue svelte astro html htm css scss sass less json jsonc md markdown txt yml yaml toml ini env xml svg sql py rb php go rs java kt swift sh bat cmd ps1 gradle properties prisma graphql gql map lock nix example sample cfg conf'.split(' '));
+const SPECIAL = new Set(['.replit','replit.nix','.gitignore','.npmrc','.nvmrc','dockerfile','procfile','makefile','.replit-artifact','.editorconfig','.babelrc','.prettierrc','.eslintrc']);
+const BIN_EXT = new Set('png jpg jpeg gif webp ico bmp tif tiff avif mp3 mp4 wav ogg m4a webm mov avi mkv pdf docx doc xlsx xls pptx zip gz tar rar 7z apk aab exe dll so dylib jar class woff woff2 ttf otf eot keystore jks db sqlite bin wasm'.split(' '));
+const MAX_TEXT = 25 * 1024 * 1024;
+const extOf = p => { const b = p.split('/').pop(); const i = b.lastIndexOf('.'); return i > 0 ? b.slice(i+1).toLowerCase() : ''; };
+function isTextPath(p){ const b = p.split('/').pop().toLowerCase(); if (SPECIAL.has(b) || b.startsWith('.env')) return true; const e = extOf(p); if (BIN_EXT.has(e)) return false; return TEXT_EXT.has(e) || e === ''; }
+const GIT_KEEP = /^\.git\/(HEAD|config|packed-refs|logs\/HEAD|logs\/refs\/heads\/[^/]+)$/;
+const SKIP_DIR = /(^|\/)(node_modules|__MACOSX|\.cache|\.pnpm-store|\.local\/state|\.upm|\.config\/\.semgrep)\//;
+
+function stripRoot(paths){
+  if (paths.length < 2) return 0;
+  const first = paths[0].split('/')[0];
+  if (!first || !paths.every(p => p.startsWith(first + '/'))) return 0;
+  return first.length + 1;
+}
+
+function newProject(name){ return { name, files: [], byPath: new Map(), binary: new Set(), skipped: { node_modules: 0, binario: 0, grande: 0 }, git: { present: false, head: '', logs: '', config: '', branchLogs: {} } }; }
+function addFile(P, path, text, size){
+  if (/(^|\/)\.git\//.test(path)){
+    P.git.present = true;
+    const rel = path.slice(path.indexOf('.git/'));
+    if (text !== null && GIT_KEEP.test(rel)){
+      if (rel === '.git/HEAD') P.git.head = text; else if (rel === '.git/config') P.git.config = text; else if (rel === '.git/logs/HEAD') P.git.logs = text;
+      else if (rel.startsWith('.git/logs/refs/heads/')) P.git.branchLogs[rel.split('/').pop()] = text;
+    }
+    return;
+  }
+  if (text === null){ P.binary.add(path); return; }
+  const f = { path, text, size: size || text.length, lines: countLines(text), ext: extOf(path) };
+  P.files.push(f); P.byPath.set(path, f);
+}
+function countLines(t){ if (!t) return 0; let n = 1; for (let i = 0; i < t.length; i++) if (t.charCodeAt(i) === 10) n++; return n; }
+
+async function projectFromZip(file, onProgress){
+  const z = await JSZip.loadAsync(file);
+  const entries = Object.values(z.files).filter(e => !e.dir);
+  const cut = stripRoot(entries.map(e => e.name));
+  const P = newProject(file.name);
+  let done = 0;
+  for (const e of entries){
+    const path = e.name.slice(cut);
+    done++; if (onProgress && done % 200 === 0) onProgress(done, entries.length);
+    if (!path || /(^|\/)\.DS_Store$/.test(path)) continue;
+    if (SKIP_DIR.test(path)){ if (/node_modules/.test(path)) P.skipped.node_modules++; continue; }
+    const size = (e._data && e._data.uncompressedSize) || 0;
+    const isGit = /(^|\/)\.git\//.test(path);
+    if (isGit){ const rel = path.slice(path.indexOf('.git/')); addFile(P, path, GIT_KEEP.test(rel) ? await e.async('string') : null, size); continue; }
+    if (!isTextPath(path)){ P.skipped.binario++; addFile(P, path, null, size); continue; }
+    if (size > MAX_TEXT){ P.skipped.grande++; addFile(P, path, null, size); continue; }
+    addFile(P, path, await e.async('string'), size);
+  }
+  return P;
+}
+async function projectFromFolder(fileList, onProgress){
+  const files = [...fileList];
+  const name = (files[0] && files[0].webkitRelativePath.split('/')[0]) || 'pasta';
+  const P = newProject(name + '/');
+  let done = 0;
+  for (const f of files){
+    const path = f.webkitRelativePath.split('/').slice(1).join('/');
+    done++; if (onProgress && done % 200 === 0) onProgress(done, files.length);
+    if (!path || /(^|\/)\.DS_Store$/.test(path)) continue;
+    if (SKIP_DIR.test(path)){ if (/node_modules/.test(path)) P.skipped.node_modules++; continue; }
+    if (/(^|\/)\.git\//.test(path)){ const rel = path.slice(path.indexOf('.git/')); addFile(P, path, GIT_KEEP.test(rel) ? await f.text() : null, f.size); continue; }
+    if (!isTextPath(path)){ P.skipped.binario++; addFile(P, path, null, f.size); continue; }
+    if (f.size > MAX_TEXT){ P.skipped.grande++; addFile(P, path, null, f.size); continue; }
+    addFile(P, path, await f.text(), f.size);
+  }
+  return P;
+}
+function projectFromObject(name, obj){ const P = newProject(name); for (const [p, t] of Object.entries(obj)) addFile(P, p, t, t.length); return P; }
+
+/* =====================================================================
+   MÓDULO 2 — UTILIDADES DE VARREDURA
+   ===================================================================== */
+const LOCKS = /(^|\/)(package-lock\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb|npm-shrinkwrap\.json)$/;
+const CODE_EXT = new Set('js mjs cjs jsx ts tsx mts cts vue svelte astro html htm'.split(' '));
+const isMap = f => f.ext === 'map';
+const isMinified = f => f.lines > 0 && f.text.length / f.lines > 400;
+const isBuildPath = p => /(^|\/)(dist|build|out|\.next|\.output|public\/assets|www)\//.test(p);
+function scan(text, re, cb){
+  re.lastIndex = 0; let m, line = 1, pos = 0;
+  while ((m = re.exec(text))){
+    for (; pos < m.index; pos++) if (text.charCodeAt(pos) === 10) line++;
+    cb(m, line);
+    if (m[0].length === 0) re.lastIndex++;
+  }
+}
+function snippetAt(text, idx, len){
+  let s = text.lastIndexOf('\n', idx - 1) + 1, e = text.indexOf('\n', idx); if (e < 0) e = text.length;
+  if (e - s > 200){ s = Math.max(s, idx - 70); e = Math.min(e, idx + (len || 0) + 90); }
+  return text.slice(s, e).trim();
+}
+function maskSecret(v){
+  const db = /^([a-z+]+:\/\/[^:]+:)([^@]+)(@.*)$/i.exec(v);
+  if (db) return db[1] + '•••••' + db[3].replace(/\?.*$/, '');
+  return v.length <= 10 ? v.slice(0, 3) + '•••' : v.slice(0, 8) + '••••• (' + v.length + ' caracteres)';
+}
+function stripJsonComments(s){ return s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:"'\\])\/\/.*$/gm, '$1').replace(/,(\s*[}\]])/g, '$1'); }
+function parseJsonLoose(s){ try { return JSON.parse(s); } catch(e){ try { return JSON.parse(stripJsonComments(s)); } catch(e2){ return null; } } }
+const dirOf = p => p.includes('/') ? p.slice(0, p.lastIndexOf('/')) : '';
+function joinPath(base, rel){
+  const out = base ? base.split('/') : [];
+  for (const seg of rel.split('/')){ if (!seg || seg === '.') continue; if (seg === '..') out.pop(); else out.push(seg); }
+  return out.join('/');
+}
+
+/* =====================================================================
+   MÓDULO 3 — DETECTORES
+   ===================================================================== */
+// 3.1 Replit
+const REPLIT_FILES = /(^|\/)(\.replit|replit\.nix|replit\.md|\.replit-artifact|\.upm)$/;
+const REPLIT_RULES = [
+  { re: /AI_INTEGRATIONS_[A-Z0-9_]+/g, lab: 'IA paga pela Replit (só funciona lá)', sev: 'hi' },
+  { re: /replit_integrations/g, lab: 'Integração interna da Replit', sev: 'hi' },
+  { re: /@replit\/[\w.-]+/g, lab: 'Pacote da Replit', sev: 'md' },
+  { re: /\bREPL(?:IT)?_[A-Z0-9_]+\b/g, lab: 'Variável que só existe na Replit', sev: 'md' },
+  { re: /[\w.-]*\b(?:replit\.dev|replit\.app|repl\.co|repl\.run|replitusercontent\.com)\b[\w\/.-]*|replit\.com\/[\w@\/.-]+/g, lab: 'Endereço da Replit', sev: 'md' },
+  { re: /\b(?:runtimeErrorOverlay|cartographer|devBanner)\b/g, lab: 'Plugin da Replit no Vite', sev: 'lo' },
+];
+function detectReplit(P){
+  const out = [];
+  for (const f of P.files){
+    if (REPLIT_FILES.test(f.path)) out.push({ file: f.path, line: 1, lab: 'Arquivo de configuração da Replit', sev: 'md', text: f.path.split('/').pop() });
+    if (LOCKS.test(f.path) || isMap(f)) continue;
+    for (const r of REPLIT_RULES) scan(f.text, r.re, (m, line) => out.push({ file: f.path, line, lab: r.lab, sev: r.sev, text: snippetAt(f.text, m.index, m[0].length), key: m[0] }));
+  }
+  return out;
+}
+// 3.2 Chaves expostas
+const SECRET_RULES = [
+  { re: /\b(?:postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis):\/\/[^\s'"`:@\/]+:[^\s'"`@]+@[^\s'"`<>]+/g, lab: 'Endereço de banco com senha' },
+  { re: /AIza[0-9A-Za-z_\-]{35}/g, lab: 'Chave Google (Gemini, Maps, Firebase)' },
+  { re: /\bsk-(?:proj-|ant-|or-v1-|or-)?[A-Za-z0-9_\-]{24,}/g, lab: 'Chave sk- (OpenAI, OpenRouter ou Anthropic)' },
+  { re: /\bgsk_[A-Za-z0-9]{20,}/g, lab: 'Chave Groq' },
+  { re: /\bpplx-[A-Za-z0-9]{20,}/g, lab: 'Chave Perplexity' },
+  { re: /\bxai-[A-Za-z0-9]{20,}/g, lab: 'Chave xAI' },
+  { re: /\b(?:ghp|gho|ghs|ghu)_[A-Za-z0-9]{30,}|\bgithub_pat_[A-Za-z0-9_]{40,}/g, lab: 'Token do GitHub' },
+  { re: /-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----/g, lab: 'Chave privada (certificado)' },
+  { re: /\bAKIA[0-9A-Z]{16}\b/g, lab: 'Chave AWS' },
+  { re: /\beyJ[A-Za-z0-9_-]{15,}\.eyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{10,}/g, lab: 'Token JWT (pode ser chave do Supabase)' },
+  { re: /\bnpg_[A-Za-z0-9]{10,}/g, lab: 'Senha do Neon' },
+];
+const PLACEHOLDER = /usuario|usu[aá]rio:senha|user:pass|:password@|:senha@|xxx|example|exemplo|<[^>]*>|\$\{|sk_user|seu[-_]|your[-_]|changeme|placeholder|\.\.\./i;
+function detectSecrets(P){
+  const out = [], seen = new Set();
+  for (const f of P.files){
+    if (LOCKS.test(f.path) || isMap(f)) continue;
+    const base = f.path.split('/').pop();
+    if (/^\.env(\.|$)/.test(base) && !/example|sample|template/i.test(base)){
+      scan(f.text, /^\s*([A-Z0-9_]+)\s*=\s*["']?([^\s"'#][^"'\n]*)/gm, (m, line) => {
+        if (PLACEHOLDER.test(m[2]) || m[2].length < 6) return;
+        out.push({ file: f.path, line, lab: 'Valor real dentro de arquivo .env', sev: 'hi', text: m[1] + ' = ' + maskSecret(m[2].trim()) });
+      });
+    }
+    for (const r of SECRET_RULES) scan(f.text, r.re, (m, line) => {
+      if (PLACEHOLDER.test(m[0])) return;
+      const k = f.path + '|' + m[0]; if (seen.has(k)) return; seen.add(k);
+      out.push({ file: f.path, line, lab: r.lab, sev: 'hi', text: maskSecret(m[0]) });
+    });
+  }
+  return out;
+}
+// 3.3 Rotas de API
+const SERVER_PATH = /(^|\/)(server|api-server|backend|functions|netlify\/functions|lambda|routes)(\/|$)/i;
+function isServerFile(f){
+  if (SERVER_PATH.test(dirOf(f.path) + '/')) return true;
+  return /from\s+['"]express['"]|require\(\s*['"]express['"]\s*\)|\bexpress\.Router\s*\(|from\s+['"](?:fastify|hono|koa)['"]/.test(f.text);
+}
+const normSegs = p => p.replace(/^(?:\$\{[^}]*\}|https?:\/\/[^\/'"`]+)/, '').replace(/[?#].*$/, '').replace(/\$\{[^}]*\}/g, ':p').split('/').filter(Boolean).map(s => s.startsWith(':') || /^\[.+\]$/.test(s) ? ':p' : s);
+const dropApi = s => s[0] === 'api' ? s.slice(1) : s;
+function segMatch(r, c){
+  if (r.length && r[r.length-1] === '*') { if (c.length < r.length - 1) return false; return r.slice(0, -1).every((s, i) => s === ':p' || c[i] === ':p' || s === c[i]); }
+  if (r.length !== c.length) return false;
+  return r.every((s, i) => s === ':p' || c[i] === ':p' || s === c[i] || s.includes(':p'));
+}
+function detectRoutes(P){
+  const routes = [], mounts = [], calls = [];
+  const SRV = /\b([\w$]+)\s*\.\s*(get|post|put|patch|delete|all|use|route)\s*\(\s*(['"`])(\/[^'"`]*)\3/g;
+  const CALL = /(['"`])((?:\$\{[^}`]*\}|https?:\/\/[^'"`\s\/]+)?\/(?:api|\.netlify\/functions)\/[^'"`\s]*)\1/g;
+  let serverFiles = 0;
+  for (const f of P.files){
+    if (!CODE_EXT.has(f.ext) || isMap(f)) continue;
+    const nf = /(^|\/)netlify\/functions\/([^/]+?)(?:\/index)?\.(?:m?js|ts)$/.exec(f.path);
+    if (nf){ routes.push({ segs: ['.netlify', 'functions', nf[2]], method: 'ANY', file: f.path, line: 1, path: '/.netlify/functions/' + nf[2] }); routes.push({ segs: [nf[2]], method: 'ANY', file: f.path, line: 1, path: '/api/' + nf[2] + ' (redirect provável)' }); serverFiles++; continue; }
+    const nx = /(^|\/)(?:pages|app)\/api\/(.+?)(?:\/route|\/index)?\.(?:m?js|tsx?|jsx)$/.exec(f.path);
+    if (nx){ routes.push({ segs: normSegs('/' + nx[2]), method: 'ANY', file: f.path, line: 1, path: '/api/' + nx[2] }); serverFiles++; continue; }
+    if (isServerFile(f) && !isBuildPath(f.path)){
+      serverFiles++;
+      scan(f.text, SRV, (m, line) => {
+        const method = m[2].toUpperCase(), path = m[4];
+        if (method === 'USE' || method === 'ROUTE'){ if (path !== '/') mounts.push(dropApi(normSegs(path))); if (method === 'USE') return; }
+        routes.push({ segs: dropApi(normSegs(path)), method, file: f.path, line, path });
+      });
+    } else if (isServerFile(f) && isBuildPath(f.path)){
+      scan(f.text, SRV, (m, line) => { const method = m[2].toUpperCase(); if (method === 'USE' || method === 'ROUTE'){ if (m[4] !== '/') mounts.push(dropApi(normSegs(m[4]))); if (method === 'USE') return; } routes.push({ segs: dropApi(normSegs(m[4])), method, file: f.path, line, path: m[4] }); });
+      serverFiles++;
+    } else {
+      scan(f.text, CALL, (m, line) => {
+        const raw = m[2];
+        const host = /^https?:\/\/([^\/]+)/.exec(raw);
+        if (host && !/^(localhost|127\.|0\.0\.0\.0|192\.168\.)|replit|repl\.co/.test(host[1])) return;
+        const segs = normSegs(raw);
+        calls.push({ segs: segs[0] === '.netlify' ? segs : dropApi(segs), raw, file: f.path, line, text: snippetAt(f.text, m.index, m[0].length) });
+      });
+    }
+  }
+  const matches = (c) => {
+    for (const r of routes){
+      const allParam = r.segs.length && r.segs.every(s => s === ':p');
+      if (!allParam && r.segs.length && segMatch(r.segs, c.segs)) return true;
+      if (!r.segs.length && !c.segs.length) return true;
+    }
+    for (const m of mounts){
+      if (m.length && m.length <= c.segs.length && m.every((s, i) => s === ':p' || s === c.segs[i] || c.segs[i] === ':p')){
+        const rest = c.segs.slice(m.length);
+        for (const r of routes) if (segMatch(r.segs, rest)) return true;
+      }
+    }
+    return false;
+  };
+  const missing = [], ok = [];
+  for (const c of calls) (matches(c) ? ok : missing).push(c);
+  const used = new Set();
+  return { routes, calls, missing, ok, serverFiles, mounts };
+}
+// 3.4 Imports quebrados e dependências
+const BUILTINS = new Set('assert buffer child_process cluster console constants crypto dgram dns domain events fs fs/promises http http2 https inspector module net os path path/posix path/win32 perf_hooks process punycode querystring readline repl stream stream/promises string_decoder sys timers timers/promises tls trace_events tty url util util/types v8 vm wasi worker_threads zlib async_hooks diagnostics_channel test electron'.split(' '));
+const RES_EXT = ['', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.mts', '.json', '.vue', '.svelte', '.css', '/index.ts', '/index.tsx', '/index.js', '/index.jsx', '/index.mjs'];
+function collectAliases(P){
+  const al = [];
+  for (const f of P.files){
+    const b = f.path.split('/').pop();
+    if (/^tsconfig.*\.json$|^jsconfig\.json$/.test(b)){
+      const j = parseJsonLoose(f.text); const co = j && j.compilerOptions; if (!co || !co.paths) continue;
+      const base = joinPath(dirOf(f.path), co.baseUrl || '.');
+      for (const [k, vals] of Object.entries(co.paths)){ const key = k.replace(/\*$/, ''); (Array.isArray(vals) ? vals : [vals]).forEach(v => al.push({ key, dir: joinPath(base, String(v).replace(/\*$/, '')), from: dirOf(f.path) })); }
+    }
+    if (/^vite\.config\.|^vitest\.config\.|^electron\.vite\.config\./.test(b)){
+      scan(f.text, /['"]?(@[\w.-]*|~|#[\w-]*)['"]?\s*:\s*(?:path\.)?(?:resolve|join)\(\s*(?:__dirname|import\.meta\.dirname|process\.cwd\(\))\s*,\s*((?:['"][^'"]*['"]\s*,?\s*)+)\)/g, (m) => {
+        const parts = (m[2].match(/['"]([^'"]*)['"]/g) || []).map(s => s.slice(1, -1));
+        al.push({ key: m[1] + '/', dir: joinPath(dirOf(f.path), parts.join('/')), from: dirOf(f.path) });
+        al.push({ key: m[1], dir: joinPath(dirOf(f.path), parts.join('/')), from: dirOf(f.path), exact: true });
+      });
+    }
+  }
+  return al;
+}
+function detectImports(P){
+  const all = new Set([...P.byPath.keys(), ...P.binary]);
+  const exists = p => { for (const e of RES_EXT){ if (all.has(p + e)) return true; } if (/\.js$/.test(p)){ const b = p.slice(0, -3); for (const e of ['.ts', '.tsx', '.mts']) if (all.has(b + e)) return true; } return false; };
+  const aliases = collectAliases(P);
+  const pkgs = P.files.filter(f => f.path.split('/').pop() === 'package.json' && !isBuildPath(f.path));
+  const declared = new Set(), wsNames = new Set(), wsDeps = [], replitDeps = [];
+  for (const f of pkgs){
+    const j = parseJsonLoose(f.text); if (!j) continue;
+    if (j.name) wsNames.add(j.name);
+    for (const sec of ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies']){
+      for (const [n, v] of Object.entries(j[sec] || {})){
+        declared.add(n);
+        if (/^workspace:/.test(String(v))) wsDeps.push({ name: n, file: f.path });
+        if (/^@replit\//.test(n)) replitDeps.push({ name: n, file: f.path });
+      }
+    }
+  }
+  const IMP = /(?:\bimport\s+(?:type\s+)?(?:[\w*${}\s,]+?\s+from\s+)?|\bexport\s+(?:type\s+)?[\w*${}\s,]+?\s+from\s+|\brequire\(\s*|\bimport\(\s*)(['"])([^'"\n]+)\1/g;
+  const brokenFiles = [], missingPkgs = new Map();
+  for (const f of P.files){
+    if (!CODE_EXT.has(f.ext) || f.ext === 'html' || f.ext === 'htm' || isBuildPath(f.path) || isMinified(f) || /\.d\.ts$/.test(f.path)) continue;
+    scan(f.text, IMP, (m, line) => {
+      let spec = m[2].replace(/\?.*$/, '');
+      if (/^(https?:|data:|virtual:|node:|bun:|\/@|\$|~icons)/.test(spec) || spec.includes('${')) return;
+      if (spec.startsWith('.')){
+        const target = joinPath(dirOf(f.path), spec);
+        if (!exists(target)) brokenFiles.push({ file: f.path, line, spec, text: snippetAt(f.text, m.index, m[0].length) });
+        return;
+      }
+      const al = aliases.filter(a => a.exact ? spec === a.key : spec.startsWith(a.key)).sort((a, b) => b.key.length - a.key.length)[0];
+      if (al){ const target = al.exact ? al.dir : joinPath(al.dir, spec.slice(al.key.length)); const cands = aliases.filter(a => a.key === al.key).map(a => a.exact ? a.dir : joinPath(a.dir, spec.slice(a.key.length)));
+        if (!cands.some(exists)) brokenFiles.push({ file: f.path, line, spec, text: snippetAt(f.text, m.index, m[0].length) }); return; }
+      if (spec.startsWith('/')) return;
+      if (/^@\//.test(spec)){ const src = f.path.indexOf('/src/') >= 0 ? f.path.slice(0, f.path.indexOf('/src/') + 4) : 'src'; if (!exists(joinPath(src, spec.slice(2)))) brokenFiles.push({ file: f.path, line, spec, text: snippetAt(f.text, m.index, m[0].length) }); return; }
+      const name = spec.startsWith('@') ? spec.split('/').slice(0, 2).join('/') : spec.split('/')[0];
+      if (BUILTINS.has(name) || BUILTINS.has(spec) || declared.has(name) || wsNames.has(name)) return;
+      if (!pkgs.length) return;
+      if (!missingPkgs.has(name)) missingPkgs.set(name, []);
+      missingPkgs.get(name).push({ file: f.path, line, text: snippetAt(f.text, m.index, m[0].length) });
+    });
+  }
+  const missingWs = wsDeps.filter(d => !wsNames.has(d.name));
+  return { brokenFiles, missingPkgs: [...missingPkgs.entries()].map(([name, uses]) => ({ name, uses })), missingWs, replitDeps, pkgCount: pkgs.length };
+}
+// 3.5 Variáveis de ambiente
+function detectEnv(P){
+  const used = new Map(), declared = new Set();
+  const RE = /\bprocess\.env\.([A-Z_][A-Z0-9_]*)|\bprocess\.env\[\s*['"]([A-Z_][A-Z0-9_]*)['"]\s*\]|\bimport\.meta\.env\.([A-Z_][A-Z0-9_]*)|\bDeno\.env\.get\(\s*['"]([A-Z_][A-Z0-9_]*)['"]/g;
+  for (const f of P.files){
+    const b = f.path.split('/').pop();
+    if (/^\.env/.test(b)) scan(f.text, /^\s*(?:export\s+)?([A-Z_][A-Z0-9_]*)\s*=/gm, m => declared.add(m[1]));
+    if (!CODE_EXT.has(f.ext) || isMap(f)) continue;
+    scan(f.text, RE, (m, line) => { const n = m[1] || m[2] || m[3] || m[4]; if (/^(NODE_ENV|MODE|DEV|PROD|SSR|BASE_URL)$/.test(n)) return; if (!used.has(n)) used.set(n, []); used.get(n).push({ file: f.path, line }); });
+  }
+  return [...used.entries()].map(([name, uses]) => ({ name, uses, declared: declared.has(name), replit: /^(REPL|REPLIT|AI_INTEGRATIONS)_/.test(name) })).sort((a, b) => (b.replit - a.replit) || a.name.localeCompare(b.name));
+}
+// 3.6 Endereços fixos
+function detectHardcoded(P){
+  const out = [];
+  for (const f of P.files){
+    if (!CODE_EXT.has(f.ext) || isMap(f) || isServerFile(f) || /(^|\/)(vite|vitest|playwright|electron)\.config\./.test(f.path)) continue;
+    scan(f.text, /https?:\/\/(?:localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3})(?::\d+)?[\w\/.-]*/g, (m, line) => out.push({ file: f.path, line, lab: 'Endereço fixo de um computador', sev: 'md', text: snippetAt(f.text, m.index, m[0].length) }));
+  }
+  for (const f of P.files){
+    if (!/(^|\/)capacitor\.config\.(ts|js|json)$/.test(f.path)) continue;
+    scan(f.text, /url\s*:\s*['"`]([^'"`]+)['"`]/g, (m, line) => out.push({ file: f.path, line, lab: 'APK aponta para este servidor', sev: /replit|repl\.co/.test(m[1]) ? 'hi' : 'md', text: snippetAt(f.text, m.index, m[0].length) }));
+  }
+  return out;
+}
+// 3.7 Mapas de código (.map)
+function detectMaps(P){
+  const out = [];
+  for (const f of P.files){
+    if (!isMap(f)) continue;
+    const j = parseJsonLoose(f.text); if (!j || !Array.isArray(j.sources)) continue;
+    const withContent = (j.sourcesContent || []).filter((c, i) => c && !/node_modules/.test(j.sources[i] || '')).length;
+    out.push({ file: f.path, sources: j.sources.length, own: j.sources.filter(s => !/node_modules/.test(s)).length, withContent });
+  }
+  return out;
+}
+function extractMaps(P){
+  const files = {};
+  for (const f of P.files){
+    if (!isMap(f)) continue;
+    const j = parseJsonLoose(f.text); if (!j || !Array.isArray(j.sources) || !j.sourcesContent) continue;
+    j.sources.forEach((s, i) => {
+      const c = j.sourcesContent[i]; if (!c || /node_modules|^\x00|vite\/|commonjsHelpers|\(disabled\)/.test(s)) return;
+      let p = s.replace(/^webpack:\/\/[^/]*\//, '').replace(/^[a-z]+:\/\//, '').replace(/^(\.\.\/)+/, '').replace(/^\/+/, '').replace(/^\.\//, '');
+      if (!p) return; files[p] = c;
+    });
+  }
+  return files;
+}
+// 3.8 Pilha do projeto
+function detectStack(P){
+  const tags = new Set();
+  const map = { react: 'React', vue: 'Vue', vite: 'Vite', express: 'Express (servidor)', electron: 'Electron (executável)', '@capacitor/core': 'Capacitor (APK)', expo: 'Expo (APK)', next: 'Next.js', 'drizzle-orm': 'Drizzle (banco)', pg: 'Postgres', '@neondatabase/serverless': 'Neon', '@supabase/supabase-js': 'Supabase', firebase: 'Firebase', '@tiptap/react': 'TipTap (editor)', 'better-sqlite3': 'SQLite', '@monaco-editor/react': 'Monaco', 'xterm': 'xterm (terminal)', '@xterm/xterm': 'xterm (terminal)', 'node-pty': 'node-pty (terminal real)', '@webcontainer/api': 'WebContainer' };
+  for (const f of P.files){
+    if (f.path.split('/').pop() !== 'package.json' || isBuildPath(f.path)) continue;
+    const j = parseJsonLoose(f.text); if (!j) continue;
+    for (const sec of ['dependencies', 'devDependencies']) for (const n of Object.keys(j[sec] || {})) if (map[n]) tags.add(map[n]);
+  }
+  if (P.files.some(f => /(^|\/)netlify\.toml$/.test(f.path))) tags.add('Netlify');
+  if (P.files.some(f => /(^|\/)(dist|build)\/index\.html$/.test(f.path))) tags.add('Tem build pronto');
+  if (!P.files.some(f => f.path.split('/').pop() === 'package.json')) tags.add('Sem package.json');
+  return [...tags];
+}
+// 3.9 Histórico git
+function parseGitLog(text){
+  const out = [];
+  for (const l of (text || '').split('\n')){
+    const m = /^([0-9a-f]{40}) ([0-9a-f]{40}) (.*?) <(.*?)> (\d+) ([+-]\d{4})\t(.*)$/.exec(l);
+    if (!m) continue;
+    const msg = m[7]; const kind = (/^([\w ()-]+?):\s*/.exec(msg) || [])[1] || '';
+    out.push({ from: m[1], to: m[2], author: m[3], time: +m[5] * 1000, kind, msg: msg.replace(/^[\w ()-]+?:\s*/, '') });
+  }
+  return out.reverse();
+}
+const FIX_RE = /\b(fix|fixe[sd]|corrig|conserta|resolv|bug|erro|error|crash|blank|branca|azul|save|salv|persist|repair|restore)/i;
+
+function analyze(P){
+  if (P._an) return P._an;
+  const lines = P.files.reduce((a, f) => a + f.lines, 0);
+  P._an = {
+    lines, stack: detectStack(P), replit: detectReplit(P), secrets: detectSecrets(P), routes: detectRoutes(P),
+    imports: detectImports(P), env: detectEnv(P), hard: detectHardcoded(P), maps: detectMaps(P), git: parseGitLog(P.git.logs)
+  };
+  return P._an;
+}
+
+/* =====================================================================
+   MÓDULO 4 — COMPARAÇÃO A × B
+   ===================================================================== */
+const FN_RE = /(?:^|[^\w$.])(?:async\s+)?function\s*\*?\s*([A-Za-z_$][\w$]*)\s*\(|(?:^|[^\w$.])(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:function\b|\([^()]*\)\s*(?::\s*[\w<>\[\]|, ]+)?\s*=>|[A-Za-z_$][\w$]*\s*=>)|(?:^|[^\w$.])class\s+([A-Za-z_$][\w$]*)|^\s*(?:export\s+)?(?:default\s+)?function\s+([A-Z][\w$]*)|^\s*(?:async\s+)?def\s+(\w+)/gm;
+function fnIndex(P){
+  const idx = new Map();
+  for (const f of P.files){
+    if (!(CODE_EXT.has(f.ext) || f.ext === 'py') || isMap(f) || isMinified(f) || isBuildPath(f.path)) continue;
+    FN_RE.lastIndex = 0; let m;
+    while ((m = FN_RE.exec(f.text))){ const n = m[1] || m[2] || m[3] || m[4] || m[5]; if (!n || n.length < 3) continue; if (!idx.has(n)) idx.set(n, f.path); }
+  }
+  return idx;
+}
+function lineBag(text){ const m = new Map(); for (const l of text.split('\n')){ const t = l.trim(); if (!t) continue; m.set(t, (m.get(t) || 0) + 1); } return m; }
+function bagDiff(a, b){ let rem = 0, add = 0; for (const [k, n] of a){ const o = b.get(k) || 0; if (n > o) rem += n - o; } for (const [k, n] of b){ const o = a.get(k) || 0; if (n > o) add += n - o; } return { rem, add }; }
+function folderKey(p){ const s = p.split('/'); if (s.length === 1) return '(raiz)'; if (s.length === 2) return s[0] + '/'; return s[0] + '/' + s[1] + '/'; }
+function compare(A, B){
+  const paths = new Set([...A.byPath.keys(), ...B.byPath.keys()]);
+  const rows = [];
+  for (const p of paths){
+    const a = A.byPath.get(p), b = B.byPath.get(p);
+    if (a && b){
+      if (a.text === b.text) rows.push({ path: p, st: 'eq', la: a.lines, lb: b.lines, rem: 0, add: 0 });
+      else { const d = (a.size + b.size > 6e6) ? { rem: a.lines, add: b.lines } : bagDiff(lineBag(a.text), lineBag(b.text)); rows.push({ path: p, st: 'chg', la: a.lines, lb: b.lines, rem: d.rem, add: d.add }); }
+    } else if (a) rows.push({ path: p, st: 'del', la: a.lines, lb: 0, rem: a.lines, add: 0 });
+    else rows.push({ path: p, st: 'add', la: 0, lb: b.lines, rem: 0, add: b.lines });
+  }
+  rows.sort((x, y) => x.path.localeCompare(y.path, 'pt', { numeric: true }));
+  const folders = new Map();
+  for (const r of rows){ const k = folderKey(r.path); const f = folders.get(k) || { key: k, la: 0, lb: 0, rem: 0, files: 0, gone: 0 }; f.la += r.la; f.lb += r.lb; f.rem += r.rem; f.files++; if (r.st === 'del') f.gone++; folders.set(k, f); }
+  const fa = fnIndex(A), fb = fnIndex(B);
+  const goneFns = [...fa].filter(([n]) => !fb.has(n)).map(([n, p]) => ({ name: n, file: p }));
+  const newFns = [...fb].filter(([n]) => !fa.has(n)).map(([n, p]) => ({ name: n, file: p }));
+  const la = rows.reduce((s, r) => s + r.la, 0), lb = rows.reduce((s, r) => s + r.lb, 0), rem = rows.reduce((s, r) => s + r.rem, 0);
+  const cnt = st => rows.filter(r => r.st === st).length;
+  return { rows, folders: [...folders.values()].sort((x, y) => y.rem - x.rem), goneFns, newFns, la, lb, rem, lostPct: la ? Math.round(rem / la * 100) : 0, n: { eq: cnt('eq'), chg: cnt('chg'), del: cnt('del'), add: cnt('add') } };
+}
+
+/* =====================================================================
+   MÓDULO 5 — RELATÓRIO (markdown)
+   ===================================================================== */
+function reportMD(S){
+  const L = [];
+  const now = new Date().toLocaleString('pt-BR');
+  L.push('# Raio-X de Projetos', '', 'Gerado em ' + now + '. As chaves aparecem mascaradas.', '');
+  for (const k of ['A', 'B']){
+    const P = S[k]; if (!P) continue; const an = analyze(P);
+    L.push('## Projeto ' + k + ': ' + P.name, '', '- Arquivos de texto: ' + P.files.length + ' · linhas: ' + an.lines.toLocaleString('pt-BR'), '- Pilha: ' + (an.stack.join(', ') || 'não identificada'), '- Pasta .git: ' + (P.git.present ? 'sim (' + an.git.length + ' registros)' : 'não'), '');
+    const R = an.routes;
+    L.push('### Rotas de API', '', '- Arquivos de servidor: ' + R.serverFiles + ' · rotas: ' + R.routes.length + ' · chamadas da tela: ' + R.calls.length + ' · **sem rota: ' + R.missing.length + '**');
+    if (!R.serverFiles && R.calls.length) L.push('- **Não há servidor neste projeto. Todas as chamadas /api vão falhar (tela azul / não salva).**');
+    [...new Set(R.missing.map(c => '/' + (c.segs[0] === '.netlify' ? '' : 'api/') + c.segs.join('/')))].slice(0, 60).forEach(p => L.push('  - `' + p + '`'));
+    L.push('', '### Arquivos importados que não existem (' + an.imports.brokenFiles.length + ')');
+    an.imports.brokenFiles.slice(0, 60).forEach(b => L.push('- ' + b.file + ':' + b.line + ' → `' + b.spec + '`'));
+    if (an.imports.missingWs.length){ L.push('', '### Pacotes internos faltando (pasta cortada?)'); an.imports.missingWs.forEach(d => L.push('- `' + d.name + '` (pedido em ' + d.file + ')')); }
+    if (an.imports.missingPkgs.length){ L.push('', '### Pacotes usados mas não declarados no package.json'); an.imports.missingPkgs.forEach(d => L.push('- `' + d.name + '` (' + d.uses.length + ' uso' + (d.uses.length > 1 ? 's' : '') + ')')); }
+    L.push('', '### Ligações com a Replit (' + an.replit.length + ')');
+    const byLab = {}; an.replit.forEach(r => (byLab[r.lab] = byLab[r.lab] || []).push(r));
+    Object.entries(byLab).forEach(([lab, list]) => { L.push('- ' + lab + ': ' + list.length); list.slice(0, 8).forEach(r => L.push('  - ' + r.file + ':' + r.line + ' `' + (r.key || r.text).slice(0, 80) + '`')); });
+    L.push('', '### Chaves expostas (' + an.secrets.length + ')');
+    an.secrets.slice(0, 40).forEach(s => L.push('- ' + s.lab + ' — ' + s.file + ':' + s.line + ' `' + s.text + '`'));
+    L.push('', '### Variáveis de ambiente usadas (' + an.env.length + ')');
+    an.env.forEach(e => L.push('- `' + e.name + '`' + (e.replit ? ' (Replit)' : '') + (e.declared ? '' : ' — sem exemplo em .env')));
+    if (an.hard.length){ L.push('', '### Endereços fixos'); an.hard.slice(0, 20).forEach(h => L.push('- ' + h.file + ':' + h.line + ' `' + h.text.slice(0, 100) + '`')); }
+    if (an.maps.length){ L.push('', '### Arquivos .map com código original'); an.maps.forEach(m => L.push('- ' + m.file + ' — ' + m.withContent + ' arquivos recuperáveis')); }
+    if (an.git.length){ L.push('', '### Histórico (.git) — últimos 40'); an.git.slice(0, 40).forEach(c => L.push('- ' + new Date(c.time).toLocaleString('pt-BR') + ' · ' + c.to.slice(0, 7) + ' · ' + c.msg)); }
+    L.push('');
+  }
+  if (S.A && S.B){
+    const C = compare(S.A, S.B);
+    L.push('## Comparação A × B', '', '- Linhas: A ' + C.la.toLocaleString('pt-BR') + ' → B ' + C.lb.toLocaleString('pt-BR') + ' · **B perdeu ' + C.lostPct + '% das linhas de A**', '- Arquivos iguais ' + C.n.eq + ' · alterados ' + C.n.chg + ' · só em A ' + C.n.del + ' · só em B ' + C.n.add, '', '### Pastas que mais perderam código', '');
+    L.push('| Pasta | Linhas A | Linhas B | Perdidas | Arquivos sumidos |', '|---|---:|---:|---:|---:|');
+    C.folders.slice(0, 25).forEach(f => L.push('| ' + f.key + ' | ' + f.la + ' | ' + f.lb + ' | ' + f.rem + ' | ' + f.gone + ' |'));
+    L.push('', '### Arquivos alterados', ''); C.rows.filter(r => r.st === 'chg').slice(0, 80).forEach(r => L.push('- ' + r.path + ' (−' + r.rem + ' +' + r.add + ')'));
+    L.push('', '### Funções que sumiram em B (' + C.goneFns.length + ')', ''); C.goneFns.slice(0, 150).forEach(f => L.push('- `' + f.name + '` — ' + f.file));
+    L.push('', '### Funções novas em B (' + C.newFns.length + ')', ''); C.newFns.slice(0, 150).forEach(f => L.push('- `' + f.name + '` — ' + f.file));
+  }
+  return L.join('\n') + '\n';
+}
+
+/* =====================================================================
+   MÓDULO 6 — EXEMPLO (dois projetos fictícios)
+   ===================================================================== */
+const SAMPLE_A = {
+  'package.json': JSON.stringify({ name: 'sk-juridico', private: true, dependencies: { express: '^5.0.0', react: '^18.3.1', '@neondatabase/serverless': '^0.9.0', '@tiptap/react': '^2.6.0', mammoth: '^1.8.0', '@workspace/db': 'workspace:*' }, devDependencies: { vite: '^5.4.0', '@replit/vite-plugin-runtime-error-modal': '^0.0.3' } }, null, 2),
+  'lib/db/package.json': JSON.stringify({ name: '@workspace/db' }, null, 2),
+  'lib/db/src/index.ts': ["import { neon } from '@neondatabase/serverless';", "export const sql = neon(process.env.DATABASE_URL!);", "export async function salvarDocumento(doc: any) {", "  return sql`insert into documentos (titulo, html) values (${doc.titulo}, ${doc.html})`;", "}"].join('\n'),
+  '.replit': 'run = "pnpm run dev"\nmodules = ["nodejs-20"]\n',
+  'tsconfig.json': '{\n  // caminhos\n  "compilerOptions": { "baseUrl": ".", "paths": { "@/*": ["./client/src/*"] } }\n}',
+  'server/index.ts': ["import express from 'express';", "import { salvarDocumento } from '@workspace/db';", "import { pdfParaTexto } from './importar';", "const app = express();", "app.use(express.json());", "", "app.get('/api/ementas', async (req, res) => { res.json([]); });", "app.post('/api/ementas', async (req, res) => { res.json({ ok: true }); });", "app.post('/api/documentos', async (req, res) => { await salvarDocumento(req.body); res.json({ ok: true }); });", "app.post('/api/importar', async (req, res) => { res.json({ texto: await pdfParaTexto(req.body) }); });", "", "async function gerarComIA(prompt: string) {", "  const key = process.env.AI_INTEGRATIONS_GEMINI_API_KEY;", "  const base = process.env.AI_INTEGRATIONS_GEMINI_BASE_URL;", "  return fetch(base + '/models/gemini-2.5-flash:generateContent?key=' + key, { method: 'POST', body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });", "}", "app.post('/api/ai/stream', async (req, res) => { const r = await gerarComIA(req.body.prompt); res.json(await r.json()); });", "", "app.listen(process.env.PORT || 8080);"].join('\n'),
+  'server/importar.ts': ["import mammoth from 'mammoth';", "export async function pdfParaTexto(arquivo: any) {", "  if (arquivo.tipo === 'docx') return (await mammoth.extractRawText({ buffer: arquivo.buffer })).value;", "  return arquivo.texto;", "}"].join('\n'),
+  'client/src/pages/editor.tsx': ["import { useState } from 'react';", "import { Toolbar } from '@/components/toolbar';", "import { montarHistorico } from '../lib/chat';", "", "export default function Editor() {", "  const [html, setHtml] = useState('');", "  async function salvar() {", "    const r = await fetch('/api/documentos', { method: 'POST', body: JSON.stringify({ titulo: 'Petição', html }) });", "    if (!r.ok) throw new Error('Falha ao salvar');", "  }", "  async function carregarEmenta(id: string) {", "    return fetch(`/api/ementas/${id}`).then(r => r.json());", "  }", "  async function exportar() {", "    return fetch('/api/export/docx', { method: 'POST', body: html });", "  }", "  async function perguntar(texto: string, historico: any[]) {", "    return fetch('/api/ai/stream', { method: 'POST', body: JSON.stringify({ prompt: montarHistorico(historico) + texto }) });", "  }", "  return <div><Toolbar onSave={salvar} onExport={exportar} /></div>;", "}"].join('\n'),
+  'client/src/components/toolbar.tsx': ["export function Toolbar({ onSave, onExport }: any) {", "  return <nav><button onClick={onSave}>Salvar</button><button onClick={onExport}>Exportar</button></nav>;", "}"].join('\n'),
+  'client/src/lib/chat.ts': ["export function montarHistorico(h: any[]) {", "  return h.map(m => m.papel + ': ' + m.texto).join('\\n') + '\\n';", "}"].join('\n'),
+  'client/src/lib/config.ts': ["// conexão direta (NÃO deveria estar no código)", "export const DB_URL = 'postgresql://neondb_owner:npg_Q7wErTy12uIo@ep-misty-sun-a5b2c3d4.us-east-2.aws.neon.tech/neondb?sslmode=require';", "export const API_BASE = 'http://localhost:8080';"].join('\n'),
+  'vite.config.ts': ["import { defineConfig } from 'vite';", "import path from 'path';", "import runtimeErrorOverlay from '@replit/vite-plugin-runtime-error-modal';", "export default defineConfig({", "  plugins: [runtimeErrorOverlay(), process.env.REPL_ID ? [] : []],", "  resolve: { alias: { '@': path.resolve(__dirname, 'client', 'src') } },", "});"].join('\n'),
+  '.git/logs/HEAD': [
+    '0000000000000000000000000000000000000000 1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d Agente <agente@exemplo.dev> 1746100000 -0300\tcommit (initial): Initial commit',
+    '1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d 2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e Agente <agente@exemplo.dev> 1746700000 -0300\tcommit: Add TipTap editor with ABNT formatting',
+    '2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e 3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f Agente <agente@exemplo.dev> 1747300000 -0300\tcommit: Fix blank screen when saving documents',
+    '3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f 4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f70 Agente <agente@exemplo.dev> 1747900000 -0300\tcommit: Make chat keep conversation history',
+    '4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f70 5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f7081 Agente <agente@exemplo.dev> 1748500000 -0300\tcommit: Published your App'
+  ].join('\n') + '\n',
+};
+const SAMPLE_B = {
+  'package.json': JSON.stringify({ name: 'sk-juridico-netlify', private: true, dependencies: { react: '^18.3.1', '@tiptap/react': '^2.6.0' }, devDependencies: { vite: '^5.4.0' } }, null, 2),
+  'netlify.toml': '[build]\n  command = "npm run build"\n  publish = "dist"\n',
+  'tsconfig.json': '{ "compilerOptions": { "baseUrl": ".", "paths": { "@/*": ["./client/src/*"] } } }',
+  'client/src/pages/editor.tsx': ["import { useState } from 'react';", "import { Toolbar } from '@/components/toolbar';", "import { montarHistorico } from '../lib/chat';", "", "export default function Editor() {", "  const [html, setHtml] = useState('');", "  async function salvar() {", "    try {", "      localStorage.setItem('doc-atual', html);", "    } catch (e) { console.warn('não salvou', e); }", "  }", "  async function carregarEmenta(id: string) {", "    return fetch(`/api/ementas/${id}`).then(r => r.json());", "  }", "  async function exportar() {", "    return fetch('/api/export/docx', { method: 'POST', body: html });", "  }", "  async function perguntar(texto: string) {", "    return fetch('/api/ai/stream', { method: 'POST', body: JSON.stringify({ prompt: texto }) });", "  }", "  return <div><Toolbar onSave={salvar} onExport={exportar} /></div>;", "}"].join('\n'),
+  'client/src/components/toolbar.tsx': ["export function Toolbar({ onSave, onExport }: any) {", "  return <nav><button onClick={onSave}>Salvar</button><button onClick={onExport}>Exportar</button></nav>;", "}"].join('\n'),
+  'vite.config.ts': ["import { defineConfig } from 'vite';", "import path from 'path';", "export default defineConfig({ resolve: { alias: { '@': path.resolve(__dirname, 'client', 'src') } } });"].join('\n'),
+};
+
+if (typeof module !== 'undefined') module.exports = { projectFromObject, analyze, compare, reportMD, extractMaps, SAMPLE_A, SAMPLE_B, parseGitLog };
+
+/* =====================================================================
+   MÓDULO 7 — INTERFACE
+   ===================================================================== */
+if (typeof document !== 'undefined') (function(){
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => Number(n).toLocaleString('pt-BR');
+const S = { A: null, B: null, example: false };
+let tab = 'projetos', diagP = 'A', gitP = 'A', dl = null, cmpCache = null;
+const cmpF = { st: 'mudou', q: '', limit: 200 };
+
+let toastT;
+function toast(m){ const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 3400); }
+async function copyText(text, label){
+  try { await navigator.clipboard.writeText(text); toast((label || 'Texto') + ' copiado'); }
+  catch(e){ const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch(_){} ta.remove(); toast(ok ? (label || 'Texto') + ' copiado' : 'Não consegui copiar automaticamente.'); }
+}
+async function saveFile(name, data){
+  if (!dl){ toast('Baixar não está disponível nesta tela. Use “Copiar relatório”.'); return; }
+  try { await dl.save({ filename: name, data }); toast('Download de ' + name + ' iniciado'); }
+  catch(e){ const c = e && e.code; toast(c === 'declined' ? 'Download cancelado' : c === 'rate_limited' ? 'Já existe um pedido de download aberto.' : 'Não consegui baixar: ' + ((e && e.message) || c)); }
+}
+try { if (window.claude && window.claude.use) window.claude.use('downloads').then(d => { dl = d; }); } catch(e){}
+
+/* ---- carregar ---- */
+function setProject(slot, P){ if (S.example){ S.example = false; S.A = null; S.B = null; } S[slot] = P; cmpCache = null; renderAll(); toast('Projeto ' + slot + ' carregado: ' + fmt(P.files.length) + ' arquivos de texto'); }
+async function loadZip(slot, file){
+  if (!window.JSZip){ toast('O leitor de .zip não carregou. Verifique a internet e recarregue.'); return; }
+  const info = $('[data-info="' + slot + '"]'); info.innerHTML = '<p class="note"><span class="busy"></span> Lendo ' + esc(file.name) + '…</p>';
+  try { const P = await projectFromZip(file, (d, t) => { info.innerHTML = '<p class="note"><span class="busy"></span> Lendo ' + fmt(d) + ' de ' + fmt(t) + ' arquivos…</p>'; }); setProject(slot, P); }
+  catch(e){ info.innerHTML = '<p class="note" style="color:var(--sev-hi)">Não consegui abrir este zip: ' + esc(e.message || e) + '</p>'; }
+}
+async function loadDir(slot, list){
+  if (!list.length) return;
+  const info = $('[data-info="' + slot + '"]'); info.innerHTML = '<p class="note"><span class="busy"></span> Lendo a pasta…</p>';
+  try { setProject(slot, await projectFromFolder(list, (d, t) => { info.innerHTML = '<p class="note"><span class="busy"></span> Lendo ' + fmt(d) + ' de ' + fmt(t) + '…</p>'; })); }
+  catch(e){ info.innerHTML = '<p class="note" style="color:var(--sev-hi)">Erro ao ler a pasta: ' + esc(e.message || e) + '</p>'; }
+}
+['A', 'B'].forEach(k => {
+  $('#zip' + k).addEventListener('change', e => { if (e.target.files[0]) loadZip(k, e.target.files[0]); e.target.value = ''; });
+  $('#dir' + k).addEventListener('change', e => { loadDir(k, e.target.files); e.target.value = ''; });
+  const d = $('[data-drop="' + k + '"]');
+  ['dragenter', 'dragover'].forEach(ev => d.addEventListener(ev, e => { e.preventDefault(); d.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => d.addEventListener(ev, e => { e.preventDefault(); d.classList.remove('over'); }));
+  d.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (!f) return; if (!/\.zip$/i.test(f.name)){ toast('Solte um arquivo .zip (para pasta, use “Escolher pasta”)'); return; } loadZip(k, f); });
+});
+$('#swapBtn').addEventListener('click', () => { [S.A, S.B] = [S.B, S.A]; cmpCache = null; renderAll(); toast('A e B trocados'); });
+function loadExample(){ S.A = projectFromObject('exemplo-versao-1.7.zip', SAMPLE_A); S.B = projectFromObject('exemplo-versao-netlify.zip', SAMPLE_B); S.example = true; cmpCache = null; }
+$('#exBtn').addEventListener('click', () => { loadExample(); renderAll(); toast('Exemplo carregado'); });
+
+/* ---- abas ---- */
+function setTab(t){ tab = t; $$('nav.steps button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t))); ['projetos', 'diag', 'comparar', 'git'].forEach(k => $('#tab-' + k).hidden = k !== t); renderTab(); window.scrollTo({ top: 0 }); }
+$$('nav.steps button').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+function renderAll(){ renderSlots(); renderTab(); }
+function renderTab(){ if (tab === 'projetos') renderSlots(); else if (tab === 'diag') renderDiag(); else if (tab === 'comparar') renderCompare(); else renderGit(); }
+
+function renderSlots(){
+  $('#exBanner').hidden = !S.example;
+  for (const k of ['A', 'B']){
+    const P = S[k], box = $('[data-info="' + k + '"]');
+    if (!P){ box.innerHTML = '<p class="note">Nenhum projeto carregado.</p>'; continue; }
+    const an = analyze(P);
+    const alerts = [];
+    if (!an.routes.serverFiles && an.routes.calls.length) alerts.push('<span class="chip bad">sem servidor</span>');
+    if (an.replit.length) alerts.push('<span class="chip warn">Replit: ' + an.replit.length + '</span>');
+    if (an.secrets.length) alerts.push('<span class="chip bad">chaves expostas: ' + an.secrets.length + '</span>');
+    box.innerHTML = '<dl class="kv"><dt>Arquivo</dt><dd>' + esc(P.name) + '</dd><dt>Texto</dt><dd>' + fmt(P.files.length) + ' arquivos · ' + fmt(an.lines) + ' linhas</dd><dt>Ignorados</dt><dd>' + fmt(P.skipped.node_modules) + ' de node_modules · ' + fmt(P.skipped.binario) + ' imagens/binários' + (P.skipped.grande ? ' · ' + P.skipped.grande + ' grandes demais' : '') + '</dd><dt>.git</dt><dd>' + (P.git.present ? (an.git.length ? 'sim, ' + fmt(an.git.length) + ' registros' : 'sim, mas sem histórico legível') : 'não veio no zip') + '</dd></dl>' +
+      '<div class="chips">' + an.stack.map(s => '<span class="chip">' + esc(s) + '</span>').join('') + alerts.join('') + '</div>';
+  }
+}
+
+/* ---- visualizador ---- */
+function openDialog(title, meta, acts, body){ $('#ovTitle').textContent = title; $('#ovMeta').textContent = meta; $('#ovActs').innerHTML = acts + '<button class="btn small" data-ov="close">Fechar</button>'; $('#ovBody').innerHTML = body; $('#ov').hidden = false; $('#ovActs [data-ov="close"]').focus(); }
+function closeDialog(){ $('#ov').hidden = true; $('#ovBody').innerHTML = ''; }
+$('#ov').addEventListener('click', e => { if (e.target.id === 'ov' || e.target.closest('[data-ov="close"]')) closeDialog(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#ov').hidden) closeDialog(); });
+let ovCopy = null;
+$('#ovActs').addEventListener('click', e => { if (e.target.closest('[data-ov="copy"]') && ovCopy) copyText(ovCopy.text, ovCopy.label); });
+function openFile(slot, path, line){
+  const P = S[slot]; const f = P && P.byPath.get(path); if (!f) return;
+  const ls = f.text.split('\n'); line = line || 1;
+  let from = 0, to = ls.length;
+  if (ls.length > 4000){ from = Math.max(0, line - 600); to = Math.min(ls.length, line + 600); }
+  const body = '<pre class="code">' + (from > 0 ? '<span class="s">… ' + fmt(from) + ' linhas acima …</span>' : '') + ls.slice(from, to).map((l, i) => '<span data-n="' + (from + i + 1) + '"' + (from + i + 1 === line ? ' class="focus" id="focusLine"' : '') + '>' + esc(l.length > 3000 ? l.slice(0, 3000) + ' …' : l) + '</span>').join('') + (to < ls.length ? '<span class="s">… ' + fmt(ls.length - to) + ' linhas abaixo …</span>' : '') + '</pre>';
+  ovCopy = { text: f.text, label: path };
+  openDialog(path, 'Projeto ' + slot + ' · ' + fmt(f.lines) + ' linhas' + (line > 1 ? ' · linha ' + line + ' destacada' : ''), '<button class="btn small primary" data-ov="copy">Copiar arquivo</button>', body);
+  const fl = $('#focusLine'); if (fl) fl.scrollIntoView({ block: 'center' });
+}
+function openDiff(path){
+  const a = S.A.byPath.get(path), b = S.B.byPath.get(path);
+  const ta = a ? a.text : '', tb = b ? b.text : '';
+  let body = '';
+  if (!window.Diff){ body = '<p class="note">O comparador linha a linha não carregou.</p>'; }
+  else if ((a ? a.lines : 0) + (b ? b.lines : 0) > 40000){ body = '<p class="note">Arquivo grande demais para comparar linha a linha aqui. Abra os dois separadamente.</p>'; }
+  else {
+    const parts = Diff.diffLines(ta, tb); let h = '', na = 0, nb = 0;
+    for (const p of parts){
+      const ls = p.value.replace(/\n$/, '').split('\n');
+      if (p.added){ ls.forEach(l => { nb++; h += '<span class="a" data-n="+' + nb + '">' + esc(l) + '</span>'; }); }
+      else if (p.removed){ ls.forEach(l => { na++; h += '<span class="d" data-n="−' + na + '">' + esc(l) + '</span>'; }); }
+      else if (ls.length > 8){ ls.slice(0, 3).forEach(l => { na++; nb++; h += '<span data-n="' + na + '">' + esc(l) + '</span>'; }); h += '<span class="s">… ' + fmt(ls.length - 6) + ' linhas iguais …</span>'; na += ls.length - 6; nb += ls.length - 6; ls.slice(-3).forEach(l => { na++; nb++; h += '<span data-n="' + na + '">' + esc(l) + '</span>'; }); }
+      else ls.forEach(l => { na++; nb++; h += '<span data-n="' + na + '">' + esc(l) + '</span>'; });
+    }
+    body = '<p class="note" style="margin:0 0 8px">Verde: entrou em B. Vermelho: existia em A e saiu.</p><pre class="code">' + h + '</pre>';
+  }
+  ovCopy = null;
+  const acts = (a ? '<button class="btn small" data-open="A">Abrir em A</button>' : '') + (b ? '<button class="btn small" data-open="B">Abrir em B</button>' : '');
+  openDialog(path, 'A: ' + (a ? fmt(a.lines) + ' linhas' : 'não existe') + ' · B: ' + (b ? fmt(b.lines) + ' linhas' : 'não existe'), acts, body);
+  $$('#ovActs [data-open]').forEach(btn => btn.addEventListener('click', () => openFile(btn.dataset.open, path)));
+}
+
+/* ---- diagnóstico ---- */
+const SEV_ORDER = { hi: 0, md: 1, lo: 2 };
+function groupByFile(list){ const g = new Map(); for (const it of list){ if (!g.has(it.file)) g.set(it.file, []); g.get(it.file).push(it); } return [...g.entries()]; }
+function hitsHTML(slot, list, maxFiles){
+  const groups = groupByFile(list);
+  return groups.slice(0, maxFiles || 60).map(([file, items]) => {
+    const worst = items.reduce((s, i) => Math.min(s, SEV_ORDER[i.sev] ?? 2), 2);
+    return '<div class="fgroup ' + (worst === 0 ? 'hi' : worst === 1 ? 'md' : '') + '"><span class="fname">' + esc(file) + '</span>' +
+      items.slice(0, 12).map(i => '<div class="hit"><button class="linkbtn ln" data-open="' + slot + '" data-path="' + esc(file) + '" data-line="' + i.line + '">' + i.line + '</button><span class="lab">' + esc(i.lab || '') + '</span><code>' + esc(i.text) + '</code></div>').join('') +
+      (items.length > 12 ? '<span class="more">+ ' + (items.length - 12) + ' neste arquivo</span>' : '') + '</div>';
+  }).join('') + (groups.length > (maxFiles || 60) ? '<p class="more">+ ' + (groups.length - (maxFiles || 60)) + ' arquivos. Baixe o relatório para ver todos.</p>' : '');
+}
+function sec(id, title, n, sev, why, body, open){
+  return '<details class="sec" id="' + id + '"' + (open ? ' open' : '') + '><summary><h2>' + title + '</h2><span class="count ' + (n ? sev : 'ok') + '">' + (n ? fmt(n) : 'nada') + '</span></summary><div class="secbody">' + (why ? '<p class="why">' + why + '</p>' : '') + body + '</div></details>';
+}
+function renderDiag(){
+  $$('#diagSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p === diagP)));
+  const P = S[diagP], out = $('#diagOut');
+  $('#diagName').textContent = P ? P.name : '';
+  if (!P){ out.innerHTML = '<div class="empty">Carregue o projeto ' + diagP + ' na aba Projetos.</div>'; return; }
+  const an = analyze(P), R = an.routes, I = an.imports;
+  const missingPaths = new Map(); R.missing.forEach(c => { const k = '/' + (c.segs[0] === '.netlify' ? '' : 'api/') + c.segs.join('/'); if (!missingPaths.has(k)) missingPaths.set(k, []); missingPaths.get(k).push(c); });
+  const depN = I.missingPkgs.length + I.missingWs.length + I.replitDeps.length;
+  const envRep = an.env.filter(e => e.replit).length;
+  const items = [
+    ['sec-rotas', 'Rotas sem servidor', missingPaths.size, 'hi'],
+    ['sec-imports', 'Arquivos que sumiram', I.brokenFiles.length, 'hi'],
+    ['sec-replit', 'Ligações com a Replit', an.replit.length, an.replit.some(r => r.sev === 'hi') ? 'hi' : 'md'],
+    ['sec-chaves', 'Chaves expostas', an.secrets.length, 'hi'],
+    ['sec-deps', 'Pacotes com problema', depN, 'md'],
+    ['sec-env', 'Variáveis de ambiente', an.env.length, envRep ? 'md' : 'lo'],
+    ['sec-fixos', 'Endereços fixos', an.hard.length, 'md'],
+    ['sec-maps', 'Código original em .map', an.maps.reduce((s, m) => s + m.withContent, 0), 'lo'],
+  ];
+  let h = '<div class="summary">' + items.map(([id, lab, n, sev]) => '<button class="sumitem" data-jump="' + id + '"><span class="dot ' + (n ? sev : 'ok') + '"></span><span>' + lab + '</span><span class="n">' + fmt(n) + '</span></button>').join('') + '</div>';
+
+  // rotas
+  let rb = '';
+  if (!R.serverFiles && R.calls.length) rb += '<div class="big"><b>Este projeto não tem servidor.</b> A tela faz ' + fmt(R.calls.length) + ' chamadas para /api, e nenhuma vai ser respondida. É isso que causa a tela azul, o “não salva” e a importação que não funciona.</div>';
+  else rb += '<p class="note" style="margin:0">' + fmt(R.serverFiles) + ' arquivos de servidor · ' + fmt(R.routes.length) + ' rotas encontradas · ' + fmt(R.calls.length) + ' chamadas na tela · ' + fmt(R.ok.length) + ' com rota.</p>';
+  if (missingPaths.size) rb += '<div class="tablewrap"><table><thead><tr><th>A tela chama</th><th>Onde</th></tr></thead><tbody>' + [...missingPaths.entries()].slice(0, 120).map(([p, cs]) => '<tr><td class="p">' + esc(p) + '</td><td>' + cs.slice(0, 3).map(c => '<button class="linkbtn mono" style="font-size:12.5px" data-open="' + diagP + '" data-path="' + esc(c.file) + '" data-line="' + c.line + '">' + esc(c.file.split('/').pop()) + ':' + c.line + '</button>').join(', ') + (cs.length > 3 ? ' <span class="note">+' + (cs.length - 3) + '</span>' : '') + '</td></tr>').join('') + '</tbody></table></div>';
+  if (R.routes.length) rb += '<details><summary class="note" style="cursor:pointer">Ver as ' + fmt(R.routes.length) + ' rotas que o servidor tem</summary><div class="tablewrap" style="margin-top:8px"><table><thead><tr><th>Método</th><th>Caminho</th><th>Arquivo</th></tr></thead><tbody>' + R.routes.slice(0, 400).map(r => '<tr><td class="mono">' + r.method + '</td><td class="p">' + esc(r.path) + '</td><td><button class="linkbtn mono" style="font-size:12.5px" data-open="' + diagP + '" data-path="' + esc(r.file) + '" data-line="' + r.line + '">' + esc(r.file) + ':' + r.line + '</button></td></tr>').join('') + '</tbody></table></div></details>';
+  h += sec('sec-rotas', 'Rotas sem servidor', missingPaths.size, 'hi', 'Cada linha é algo que a tela pede ao servidor (salvar, exportar, IA, ementas) e que não existe neste projeto. Quando o usuário clica, dá erro. Pode ser servidor faltando ou rota que foi cortada. Rotas montadas de formas incomuns podem aparecer aqui por engano; confira abrindo o arquivo.', rb, missingPaths.size > 0);
+
+  // imports
+  h += sec('sec-imports', 'Arquivos importados que não existem', I.brokenFiles.length, 'hi', 'O código manda carregar um arquivo do próprio projeto que não está no zip. Em versões “cortadas” é o sinal mais claro do que foi apagado. O app quebra ao abrir a tela que usa esse arquivo.',
+    hitsHTML(diagP, I.brokenFiles.map(b => ({ file: b.file, line: b.line, lab: 'procura', text: b.spec, sev: 'hi' }))), I.brokenFiles.length > 0);
+
+  // replit
+  h += sec('sec-replit', 'Ligações com a Replit', an.replit.length, an.replit.some(r => r.sev === 'hi') ? 'hi' : 'md', 'Tudo aqui só funciona dentro da Replit. O mais grave é “IA paga pela Replit”: fora de lá a IA não responde, ou responde sempre a mesma coisa. Essas linhas precisam ser trocadas pelas suas próprias chaves.', hitsHTML(diagP, an.replit), an.replit.some(r => r.sev === 'hi'));
+
+  // chaves
+  h += sec('sec-chaves', 'Chaves e senhas expostas', an.secrets.length, 'hi', 'Chaves reais escritas no código. Qualquer pessoa com o zip consegue usar. Troque cada uma no site do serviço (Neon, Google, OpenAI…) e passe a guardar só na tela de configuração. Os valores aparecem mascarados.', hitsHTML(diagP, an.secrets), an.secrets.length > 0);
+
+  // deps
+  let db = '';
+  if (!I.pkgCount) db += '<p class="note" style="margin:0">Não há package.json neste projeto, então não dá para conferir pacotes.</p>';
+  if (I.missingWs.length) db += '<div class="fgroup hi"><span class="fname">Pacotes internos que deveriam estar no projeto</span>' + I.missingWs.map(d => '<div class="hit"><span class="ln">—</span><span class="lab">pedido em ' + esc(d.file) + '</span><code>' + esc(d.name) + '</code></div>').join('') + '<span class="more">São pastas do próprio projeto (ex.: lib/db). Se não estão no zip, a versão foi cortada.</span></div>';
+  if (I.missingPkgs.length) db += '<div class="fgroup md"><span class="fname">Usados no código, mas fora do package.json</span>' + I.missingPkgs.slice(0, 80).map(d => '<div class="hit"><button class="linkbtn ln" data-open="' + diagP + '" data-path="' + esc(d.uses[0].file) + '" data-line="' + d.uses[0].line + '">ver</button><span class="lab">' + d.uses.length + ' uso' + (d.uses.length > 1 ? 's' : '') + '</span><code>' + esc(d.name) + '</code></div>').join('') + '</div>';
+  if (I.replitDeps.length) db += '<div class="fgroup md"><span class="fname">Pacotes da Replit declarados</span>' + I.replitDeps.map(d => '<div class="hit"><span class="ln">—</span><span class="lab">' + esc(d.file) + '</span><code>' + esc(d.name) + '</code></div>').join('') + '<span class="more">Podem ser removidos ao tirar o projeto da Replit.</span></div>';
+  h += sec('sec-deps', 'Pacotes com problema', depN, 'md', 'Erros de dependência: bibliotecas que o código usa mas o projeto não instala, e partes internas do projeto que não vieram.', db || '<p class="note" style="margin:0">Nenhum problema de pacote encontrado.</p>', false);
+
+  // env
+  const envB = an.env.length ? '<div class="tablewrap"><table><thead><tr><th>Variável</th><th>Situação</th><th class="num">Usos</th><th>Primeiro uso</th></tr></thead><tbody>' + an.env.map(e => '<tr><td class="p">' + esc(e.name) + '</td><td>' + (e.replit ? '<span class="chip bad">só na Replit</span>' : e.declared ? '<span class="chip">tem exemplo</span>' : '<span class="chip warn">sem exemplo em .env</span>') + '</td><td class="num">' + e.uses.length + '</td><td><button class="linkbtn mono" style="font-size:12.5px" data-open="' + diagP + '" data-path="' + esc(e.uses[0].file) + '" data-line="' + e.uses[0].line + '">' + esc(e.uses[0].file.split('/').pop()) + ':' + e.uses[0].line + '</button></td></tr>').join('') + '</tbody></table></div>' : '';
+  h += sec('sec-env', 'Variáveis de ambiente usadas', an.env.length, envRep ? 'md' : 'lo', 'É a lista que a sua tela de configuração precisa preencher. As marcadas “só na Replit” não existem fora de lá e precisam ser substituídas.', envB, false);
+
+  // endereços fixos
+  h += sec('sec-fixos', 'Endereços fixos', an.hard.length, 'md', 'Endereços de um computador específico (localhost, 192.168…) escritos na tela. No APK ou em outro computador, isso aponta para o lugar errado e as chamadas falham.', hitsHTML(diagP, an.hard), false);
+
+  // maps
+  let mb = '';
+  if (an.maps.length){ mb += '<div class="tablewrap"><table><thead><tr><th>Arquivo .map</th><th class="num">Arquivos do projeto</th><th class="num">Com código</th></tr></thead><tbody>' + an.maps.map(m => '<tr><td class="p">' + esc(m.file) + '</td><td class="num">' + m.own + '</td><td class="num">' + m.withContent + '</td></tr>').join('') + '</tbody></table></div><div class="row"><button class="btn primary" id="mapsZip">Baixar código recuperado (.zip)</button></div>'; }
+  h += sec('sec-maps', 'Código original escondido em .map', an.maps.reduce((s, m) => s + m.withContent, 0), 'lo', 'Builds às vezes levam junto arquivos .map com o código-fonte legível. Se o conserto foi feito só no build, ele pode estar aqui dentro. Baixe e carregue o zip recuperado como projeto B para comparar com a 1.7.', mb || '<p class="note" style="margin:0">Nenhum arquivo .map com código neste projeto.</p>', an.maps.length > 0);
+
+  out.innerHTML = h;
+}
+$('#diagSeg').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; diagP = b.dataset.p; renderDiag(); });
+$('#diagOut').addEventListener('click', async e => {
+  const j = e.target.closest('[data-jump]'); if (j){ const s = document.getElementById(j.dataset.jump); s.open = true; s.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+  const o = e.target.closest('[data-open]'); if (o){ openFile(o.dataset.open, o.dataset.path, +o.dataset.line); return; }
+  if (e.target.id === 'mapsZip'){
+    const files = extractMaps(S[diagP]); const n = Object.keys(files).length;
+    if (!n){ toast('Nada para recuperar'); return; }
+    const z = new JSZip(); const root = z.folder('codigo-recuperado'); Object.entries(files).forEach(([p, c]) => root.file(p, c));
+    saveFile('codigo-recuperado-' + diagP + '.zip', await z.generateAsync({ type: 'blob' }));
+  }
+});
+
+/* ---- comparar ---- */
+function renderCompare(){
+  const out = $('#cmpOut');
+  if (!S.A || !S.B){ out.innerHTML = '<div class="empty">Carregue os projetos A e B na aba Projetos para comparar.</div>'; return; }
+  if (!cmpCache){ out.innerHTML = '<p class="note"><span class="busy"></span> Comparando…</p>'; setTimeout(() => { cmpCache = compare(S.A, S.B); renderCompare(); }, 30); return; }
+  const C = cmpCache;
+  let h = '<div class="panel stack"><div class="headline">' +
+    '<div><div class="big-n" style="color:var(--a)">' + fmt(C.la) + '</div><div class="lbl">linhas em A</div></div>' +
+    '<div><div class="big-n" style="color:var(--b)">' + fmt(C.lb) + '</div><div class="lbl">linhas em B</div></div>' +
+    '<div><div class="big-n" style="color:' + (C.lostPct >= 30 ? 'var(--sev-hi)' : 'var(--ink)') + '">' + C.lostPct + '%</div><div class="lbl">das linhas de A não estão em B</div></div></div>' +
+    '<p class="note" style="margin:0">' + fmt(C.n.eq) + ' arquivos iguais · ' + fmt(C.n.chg) + ' alterados · ' + fmt(C.n.del) + ' só em A (apagados em B) · ' + fmt(C.n.add) + ' só em B (novos)</p></div>';
+  // pastas
+  const maxLa = Math.max(1, ...C.folders.map(f => f.la));
+  h += '<div class="stack"><h2>Pastas que mais perderam código</h2><div class="tablewrap"><table><thead><tr><th>Pasta</th><th class="num">Linhas A</th><th class="num">Linhas B</th><th>Tamanho em B</th><th class="num">Perdeu</th><th class="num">Arquivos sumidos</th></tr></thead><tbody>' +
+    C.folders.slice(0, 30).map(f => { const pct = f.la ? Math.round(f.rem / f.la * 100) : 0; return '<tr><td class="p">' + esc(f.key) + '</td><td class="num">' + fmt(f.la) + '</td><td class="num">' + fmt(f.lb) + '</td><td><div class="bar" title="' + fmt(f.lb) + ' de ' + fmt(f.la) + '"><i style="width:' + (f.la ? Math.min(100, f.lb / f.la * 100) : 100) + '%"></i></div></td><td class="num"><span class="lost' + (pct >= 50 ? ' hi' : '') + '">' + (f.la ? pct + '%' : '—') + '</span></td><td class="num">' + fmt(f.gone) + '</td></tr>'; }).join('') + '</tbody></table></div></div>';
+  // funções
+  const fnHTML = (list) => list.length ? '<div class="fnlist">' + list.slice(0, 500).map(f => '<span>' + esc(f.name) + ' <small>' + esc(f.file) + '</small></span>').join('') + (list.length > 500 ? '<small>+ ' + (list.length - 500) + '</small>' : '') + '</div>' : '<p class="note">Nenhuma.</p>';
+  h += '<div class="fnwrap"><div class="stack" style="gap:8px"><h2>Funções que sumiram em B <span class="count ' + (C.goneFns.length ? 'hi' : 'ok') + '">' + fmt(C.goneFns.length) + '</span></h2><p class="why">Existiam em A e não existem em lugar nenhum de B.</p>' + fnHTML(C.goneFns) + '</div><div class="stack" style="gap:8px"><h2>Funções novas em B <span class="count lo">' + fmt(C.newFns.length) + '</span></h2><p class="why">Não existiam em A. Se B corrigiu algum bug, o conserto costuma estar aqui ou nos arquivos alterados.</p>' + fnHTML(C.newFns) + '</div></div>';
+  // arquivos
+  const stLab = { eq: 'igual', chg: 'alterado', del: 'só em A', add: 'só em B' };
+  let rows = C.rows;
+  if (cmpF.st === 'mudou') rows = rows.filter(r => r.st !== 'eq'); else if (cmpF.st !== 'todos') rows = rows.filter(r => r.st === cmpF.st);
+  if (cmpF.q) rows = rows.filter(r => r.path.toLowerCase().includes(cmpF.q));
+  h += '<div class="stack"><div class="row between"><h2>Arquivos</h2><div class="row"><select id="cmpSt" aria-label="Filtrar"><option value="mudou">Só os que mudaram</option><option value="chg">Alterados</option><option value="del">Só em A (apagados em B)</option><option value="add">Só em B (novos)</option><option value="todos">Todos</option></select><input type="text" id="cmpQ" placeholder="Filtrar caminho" value="' + esc(cmpF.q) + '"></div></div>' +
+    (rows.length ? '<div class="tablewrap"><table><thead><tr><th>Arquivo</th><th>Situação</th><th class="num">Linhas A</th><th class="num">Linhas B</th><th class="num">−</th><th class="num">+</th></tr></thead><tbody>' +
+    rows.slice(0, cmpF.limit).map(r => '<tr class="click" data-diff="' + esc(r.path) + '" tabindex="0"><td class="p">' + esc(r.path) + '</td><td><span class="st ' + r.st + '">' + stLab[r.st] + '</span></td><td class="num">' + (r.la ? fmt(r.la) : '—') + '</td><td class="num">' + (r.lb ? fmt(r.lb) : '—') + '</td><td class="num" style="color:var(--del)">' + (r.rem ? fmt(r.rem) : '') + '</td><td class="num" style="color:var(--add)">' + (r.add ? fmt(r.add) : '') + '</td></tr>').join('') + '</tbody></table></div>' + (rows.length > cmpF.limit ? '<div class="row"><button class="btn" id="cmpMore">Mostrar mais (' + fmt(rows.length - cmpF.limit) + ')</button></div>' : '') : '<div class="empty">Nenhum arquivo com esse filtro.</div>') + '</div>';
+  out.innerHTML = h;
+  $('#cmpSt').value = cmpF.st;
+}
+$('#cmpOut').addEventListener('change', e => { if (e.target.id === 'cmpSt'){ cmpF.st = e.target.value; cmpF.limit = 200; renderCompare(); } });
+let cqT; $('#cmpOut').addEventListener('input', e => { if (e.target.id !== 'cmpQ') return; clearTimeout(cqT); cqT = setTimeout(() => { cmpF.q = e.target.value.trim().toLowerCase(); cmpF.limit = 200; renderCompare(); const q = $('#cmpQ'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }, 250); });
+$('#cmpOut').addEventListener('click', e => { if (e.target.id === 'cmpMore'){ cmpF.limit += 300; renderCompare(); return; } const r = e.target.closest('[data-diff]'); if (r) openDiff(r.dataset.diff); });
+$('#cmpOut').addEventListener('keydown', e => { if (e.key === 'Enter'){ const r = e.target.closest('[data-diff]'); if (r) openDiff(r.dataset.diff); } });
+
+/* ---- histórico git ---- */
+function renderGit(){
+  $$('#gitSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.p === gitP)));
+  const P = S[gitP], out = $('#gitOut');
+  if (!P){ out.innerHTML = '<div class="empty">Carregue o projeto ' + gitP + ' na aba Projetos.</div>'; return; }
+  const an = analyze(P);
+  if (!P.git.present){ out.innerHTML = '<div class="empty">Este zip não trouxe a pasta .git. No Windows ela é oculta: no Explorador, ative Exibir → Mostrar → Itens ocultos e confira se ela está dentro da pasta antes de compactar. A Replit inclui a .git quando você usa “Download as zip”.</div>'; return; }
+  if (!an.git.length){ out.innerHTML = '<div class="empty">A pasta .git veio, mas sem o registro de histórico legível (.git/logs/HEAD). Mande o zip para o Claude: ele consegue ler o histórico completo direto dos arquivos internos.</div>'; return; }
+  const q = ($('#gitQ').value || '').trim().toLowerCase();
+  const list = an.git.filter(c => !q || c.msg.toLowerCase().includes(q) || c.to.startsWith(q));
+  const nFix = an.git.filter(c => FIX_RE.test(c.msg)).length;
+  const hl = s => q ? esc(s).replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => '<mark>' + m + '</mark>') : esc(s);
+  out.innerHTML = '<p class="note" style="margin:0">' + fmt(an.git.length) + ' registros, do mais novo para o mais antigo. ' + fmt(nFix) + ' falam em correção, erro ou salvar (em negrito). O código de 7 letras identifica cada versão: com ele, o Claude consegue abrir exatamente aquele momento do projeto.</p>' +
+    '<div class="panel commits">' + list.slice(0, 1500).map(c => '<div class="commit' + (FIX_RE.test(c.msg) ? ' fix' : '') + '"><span class="d">' + new Date(c.time).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + '</span><span class="m">' + hl(c.msg) + (c.kind && c.kind !== 'commit' ? ' <span class="note">(' + esc(c.kind) + ')</span>' : '') + '</span><span class="h">' + c.to.slice(0, 7) + '</span></div>').join('') + (list.length ? '' : '<p class="note">Nada encontrado.</p>') + '</div>';
+}
+$('#gitSeg').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (!b) return; gitP = b.dataset.p; renderGit(); });
+let gqT; $('#gitQ').addEventListener('input', () => { clearTimeout(gqT); gqT = setTimeout(renderGit, 200); });
+
+/* ---- relatório ---- */
+$('#reportDl').addEventListener('click', () => { if (!S.A && !S.B){ toast('Carregue um projeto primeiro'); return; } saveFile('raio-x-' + new Date().toISOString().slice(0, 10) + '.md', reportMD(S)); });
+$('#reportCopy').addEventListener('click', () => { if (!S.A && !S.B){ toast('Carregue um projeto primeiro'); return; } copyText(reportMD(S), 'Relatório'); });
+
+loadExample();
+renderAll();
+})();
+</script>
+
+</body></html>
