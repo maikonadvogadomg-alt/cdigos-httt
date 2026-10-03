@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: App.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 App.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:26:56 • 59 elementos • 45 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { useState, useRef, useEffect, useCallback } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import { extractArchive, extractApk, guessConfig, analyzeProject, type ArchiveFi</div><div class="idx-item">L3 [import] import { buildAndroidZip, buildAndroidFilesForGithub, buildEASFilesForGithub, ge</div><div class="idx-item">L4 [import] import {</div><div class="idx-item">L8 [import] import { saveSession, loadSession, getSavedMeta, clearSession, type SavedSession</div><div class="idx-item">L9 [import] import TerminalTab from &quot;./components/TerminalTab&quot;;</div><div class="idx-item">L10 [import] import ApkAnalyzer from &quot;./components/ApkAnalyzer&quot;;</div><div class="idx-item">L13 [interface] AIKeys</div><div class="idx-item">L14 [interface] ChatMsg</div><div class="idx-item">L16 [function] callAI</div><div class="idx-item">L17 [function] base →</div><div class="idx-item">L34 [function] detectAIProvider</div><div class="idx-item">L49 [function] uploadToDrive</div><div class="idx-item">L63 [function] downloadBlob</div><div class="idx-item">L77 [const] APP_VERSION</div><div class="idx-item">L78 [const] BUILD_DATE</div><div class="idx-item">L81 [interface] Tab</div><div class="idx-item">L83 [interface] SysInfo</div><div class="idx-item">L109 [const] AI_TOKEN_LIMITS</div><div class="idx-item">L133 [component] App</div><div class="idx-item">L254 [function] conn →</div><div class="idx-item">L324 [function] handleFileImport</div><div class="idx-item">L358 [function] applyCustomName</div><div class="idx-item">L368 [function] handleImportAssistenteJuridico</div><div class="idx-item">L404 [function] onFileInput</div><div class="idx-item">L408 [function] onDrop</div><div class="idx-item">L414 [function] restoreSession</div><div class="idx-item">L434 [function] handleGhImport</div><div class="idx-item">L461 [function] handleGhCustomImport</div><div class="idx-item">L477 [function] handlePublicRepoImport</div><div class="idx-item">L504 [function] handleUrlImport</div><div class="idx-item">L517 [function] proxyUrl →</div><div class="idx-item">L523 [function] fetchViaProxy →</div><div class="idx-item">L560 [function] appLabel →</div><div class="idx-item">L585 [function] icons →</div><div class="idx-item">L608 [function] siteName →</div><div class="idx-item">L639 [function] handleEASDeploy</div><div class="idx-item">L643 [function] slug →</div><div class="idx-item">L645 [hook] useCloud</div><div class="idx-item">L706 [function] handleFullDeploy</div><div class="idx-item">L710 [function] slug →</div><div class="idx-item">L763 [function] handleCiBuild</div><div class="idx-item">L805 [function] handleGenerate</div><div class="idx-item">L827 [function] handleDriveUpload</div><div class="idx-item">L841 [function] handleGhPush</div><div class="idx-item">L867 [function] handlePublishPages</div><div class="idx-item">L884 [function] msg →</div><div class="idx-item">L904 [function] SR →</div><div class="idx-item">L915 [function] setStatus</div><div class="idx-item">L921 [function] doSave</div><div class="idx-item">L936 [function] generateBrain</div><div class="idx-item">L949 [function] exportBrain</div><div class="idx-item">L951 [function] nome →</div><div class="idx-item">L955 [function] exportChatJson</div><div class="idx-item">L963 [function] activateBrain</div><div class="idx-item">L976 [const] BASE</div><div class="idx-item">L982 [function] tabCls →</div><div class="idx-item">L987 [function] field →</div><div class="idx-item">L1001 [function] colorField →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L15</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { useState, useRef, useEffect, useCallback } from &quot;react&quot;;
+import { extractArchive, extractApk, guessConfig, analyzeProject, type ArchiveFile, type ProjectAnalysis } from &quot;./lib/archive&quot;;
+import { buildAndroidZip, buildAndroidFilesForGithub, buildEASFilesForGithub, genEASCloudWorkflow, DEFAULT_CFG, type AppConfig } from &quot;./lib/android&quot;;
+import {
+  ghGetUser, ghListRepos, ghGetRepo, ghImportRepo, ghImportPublicRepo,
+  ghCreateRepo, ghPushFiles, ghPublishPages, ghSetRepoSecret, type GhUser, type GhRepo,
+} from &quot;./lib/github&quot;;
+import { saveSession, loadSession, getSavedMeta, clearSession, type SavedSession, type SaveResult } from &quot;./lib/storage&quot;;
+import TerminalTab from &quot;./components/TerminalTab&quot;;
+import ApkAnalyzer from &quot;./components/ApkAnalyzer&quot;;
+
+/* ─── AI helpers ────────────────────────────────────────── */
+interface AIKeys { url: string; key: string; model: string; }
+interface ChatMsg { role: &quot;user&quot; | &quot;assistant&quot;; text: string; }
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>callAI</span>
+    <div>
+      <small>L16–L16</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">async function callAI(keys: AIKeys, userMsg: string, context: string) {</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>base →</span>
+    <div>
+      <small>L17–L33</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">  const base = (keys.url || &quot;https://api.openai.com/v1&quot;).replace(/\/$/, &quot;&quot;);
+  const r = await fetch(`${base}/chat/completions`, {
+    method: &quot;POST&quot;,
+    headers: { &quot;Content-Type&quot;: &quot;application/json&quot;, Authorization: `Bearer ${keys.key}` },
+    body: JSON.stringify({
+      model: keys.model || &quot;gpt-4o-mini&quot;,
+      messages: [
+        { role: &quot;system&quot;, content: &quot;Você é especialista em Android, PWA, Capacitor, Gradle e React Native. Responda em português de forma clara e prática.&quot; },
+        { role: &quot;user&quot;, content: context ? `[Contexto: ${context}]\n\n${userMsg}` : userMsg },
+      ],
+    }),
+  });
+  if (!r.ok) throw new Error(`IA ${r.status}: ${(await r.json().catch(() =&gt; ({}))).error?.message ?? r.statusText}`);
+  return (await r.json()).choices[0].message.content as string;
+}
+
+/* ─── AI key auto-detect ─────────────────────────────────── */</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>detectAIProvider</span>
+    <div>
+      <small>L34–L48</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">function detectAIProvider(key: string): { url: string; model: string } | null {
+  const k = key.trim();
+  if (!k || k.length &lt; 8) return null;
+  if (k.startsWith(&quot;sk-ant-&quot;))  return { url: &quot;https://api.anthropic.com/v1&quot;,                            model: &quot;claude-3-5-haiku-20241022&quot; };
+  if (k.startsWith(&quot;sk-or-&quot;))   return { url: &quot;https://openrouter.ai/api/v1&quot;,                           model: &quot;openai/gpt-4o-mini&quot; };
+  if (k.startsWith(&quot;gsk_&quot;))     return { url: &quot;https://api.groq.com/openai/v1&quot;,                         model: &quot;llama-3.3-70b-versatile&quot; };
+  if (k.startsWith(&quot;AIza&quot;))     return { url: &quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;, model: &quot;gemini-2.0-flash&quot; };
+  if (k.startsWith(&quot;pplx-&quot;))    return { url: &quot;https://api.perplexity.ai&quot;,                              model: &quot;sonar&quot; };
+  if (k.startsWith(&quot;hf_&quot;))      return { url: &quot;https://api-inference.huggingface.co/v1&quot;,                model: &quot;meta-llama/Llama-3.1-8B-Instruct&quot; };
+  if (k.startsWith(&quot;r8_&quot;))      return { url: &quot;https://api.replicate.com/v1&quot;,                           model: &quot;meta/llama-3.1-405b-instruct&quot; };
+  if (k.startsWith(&quot;sk-&quot;))      return { url: &quot;https://api.openai.com/v1&quot;,                              model: &quot;gpt-4o-mini&quot; };
+  return null;
+}
+
+/* ─── Google Drive ──────────────────────────────────────── */</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>uploadToDrive</span>
+    <div>
+      <small>L49–L62</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">async function uploadToDrive(token: string, blob: Blob, name: string) {
+  const meta = JSON.stringify({ name, mimeType: &quot;application/zip&quot; });
+  const form = new FormData();
+  form.append(&quot;metadata&quot;, new Blob([meta], { type: &quot;application/json&quot; }));
+  form.append(&quot;file&quot;, blob, name);
+  const r = await fetch(&quot;https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&quot;, {
+    method: &quot;POST&quot;, headers: { Authorization: `Bearer ${token}` }, body: form,
+  });
+  if (!r.ok) throw new Error(`Drive ${r.status}: ${(await r.json()).error?.message}`);
+  const j = await r.json();
+  return `https://drive.google.com/file/d/${j.id}/view`;
+}
+
+/* ─── Download blob ─────────────────────────────────────── */</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>downloadBlob</span>
+    <div>
+      <small>L63–L132</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">function downloadBlob(blob: Blob, name: string) {
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement(&quot;a&quot;);
+    a.href = url; a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() =&gt; { try { document.body.removeChild(a); } catch {} URL.revokeObjectURL(url); }, 800);
+  } catch (e) {
+    alert(&quot;Erro ao baixar: &quot; + String(e));
+  }
+}
+
+/* ─── Version ───────────────────────────────────────────── */
+const APP_VERSION = &quot;v2.0&quot;;
+const BUILD_DATE = &quot;2025-05-04&quot;;
+
+/* ─── Types ─────────────────────────────────────────────── */
+type Tab = &quot;import&quot; | &quot;github&quot; | &quot;export&quot; | &quot;ai&quot; | &quot;terminal&quot; | &quot;analisar&quot; | &quot;guide&quot; | &quot;downloads&quot;;
+
+interface SysInfo {
+  checkedAt: string;
+  // Rede
+  proxyOk: boolean | null;
+  online: boolean | null;
+  connType: string | null;
+  downlinkMbps: number | null;
+  rttMs: number | null;
+  // Memória JS
+  memUsedMB: number | null;
+  memTotalMB: number | null;
+  memLimitMB: number | null;
+  deviceMemGB: number | null;
+  // Storage
+  storageUsedMB: number | null;
+  storageQuotaMB: number | null;
+  storagePct: number | null;
+  // Device/Browser
+  cores: number | null;
+  browserInfo: string | null;
+  platform: string | null;
+  // GitHub
+  ghRateLimit: number | null;
+  ghRateLimitReset: string | null;
+}
+
+const AI_TOKEN_LIMITS = [
+  { provider: &quot;OpenAI&quot;,      model: &quot;gpt-4o&quot;,               ctx: &quot;128k&quot;,  out: &quot;16k&quot;,   color: &quot;#10b981&quot; },
+  { provider: &quot;OpenAI&quot;,      model: &quot;gpt-4o-mini&quot;,          ctx: &quot;128k&quot;,  out: &quot;16k&quot;,   color: &quot;#10b981&quot; },
+  { provider: &quot;OpenAI&quot;,      model: &quot;gpt-4-turbo&quot;,          ctx: &quot;128k&quot;,  out: &quot;4k&quot;,    color: &quot;#10b981&quot; },
+  { provider: &quot;OpenAI&quot;,      model: &quot;gpt-3.5-turbo&quot;,        ctx: &quot;16k&quot;,   out: &quot;4k&quot;,    color: &quot;#10b981&quot; },
+  { provider: &quot;OpenAI&quot;,      model: &quot;o1 / o3&quot;,              ctx: &quot;200k&quot;,  out: &quot;100k&quot;,  color: &quot;#10b981&quot; },
+  { provider: &quot;Anthropic&quot;,   model: &quot;claude-3.5-sonnet&quot;,    ctx: &quot;200k&quot;,  out: &quot;8k&quot;,    color: &quot;#f59e0b&quot; },
+  { provider: &quot;Anthropic&quot;,   model: &quot;claude-3-opus&quot;,        ctx: &quot;200k&quot;,  out: &quot;4k&quot;,    color: &quot;#f59e0b&quot; },
+  { provider: &quot;Anthropic&quot;,   model: &quot;claude-3-haiku&quot;,       ctx: &quot;200k&quot;,  out: &quot;4k&quot;,    color: &quot;#f59e0b&quot; },
+  { provider: &quot;Google&quot;,      model: &quot;gemini-1.5-pro&quot;,       ctx: &quot;1M&quot;,    out: &quot;8k&quot;,    color: &quot;#3b82f6&quot; },
+  { provider: &quot;Google&quot;,      model: &quot;gemini-1.5-flash&quot;,     ctx: &quot;1M&quot;,    out: &quot;8k&quot;,    color: &quot;#3b82f6&quot; },
+  { provider: &quot;Google&quot;,      model: &quot;gemini-2.0-flash&quot;,     ctx: &quot;1M&quot;,    out: &quot;8k&quot;,    color: &quot;#3b82f6&quot; },
+  { provider: &quot;Groq&quot;,        model: &quot;llama-3.1-70b&quot;,        ctx: &quot;128k&quot;,  out: &quot;8k&quot;,    color: &quot;#8b5cf6&quot; },
+  { provider: &quot;Groq&quot;,        model: &quot;mixtral-8x7b&quot;,         ctx: &quot;32k&quot;,   out: &quot;32k&quot;,   color: &quot;#8b5cf6&quot; },
+  { provider: &quot;Groq&quot;,        model: &quot;llama-3.3-70b&quot;,        ctx: &quot;128k&quot;,  out: &quot;8k&quot;,    color: &quot;#8b5cf6&quot; },
+  { provider: &quot;Perplexity&quot;,  model: &quot;sonar-pro&quot;,            ctx: &quot;200k&quot;,  out: &quot;8k&quot;,    color: &quot;#22d3ee&quot; },
+  { provider: &quot;Perplexity&quot;,  model: &quot;sonar&quot;,                ctx: &quot;128k&quot;,  out: &quot;8k&quot;,    color: &quot;#22d3ee&quot; },
+  { provider: &quot;DeepSeek&quot;,    model: &quot;deepseek-chat&quot;,        ctx: &quot;64k&quot;,   out: &quot;8k&quot;,    color: &quot;#ec4899&quot; },
+  { provider: &quot;Mistral&quot;,     model: &quot;mistral-large&quot;,        ctx: &quot;128k&quot;,  out: &quot;8k&quot;,    color: &quot;#f97316&quot; },
+];
+
+/* ════════════════════════════════════════════════════════════
+   MAIN APP
+═══════════════════════════════════════════════════════════════ */</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>App</span>
+    <div>
+      <small>L133–L253</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">export default function App() {
+  /* ── Core project state ── */
+  const [files, setFiles] = useState&lt;ArchiveFile[]&gt;([]);
+  const [cfg, setCfg] = useState&lt;AppConfig&gt;(DEFAULT_CFG);
+  const [source, setSource] = useState(&quot;&quot;);
+  const [projectReady, setProjectReady] = useState(false);
+
+  /* ── UI state ── */
+  const [tab, setTab] = useState&lt;Tab&gt;(&quot;import&quot;);
+  const [statusMsg, setStatusMsg] = useState&lt;{ text: string; ok: boolean } | null&gt;(null);
+
+  /* ── Import / Upload ── */
+  const [importLoading, setImportLoading] = useState(false);
+  const [importInfo, setImportInfo] = useState(&quot;&quot;);
+  const fileRef = useRef&lt;HTMLInputElement&gt;(null);
+  const [dragOver, setDragOver] = useState(false);
+
+  /* ── GitHub ── */
+  const [ghToken, setGhToken] = useState(() =&gt; localStorage.getItem(&quot;gh_token&quot;) || &quot;&quot;);
+  const [ghUser, setGhUser] = useState&lt;GhUser | null&gt;(null);
+  const [ghRepos, setGhRepos] = useState&lt;GhRepo[]&gt;([]);
+  const [ghRepoFilter, setGhRepoFilter] = useState(&quot;&quot;);
+  const [ghLoading, setGhLoading] = useState(false);
+  const [ghMsg, setGhMsg] = useState(&quot;&quot;);
+  const [ghSelectedRepo, setGhSelectedRepo] = useState&lt;GhRepo | null&gt;(null);
+  const [ghCustomRepo, setGhCustomRepo] = useState(&quot;&quot;);
+  /* import público sem token */
+  const [ghPublicRepo, setGhPublicRepo] = useState(&quot;&quot;);
+  const [ghPublicLoading, setGhPublicLoading] = useState(false);
+  const [ghPublicMsg, setGhPublicMsg] = useState(&quot;&quot;);
+
+  /* ── Export ── */
+  const [resultBlob, setResultBlob] = useState&lt;Blob | null&gt;(null);
+  const [resultName, setResultName] = useState(&quot;&quot;);
+  const [generating, setGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [driveToken, setDriveToken] = useState(() =&gt; localStorage.getItem(&quot;drive_token&quot;) || &quot;&quot;);
+  const [driveMsg, setDriveMsg] = useState(&quot;&quot;);
+  const [driveLoading, setDriveLoading] = useState(false);
+  const [pushRepoName, setPushRepoName] = useState(&quot;&quot;);
+  const [pushPrivate, setPushPrivate] = useState(false);
+  const [pushMsg, setPushMsg] = useState(&quot;&quot;);
+  const [pushLoading, setPushLoading] = useState(false);
+
+  /* ── GitHub Pages publish ── */
+  const [pagesRepoName, setPagesRepoName] = useState(&quot;&quot;);
+  const [pagesPrivate, setPagesPrivate] = useState(false);
+  const [pagesMsg, setPagesMsg] = useState(&quot;&quot;);
+  const [pagesLoading, setPagesLoading] = useState(false);
+  const [pagesUrl, setPagesUrl] = useState(&quot;&quot;);
+
+  /* ── Session persistence ── */
+  const [savedMeta, setSavedMeta] = useState&lt;SavedSession | null&gt;(null);
+  const [restoring, setRestoring] = useState(false);
+
+  /* ── URL import ── */
+  const [urlInput, setUrlInput] = useState(&quot;&quot;);
+  const [urlLoading, setUrlLoading] = useState(false);
+  const [urlMsg, setUrlMsg] = useState(&quot;&quot;);
+  const [urlIssues, setUrlIssues] = useState&lt;{ type: &quot;ok&quot; | &quot;warn&quot; | &quot;err&quot;; text: string }[]&gt;([]);
+
+  /* ── APK analysis / cleanup ── */
+  const [analysis, setAnalysis] = useState&lt;ProjectAnalysis | null&gt;(null);
+  const [cleanedFiles, setCleanedFiles] = useState&lt;ArchiveFile[] | null&gt;(null);
+  const [customName, setCustomName] = useState(&quot;&quot;);
+  const [nameApplied, setNameApplied] = useState(false);
+
+  /* ── GitHub Actions cloud build ── */
+  const [ciRepoOwner, setCiRepoOwner] = useState(&quot;&quot;);
+  const [ciRepoName, setCiRepoName] = useState(&quot;&quot;);
+  const [ciMsg, setCiMsg] = useState(&quot;&quot;);
+  const [ciLoading, setCiLoading] = useState(false);
+  const [ciRunUrl, setCiRunUrl] = useState(&quot;&quot;);
+
+  /* ── Pipeline completo (1 clique) ── */
+  const [pipeLoading, setPipeLoading] = useState(false);
+  const [pipeMsg, setPipeMsg] = useState(&quot;&quot;);
+  const [pipeRunUrl, setPipeRunUrl] = useState(&quot;&quot;);
+
+  /* ── EAS (Expo) build ── */
+  const [easLoading, setEasLoading] = useState(false);
+  const [easMsg, setEasMsg] = useState(&quot;&quot;);
+  const [easRunUrl, setEasRunUrl] = useState(&quot;&quot;);
+  const [easToken, setEasToken] = useState(() =&gt; localStorage.getItem(&quot;expo_token&quot;) || &quot;&quot;);
+
+  /* ── AI ── */
+  const [aiKeys, setAiKeys] = useState&lt;AIKeys&gt;(() =&gt; ({
+    url: localStorage.getItem(&quot;custom_api_url&quot;) || &quot;&quot;,
+    key: localStorage.getItem(&quot;custom_api_key&quot;) || &quot;&quot;,
+    model: localStorage.getItem(&quot;custom_api_model&quot;) || &quot;gpt-4o-mini&quot;,
+  }));
+  const [showAiKeys, setShowAiKeys] = useState(false);
+  const [chat, setChat] = useState&lt;ChatMsg[]&gt;([]);
+  const [chatInput, setChatInput] = useState(&quot;&quot;);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [listening, setListening] = useState(false);
+  const chatEndRef = useRef&lt;HTMLDivElement&gt;(null);
+  const recognRef = useRef&lt;any&gt;(null);
+
+  /* ── System status ── */
+  const [sysInfo, setSysInfo] = useState&lt;SysInfo&gt;({
+    checkedAt: &quot;&quot;, proxyOk: null, online: null, connType: null,
+    downlinkMbps: null, rttMs: null, memUsedMB: null, memTotalMB: null,
+    memLimitMB: null, deviceMemGB: null, storageUsedMB: null,
+    storageQuotaMB: null, storagePct: null, cores: null,
+    browserInfo: null, platform: null, ghRateLimit: null, ghRateLimitReset: null,
+  });
+  const [sysChecking, setSysChecking] = useState(false);
+
+  const checkSystem = useCallback(async () =&gt; {
+    setSysChecking(true);
+    const info: SysInfo = {
+      checkedAt: new Date().toLocaleTimeString(&quot;pt-BR&quot;),
+      proxyOk: null, online: navigator.onLine, connType: null,
+      downlinkMbps: null, rttMs: null, memUsedMB: null, memTotalMB: null,
+      memLimitMB: null, deviceMemGB: null, storageUsedMB: null,
+      storageQuotaMB: null, storagePct: null, cores: navigator.hardwareConcurrency || null,
+      browserInfo: null, platform: navigator.platform || null,
+      ghRateLimit: null, ghRateLimitReset: null,
+    };
+    // Rede</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>conn →</span>
+    <div>
+      <small>L254–L323</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">    const conn = (navigator as any).connection ?? (navigator as any).mozConnection ?? (navigator as any).webkitConnection;
+    if (conn) { info.connType = conn.effectiveType ?? conn.type ?? null; info.downlinkMbps = conn.downlink ?? null; info.rttMs = conn.rtt ?? null; }
+    // Browser
+    const ua = navigator.userAgent;
+    if (ua.includes(&quot;Chrome/&quot;)) info.browserInfo = `Chrome ${ua.match(/Chrome\/(\d+)/)?.[1] ?? &quot;&quot;}`;
+    else if (ua.includes(&quot;Firefox/&quot;)) info.browserInfo = `Firefox ${ua.match(/Firefox\/(\d+)/)?.[1] ?? &quot;&quot;}`;
+    else if (ua.includes(&quot;Safari/&quot;)) info.browserInfo = `Safari ${ua.match(/Version\/(\d+)/)?.[1] ?? &quot;&quot;}`;
+    else if (ua.includes(&quot;Edg/&quot;)) info.browserInfo = `Edge ${ua.match(/Edg\/(\d+)/)?.[1] ?? &quot;&quot;}`;
+    else info.browserInfo = ua.slice(0, 30);
+    // Device memory
+    info.deviceMemGB = (navigator as any).deviceMemory ?? null;
+    // Heap JS (Chrome)
+    try { const m = (performance as any).memory; if (m) { info.memUsedMB = Math.round(m.usedJSHeapSize / 1048576); info.memTotalMB = Math.round(m.totalJSHeapSize / 1048576); info.memLimitMB = Math.round(m.jsHeapSizeLimit / 1048576); } } catch { /* ok */ }
+    // Storage
+    try { const e = await navigator.storage.estimate(); info.storageUsedMB = Math.round((e.usage ?? 0) / 1048576); info.storageQuotaMB = Math.round((e.quota ?? 0) / 1048576); info.storagePct = info.storageQuotaMB &gt; 0 ? Math.round((info.storageUsedMB! / info.storageQuotaMB) * 100) : 0; } catch { /* ok */ }
+    // Proxy
+    try {
+      const domain = window.location.hostname !== &quot;localhost&quot; ? window.location.origin : &quot;&quot;;
+      const r = await fetch(`${domain}/api/healthz`);
+      info.proxyOk = r.ok;
+    } catch { info.proxyOk = false; }
+    // GitHub rate limit
+    const tok = localStorage.getItem(&quot;gh_token&quot;);
+    if (tok) { try { const r = await fetch(&quot;https://api.github.com/rate_limit&quot;, { headers: { Authorization: `token ${tok}` } }); if (r.ok) { const d = await r.json(); info.ghRateLimit = d.rate?.remaining ?? null; info.ghRateLimitReset = d.rate?.reset ? new Date(d.rate.reset * 1000).toLocaleTimeString(&quot;pt-BR&quot;) : null; } } catch { /* ok */ } }
+    setSysInfo(info);
+    setSysChecking(false);
+  }, []);
+
+  /* ── Effects ── */
+  useEffect(() =&gt; { chatEndRef.current?.scrollIntoView({ behavior: &quot;smooth&quot; }); }, [chat]);
+
+  useEffect(() =&gt; {
+    if (ghToken) localStorage.setItem(&quot;gh_token&quot;, ghToken);
+  }, [ghToken]);
+  useEffect(() =&gt; {
+    if (driveToken) localStorage.setItem(&quot;drive_token&quot;, driveToken);
+  }, [driveToken]);
+  useEffect(() =&gt; {
+    localStorage.setItem(&quot;custom_api_url&quot;, aiKeys.url);
+    localStorage.setItem(&quot;custom_api_key&quot;, aiKeys.key);
+    localStorage.setItem(&quot;custom_api_model&quot;, aiKeys.model);
+  }, [aiKeys]);
+
+  // Load saved session metadata on mount + check system
+  useEffect(() =&gt; {
+    getSavedMeta().then(m =&gt; { if (m) setSavedMeta(m); });
+    checkSystem();
+    const id = setInterval(checkSystem, 30000);
+    return () =&gt; clearInterval(id);
+  }, [checkSystem]);
+
+  // Auto-detect GitHub user when token changes
+  useEffect(() =&gt; {
+    if (!ghToken || ghToken.length &lt; 10) { setGhUser(null); setGhRepos([]); return; }
+    const t = setTimeout(async () =&gt; {
+      try {
+        const user = await ghGetUser(ghToken);
+        setGhUser(user);
+        const repos = await ghListRepos(ghToken);
+        setGhRepos(repos);
+        setGhMsg(`✅ Conectado como @${user.login}`);
+      } catch (e) {
+        setGhUser(null);
+        setGhMsg(&quot;❌ &quot; + String(e));
+      }
+    }, 600);
+    return () =&gt; clearTimeout(t);
+  }, [ghToken]);
+
+  /* ── Import file ── */</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>handleFileImport</span>
+    <div>
+      <small>L324–L357</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">  async function handleFileImport(file: File) {
+    setImportLoading(true);
+    setAnalysis(null); setCleanedFiles(null); setNameApplied(false);
+    const isApk = file.name.toLowerCase().endsWith(&quot;.apk&quot;);
+    setImportInfo(isApk ? `Abrindo APK ${file.name}...` : `Lendo ${file.name}...`);
+    try {
+      const extracted = isApk ? await extractApk(file) : await extractArchive(file);
+      const a = analyzeProject(extracted, file.name.replace(/\.(apk|zip|tar\.gz|tgz|tar)$/i, &quot;&quot;));
+      setAnalysis(a);
+      setCustomName(a.detectedName);
+      // Auto-clean: remove unnecessary files
+      const cleaned = extracted.filter(f =&gt; !a.unnecessaryFiles.includes(f.path));
+      setCleanedFiles(cleaned);
+      setFiles(cleaned);
+      const newCfg = { ...DEFAULT_CFG, appName: a.detectedName, appId: a.detectedId };
+      setCfg(newCfg);
+      const src = `${isApk ? &quot;APK&quot; : &quot;Arquivo&quot;}: ${file.name} (${cleaned.length} arquivos${a.unnecessaryFiles.length ? `, ${a.unnecessaryFiles.length} removidos` : &quot;&quot;})`;
+      setSource(src);
+      setProjectReady(true);
+      setResultBlob(null);
+      setImportInfo(`✅ ${cleaned.length} arquivos · análise pronta`);
+      const slug1 = a.detectedId.split(&quot;.&quot;).pop() || a.detectedName.toLowerCase().replace(/\s+/g, &quot;-&quot;);
+      setPushRepoName(slug1 + &quot;-android&quot;);
+      setPagesRepoName(slug1 + &quot;-pwa&quot;);
+      await doSave(newCfg, src, cleaned);
+      // Stay on import tab to show the analysis panel
+    } catch (e) {
+      setImportInfo(&quot;❌ &quot; + String(e));
+    } finally {
+      setImportLoading(false);
+    }
+  }
+
+  /* ── Apply custom name to project ── */</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>applyCustomName</span>
+    <div>
+      <small>L358–L367</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">  function applyCustomName() {
+    if (!customName.trim()) return;
+    const slug = customName.trim().toLowerCase().replace(/\s+/g, &quot;-&quot;).replace(/[^a-z0-9-]/g, &quot;&quot;);
+    const newId = `com.meuapp.${slug}`;
+    setCfg(c =&gt; ({ ...c, appName: customName.trim(), appId: newId }));
+    setPushRepoName(slug + &quot;-android&quot;);
+    setPagesRepoName(slug + &quot;-pwa&quot;);
+    setNameApplied(true);
+  }
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>handleImportAssistenteJuridico</span>
+    <div>
+      <small>L368–L403</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">  async function handleImportAssistenteJuridico() {
+    setImportLoading(true);
+    setImportInfo(&quot;Carregando Assistente Jurídico...&quot;);
+    try {
+      const resp = await fetch(`${import.meta.env.BASE_URL}assistente-juridico-pwa.zip`);
+      if (!resp.ok) throw new Error(&quot;Arquivo não encontrado — tente recarregar a página&quot;);
+      const blob = await resp.blob();
+      const file = new File([blob], &quot;assistente-juridico-pwa.zip&quot;, { type: &quot;application/zip&quot; });
+      const extracted = await extractArchive(file);
+      const newCfg = {
+        ...DEFAULT_CFG,
+        appName: &quot;Assistente Jurídico&quot;,
+        appId: &quot;br.com.maikoncaldeira.assistentejuridico&quot;,
+        themeColor: &quot;#1e40af&quot;,
+        bgColor: &quot;#0f172a&quot;,
+      };
+      setFiles(extracted);
+      setCfg(newCfg);
+      const src = `Assistente Jurídico (${extracted.length} arquivos)`;
+      setSource(src);
+      setProjectReady(true);
+      setResultBlob(null);
+      setPushRepoName(&quot;assistente-juridico-android&quot;);
+      setPagesRepoName(&quot;assistente-juridico-pwa&quot;);
+      setCiRepoOwner(&quot;&quot;);
+      setCiRepoName(&quot;assistente-juridico-android&quot;);
+      setImportInfo(`✅ ${extracted.length} arquivos carregados`);
+      setTab(&quot;export&quot;);
+      await doSave(newCfg, src, extracted);
+    } catch (e) {
+      setImportInfo(&quot;❌ &quot; + String(e));
+    } finally {
+      setImportLoading(false);
+    }
+  }
+</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>onFileInput</span>
+    <div>
+      <small>L404–L407</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">  function onFileInput(e: React.ChangeEvent&lt;HTMLInputElement&gt;) {
+    const f = e.target.files?.[0]; if (f) handleFileImport(f);
+  }
+</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>onDrop</span>
+    <div>
+      <small>L408–L413</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">  function onDrop(e: React.DragEvent) {
+    e.preventDefault(); setDragOver(false);
+    const f = e.dataTransfer.files?.[0]; if (f) handleFileImport(f);
+  }
+
+  /* ── Restore session ── */</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>restoreSession</span>
+    <div>
+      <small>L414–L433</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">  async function restoreSession() {
+    setRestoring(true);
+    try {
+      const s = await loadSession();
+      if (!s) { setStatus(&quot;Nenhuma sessão salva encontrada&quot;, false); return; }
+      setFiles(s.files); setCfg(s.cfg); setSource(s.source);
+      setProjectReady(true); setResultBlob(null);
+      const slug2 = s.cfg.appId.split(&quot;.&quot;).pop() || &quot;&quot;;
+      setPushRepoName(slug2 + &quot;-android&quot;);
+      setPagesRepoName(slug2 + &quot;-pwa&quot;);
+      setTab(&quot;export&quot;);
+      setStatus(&quot;Sessão restaurada com sucesso!&quot;, true);
+    } catch (e) {
+      setStatus(&quot;Erro ao restaurar: &quot; + String(e), false);
+    } finally {
+      setRestoring(false);
+    }
+  }
+
+  /* ── GitHub import ── */</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>handleGhImport</span>
+    <div>
+      <small>L434–L460</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">  async function handleGhImport(repo: GhRepo | null) {
+    const target = repo || ghSelectedRepo;
+    if (!target || !ghToken) return;
+    setGhLoading(true); setGhMsg(&quot;Importando...&quot;);
+    try {
+      const [owner, name] = target.full_name.split(&quot;/&quot;);
+      const imported = await ghImportRepo(ghToken, owner, name, target.default_branch, setGhMsg);
+      const newCfg = {
+        ...DEFAULT_CFG,
+        appName: target.name,
+        appId: `com.github.${name.replace(/[^a-z0-9]/gi, &quot;&quot;).toLowerCase()}`,
+      };
+      setFiles(imported); setCfg(newCfg);
+      const src = `GitHub: ${target.full_name}@${target.default_branch}`;
+      setSource(src); setProjectReady(true); setResultBlob(null);
+      setPushRepoName(name + &quot;-android&quot;);
+      setPagesRepoName(name + &quot;-pwa&quot;);
+      setGhMsg(`✅ ${imported.length} arquivos importados!`);
+      setTab(&quot;export&quot;);
+      await doSave(newCfg, src, imported);
+    } catch (e) {
+      setGhMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setGhLoading(false);
+    }
+  }
+</pre>
+</div>
+<div class="block" id="b15">
+  <div class="block-h">
+    <span>handleGhCustomImport</span>
+    <div>
+      <small>L461–L476</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre15').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre15">  async function handleGhCustomImport() {
+    if (!ghToken || !ghCustomRepo.trim()) return;
+    setGhLoading(true); setGhMsg(&quot;Buscando repositório...&quot;);
+    try {
+      const parts = ghCustomRepo.replace(&quot;https://github.com/&quot;, &quot;&quot;).split(&quot;/&quot;);
+      const [owner, name] = parts.slice(-2);
+      const repo = await ghGetRepo(ghToken, owner, name);
+      setGhSelectedRepo(repo);
+      await handleGhImport(repo);
+    } catch (e) {
+      setGhMsg(&quot;❌ &quot; + String(e));
+      setGhLoading(false);
+    }
+  }
+
+  /* ── Import público sem token ── */</pre>
+</div>
+<div class="block" id="b16">
+  <div class="block-h">
+    <span>handlePublicRepoImport</span>
+    <div>
+      <small>L477–L503</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre16').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre16">  async function handlePublicRepoImport() {
+    if (!ghPublicRepo.trim()) return;
+    setGhPublicLoading(true);
+    setGhPublicMsg(&quot;Acessando repositório público...&quot;);
+    try {
+      const { files: imported, repoName, branch } = await ghImportPublicRepo(ghPublicRepo, setGhPublicMsg);
+      const newCfg = {
+        ...DEFAULT_CFG,
+        appName: repoName,
+        appId: `com.github.${repoName.replace(/[^a-z0-9]/gi, &quot;&quot;).toLowerCase()}`,
+      };
+      setFiles(imported); setCfg(newCfg);
+      const src = `GitHub (público): ${ghPublicRepo.trim()}@${branch}`;
+      setSource(src); setProjectReady(true); setResultBlob(null);
+      setPushRepoName(repoName + &quot;-android&quot;);
+      setPagesRepoName(repoName + &quot;-pwa&quot;);
+      setGhPublicMsg(`✅ ${imported.length} arquivos importados de ${repoName}!`);
+      setTab(&quot;export&quot;);
+      await doSave(newCfg, src, imported);
+    } catch (e) {
+      setGhPublicMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setGhPublicLoading(false);
+    }
+  }
+
+  /* ── URL Import / PWA Analyzer ── */</pre>
+</div>
+<div class="block" id="b17">
+  <div class="block-h">
+    <span>handleUrlImport</span>
+    <div>
+      <small>L504–L516</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre17').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre17">  async function handleUrlImport() {
+    let target = urlInput.trim();
+    if (!target) return;
+    if (!target.startsWith(&quot;http&quot;)) target = &quot;https://&quot; + target;
+
+    setUrlLoading(true);
+    setUrlMsg(&quot;Acessando site...&quot;);
+    setUrlIssues([]);
+
+    const issues: { type: &quot;ok&quot; | &quot;warn&quot; | &quot;err&quot;; text: string }[] = [];
+    const fetched: ArchiveFile[] = [];
+
+    // Tenta 3 proxies CORS em paralelo — usa o primeiro que responder com sucesso</pre>
+</div>
+<div class="block" id="b18">
+  <div class="block-h">
+    <span>proxyUrl →</span>
+    <div>
+      <small>L517–L522</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre18').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre18">    const proxyUrl = (u: string, p: number) =&gt; [
+      `https://corsproxy.io/?${encodeURIComponent(u)}`,
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+    ][p];
+</pre>
+</div>
+<div class="block" id="b19">
+  <div class="block-h">
+    <span>fetchViaProxy →</span>
+    <div>
+      <small>L523–L559</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre19').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre19">    const fetchViaProxy = async (url: string): Promise&lt;Response&gt; =&gt; {
+      const attempts = [0, 1, 2].map(p =&gt;
+        fetch(proxyUrl(url, p)).then(r =&gt; {
+          if (r.ok) return r;
+          throw new Error(String(r.status));
+        })
+      );
+      const results = await Promise.allSettled(attempts);
+      const ok = results.find((r): r is PromiseFulfilledResult&lt;Response&gt; =&gt; r.status === &quot;fulfilled&quot;);
+      if (ok) return ok.value;
+      const statuses = results.map(r =&gt; r.status === &quot;rejected&quot; ? (r.reason as Error).message : &quot;ok&quot;).join(&quot;, &quot;);
+      throw new Error(`Site bloqueou o acesso via proxy (${statuses}). Tente importar via ZIP ou GitHub.`);
+    };
+
+    try {
+      // 1. HTML principal
+      setUrlMsg(&quot;Tentando acessar o site...&quot;);
+      const htmlResp = await fetchViaProxy(target);
+      if (!htmlResp.ok) throw new Error(`Site retornou ${htmlResp.status}`);
+      const html = await htmlResp.text();
+      fetched.push({ path: &quot;index.html&quot;, content: new TextEncoder().encode(html).buffer as ArrayBuffer });
+      issues.push({ type: &quot;ok&quot;, text: &quot;HTML principal baixado&quot; });
+
+      // 2. Manifest
+      const mHref =
+        html.match(/&lt;link[^&gt;]+rel=[&quot;']manifest[&quot;'][^&gt;]+href=[&quot;']([^&quot;']+)[&quot;']/i)?.[1] ||
+        html.match(/&lt;link[^&gt;]+href=[&quot;']([^&quot;']+)[&quot;'][^&gt;]+rel=[&quot;']manifest[&quot;']/i)?.[1];
+
+      let manifestData: Record&lt;string, unknown&gt; | null = null;
+      if (mHref) {
+        setUrlMsg(&quot;Baixando manifest.json...&quot;);
+        try {
+          const mUrl = new URL(mHref, target).href;
+          const mResp = await fetchViaProxy(mUrl);
+          const mText = await mResp.text();
+          manifestData = JSON.parse(mText) as Record&lt;string, unknown&gt;;
+          fetched.push({ path: &quot;manifest.json&quot;, content: new TextEncoder().encode(mText).buffer as ArrayBuffer });</pre>
+</div>
+<div class="block" id="b20">
+  <div class="block-h">
+    <span>appLabel →</span>
+    <div>
+      <small>L560–L584</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre20').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre20">          const appLabel = (manifestData.name || manifestData.short_name || &quot;?&quot;) as string;
+          issues.push({ type: &quot;ok&quot;, text: `manifest.json encontrado — App: &quot;${appLabel}&quot;` });
+          if (!manifestData.name &amp;&amp; !manifestData.short_name) issues.push({ type: &quot;warn&quot;, text: &quot;Sem name/short_name no manifest&quot; });
+          if (!manifestData.start_url) issues.push({ type: &quot;warn&quot;, text: &quot;Sem start_url no manifest&quot; });
+          if (!manifestData.display) issues.push({ type: &quot;warn&quot;, text: &quot;Sem display: standalone no manifest&quot; });
+          else issues.push({ type: &quot;ok&quot;, text: `display: ${manifestData.display}` });
+          if (!manifestData.theme_color) issues.push({ type: &quot;warn&quot;, text: &quot;Sem theme_color&quot; });
+          if (!manifestData.background_color) issues.push({ type: &quot;warn&quot;, text: &quot;Sem background_color&quot; });
+        } catch {
+          issues.push({ type: &quot;err&quot;, text: &quot;manifest.json não pôde ser baixado ou é inválido JSON&quot; });
+        }
+      } else {
+        issues.push({ type: &quot;err&quot;, text: &quot;manifest.json não encontrado — site pode não ser PWA&quot; });
+        // Cria manifest mínimo automaticamente
+        const domain = new URL(target).hostname.replace(/^www\./, &quot;&quot;);
+        const auto = { name: domain, short_name: domain.split(&quot;.&quot;)[0], start_url: &quot;/&quot;, display: &quot;standalone&quot;, theme_color: &quot;#6366f1&quot;, background_color: &quot;#080c18&quot;, icons: [{ src: &quot;icons/icon-192.png&quot;, sizes: &quot;192x192&quot;, type: &quot;image/png&quot; }] };
+        fetched.push({ path: &quot;manifest.json&quot;, content: new TextEncoder().encode(JSON.stringify(auto, null, 2)).buffer as ArrayBuffer });
+        issues.push({ type: &quot;warn&quot;, text: &quot;manifest.json básico gerado automaticamente&quot; });
+      }
+
+      // 3. Service Worker
+      if (/serviceWorker/i.test(html)) issues.push({ type: &quot;ok&quot;, text: &quot;Service Worker detectado no HTML&quot; });
+      else issues.push({ type: &quot;warn&quot;, text: &quot;Service Worker não detectado (PWA pode não funcionar offline)&quot; });
+
+      // 4. Ícones</pre>
+</div>
+<div class="block" id="b21">
+  <div class="block-h">
+    <span>icons →</span>
+    <div>
+      <small>L585–L607</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre21').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre21">      const icons = (manifestData?.icons as { src: string; sizes: string }[] | undefined) || [];
+      if (icons.length &gt; 0) {
+        setUrlMsg(&quot;Baixando ícones...&quot;);
+        let ok = 0;
+        for (const icon of icons.slice(0, 8)) {
+          try {
+            const iconUrl = new URL(icon.src, target).href;
+            const iResp = await fetchViaProxy(iconUrl);
+            if (!iResp.ok) continue;
+            const ibuf = await iResp.arrayBuffer();
+            const fname = icon.src.split(&quot;/&quot;).pop() || `icon-${icon.sizes}.png`;
+            fetched.push({ path: `icons/${fname}`, content: ibuf });
+            ok++;
+          } catch { /* skip */ }
+        }
+        if (ok &gt; 0) issues.push({ type: &quot;ok&quot;, text: `${ok} ícone(s) baixado(s)` });
+        else issues.push({ type: &quot;warn&quot;, text: &quot;Ícones declarados no manifest mas bloqueados por CORS&quot; });
+      } else {
+        issues.push({ type: &quot;err&quot;, text: &quot;Nenhum ícone no manifest — obrigatório para instalar como app&quot; });
+      }
+
+      // 5. Finaliza
+      const domain = new URL(target).hostname.replace(/^www\./, &quot;&quot;);</pre>
+</div>
+<div class="block" id="b22">
+  <div class="block-h">
+    <span>siteName →</span>
+    <div>
+      <small>L608–L638</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre22').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre22">      const siteName = ((manifestData?.name || manifestData?.short_name || domain) as string);
+      const siteId = &quot;com.&quot; + domain.replace(/[^a-z0-9]/gi, &quot;.&quot;).toLowerCase().replace(/\.+/g, &quot;.&quot;).replace(/^\.|\.$/g, &quot;&quot;);
+      const newCfg = {
+        ...DEFAULT_CFG,
+        appName: siteName,
+        appId: siteId,
+        themeColor: (manifestData?.theme_color as string) || &quot;#6366f1&quot;,
+        bgColor: (manifestData?.background_color as string) || &quot;#080c18&quot;,
+      };
+      setFiles(fetched);
+      setCfg(newCfg);
+      const src = `URL: ${target}`;
+      setSource(src);
+      setProjectReady(true);
+      setResultBlob(null);
+      const slug3 = siteId.split(&quot;.&quot;).pop() || &quot;meu-app&quot;;
+      setPushRepoName(slug3 + &quot;-android&quot;);
+      setPagesRepoName(slug3 + &quot;-pwa&quot;);
+      await doSave(newCfg, src, fetched);
+      setUrlMsg(`✅ ${fetched.length} arquivos obtidos`);
+      setUrlIssues(issues);
+      setTab(&quot;export&quot;);
+    } catch (e) {
+      setUrlMsg(&quot;❌ &quot; + String(e));
+      setUrlIssues(issues);
+    } finally {
+      setUrlLoading(false);
+    }
+  }
+
+  /* ── EAS (Expo) build: gera projeto Expo → GitHub → compila APK ── */</pre>
+</div>
+<div class="block" id="b23">
+  <div class="block-h">
+    <span>handleEASDeploy</span>
+    <div>
+      <small>L639–L642</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre23').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre23">  async function handleEASDeploy() {
+    if (!files.length || !ghToken || !ghUser) return;
+    setEasLoading(true); setEasMsg(&quot;⚙ Gerando projeto Expo + WebView...&quot;); setEasRunUrl(&quot;&quot;);
+    const hdrs = { Authorization: `token ${ghToken}`, Accept: &quot;application/vnd.github+json&quot;, &quot;X-GitHub-Api-Version&quot;: &quot;2022-11-28&quot; };</pre>
+</div>
+<div class="block" id="b24">
+  <div class="block-h">
+    <span>slug →</span>
+    <div>
+      <small>L643–L644</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre24').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre24">    const slug = (cfg.appName || &quot;meu-app&quot;).toLowerCase().replace(/[^a-z0-9]+/g, &quot;-&quot;).replace(/^-|-$/g, &quot;&quot;);
+    const repoName = slug + &quot;-eas&quot;;</pre>
+</div>
+<div class="block" id="b25">
+  <div class="block-h">
+    <span>useCloud</span>
+    <div>
+      <small>L645–L705</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre25').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre25">    const useCloud = !!easToken.trim();
+
+    // Persiste token se fornecido
+    if (useCloud) localStorage.setItem(&quot;expo_token&quot;, easToken.trim());
+
+    try {
+      const easFiles = await buildEASFilesForGithub(cfg, files, source, useCloud ? genEASCloudWorkflow : undefined);
+
+      setEasMsg(&quot;📦 Criando repositório no GitHub...&quot;);
+      await ghCreateRepo(ghToken, repoName, cfg.appName, false);
+
+      if (useCloud) {
+        setEasMsg(&quot;🔐 Configurando EXPO_TOKEN como secret do repositório...&quot;);
+        await ghSetRepoSecret(ghToken, ghUser.login, repoName, &quot;EXPO_TOKEN&quot;, easToken.trim());
+        setEasMsg(&quot;✅ Secret EXPO_TOKEN configurado!&quot;);
+        await new Promise(r =&gt; setTimeout(r, 1500));
+      }
+
+      setEasMsg(`📤 Enviando ${easFiles.length} arquivos (projeto Expo + web)...`);
+      await ghPushFiles(ghToken, ghUser.login, repoName, easFiles,
+        `chore: projeto Expo EAS${useCloud ? &quot; Cloud&quot; : &quot; Local&quot;} — ${cfg.appName} v${cfg.versionName}`, setEasMsg);
+
+      setEasMsg(&quot;🚀 Aguardando GitHub Actions iniciar...&quot;);
+      await new Promise(r =&gt; setTimeout(r, 10000));
+      await fetch(`https://api.github.com/repos/${ghUser.login}/${repoName}/actions/workflows/build-apk.yml/dispatches`, {
+        method: &quot;POST&quot;, headers: { ...hdrs, &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify({ ref: &quot;main&quot; }),
+      });
+      await new Promise(r =&gt; setTimeout(r, 6000));
+
+      // Poll por conclusão (até 30 min para EAS cloud, 20 min local)
+      const maxPolls = useCloud ? 60 : 40;
+      for (let i = 0; i &lt; maxPolls; i++) {
+        const r = await fetch(`https://api.github.com/repos/${ghUser.login}/${repoName}/actions/runs?per_page=1`, { headers: hdrs });
+        const d = await r.json() as { workflow_runs?: { id: number; status: string; conclusion: string | null; html_url: string }[] };
+        const run = d.workflow_runs?.[0];
+        if (run) {
+          setEasRunUrl(run.html_url);
+          if (run.status === &quot;completed&quot;) {
+            if (run.conclusion === &quot;success&quot;) {
+              setEasMsg(`✅ APK pronto! Clique no link → aba &quot;Artifacts&quot; → baixe o APK.`);
+            } else {
+              setEasMsg(`❌ Build falhou (${run.conclusion}). Veja detalhes no link.`);
+            }
+            break;
+          }
+          const modeLabel = useCloud ? &quot;EAS Cloud (conta Expo)&quot; : &quot;Expo Prebuild local&quot;;
+          setEasMsg(`⏳ ${run.status === &quot;in_progress&quot; ? `Compilando via ${modeLabel}` : &quot;Na fila&quot;}... (~${useCloud ? &quot;10–20&quot; : &quot;10–15&quot;} min)`);
+        } else {
+          setEasMsg(&quot;⏳ Aguardando GitHub Actions iniciar...&quot;);
+        }
+        await new Promise(r =&gt; setTimeout(r, 30000));
+      }
+    } catch (e) {
+      setEasMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setEasLoading(false);
+    }
+  }
+
+  /* ── Pipeline completo: gera → GitHub → compila APK ── */</pre>
+</div>
+<div class="block" id="b26">
+  <div class="block-h">
+    <span>handleFullDeploy</span>
+    <div>
+      <small>L706–L709</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre26').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre26">  async function handleFullDeploy() {
+    if (!files.length || !ghToken || !ghUser) return;
+    setPipeLoading(true); setPipeMsg(&quot;⚙ Preparando projeto Android...&quot;); setPipeRunUrl(&quot;&quot;);
+    const hdrs = { Authorization: `token ${ghToken}`, Accept: &quot;application/vnd.github+json&quot;, &quot;X-GitHub-Api-Version&quot;: &quot;2022-11-28&quot; };</pre>
+</div>
+<div class="block" id="b27">
+  <div class="block-h">
+    <span>slug →</span>
+    <div>
+      <small>L710–L762</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre27').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre27">    const slug = (cfg.appName || &quot;meu-app&quot;).toLowerCase().replace(/[^a-z0-9]+/g, &quot;-&quot;).replace(/^-|-$/g, &quot;&quot;);
+    const repoName = slug + &quot;-android&quot;;
+    try {
+      // 1. Gera arquivos do projeto Android
+      const androidFiles = await buildAndroidFilesForGithub(cfg, files, source);
+
+      // 2. Cria repositório no GitHub
+      setPipeMsg(&quot;📦 Criando repositório no GitHub...&quot;);
+      await ghCreateRepo(ghToken, repoName, cfg.appName, false);
+
+      // 3. Envia arquivos
+      setPipeMsg(`📤 Enviando ${androidFiles.length} arquivos para o GitHub...`);
+      await ghPushFiles(ghToken, ghUser.login, repoName, androidFiles,
+        `chore: projeto Android — ${cfg.appName} v${cfg.versionName}`, setPipeMsg);
+
+      // 4. Aguarda GitHub Actions ser ativado e dispara manualmente
+      setPipeMsg(&quot;🚀 Aguardando GitHub Actions iniciar...&quot;);
+      await new Promise(r =&gt; setTimeout(r, 10000));
+      await fetch(`https://api.github.com/repos/${ghUser.login}/${repoName}/actions/workflows/build-apk.yml/dispatches`, {
+        method: &quot;POST&quot;, headers: { ...hdrs, &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify({ ref: &quot;main&quot; }),
+      });
+      await new Promise(r =&gt; setTimeout(r, 6000));
+
+      // 5. Poll por conclusão (até 25 min)
+      for (let i = 0; i &lt; 50; i++) {
+        const r = await fetch(`https://api.github.com/repos/${ghUser.login}/${repoName}/actions/runs?per_page=1`, { headers: hdrs });
+        const d = await r.json() as { workflow_runs?: { id: number; status: string; conclusion: string | null; html_url: string }[] };
+        const run = d.workflow_runs?.[0];
+        if (run) {
+          setPipeRunUrl(run.html_url);
+          if (run.status === &quot;completed&quot;) {
+            if (run.conclusion === &quot;success&quot;) {
+              setPipeMsg(`✅ APK compilado com sucesso! Abra o link abaixo → aba &quot;Artifacts&quot; → baixe o APK.`);
+            } else {
+              setPipeMsg(`❌ Build falhou (${run.conclusion}). Veja detalhes no link.`);
+            }
+            break;
+          }
+          setPipeMsg(`⏳ ${run.status === &quot;in_progress&quot; ? &quot;Compilando APK&quot; : &quot;Na fila&quot;}... aguarde ~10 min`);
+        } else {
+          setPipeMsg(&quot;⏳ Aguardando GitHub Actions iniciar...&quot;);
+        }
+        await new Promise(r =&gt; setTimeout(r, 30000));
+      }
+    } catch (e) {
+      setPipeMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setPipeLoading(false);
+    }
+  }
+
+  /* ── GitHub Actions cloud build ── */</pre>
+</div>
+<div class="block" id="b28">
+  <div class="block-h">
+    <span>handleCiBuild</span>
+    <div>
+      <small>L763–L804</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre28').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre28">  async function handleCiBuild() {
+    if (!ghToken || !ciRepoOwner || !ciRepoName) return;
+    setCiLoading(true); setCiMsg(&quot;Disparando build na nuvem...&quot;); setCiRunUrl(&quot;&quot;);
+    const hdrs = { Authorization: `token ${ghToken}`, Accept: &quot;application/vnd.github+json&quot;, &quot;X-GitHub-Api-Version&quot;: &quot;2022-11-28&quot; };
+    try {
+      // Tenta disparar via workflow_dispatch
+      await fetch(`https://api.github.com/repos/${ciRepoOwner}/${ciRepoName}/actions/workflows/build-apk.yml/dispatches`, {
+        method: &quot;POST&quot;, headers: { ...hdrs, &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify({ ref: &quot;main&quot; }),
+      });
+
+      setCiMsg(&quot;⏳ Build iniciado — aguardando GitHub Actions...&quot;);
+      await new Promise(r =&gt; setTimeout(r, 8000));
+
+      // Poll por até 25 min
+      for (let i = 0; i &lt; 50; i++) {
+        const r = await fetch(`https://api.github.com/repos/${ciRepoOwner}/${ciRepoName}/actions/runs?per_page=1`, { headers: hdrs });
+        const data = await r.json() as { workflow_runs?: { id: number; status: string; conclusion: string | null; html_url: string }[] };
+        const run = data.workflow_runs?.[0];
+        if (run) {
+          setCiRunUrl(run.html_url);
+          if (run.status === &quot;completed&quot;) {
+            if (run.conclusion === &quot;success&quot;) {
+              setCiMsg(`✅ APK compilado! Baixe em: ${run.html_url}`);
+            } else {
+              setCiMsg(`❌ Build falhou (${run.conclusion}). Veja detalhes: ${run.html_url}`);
+            }
+            break;
+          } else {
+            setCiMsg(`⏳ ${run.status === &quot;in_progress&quot; ? &quot;Compilando&quot; : &quot;Na fila&quot;}... (~5–10 min)`);
+          }
+        }
+        await new Promise(r =&gt; setTimeout(r, 30000));
+      }
+    } catch (e) {
+      setCiMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setCiLoading(false);
+    }
+  }
+
+  /* ── Generate Android ZIP ── */</pre>
+</div>
+<div class="block" id="b29">
+  <div class="block-h">
+    <span>handleGenerate</span>
+    <div>
+      <small>L805–L826</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre29').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre29">  async function handleGenerate() {
+    if (!cfg.appName || !cfg.appId || !files.length) return;
+    setGenerating(true); setProgress(0);
+    try {
+      for (const p of [10, 30, 60, 85]) {
+        await new Promise(r =&gt; setTimeout(r, 200));
+        setProgress(p);
+      }
+      const blob = await buildAndroidZip(cfg, files, source);
+      setProgress(100);
+      const safeName = cfg.appName.replace(/[^a-zA-Z0-9]/g, &quot;-&quot;).toLowerCase();
+      const name = `${safeName}-android-v${cfg.versionName}.zip`;
+      setResultBlob(blob); setResultName(name);
+      await doSave(cfg, source, files);
+    } catch (e) {
+      setStatus(&quot;Erro ao gerar: &quot; + String(e), false);
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  /* ── Drive upload ── */</pre>
+</div>
+<div class="block" id="b30">
+  <div class="block-h">
+    <span>handleDriveUpload</span>
+    <div>
+      <small>L827–L840</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre30').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre30">  async function handleDriveUpload() {
+    if (!resultBlob || !driveToken) return;
+    setDriveLoading(true); setDriveMsg(&quot;Enviando para o Drive...&quot;);
+    try {
+      const link = await uploadToDrive(driveToken, resultBlob, resultName);
+      setDriveMsg(`✅ Enviado! ${link}`);
+    } catch (e) {
+      setDriveMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setDriveLoading(false);
+    }
+  }
+
+  /* ── GitHub push ── */</pre>
+</div>
+<div class="block" id="b31">
+  <div class="block-h">
+    <span>handleGhPush</span>
+    <div>
+      <small>L841–L866</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre31').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre31">  async function handleGhPush() {
+    if (!resultBlob || !ghToken || !pushRepoName.trim()) return;
+    setPushLoading(true); setPushMsg(&quot;Criando repositório...&quot;);
+    try {
+      if (!ghUser) throw new Error(&quot;Faça login com seu token GitHub primeiro&quot;);
+      const repoInfo = await ghCreateRepo(ghToken, pushRepoName.trim(),
+        `Projeto Android — ${cfg.appName}`, pushPrivate);
+      setPushMsg(&quot;Preparando arquivos...&quot;);
+
+      // Convert files: add path prefix for the android project
+      const allFiles: ArchiveFile[] = [
+        ...files.map(f =&gt; ({ path: `dist/${f.path}`, content: f.content })),
+      ];
+
+      await ghPushFiles(ghToken, ghUser.login, pushRepoName.trim(), allFiles,
+        `chore: initial project — ${cfg.appName} v${cfg.versionName}`, setPushMsg);
+
+      setPushMsg(`✅ Repositório criado: ${repoInfo.html_url}`);
+    } catch (e) {
+      setPushMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setPushLoading(false);
+    }
+  }
+
+  /* ── GitHub Pages publish ── */</pre>
+</div>
+<div class="block" id="b32">
+  <div class="block-h">
+    <span>handlePublishPages</span>
+    <div>
+      <small>L867–L883</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre32').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre32">  async function handlePublishPages() {
+    if (!files.length || !ghToken || !pagesRepoName.trim()) return;
+    setPagesLoading(true); setPagesMsg(&quot;Iniciando publicação...&quot;); setPagesUrl(&quot;&quot;);
+    try {
+      if (!ghUser) throw new Error(&quot;Faça login com seu token GitHub (aba GitHub) primeiro&quot;);
+      const url = await ghPublishPages(ghToken, pagesRepoName.trim(), files, pagesPrivate, setPagesMsg);
+      setPagesUrl(url);
+      setPagesMsg(`✅ Publicado! Aguarde ~1 min para o GitHub Pages ativar: ${url}`);
+    } catch (e) {
+      setPagesMsg(&quot;❌ &quot; + String(e));
+    } finally {
+      setPagesLoading(false);
+    }
+  }
+
+  /* ── AI chat ── */
+  const sendChat = useCallback(async (text?: string) =&gt; {</pre>
+</div>
+<div class="block" id="b33">
+  <div class="block-h">
+    <span>msg →</span>
+    <div>
+      <small>L884–L903</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre33').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre33">    const msg = (text || chatInput).trim();
+    if (!msg || !aiKeys.key) return;
+    setChatInput(&quot;&quot;);
+    const history: ChatMsg[] = [...chat, { role: &quot;user&quot;, text: msg }];
+    setChat(history);
+    setChatLoading(true);
+    try {
+      const ctx = projectReady
+        ? `Projeto: ${source}. App: ${cfg.appName} (${cfg.appId}). ${files.length} arquivos.`
+        : &quot;&quot;;
+      const reply = await callAI(aiKeys, msg, ctx);
+      setChat(c =&gt; [...c, { role: &quot;assistant&quot;, text: reply }]);
+    } catch (e) {
+      setChat(c =&gt; [...c, { role: &quot;assistant&quot;, text: &quot;❌ &quot; + String(e) }]);
+    } finally {
+      setChatLoading(false);
+    }
+  }, [chat, chatInput, aiKeys, projectReady, source, cfg, files.length]);
+
+  const toggleVoice = useCallback(() =&gt; {</pre>
+</div>
+<div class="block" id="b34">
+  <div class="block-h">
+    <span>SR →</span>
+    <div>
+      <small>L904–L914</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre34').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre34">    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SR) { alert(&quot;Navegador sem suporte a voz.&quot;); return; }
+    if (listening) { recognRef.current?.stop(); setListening(false); return; }
+    const r = new SR();
+    r.lang = &quot;pt-BR&quot;; r.continuous = false; r.interimResults = false;
+    r.onresult = (e: any) =&gt; sendChat(e.results[0][0].transcript);
+    r.onend = () =&gt; setListening(false);
+    recognRef.current = r; r.start(); setListening(true);
+  }, [listening, sendChat]);
+
+  /* ── Status helper ── */</pre>
+</div>
+<div class="block" id="b35">
+  <div class="block-h">
+    <span>setStatus</span>
+    <div>
+      <small>L915–L920</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre35').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre35">  function setStatus(text: string, ok: boolean) {
+    setStatusMsg({ text, ok });
+    setTimeout(() =&gt; setStatusMsg(null), 4000);
+  }
+
+  /* ── Save helper com feedback visível ── */</pre>
+</div>
+<div class="block" id="b36">
+  <div class="block-h">
+    <span>doSave</span>
+    <div>
+      <small>L921–L935</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre36').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre36">  async function doSave(cfg: AppConfig, src: string, files: ArchiveFile[]) {
+    try {
+      const result: SaveResult = await saveSession(cfg, src, files);
+      if (result === &quot;quota-exceeded&quot;) {
+        setStatus(&quot;⚠️ Projeto carregado, mas não foi possível salvar os arquivos (armazenamento cheio). Recarregue a página para usar novamente.&quot;, false);
+      } else if (result === &quot;meta-only&quot;) {
+        setStatus(&quot;⚠️ Projeto grande demais para salvar localmente (&gt;5000 arquivos). Metadados salvos.&quot;, false);
+      }
+      setSavedMeta(await getSavedMeta());
+    } catch (e) {
+      setStatus(&quot;⚠️ Erro ao salvar sessão: &quot; + String(e), false);
+    }
+  }
+
+  /* ── Cérebro / Brain ── */</pre>
+</div>
+<div class="block" id="b37">
+  <div class="block-h">
+    <span>generateBrain</span>
+    <div>
+      <small>L936–L948</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre37').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre37">  function generateBrain() {
+    return {
+      version: 1,
+      gerado_em: new Date().toLocaleString(&quot;pt-BR&quot;),
+      projeto: projectReady ? {
+        nome: cfg.appName, package_id: cfg.appId, versao: cfg.versionName,
+        arquivos: files.length, arvore: files.slice(0, 150).map(f =&gt; f.path), origem: source,
+      } : null,
+      conversa: chat.map((m, i) =&gt; ({ n: i + 1, papel: m.role === &quot;user&quot; ? &quot;Você&quot; : &quot;IA&quot;, texto: m.text.slice(0, 2000) })),
+      config: cfg,
+    };
+  }
+</pre>
+</div>
+<div class="block" id="b38">
+  <div class="block-h">
+    <span>exportBrain</span>
+    <div>
+      <small>L949–L950</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre38').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre38">  function exportBrain() {
+    const b = generateBrain();</pre>
+</div>
+<div class="block" id="b39">
+  <div class="block-h">
+    <span>nome →</span>
+    <div>
+      <small>L951–L954</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre39').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre39">    const nome = (cfg.appName || &quot;projeto&quot;).replace(/[^a-z0-9]/gi, &quot;-&quot;).toLowerCase();
+    downloadBlob(new Blob([JSON.stringify(b, null, 2)], { type: &quot;application/json&quot; }), `cerebro-${nome}.json`);
+  }
+</pre>
+</div>
+<div class="block" id="b40">
+  <div class="block-h">
+    <span>exportChatJson</span>
+    <div>
+      <small>L955–L962</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre40').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre40">  function exportChatJson() {
+    if (!chat.length) { alert(&quot;Nenhuma mensagem para exportar.&quot;); return; }
+    downloadBlob(
+      new Blob([JSON.stringify({ gerado: new Date().toISOString(), mensagens: chat }, null, 2)], { type: &quot;application/json&quot; }),
+      &quot;conversa-ia.json&quot;
+    );
+  }
+</pre>
+</div>
+<div class="block" id="b41">
+  <div class="block-h">
+    <span>activateBrain</span>
+    <div>
+      <small>L963–L981</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre41').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre41">  function activateBrain() {
+    const b = generateBrain();
+    const proj = b.projeto
+      ? `📦 Projeto: ${b.projeto.nome} (${b.projeto.package_id}) · ${b.projeto.arquivos} arquivos\nOrigem: ${b.projeto.origem}\nArquivos principais: ${b.projeto.arvore.slice(0, 30).join(&quot;, &quot;)}`
+      : &quot;Nenhum projeto carregado ainda.&quot;;
+    const hist = b.conversa.length &gt; 0
+      ? `\n💬 Histórico: ${b.conversa.length} mensagens`
+      : &quot;\nSem histórico de conversa.&quot;;
+    const msg = `[🧠 ATIVAR CÉREBRO — Contexto completo do projeto]\nGerado: ${b.gerado_em}\n${proj}${hist}\nConfig: ${JSON.stringify(b.config)}\n\nCom base neste contexto, resuma o que você sabe sobre meu projeto e como pode me ajudar agora.`;
+    sendChat(msg);
+  }
+
+  /* ── Open Code Editor ── */
+  const BASE = import.meta.env.BASE_URL;
+  const codeEditorUrl = BASE.replace(&quot;/apk-builder/&quot;, &quot;/sk-code-editor/&quot;);
+
+  /* ─────────────────────────────────────────────────────────
+     UI helpers
+  ──────────────────────────────────────────────────────────── */</pre>
+</div>
+<div class="block" id="b42">
+  <div class="block-h">
+    <span>tabCls →</span>
+    <div>
+      <small>L982–L986</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre42').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre42">  const tabCls = (t: Tab) =&gt;
+    `px-3 py-2 text-xs font-bold rounded-lg transition-all ${tab === t
+      ? &quot;bg-violet-600 text-white&quot;
+      : &quot;text-slate-400 hover:text-white hover:bg-slate-700&quot;}`;
+</pre>
+</div>
+<div class="block" id="b43">
+  <div class="block-h">
+    <span>field →</span>
+    <div>
+      <small>L987–L1000</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre43').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre43">  const field = (
+    label: string, val: string,
+    onChange: (v: string) =&gt; void,
+    extra?: React.InputHTMLAttributes&lt;HTMLInputElement&gt;
+  ) =&gt; (
+    &lt;div&gt;
+      &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;{label}&lt;/label&gt;
+      &lt;input
+        className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-violet-500 outline-none placeholder-slate-500&quot;
+        value={val} onChange={e =&gt; onChange(e.target.value)} {...extra}
+      /&gt;
+    &lt;/div&gt;
+  );
+</pre>
+</div>
+<div class="block" id="b44">
+  <div class="block-h">
+    <span>colorField →</span>
+    <div>
+      <small>L1001–L2251</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre44').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre44">  const colorField = (label: string, val: string, onChange: (v: string) =&gt; void) =&gt; (
+    &lt;div&gt;
+      &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;{label}&lt;/label&gt;
+      &lt;div className=&quot;flex gap-2&quot;&gt;
+        &lt;input type=&quot;color&quot; className=&quot;w-10 h-10 rounded border-0 bg-transparent cursor-pointer shrink-0&quot;
+          value={val} onChange={e =&gt; onChange(e.target.value)} /&gt;
+        &lt;input className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none&quot;
+          value={val} onChange={e =&gt; onChange(e.target.value)} /&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+
+  const filteredRepos = ghRepos.filter(r =&gt;
+    !ghRepoFilter || r.name.toLowerCase().includes(ghRepoFilter.toLowerCase())
+  );
+
+  /* ══════════════════════════════════════════════════════════
+     RENDER
+  ══════════════════════════════════════════════════════════════ */
+  return (
+    &lt;div className=&quot;min-h-screen bg-[#080c18] text-white flex flex-col&quot;&gt;
+
+      {/* ── Header ── */}
+      &lt;header className=&quot;border-b border-slate-800 bg-[#0a0f1e]/95 backdrop-blur sticky top-0 z-30 px-4 py-2.5&quot;&gt;
+        &lt;div className=&quot;max-w-3xl mx-auto flex items-center gap-3&quot;&gt;
+          &lt;div className=&quot;w-9 h-9 bg-violet-600 rounded-xl flex items-center justify-center text-xl shrink-0&quot;&gt;📦&lt;/div&gt;
+          &lt;div className=&quot;min-w-0&quot;&gt;
+            &lt;div className=&quot;flex items-center gap-2 leading-none&quot;&gt;
+              &lt;h1 className=&quot;font-bold text-sm&quot;&gt;ConstruAPK Pro&lt;/h1&gt;
+              &lt;span className=&quot;text-[10px] font-mono bg-violet-900/60 text-violet-300 border border-violet-700/50 px-1.5 py-0.5 rounded-full shrink-0&quot;&gt;{APP_VERSION}&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;p className=&quot;text-xs text-slate-500 truncate&quot;&gt;
+              {projectReady ? `📱 ${cfg.appName || &quot;Sem nome&quot;} · ${files.length} arquivos` : &quot;PWA → Android APK nativo&quot;}
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;nav className=&quot;ml-auto flex gap-1 flex-wrap justify-end items-center&quot;&gt;
+            &lt;button className={`${tabCls(&quot;downloads&quot;)} bg-green-700 text-white hover:bg-green-600`} onClick={() =&gt; setTab(&quot;downloads&quot;)}&gt;⬇ APKs&lt;/button&gt;
+            &lt;button className={tabCls(&quot;import&quot;)} onClick={() =&gt; setTab(&quot;import&quot;)}&gt;📂 Importar&lt;/button&gt;
+            &lt;button className={tabCls(&quot;github&quot;)} onClick={() =&gt; setTab(&quot;github&quot;)}&gt;🐙 GitHub&lt;/button&gt;
+            &lt;button className={tabCls(&quot;export&quot;)} onClick={() =&gt; setTab(&quot;export&quot;)}&gt;📤 Exportar&lt;/button&gt;
+            &lt;button className={tabCls(&quot;ai&quot;)} onClick={() =&gt; setTab(&quot;ai&quot;)}&gt;🤖 IA&lt;/button&gt;
+            &lt;button className={tabCls(&quot;terminal&quot;)} onClick={() =&gt; setTab(&quot;terminal&quot;)}&gt;⌨ Terminal&lt;/button&gt;
+            &lt;button className={tabCls(&quot;analisar&quot;)} onClick={() =&gt; setTab(&quot;analisar&quot;)}&gt;🔍 Analisar&lt;/button&gt;
+            &lt;button
+              className={`${tabCls(&quot;guide&quot;)} flex items-center gap-1`}
+              onClick={() =&gt; setTab(&quot;guide&quot;)}
+              title={sysInfo.proxyOk === true ? &quot;Sistema OK&quot; : sysInfo.proxyOk === false ? &quot;Proxy offline&quot; : &quot;Verificando...&quot;}&gt;
+              📖 &lt;span className={`w-2 h-2 rounded-full inline-block ${sysInfo.proxyOk === true ? &quot;bg-green-400&quot; : sysInfo.proxyOk === false ? &quot;bg-red-400&quot; : &quot;bg-yellow-400 animate-pulse&quot;}`}&gt;&lt;/span&gt;
+            &lt;/button&gt;
+          &lt;/nav&gt;
+        &lt;/div&gt;
+      &lt;/header&gt;
+
+      {/* ── Status toast ── */}
+      {statusMsg &amp;&amp; (
+        &lt;div className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl text-sm font-semibold shadow-xl transition-all ${statusMsg.ok ? &quot;bg-green-700&quot; : &quot;bg-red-700&quot;}`}&gt;
+          {statusMsg.text}
+        &lt;/div&gt;
+      )}
+
+      &lt;main className=&quot;max-w-3xl mx-auto w-full px-4 py-5 flex-1 space-y-4&quot;&gt;
+
+        {/* ══ TAB: IMPORTAR ══════════════════════════════════════ */}
+        {tab === &quot;import&quot; &amp;&amp; (
+          &lt;&gt;
+            {/* Saved session banner */}
+            {savedMeta &amp;&amp; !projectReady &amp;&amp; (
+              &lt;div className=&quot;bg-violet-900/20 border border-violet-700/40 rounded-xl p-4 flex items-center justify-between gap-3&quot;&gt;
+                &lt;div&gt;
+                  &lt;p className=&quot;text-sm font-semibold text-violet-300&quot;&gt;💾 Sessão salva encontrada&lt;/p&gt;
+                  &lt;p className=&quot;text-xs text-slate-400&quot;&gt;
+                    {savedMeta.cfg.appName} · {savedMeta.fileCount} arquivos ·{&quot; &quot;}
+                    {new Date(savedMeta.savedAt).toLocaleDateString(&quot;pt-BR&quot;, { day: &quot;2-digit&quot;, month: &quot;short&quot;, hour: &quot;2-digit&quot;, minute: &quot;2-digit&quot; })}
+                  &lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;flex gap-2 shrink-0&quot;&gt;
+                  &lt;button onClick={restoreSession} disabled={restoring}
+                    className=&quot;px-3 py-1.5 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 rounded-lg text-xs font-bold&quot;&gt;
+                    {restoring ? &quot;...&quot; : &quot;↩ Restaurar&quot;}
+                  &lt;/button&gt;
+                  &lt;button onClick={async () =&gt; { await clearSession(); setSavedMeta(null); }}
+                    className=&quot;px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-bold text-slate-400&quot;&gt;
+                    🗑
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+
+            {/* Drop zone */}
+            &lt;div
+              onDragOver={e =&gt; { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() =&gt; setDragOver(false)}
+              onDrop={onDrop}
+              onClick={() =&gt; fileRef.current?.click()}
+              className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all ${dragOver ? &quot;border-violet-400 bg-violet-900/20&quot; : importLoading ? &quot;border-violet-500 bg-violet-900/10&quot; : projectReady ? &quot;border-green-600 bg-green-900/10&quot; : &quot;border-slate-600 hover:border-violet-500 hover:bg-violet-900/10&quot;}`}
+            &gt;
+              {importLoading ? (
+                &lt;&gt;&lt;div className=&quot;text-4xl animate-spin mb-3&quot;&gt;⚙&lt;/div&gt;&lt;p className=&quot;text-violet-400 font-semibold&quot;&gt;{importInfo}&lt;/p&gt;&lt;/&gt;
+              ) : projectReady ? (
+                &lt;&gt;&lt;div className=&quot;text-4xl mb-2&quot;&gt;✅&lt;/div&gt;
+                  &lt;p className=&quot;font-semibold text-green-400&quot;&gt;{source}&lt;/p&gt;
+                  &lt;p className=&quot;text-xs text-slate-400 mt-1&quot;&gt;{files.length} arquivos carregados · Clique para reimportar&lt;/p&gt;&lt;/&gt;
+              ) : (
+                &lt;&gt;&lt;div className=&quot;text-5xl mb-3&quot;&gt;📦&lt;/div&gt;
+                  &lt;p className=&quot;font-bold text-lg&quot;&gt;Arraste ou clique para importar&lt;/p&gt;
+                  &lt;p className=&quot;text-sm text-slate-400 mt-1&quot;&gt;
+                    &lt;span className=&quot;text-violet-300 font-mono&quot;&gt;.apk&lt;/span&gt; · &lt;span className=&quot;text-violet-300 font-mono&quot;&gt;.zip&lt;/span&gt; · &lt;span className=&quot;text-violet-300 font-mono&quot;&gt;.tar&lt;/span&gt; · &lt;span className=&quot;text-violet-300 font-mono&quot;&gt;.tar.gz&lt;/span&gt;
+                  &lt;/p&gt;
+                  &lt;p className=&quot;text-xs text-slate-500 mt-2&quot;&gt;Importe um &lt;strong className=&quot;text-violet-300&quot;&gt;APK existente&lt;/strong&gt; para editar e regerar, ou um ZIP do seu PWA&lt;/p&gt;&lt;/&gt;
+              )}
+              &lt;input ref={fileRef} type=&quot;file&quot; accept=&quot;.zip,.tar,.tar.gz,.tgz,.apk&quot; className=&quot;hidden&quot; onChange={onFileInput} /&gt;
+            &lt;/div&gt;
+
+            {/* ══ PAINEL DE ANÁLISE AUTOMÁTICA ══════════════════════ */}
+            {analysis &amp;&amp; (
+              &lt;div className=&quot;space-y-3&quot;&gt;
+
+                {/* ── Nome do app ── */}
+                &lt;div className=&quot;bg-slate-900/80 border border-violet-700/50 rounded-2xl p-4 space-y-3&quot;&gt;
+                  &lt;p className=&quot;text-xs font-semibold text-violet-300 tracking-widest&quot;&gt;✏️ NOME DO APLICATIVO&lt;/p&gt;
+                  &lt;div className=&quot;flex gap-2&quot;&gt;
+                    &lt;input
+                      value={customName}
+                      onChange={e =&gt; { setCustomName(e.target.value); setNameApplied(false); }}
+                      placeholder=&quot;Nome do seu app...&quot;
+                      className=&quot;flex-1 rounded-xl bg-slate-800 border border-slate-600 px-3 py-2 text-sm focus:outline-none focus:border-violet-500&quot;
+                    /&gt;
+                    &lt;button
+                      onClick={applyCustomName}
+                      className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${nameApplied ? &quot;bg-green-600 text-white&quot; : &quot;bg-violet-600 hover:bg-violet-500 text-white&quot;}`}
+                    &gt;
+                      {nameApplied ? &quot;✅ Aplicado&quot; : &quot;Aplicar&quot;}
+                    &lt;/button&gt;
+                  &lt;/div&gt;
+                  {/* Sugestões de nomes */}
+                  &lt;div className=&quot;flex flex-wrap gap-1.5&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 w-full&quot;&gt;Sugestões:&lt;/p&gt;
+                    {[
+                      analysis.detectedName,
+                      analysis.detectedName + &quot; App&quot;,
+                      analysis.detectedName + &quot; Pro&quot;,
+                      &quot;Meu &quot; + analysis.detectedName,
+                    ].filter((v, i, a) =&gt; a.indexOf(v) === i).map(n =&gt; (
+                      &lt;button key={n}
+                        onClick={() =&gt; { setCustomName(n); setNameApplied(false); }}
+                        className={`text-[11px] px-2.5 py-1 rounded-full border transition-all ${customName === n ? &quot;border-violet-500 text-violet-300 bg-violet-900/30&quot; : &quot;border-slate-600 text-slate-400 hover:border-violet-500&quot;}`}&gt;
+                        {n}
+                      &lt;/button&gt;
+                    ))}
+                  &lt;/div&gt;
+                &lt;/div&gt;
+
+                {/* ── Contagem de arquivos ── */}
+                &lt;div className=&quot;bg-slate-900/80 border border-slate-700 rounded-2xl p-4&quot;&gt;
+                  &lt;p className=&quot;text-xs font-semibold text-slate-400 tracking-widest mb-3&quot;&gt;📊 ARQUIVOS DETECTADOS&lt;/p&gt;
+                  &lt;div className=&quot;grid grid-cols-5 gap-2 text-center&quot;&gt;
+                    {[
+                      [&quot;HTML&quot;, analysis.fileCounts.html, &quot;#60a5fa&quot;],
+                      [&quot;JS&quot;, analysis.fileCounts.js, &quot;#fbbf24&quot;],
+                      [&quot;CSS&quot;, analysis.fileCounts.css, &quot;#a78bfa&quot;],
+                      [&quot;Img&quot;, analysis.fileCounts.img, &quot;#34d399&quot;],
+                      [&quot;Outros&quot;, analysis.fileCounts.other, &quot;#94a3b8&quot;],
+                    ].map(([label, count, color]) =&gt; (
+                      &lt;div key={label as string} className=&quot;bg-slate-800/60 rounded-xl py-2.5&quot;&gt;
+                        &lt;div className=&quot;text-lg font-black&quot; style={{ color: color as string }}&gt;{count}&lt;/div&gt;
+                        &lt;div className=&quot;text-[10px] text-slate-500&quot;&gt;{label}&lt;/div&gt;
+                      &lt;/div&gt;
+                    ))}
+                  &lt;/div&gt;
+                  {analysis.unnecessaryFiles.length &gt; 0 &amp;&amp; (
+                    &lt;div className=&quot;mt-3 flex items-center gap-2 bg-green-900/20 border border-green-700/40 rounded-xl px-3 py-2&quot;&gt;
+                      &lt;span className=&quot;text-green-400&quot;&gt;🗑&lt;/span&gt;
+                      &lt;span className=&quot;text-xs text-green-300 font-semibold&quot;&gt;
+                        {analysis.unnecessaryFiles.length} arquivo(s) desnecessário(s) removidos automaticamente
+                      &lt;/span&gt;
+                      &lt;span className=&quot;text-[10px] text-slate-500&quot;&gt;(source maps, testes, docs)&lt;/span&gt;
+                    &lt;/div&gt;
+                  )}
+                  {analysis.techStack.length &gt; 0 &amp;&amp; (
+                    &lt;div className=&quot;mt-2 flex flex-wrap gap-1&quot;&gt;
+                      {analysis.techStack.map(t =&gt; (
+                        &lt;span key={t} className=&quot;text-[10px] px-2 py-0.5 rounded-full bg-violet-900/30 text-violet-300 border border-violet-700/40&quot;&gt;{t}&lt;/span&gt;
+                      ))}
+                    &lt;/div&gt;
+                  )}
+                &lt;/div&gt;
+
+                {/* ── Sugestões de configuração ── */}
+                {analysis.suggestions.length &gt; 0 &amp;&amp; (
+                  &lt;div className=&quot;bg-slate-900/80 border border-slate-700 rounded-2xl p-4 space-y-2&quot;&gt;
+                    &lt;p className=&quot;text-xs font-semibold text-slate-400 tracking-widest mb-1&quot;&gt;💡 SOLUÇÕES SUGERIDAS&lt;/p&gt;
+                    {analysis.suggestions.map((s, i) =&gt; (
+                      &lt;div key={i} className={`flex items-start gap-3 rounded-xl px-3 py-2.5 ${
+                        s.action === &quot;remove&quot; ? &quot;bg-green-900/15 border border-green-700/30&quot; :
+                        s.action === &quot;keep&quot;   ? &quot;bg-blue-900/15 border border-blue-700/30&quot; :
+                        &quot;bg-amber-900/15 border border-amber-700/30&quot;
+                      }`}&gt;
+                        &lt;div className=&quot;flex-1&quot;&gt;
+                          &lt;p className=&quot;text-xs font-semibold&quot;&gt;{s.label}&lt;/p&gt;
+                          &lt;p className=&quot;text-[11px] text-slate-400 mt-0.5&quot;&gt;{s.detail}&lt;/p&gt;
+                        &lt;/div&gt;
+                      &lt;/div&gt;
+                    ))}
+                  &lt;/div&gt;
+                )}
+
+                {/* ── Ação: ir para exportar ── */}
+                &lt;button
+                  onClick={() =&gt; setTab(&quot;export&quot;)}
+                  className=&quot;w-full py-3 rounded-2xl text-sm font-bold text-white bg-violet-600 hover:bg-violet-500 transition-all&quot;
+                &gt;
+                  ⚙️ Configurar e gerar APK →
+                &lt;/button&gt;
+              &lt;/div&gt;
+            )}
+
+            {/* ── 1-clique: Assistente Jurídico ── */}
+            &lt;div className=&quot;bg-blue-900/20 border border-blue-700/60 rounded-2xl p-4 flex items-center justify-between gap-4&quot;&gt;
+              &lt;div&gt;
+                &lt;p className=&quot;text-sm font-bold text-blue-300&quot;&gt;⚖️ Assistente Jurídico&lt;/p&gt;
+                &lt;p className=&quot;text-xs text-slate-400 mt-0.5&quot;&gt;Importar direto — 1 clique, sem ZIP&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;button
+                onClick={handleImportAssistenteJuridico}
+                disabled={importLoading}
+                className=&quot;px-5 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-xl text-sm font-bold whitespace-nowrap transition-all text-white shrink-0&quot;&gt;
+                {importLoading ? &quot;⏳ Carregando...&quot; : &quot;⚡ Importar&quot;}
+              &lt;/button&gt;
+            &lt;/div&gt;
+
+            {/* File list preview */}
+            {files.length &gt; 0 &amp;&amp; (
+              &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-xl p-4&quot;&gt;
+                &lt;p className=&quot;text-xs text-slate-400 font-semibold mb-2&quot;&gt;Arquivos no projeto:&lt;/p&gt;
+                &lt;div className=&quot;max-h-36 overflow-y-auto space-y-0.5&quot;&gt;
+                  {files.slice(0, 200).map(f =&gt; (
+                    &lt;p key={f.path} className=&quot;text-xs font-mono text-slate-300 truncate&quot;&gt;
+                      &lt;span className=&quot;text-slate-500 mr-1&quot;&gt;
+                        {/\.(html)$/i.test(f.path) ? &quot;🌐&quot; : /\.(css)$/i.test(f.path) ? &quot;🎨&quot; : /\.(js|ts|jsx|tsx)$/i.test(f.path) ? &quot;⚡&quot; : /\.(png|jpg|svg|gif|webp|ico)$/i.test(f.path) ? &quot;🖼&quot; : &quot;📄&quot;}
+                      &lt;/span&gt;
+                      {f.path}
+                    &lt;/p&gt;
+                  ))}
+                  {files.length &gt; 200 &amp;&amp; &lt;p className=&quot;text-xs text-slate-500 pt-1&quot;&gt;...e mais {files.length - 200} arquivos&lt;/p&gt;}
+                &lt;/div&gt;
+                &lt;button onClick={() =&gt; setTab(&quot;export&quot;)}
+                  className=&quot;mt-3 w-full py-2 bg-violet-600 hover:bg-violet-500 rounded-xl text-sm font-bold transition-all&quot;&gt;
+                  ⚙ Configurar e gerar APK →
+                &lt;/button&gt;
+              &lt;/div&gt;
+            )}
+
+            {/* URL Import / PWA Analyzer */}
+            &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl p-4 space-y-3&quot;&gt;
+              &lt;h2 className=&quot;font-bold text-sm text-violet-400&quot;&gt;🌐 Importar por URL do site&lt;/h2&gt;
+              &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Cole o endereço do site — o sistema baixa HTML, manifest.json e ícones automaticamente e analisa o PWA&lt;/p&gt;
+              &lt;div className=&quot;flex gap-2&quot;&gt;
+                &lt;input
+                  className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                  value={urlInput} onChange={e =&gt; setUrlInput(e.target.value)}
+                  placeholder=&quot;https://meusite.com.br&quot;
+                  onKeyDown={e =&gt; e.key === &quot;Enter&quot; &amp;&amp; handleUrlImport()}
+                  disabled={urlLoading}
+                /&gt;
+                &lt;button onClick={handleUrlImport} disabled={urlLoading || !urlInput.trim()}
+                  className=&quot;px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg text-sm font-bold whitespace-nowrap transition-all&quot;&gt;
+                  {urlLoading ? &quot;⏳ ...&quot; : &quot;🔍 Analisar&quot;}
+                &lt;/button&gt;
+              &lt;/div&gt;
+
+              {/* Example sites */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-xs text-slate-500 mb-1.5&quot;&gt;💡 Exemplos de PWA para testar:&lt;/p&gt;
+                &lt;div className=&quot;flex flex-wrap gap-1.5&quot;&gt;
+                  {[
+                    { label: &quot;Excalidraw&quot;, url: &quot;https://excalidraw.com&quot; },
+                    { label: &quot;Squoosh&quot;, url: &quot;https://squoosh.app&quot; },
+                    { label: &quot;Duolingo&quot;, url: &quot;https://www.duolingo.com&quot; },
+                    { label: &quot;Pinterest&quot;, url: &quot;https://www.pinterest.com&quot; },
+                    { label: &quot;Spotify Web&quot;, url: &quot;https://open.spotify.com&quot; },
+                    { label: &quot;Starbucks&quot;, url: &quot;https://app.starbucks.com&quot; },
+                  ].map(s =&gt; (
+                    &lt;button key={s.url}
+                      onClick={() =&gt; setUrlInput(s.url)}
+                      className=&quot;text-xs px-2.5 py-1 bg-slate-800 hover:bg-violet-900/50 border border-slate-700 hover:border-violet-600 rounded-lg transition-all text-slate-300 hover:text-violet-300&quot;&gt;
+                      {s.label}
+                    &lt;/button&gt;
+                  ))}
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              {urlMsg &amp;&amp; (
+                &lt;p className={`text-xs rounded px-2 py-1.5 ${urlMsg.startsWith(&quot;✅&quot;) ? &quot;bg-green-900/20 text-green-400&quot; : urlMsg.startsWith(&quot;❌&quot;) ? &quot;bg-red-900/20 text-red-400&quot; : &quot;bg-slate-800/60 text-slate-300&quot;}`}&gt;
+                  {urlMsg}
+                &lt;/p&gt;
+              )}
+              {urlIssues.length &gt; 0 &amp;&amp; (
+                &lt;div className=&quot;space-y-1 border-t border-slate-700 pt-2&quot;&gt;
+                  &lt;p className=&quot;text-xs font-semibold text-slate-400 mb-1&quot;&gt;📋 Análise PWA:&lt;/p&gt;
+                  {urlIssues.map((issue, i) =&gt; (
+                    &lt;div key={i} className={`text-xs flex gap-2 items-start ${issue.type === &quot;ok&quot; ? &quot;text-green-400&quot; : issue.type === &quot;warn&quot; ? &quot;text-amber-400&quot; : &quot;text-red-400&quot;}`}&gt;
+                      &lt;span className=&quot;shrink-0 mt-px&quot;&gt;{issue.type === &quot;ok&quot; ? &quot;✅&quot; : issue.type === &quot;warn&quot; ? &quot;⚠&quot; : &quot;❌&quot;}&lt;/span&gt;
+                      &lt;span&gt;{issue.text}&lt;/span&gt;
+                    &lt;/div&gt;
+                  ))}
+                  {urlIssues.some(i =&gt; i.type === &quot;err&quot; || i.type === &quot;warn&quot;) &amp;&amp; (
+                    &lt;div className=&quot;mt-2 pt-2 border-t border-slate-700&quot;&gt;
+                      &lt;p className=&quot;text-xs text-slate-400 font-semibold mb-1&quot;&gt;🔧 Como corrigir os problemas:&lt;/p&gt;
+                      {urlIssues.filter(i =&gt; i.type !== &quot;ok&quot;).map((issue, i) =&gt; (
+                        &lt;div key={i} className=&quot;text-xs text-slate-400 flex gap-1.5 items-start&quot;&gt;
+                          &lt;span className=&quot;shrink-0&quot;&gt;→&lt;/span&gt;
+                          &lt;span&gt;
+                            {issue.text.includes(&quot;manifest.json&quot;) &amp;&amp; &quot;Adicione um arquivo manifest.json na raiz do site com name, icons e start_url&quot;}
+                            {issue.text.includes(&quot;ícone&quot;) &amp;&amp; &quot;Adicione ícones de 192×192px e 512×512px no manifest.json&quot;}
+                            {issue.text.includes(&quot;HTTPS&quot;) &amp;&amp; &quot;O site precisa ser servido por HTTPS para ser instalável como PWA&quot;}
+                            {issue.text.includes(&quot;display&quot;) &amp;&amp; 'Defina display: &quot;standalone&quot; ou &quot;fullscreen&quot; no manifest.json'}
+                            {issue.text.includes(&quot;Service Worker&quot;) &amp;&amp; 'Registre um Service Worker para funcionamento offline: navigator.serviceWorker.register(&quot;/sw.js&quot;)'}
+                            {!issue.text.includes(&quot;manifest&quot;) &amp;&amp; !issue.text.includes(&quot;ícone&quot;) &amp;&amp; !issue.text.includes(&quot;HTTPS&quot;) &amp;&amp; !issue.text.includes(&quot;display&quot;) &amp;&amp; !issue.text.includes(&quot;Service Worker&quot;) &amp;&amp; &quot;Revise a configuração do manifest.json&quot;}
+                          &lt;/span&gt;
+                        &lt;/div&gt;
+                      ))}
+                    &lt;/div&gt;
+                  )}
+                &lt;/div&gt;
+              )}
+            &lt;/div&gt;
+
+
+            {/* ProCode Studio link */}
+            &lt;div className=&quot;bg-slate-800/50 border border-slate-700 rounded-xl p-4 flex items-center justify-between gap-3&quot;&gt;
+              &lt;div&gt;
+                &lt;p className=&quot;text-sm font-semibold&quot;&gt;💻 ProCode Studio&lt;/p&gt;
+                &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Abra o editor integrado para corrigir o projeto antes de empacotar&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;a href={codeEditorUrl} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+                className=&quot;px-4 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-xs font-bold whitespace-nowrap transition-all&quot;&gt;
+                Abrir Editor →
+              &lt;/a&gt;
+            &lt;/div&gt;
+          &lt;/&gt;
+        )}
+
+        {/* ══ TAB: GITHUB ════════════════════════════════════════ */}
+        {tab === &quot;github&quot; &amp;&amp; (
+          &lt;div className=&quot;space-y-4&quot;&gt;
+
+            {/* ── Import repo público sem token ── */}
+            &lt;div className=&quot;bg-slate-900/60 border border-green-800/50 rounded-2xl p-4 space-y-3&quot;&gt;
+              &lt;h2 className=&quot;font-bold text-sm text-green-400&quot;&gt;🌐 Importar repositório público (sem token)&lt;/h2&gt;
+              &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Cole a URL ou o caminho do repo público. Ex: &lt;code className=&quot;text-green-300 font-mono&quot;&gt;usuario/repositorio&lt;/code&gt; ou &lt;code className=&quot;text-green-300 font-mono&quot;&gt;https://github.com/usuario/repo&lt;/code&gt;&lt;/p&gt;
+              &lt;div className=&quot;flex gap-2&quot;&gt;
+                &lt;input
+                  className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-green-500 outline-none placeholder-slate-500&quot;
+                  value={ghPublicRepo}
+                  onChange={e =&gt; setGhPublicRepo(e.target.value)}
+                  placeholder=&quot;usuario/repositorio  ou  https://github.com/...&quot;
+                  onKeyDown={e =&gt; e.key === &quot;Enter&quot; &amp;&amp; handlePublicRepoImport()}
+                  disabled={ghPublicLoading}
+                /&gt;
+                &lt;button
+                  onClick={handlePublicRepoImport}
+                  disabled={ghPublicLoading || !ghPublicRepo.trim()}
+                  className=&quot;px-4 py-2 bg-green-700 hover:bg-green-600 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg text-sm font-bold transition-all whitespace-nowrap&quot;
+                &gt;
+                  {ghPublicLoading ? &quot;⏳ Baixando...&quot; : &quot;⬇ Importar&quot;}
+                &lt;/button&gt;
+              &lt;/div&gt;
+              {ghPublicMsg &amp;&amp; (
+                &lt;p className={`text-xs rounded px-2 py-1.5 ${ghPublicMsg.startsWith(&quot;✅&quot;) ? &quot;bg-green-900/20 text-green-400&quot; : ghPublicMsg.startsWith(&quot;❌&quot;) ? &quot;bg-red-900/20 text-red-400&quot; : &quot;bg-slate-800 text-slate-300&quot;}`}&gt;
+                  {ghPublicMsg}
+                &lt;/p&gt;
+              )}
+            &lt;/div&gt;
+
+            {/* Token input */}
+            &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl p-4 space-y-3&quot;&gt;
+              &lt;h2 className=&quot;font-bold text-sm text-violet-400&quot;&gt;🔑 Token de acesso (PAT) — repos privados&lt;/h2&gt;
+              &lt;input
+                type=&quot;password&quot;
+                className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                value={ghToken} onChange={e =&gt; setGhToken(e.target.value)}
+                placeholder=&quot;ghp_xxxxxxxxxxxxxxxxxxxx&quot;
+              /&gt;
+              &lt;p className=&quot;text-xs text-slate-500&quot;&gt;
+                Crie em: GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → scope: &lt;code className=&quot;font-mono text-violet-300&quot;&gt;repo&lt;/code&gt;
+              &lt;/p&gt;
+
+              {/* User badge */}
+              {ghUser &amp;&amp; (
+                &lt;div className=&quot;flex items-center gap-3 bg-green-900/20 border border-green-700/40 rounded-lg px-3 py-2&quot;&gt;
+                  &lt;img src={ghUser.avatar_url} className=&quot;w-8 h-8 rounded-full&quot; alt=&quot;&quot; /&gt;
+                  &lt;div&gt;
+                    &lt;p className=&quot;text-sm font-semibold text-green-300&quot;&gt;{ghUser.name || ghUser.login}&lt;/p&gt;
+                    &lt;p className=&quot;text-xs text-slate-400&quot;&gt;@{ghUser.login} · {ghRepos.length} repositórios&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              )}
+              {ghMsg &amp;&amp; !ghUser &amp;&amp; (
+                &lt;p className={`text-xs rounded px-2 py-1.5 ${ghMsg.startsWith(&quot;✅&quot;) ? &quot;bg-green-900/20 text-green-400&quot; : &quot;bg-red-900/20 text-red-400&quot;}`}&gt;{ghMsg}&lt;/p&gt;
+              )}
+            &lt;/div&gt;
+
+            {/* Custom repo URL */}
+            &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl p-4 space-y-3&quot;&gt;
+              &lt;h2 className=&quot;font-bold text-sm text-violet-400&quot;&gt;🔗 Clonar repositório específico&lt;/h2&gt;
+              &lt;div className=&quot;flex gap-2&quot;&gt;
+                &lt;input
+                  className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                  value={ghCustomRepo} onChange={e =&gt; setGhCustomRepo(e.target.value)}
+                  placeholder=&quot;usuario/repositorio  ou  https://github.com/...&quot;
+                  onKeyDown={e =&gt; e.key === &quot;Enter&quot; &amp;&amp; handleGhCustomImport()}
+                /&gt;
+                &lt;button onClick={handleGhCustomImport}
+                  disabled={ghLoading || !ghToken || !ghCustomRepo.trim()}
+                  className=&quot;px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg text-sm font-bold transition-all&quot;&gt;
+                  {ghLoading ? &quot;...&quot; : &quot;⬇ Importar&quot;}
+                &lt;/button&gt;
+              &lt;/div&gt;
+              {ghMsg &amp;&amp; (
+                &lt;p className={`text-xs rounded px-2 py-1.5 ${ghMsg.startsWith(&quot;✅&quot;) ? &quot;bg-green-900/20 text-green-400&quot; : ghMsg.startsWith(&quot;❌&quot;) ? &quot;bg-red-900/20 text-red-400&quot; : &quot;bg-slate-800 text-slate-300&quot;}`}&gt;{ghMsg}&lt;/p&gt;
+              )}
+            &lt;/div&gt;
+
+            {/* Repo list */}
+            {ghRepos.length &gt; 0 &amp;&amp; (
+              &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl p-4 space-y-3&quot;&gt;
+                &lt;h2 className=&quot;font-bold text-sm text-violet-400&quot;&gt;📋 Meus repositórios&lt;/h2&gt;
+                &lt;input
+                  className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                  value={ghRepoFilter} onChange={e =&gt; setGhRepoFilter(e.target.value)}
+                  placeholder=&quot;Filtrar por nome...&quot;
+                /&gt;
+                &lt;div className=&quot;max-h-64 overflow-y-auto space-y-1.5&quot;&gt;
+                  {filteredRepos.slice(0, 50).map(r =&gt; (
+                    &lt;button key={r.full_name}
+                      onClick={() =&gt; handleGhImport(r)}
+                      disabled={ghLoading}
+                      className=&quot;w-full text-left px-3 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 rounded-lg transition-all border border-slate-700 hover:border-violet-600&quot;&gt;
+                      &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                        &lt;span className=&quot;text-xs&quot;&gt;{r.private ? &quot;🔒&quot; : &quot;🌐&quot;}&lt;/span&gt;
+                        &lt;span className=&quot;text-sm font-semibold truncate&quot;&gt;{r.name}&lt;/span&gt;
+                        &lt;span className=&quot;ml-auto text-xs text-slate-500 shrink-0&quot;&gt;{r.default_branch}&lt;/span&gt;
+                      &lt;/div&gt;
+                      {r.description &amp;&amp; &lt;p className=&quot;text-xs text-slate-400 mt-0.5 truncate&quot;&gt;{r.description}&lt;/p&gt;}
+                    &lt;/button&gt;
+                  ))}
+                  {filteredRepos.length === 0 &amp;&amp; &lt;p className=&quot;text-xs text-slate-500 text-center py-4&quot;&gt;Nenhum repositório encontrado&lt;/p&gt;}
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+        )}
+
+        {/* ══ TAB: EXPORTAR ══════════════════════════════════════ */}
+        {tab === &quot;export&quot; &amp;&amp; (
+          &lt;div className=&quot;space-y-4&quot;&gt;
+            {!projectReady ? (
+              &lt;div className=&quot;text-center py-12 text-slate-500&quot;&gt;
+                &lt;p className=&quot;text-4xl mb-3&quot;&gt;📦&lt;/p&gt;
+                &lt;p className=&quot;font-semibold text-slate-300&quot;&gt;Nenhum projeto carregado&lt;/p&gt;
+                &lt;p className=&quot;text-sm mt-1&quot;&gt;Importe um ZIP/TAR ou clone um repositório GitHub&lt;/p&gt;
+                &lt;div className=&quot;flex gap-3 justify-center mt-4 flex-wrap&quot;&gt;
+                  &lt;button onClick={() =&gt; setTab(&quot;import&quot;)}
+                    className=&quot;px-6 py-2 bg-violet-600 hover:bg-violet-500 rounded-xl text-sm font-bold text-white&quot;&gt;
+                    📂 Importar projeto
+                  &lt;/button&gt;
+                  {savedMeta &amp;&amp; (
+                    &lt;button onClick={restoreSession} disabled={restoring}
+                      className=&quot;px-6 py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 rounded-xl text-sm font-bold text-slate-200&quot;&gt;
+                      {restoring ? &quot;Restaurando...&quot; : `↩ Restaurar &quot;${savedMeta.cfg.appName || &quot;sessão anterior&quot;}&quot; (${savedMeta.fileCount} arq.)`}
+                    &lt;/button&gt;
+                  )}
+                &lt;/div&gt;
+              &lt;/div&gt;
+            ) : (
+              &lt;&gt;
+                {/* Config */}
+                &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl p-4 space-y-3&quot;&gt;
+                  &lt;h2 className=&quot;font-bold text-sm text-violet-400&quot;&gt;⚙ Configuração do APK&lt;/h2&gt;
+                  &lt;div className=&quot;grid sm:grid-cols-2 gap-3&quot;&gt;
+                    {field(&quot;Nome do App *&quot;, cfg.appName, v =&gt; setCfg(c =&gt; ({ ...c, appName: v })), { placeholder: &quot;Meu App&quot; })}
+                    {field(&quot;Package ID *&quot;, cfg.appId, v =&gt; setCfg(c =&gt; ({ ...c, appId: v })), { placeholder: &quot;com.meuapp.app&quot;, className: &quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot; })}
+                    {field(&quot;Versão&quot;, cfg.versionName, v =&gt; setCfg(c =&gt; ({ ...c, versionName: v })))}
+                    &lt;div&gt;
+                      &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;Código de versão&lt;/label&gt;
+                      &lt;input type=&quot;number&quot; min={1}
+                        className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-violet-500 outline-none&quot;
+                        value={cfg.versionCode} onChange={e =&gt; setCfg(c =&gt; ({ ...c, versionCode: Number(e.target.value) }))} /&gt;
+                    &lt;/div&gt;
+                    {colorField(&quot;Cor do tema&quot;, cfg.themeColor, v =&gt; setCfg(c =&gt; ({ ...c, themeColor: v })))}
+                    {colorField(&quot;Cor de fundo (splash)&quot;, cfg.bgColor, v =&gt; setCfg(c =&gt; ({ ...c, bgColor: v })))}
+                    &lt;div&gt;
+                      &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;Orientação&lt;/label&gt;
+                      &lt;select className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-violet-500 outline-none&quot;
+                        value={cfg.orientation} onChange={e =&gt; setCfg(c =&gt; ({ ...c, orientation: e.target.value as AppConfig[&quot;orientation&quot;] }))}&gt;
+                        &lt;option value=&quot;portrait&quot;&gt;Retrato&lt;/option&gt;
+                        &lt;option value=&quot;landscape&quot;&gt;Paisagem&lt;/option&gt;
+                        &lt;option value=&quot;any&quot;&gt;Ambas&lt;/option&gt;
+                      &lt;/select&gt;
+                    &lt;/div&gt;
+                    &lt;div&gt;
+                      &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;Android mínimo&lt;/label&gt;
+                      &lt;select className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:border-violet-500 outline-none&quot;
+                        value={cfg.minSdk} onChange={e =&gt; setCfg(c =&gt; ({ ...c, minSdk: Number(e.target.value) }))}&gt;
+                        &lt;option value={21}&gt;Android 5.0+ (API 21)&lt;/option&gt;
+                        &lt;option value={22}&gt;Android 5.1+ (API 22)&lt;/option&gt;
+                        &lt;option value={24}&gt;Android 7.0+ (API 24)&lt;/option&gt;
+                        &lt;option value={26}&gt;Android 8.0+ (API 26)&lt;/option&gt;
+                        &lt;option value={28}&gt;Android 9.0+ (API 28)&lt;/option&gt;
+                      &lt;/select&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+
+                {/* ══ BOTÕES DE BUILD NA NUVEM ══ */}
+                {ghToken &amp;&amp; ghUser ? (
+                  &lt;div className=&quot;space-y-3&quot;&gt;
+
+                    {/* EAS (Expo) — RECOMENDADO */}
+                    &lt;div className=&quot;bg-blue-900/25 border-2 border-blue-500/70 rounded-2xl p-4 space-y-3&quot;&gt;
+                      &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                        &lt;span className=&quot;text-2xl&quot;&gt;📱&lt;/span&gt;
+                        &lt;div&gt;
+                          &lt;p className=&quot;font-bold text-blue-300 text-sm&quot;&gt;EAS — EXPO BUILD (RECOMENDADO)&lt;/p&gt;
+                          &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Gera APK nativo via WebView. Com EXPO_TOKEN usa a nuvem Expo; sem token usa build local gratuito.&lt;/p&gt;
+                        &lt;/div&gt;
+                      &lt;/div&gt;
+
+                      {/* EXPO_TOKEN */}
+                      &lt;div&gt;
+                        &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;
+                          🔑 EXPO_TOKEN &lt;span className=&quot;text-slate-600&quot;&gt;(opcional — para build na nuvem Expo)&lt;/span&gt;
+                        &lt;/label&gt;
+                        &lt;input
+                          type=&quot;password&quot;
+                          className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-blue-500 outline-none placeholder-slate-600&quot;
+                          placeholder=&quot;Cole aqui seu token EAS (expo.dev → Access Tokens)&quot;
+                          value={easToken}
+                          onChange={e =&gt; { setEasToken(e.target.value); localStorage.setItem(&quot;expo_token&quot;, e.target.value); }}
+                        /&gt;
+                        {easToken.trim() &amp;&amp; (
+                          &lt;p className=&quot;text-xs text-blue-400 mt-1&quot;&gt;✅ EAS Cloud ativo — usará conta &lt;strong&gt;maikons-individual-orga&lt;/strong&gt;&lt;/p&gt;
+                        )}
+                        {!easToken.trim() &amp;&amp; (
+                          &lt;p className=&quot;text-xs text-slate-500 mt-1&quot;&gt;Sem token → build local gratuito (sem conta Expo necessária)&lt;/p&gt;
+                        )}
+                      &lt;/div&gt;
+
+                      &lt;button onClick={handleEASDeploy}
+                        disabled={easLoading || pipeLoading || !files.length || !cfg.appName || !cfg.appId || !ghToken || !ghUser}
+                        className=&quot;w-full py-3.5 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-xl font-bold text-base transition-all text-white&quot;&gt;
+                        {easLoading ? &quot;⏳ Compilando via EAS...&quot; : easToken.trim() ? &quot;🚀 ENVIAR PARA EAS CLOUD&quot; : &quot;🚀 ENVIAR PARA EAS (LOCAL)&quot;}
+                      &lt;/button&gt;
+                      {!ghToken &amp;&amp; &lt;p className=&quot;text-xs text-amber-400 text-center&quot;&gt;⚠ Configure o token GitHub na aba GitHub primeiro&lt;/p&gt;}
+                      {easMsg &amp;&amp; (
+                        &lt;p className={`text-xs break-all font-medium ${easMsg.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : easMsg.startsWith(&quot;❌&quot;) ? &quot;text-red-400&quot; : &quot;text-yellow-300&quot;}`}&gt;{easMsg}&lt;/p&gt;
+                      )}
+                      {easRunUrl &amp;&amp; (
+                        &lt;a href={easRunUrl} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+                          className=&quot;flex items-center gap-1.5 text-xs text-blue-300 hover:text-blue-200 underline break-all font-semibold&quot;&gt;
+                          🔗 Abrir GitHub Actions → aba &quot;Artifacts&quot; → baixar APK
+                        &lt;/a&gt;
+                      )}
+                    &lt;/div&gt;
+
+                    {/* Capacitor (build clássico) */}
+                    &lt;div className=&quot;bg-green-900/20 border border-green-700/50 rounded-2xl p-4 space-y-3&quot;&gt;
+                      &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                        &lt;span className=&quot;text-lg&quot;&gt;⚡&lt;/span&gt;
+                        &lt;div&gt;
+                          &lt;p className=&quot;font-bold text-green-300 text-sm&quot;&gt;Capacitor (build clássico)&lt;/p&gt;
+                          &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Gradle direto — mais rápido mas requer Android SDK no runner&lt;/p&gt;
+                        &lt;/div&gt;
+                      &lt;/div&gt;
+                      &lt;button onClick={handleFullDeploy}
+                        disabled={pipeLoading || easLoading || !files.length || !cfg.appName || !cfg.appId}
+                        className=&quot;w-full py-2.5 bg-green-700 hover:bg-green-600 disabled:bg-slate-700 disabled:text-slate-500 rounded-xl font-bold text-sm transition-all text-white&quot;&gt;
+                        {pipeLoading ? &quot;⏳ Compilando...&quot; : &quot;⚡ ENVIAR VIA CAPACITOR&quot;}
+                      &lt;/button&gt;
+                      {pipeMsg &amp;&amp; (
+                        &lt;p className={`text-xs break-all font-medium ${pipeMsg.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : pipeMsg.startsWith(&quot;❌&quot;) ? &quot;text-red-400&quot; : &quot;text-yellow-300&quot;}`}&gt;{pipeMsg}&lt;/p&gt;
+                      )}
+                      {pipeRunUrl &amp;&amp; (
+                        &lt;a href={pipeRunUrl} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+                          className=&quot;flex items-center gap-1.5 text-xs text-green-300 hover:text-green-200 underline break-all font-semibold&quot;&gt;
+                          🔗 Abrir GitHub Actions → baixar APK
+                        &lt;/a&gt;
+                      )}
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                ) : (
+                  &lt;div className=&quot;bg-amber-900/20 border border-amber-700/50 rounded-xl p-3 text-xs text-amber-300&quot;&gt;
+                    ⚠ Configure o token GitHub na aba &lt;strong&gt;GitHub&lt;/strong&gt; para usar o build automático na nuvem
+                  &lt;/div&gt;
+                )}
+
+                {/* Generate button */}
+                &lt;button onClick={handleGenerate}
+                  disabled={generating || !cfg.appName || !cfg.appId || !files.length}
+                  className=&quot;w-full py-3.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-2xl font-bold transition-all text-base&quot;&gt;
+                  {generating ? `⚙ Gerando projeto Android... ${progress}%` : &quot;⚡ Gerar Projeto Android (.zip)&quot;}
+                &lt;/button&gt;
+                {!files.length &amp;&amp; (
+                  &lt;p className=&quot;text-xs text-amber-400 text-center -mt-2&quot;&gt;⚠ Importe um projeto primeiro (aba Importar ou GitHub)&lt;/p&gt;
+                )}
+                {files.length &gt; 0 &amp;&amp; (!cfg.appName || !cfg.appId) &amp;&amp; (
+                  &lt;p className=&quot;text-xs text-amber-400 text-center -mt-2&quot;&gt;⚠ Preencha Nome do App e Package ID acima para gerar&lt;/p&gt;
+                )}
+                {generating &amp;&amp; (
+                  &lt;div className=&quot;bg-slate-700 rounded-full h-2 overflow-hidden -mt-2&quot;&gt;
+                    &lt;div className=&quot;h-full bg-violet-500 transition-all duration-300&quot; style={{ width: `${progress}%` }} /&gt;
+                  &lt;/div&gt;
+                )}
+
+                {/* Result actions */}
+                {resultBlob &amp;&amp; (
+                  &lt;div className=&quot;bg-green-900/15 border border-green-700/40 rounded-2xl p-4 space-y-4&quot;&gt;
+                    &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                      &lt;span className=&quot;text-2xl&quot;&gt;✅&lt;/span&gt;
+                      &lt;div&gt;
+                        &lt;p className=&quot;font-bold text-green-300 text-sm&quot;&gt;Projeto gerado com sucesso!&lt;/p&gt;
+                        &lt;p className=&quot;text-xs text-slate-400 font-mono&quot;&gt;{resultName}&lt;/p&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+
+                    {/* Download */}
+                    &lt;button onClick={() =&gt; downloadBlob(resultBlob!, resultName)}
+                      className=&quot;w-full py-2.5 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-sm transition-all&quot;&gt;
+                      ⬇ Baixar ZIP do Projeto Android
+                    &lt;/button&gt;
+
+                    {/* Google Drive */}
+                    &lt;div className=&quot;border border-slate-700 rounded-xl p-3 space-y-2&quot;&gt;
+                      &lt;p className=&quot;text-xs font-semibold text-slate-300&quot;&gt;☁ Enviar para Google Drive&lt;/p&gt;
+                      &lt;div className=&quot;flex gap-2&quot;&gt;
+                        &lt;input type=&quot;password&quot;
+                          className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-xs font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                          value={driveToken} onChange={e =&gt; setDriveToken(e.target.value)}
+                          placeholder=&quot;Token OAuth ya29.xxx (não API key)&quot; /&gt;
+                        &lt;button onClick={handleDriveUpload} disabled={driveLoading || !driveToken}
+                          className=&quot;px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg text-xs font-bold whitespace-nowrap transition-all&quot;&gt;
+                          {driveLoading ? &quot;...&quot; : &quot;☁ Enviar&quot;}
+                        &lt;/button&gt;
+                      &lt;/div&gt;
+                      {driveMsg &amp;&amp; (
+                        &lt;p className={`text-xs break-all ${driveMsg.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : &quot;text-red-400&quot;}`}&gt;{driveMsg}&lt;/p&gt;
+                      )}
+                    &lt;/div&gt;
+
+                    {/* GitHub push */}
+                    &lt;div className=&quot;border border-slate-700 rounded-xl p-3 space-y-2&quot;&gt;
+                      &lt;p className=&quot;text-xs font-semibold text-slate-300&quot;&gt;🐙 Exportar para GitHub&lt;/p&gt;
+                      {!ghToken ? (
+                        &lt;p className=&quot;text-xs text-amber-400&quot;&gt;⚠ Configure o token GitHub na aba GitHub primeiro&lt;/p&gt;
+                      ) : (
+                        &lt;&gt;
+                          &lt;div className=&quot;flex gap-2&quot;&gt;
+                            &lt;input
+                              className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                              value={pushRepoName} onChange={e =&gt; setPushRepoName(e.target.value)}
+                              placeholder=&quot;nome-do-repositorio&quot;
+                            /&gt;
+                            &lt;label className=&quot;flex items-center gap-1.5 text-xs text-slate-400 shrink-0 cursor-pointer&quot;&gt;
+                              &lt;input type=&quot;checkbox&quot; checked={pushPrivate} onChange={e =&gt; setPushPrivate(e.target.checked)} className=&quot;accent-violet-500&quot; /&gt;
+                              Privado
+                            &lt;/label&gt;
+                          &lt;/div&gt;
+                          &lt;button onClick={handleGhPush} disabled={pushLoading || !pushRepoName.trim()}
+                            className=&quot;w-full py-2 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 rounded-lg text-xs font-bold transition-all&quot;&gt;
+                            {pushLoading ? &quot;⬆ Enviando...&quot; : &quot;⬆ Criar repositório e enviar&quot;}
+                          &lt;/button&gt;
+                          {pushMsg &amp;&amp; (
+                            &lt;p className={`text-xs break-all ${pushMsg.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : pushMsg.startsWith(&quot;❌&quot;) ? &quot;text-red-400&quot; : &quot;text-slate-300&quot;}`}&gt;{pushMsg}&lt;/p&gt;
+                          )}
+                        &lt;/&gt;
+                      )}
+                    &lt;/div&gt;
+
+                    {/* ☁ Compilar APK na nuvem via GitHub Actions */}
+                    &lt;div className=&quot;border border-orange-700/60 bg-orange-900/10 rounded-xl p-3 space-y-2&quot;&gt;
+                      &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                        &lt;span className=&quot;text-base&quot;&gt;🤖&lt;/span&gt;
+                        &lt;p className=&quot;text-xs font-semibold text-orange-300&quot;&gt;Compilar APK na nuvem (GitHub Actions)&lt;/p&gt;
+                      &lt;/div&gt;
+                      &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Informa o repositório GitHub já criado — o build roda automaticamente e você baixa o APK direto pelo link. Leva ~5–10 min.&lt;/p&gt;
+                      {!ghToken ? (
+                        &lt;p className=&quot;text-xs text-amber-400&quot;&gt;⚠ Configure o token GitHub na aba GitHub primeiro&lt;/p&gt;
+                      ) : (
+                        &lt;&gt;
+                          &lt;div className=&quot;flex gap-2&quot;&gt;
+                            &lt;input
+                              className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-xs font-mono focus:border-orange-500 outline-none placeholder-slate-500&quot;
+                              value={ciRepoOwner} onChange={e =&gt; setCiRepoOwner(e.target.value)}
+                              placeholder=&quot;seu-usuario-github&quot;
+                            /&gt;
+                            &lt;span className=&quot;text-slate-500 self-center&quot;&gt;/&lt;/span&gt;
+                            &lt;input
+                              className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-xs font-mono focus:border-orange-500 outline-none placeholder-slate-500&quot;
+                              value={ciRepoName} onChange={e =&gt; setCiRepoName(e.target.value)}
+                              placeholder=&quot;nome-do-repositorio&quot;
+                            /&gt;
+                          &lt;/div&gt;
+                          &lt;button onClick={handleCiBuild} disabled={ciLoading || !ciRepoOwner.trim() || !ciRepoName.trim()}
+                            className=&quot;w-full py-2 bg-orange-700 hover:bg-orange-600 disabled:bg-slate-700 disabled:text-slate-500 rounded-lg text-xs font-bold transition-all text-white&quot;&gt;
+                            {ciLoading ? &quot;⏳ Aguardando build...&quot; : &quot;🚀 Iniciar compilação APK&quot;}
+                          &lt;/button&gt;
+                          {ciMsg &amp;&amp; (
+                            &lt;p className={`text-xs break-all ${ciMsg.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : ciMsg.startsWith(&quot;❌&quot;) ? &quot;text-red-400&quot; : &quot;text-orange-300&quot;}`}&gt;{ciMsg}&lt;/p&gt;
+                          )}
+                          {ciRunUrl &amp;&amp; (
+                            &lt;a href={ciRunUrl} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+                              className=&quot;flex items-center gap-1 text-xs text-orange-300 hover:text-orange-200 underline break-all&quot;&gt;
+                              🔗 Ver build no GitHub Actions →
+                            &lt;/a&gt;
+                          )}
+                        &lt;/&gt;
+                      )}
+                    &lt;/div&gt;
+
+                    {/* GitHub Pages publish */}
+                    &lt;div className=&quot;border border-emerald-800/60 bg-emerald-900/10 rounded-xl p-3 space-y-2&quot;&gt;
+                      &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                        &lt;span className=&quot;text-base&quot;&gt;🌍&lt;/span&gt;
+                        &lt;p className=&quot;text-xs font-semibold text-emerald-300&quot;&gt;Publicar como PWA (GitHub Pages)&lt;/p&gt;
+                      &lt;/div&gt;
+                      &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Sobe os arquivos do site direto no GitHub Pages e gera um link público para testar a instalação no celular&lt;/p&gt;
+                      {!ghToken ? (
+                        &lt;p className=&quot;text-xs text-amber-400&quot;&gt;⚠ Configure o token GitHub na aba GitHub primeiro&lt;/p&gt;
+                      ) : (
+                        &lt;&gt;
+                          &lt;div className=&quot;flex gap-2&quot;&gt;
+                            &lt;input
+                              className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-emerald-500 outline-none placeholder-slate-500&quot;
+                              value={pagesRepoName} onChange={e =&gt; setPagesRepoName(e.target.value)}
+                              placeholder=&quot;meu-app-pwa&quot;
+                            /&gt;
+                            &lt;label className=&quot;flex items-center gap-1.5 text-xs text-slate-400 shrink-0 cursor-pointer&quot;&gt;
+                              &lt;input type=&quot;checkbox&quot; checked={pagesPrivate} onChange={e =&gt; setPagesPrivate(e.target.checked)} className=&quot;accent-emerald-500&quot; /&gt;
+                              Privado
+                            &lt;/label&gt;
+                          &lt;/div&gt;
+                          &lt;button onClick={handlePublishPages} disabled={pagesLoading || !pagesRepoName.trim()}
+                            className=&quot;w-full py-2 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 rounded-lg text-xs font-bold transition-all text-white&quot;&gt;
+                            {pagesLoading ? &quot;⏳ Publicando...&quot; : &quot;🚀 Publicar no GitHub Pages&quot;}
+                          &lt;/button&gt;
+                          {pagesUrl &amp;&amp; (
+                            &lt;a href={pagesUrl} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+                              className=&quot;flex items-center gap-2 text-xs text-emerald-300 hover:text-emerald-200 underline break-all&quot;&gt;
+                              🔗 {pagesUrl}
+                            &lt;/a&gt;
+                          )}
+                          {pagesMsg &amp;&amp; (
+                            &lt;p className={`text-xs break-all ${pagesMsg.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : pagesMsg.startsWith(&quot;❌&quot;) ? &quot;text-red-400&quot; : &quot;text-slate-300&quot;}`}&gt;{pagesMsg}&lt;/p&gt;
+                          )}
+                        &lt;/&gt;
+                      )}
+                    &lt;/div&gt;
+
+                    {/* Code Editor integration */}
+                    &lt;div className=&quot;border border-slate-700 rounded-xl p-3 flex items-center justify-between gap-3&quot;&gt;
+                      &lt;div&gt;
+                        &lt;p className=&quot;text-xs font-semibold text-slate-300&quot;&gt;💻 Corrigir no Code Editor&lt;/p&gt;
+                        &lt;p className=&quot;text-xs text-slate-500&quot;&gt;Abra o ProCode Studio para editar e volte para gerar novamente&lt;/p&gt;
+                      &lt;/div&gt;
+                      &lt;a href={codeEditorUrl} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+                        className=&quot;px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-xs font-bold whitespace-nowrap transition-all&quot;&gt;
+                        Abrir →
+                      &lt;/a&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                )}
+              &lt;/&gt;
+            )}
+          &lt;/div&gt;
+        )}
+
+        {/* ══ TAB: IA ════════════════════════════════════════════ */}
+        {tab === &quot;ai&quot; &amp;&amp; (
+          &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl flex flex-col&quot; style={{ height: &quot;calc(100vh - 160px)&quot;, minHeight: 480, maxHeight: 800 }}&gt;
+            &lt;div className=&quot;flex items-center gap-2 px-4 py-3 border-b border-slate-700&quot;&gt;
+              &lt;span className=&quot;text-lg&quot;&gt;🤖&lt;/span&gt;
+              &lt;span className=&quot;font-bold text-sm&quot;&gt;IA Assistente — Android &amp; PWA&lt;/span&gt;
+              &lt;div className=&quot;ml-auto flex gap-1.5 items-center flex-wrap&quot;&gt;
+                &lt;button onClick={activateBrain} title=&quot;Envia contexto completo do projeto para a IA&quot;
+                  disabled={!aiKeys.key}
+                  className=&quot;text-xs px-2 py-1 rounded bg-amber-900/50 hover:bg-amber-800/70 text-amber-300 disabled:opacity-40 transition-all&quot;&gt;
+                  🧠 Cérebro
+                &lt;/button&gt;
+                &lt;button onClick={exportBrain}
+                  className=&quot;text-xs px-2 py-1 rounded bg-slate-700/50 hover:bg-slate-700 text-slate-400 transition-all&quot;
+                  title=&quot;Baixar cérebro.json com contexto completo&quot;&gt;
+                  💾 Salvar
+                &lt;/button&gt;
+                {chat.length &gt; 0 &amp;&amp; (
+                  &lt;button onClick={exportChatJson}
+                    className=&quot;text-xs px-2 py-1 rounded bg-slate-700/50 hover:bg-slate-700 text-slate-400 transition-all&quot;
+                    title=&quot;Exportar conversa como JSON&quot;&gt;
+                    📥 JSON
+                  &lt;/button&gt;
+                )}
+                &lt;button onClick={() =&gt; setShowAiKeys(v =&gt; !v)}
+                  className=&quot;text-xs text-slate-400 hover:text-white px-2 py-1 rounded bg-slate-700/50 hover:bg-slate-700&quot;&gt;
+                  🔑 Chaves
+                &lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+
+            {showAiKeys &amp;&amp; (
+              &lt;div className=&quot;px-4 py-3 border-b border-slate-700 space-y-2 bg-slate-950/40&quot;&gt;
+                &lt;div&gt;
+                  &lt;label className=&quot;text-xs text-slate-400 block mb-1&quot;&gt;Chave API — cole aqui (auto-detecta o provedor)&lt;/label&gt;
+                  &lt;input type=&quot;password&quot;
+                    className=&quot;w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm font-mono focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                    value={aiKeys.key}
+                    onChange={e =&gt; {
+                      const newKey = e.target.value;
+                      const det = detectAIProvider(newKey);
+                      const next = { key: newKey, url: det ? det.url : aiKeys.url, model: det ? det.model : aiKeys.model };
+                      setAiKeys(next);
+                      localStorage.setItem(&quot;custom_api_key&quot;, newKey);
+                      if (det) { localStorage.setItem(&quot;custom_api_url&quot;, det.url); localStorage.setItem(&quot;custom_api_model&quot;, det.model); }
+                    }}
+                    placeholder=&quot;sk-...  /  pplx-...  /  sk-ant-...  /  gsk_...  /  AIza...&quot; /&gt;
+                  {aiKeys.key.length &gt; 8 &amp;&amp; detectAIProvider(aiKeys.key) &amp;&amp; (
+                    &lt;p className=&quot;text-xs text-green-400 mt-1&quot;&gt;✅ {detectAIProvider(aiKeys.key)!.url.replace(&quot;https://&quot;,&quot;&quot;).split(&quot;/&quot;)[0]} detectado automaticamente&lt;/p&gt;
+                  )}
+                  {aiKeys.key.length &gt; 8 &amp;&amp; !detectAIProvider(aiKeys.key) &amp;&amp; (
+                    &lt;p className=&quot;text-xs text-yellow-400 mt-1&quot;&gt;⚠️ Formato não reconhecido — configure URL/modelo abaixo&lt;/p&gt;
+                  )}
+                &lt;/div&gt;
+                &lt;div className=&quot;grid sm:grid-cols-2 gap-2&quot;&gt;
+                  {field(&quot;URL da API&quot;, aiKeys.url, v =&gt; { setAiKeys(k =&gt; ({ ...k, url: v })); localStorage.setItem(&quot;custom_api_url&quot;, v); }, { placeholder: &quot;https://api.openai.com/v1&quot; })}
+                  {field(&quot;Modelo&quot;, aiKeys.model, v =&gt; { setAiKeys(k =&gt; ({ ...k, model: v })); localStorage.setItem(&quot;custom_api_model&quot;, v); }, { placeholder: &quot;gpt-4o-mini&quot; })}
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+
+            &lt;div className=&quot;flex-1 overflow-y-auto p-4 space-y-3 min-h-0&quot;&gt;
+              {chat.length === 0 &amp;&amp; (
+                &lt;div className=&quot;text-center text-slate-500 text-sm py-10 space-y-2&quot;&gt;
+                  &lt;p className=&quot;text-3xl&quot;&gt;🤖&lt;/p&gt;
+                  &lt;p&gt;Especialista em Android, PWA e Capacitor&lt;/p&gt;
+                  {projectReady &amp;&amp; &lt;p className=&quot;text-xs text-violet-400&quot;&gt;Projeto carregado: {cfg.appName}&lt;/p&gt;}
+                &lt;/div&gt;
+              )}
+              {chat.map((m, i) =&gt; (
+                &lt;div key={i} className={`flex ${m.role === &quot;user&quot; ? &quot;justify-end&quot; : &quot;justify-start&quot;}`}&gt;
+                  &lt;div className={`max-w-[88%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap leading-relaxed ${m.role === &quot;user&quot; ? &quot;bg-violet-600 text-white rounded-br-none&quot; : &quot;bg-slate-800 text-slate-100 rounded-bl-none&quot;}`}&gt;
+                    {m.text}
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              ))}
+              {chatLoading &amp;&amp; (
+                &lt;div className=&quot;flex justify-start&quot;&gt;
+                  &lt;div className=&quot;bg-slate-800 rounded-2xl rounded-bl-none px-4 py-2.5 text-slate-400 text-sm&quot;&gt;
+                    &lt;span className=&quot;animate-pulse&quot;&gt;● ● ●&lt;/span&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              )}
+              &lt;div ref={chatEndRef} /&gt;
+            &lt;/div&gt;
+
+            {chat.length === 0 &amp;&amp; (
+              &lt;div className=&quot;px-4 pb-2 flex flex-wrap gap-2&quot;&gt;
+                {[&quot;Como assinar o APK?&quot;, &quot;Adicionar ícone personalizado&quot;, &quot;Como publicar na Play Store?&quot;, &quot;Erro no Gradle sync&quot;, &quot;Permissões Android&quot;].map(s =&gt; (
+                  &lt;button key={s} onClick={() =&gt; sendChat(s)}
+                    className=&quot;text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full px-3 py-1.5 text-slate-300 transition-all&quot;&gt;
+                    {s}
+                  &lt;/button&gt;
+                ))}
+              &lt;/div&gt;
+            )}
+
+            &lt;div className=&quot;p-3 border-t border-slate-700&quot;&gt;
+              {!aiKeys.key &amp;&amp; (
+                &lt;p className=&quot;text-xs text-amber-400 text-center mb-2&quot;&gt;⚠ Configure a chave de API acima para usar a IA&lt;/p&gt;
+              )}
+              &lt;div className=&quot;flex gap-2&quot;&gt;
+                &lt;input
+                  className=&quot;flex-1 bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:border-violet-500 outline-none placeholder-slate-500&quot;
+                  placeholder=&quot;Pergunte sobre Android, Gradle, Capacitor...&quot;
+                  value={chatInput}
+                  onChange={e =&gt; setChatInput(e.target.value)}
+                  onKeyDown={e =&gt; e.key === &quot;Enter&quot; &amp;&amp; !e.shiftKey &amp;&amp; sendChat()}
+                  disabled={!aiKeys.key}
+                /&gt;
+                &lt;button onClick={toggleVoice}
+                  className={`px-3 rounded-xl text-xl transition-all ${listening ? &quot;bg-red-600 animate-pulse&quot; : &quot;bg-slate-700 hover:bg-slate-600&quot;}`}
+                  title=&quot;Entrada por voz&quot;&gt;🎤&lt;/button&gt;
+                &lt;button onClick={() =&gt; sendChat()}
+                  disabled={!chatInput.trim() || !aiKeys.key || chatLoading}
+                  className=&quot;px-4 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-700 disabled:text-slate-500 rounded-xl text-sm font-bold transition-all&quot;&gt;➤&lt;/button&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+
+        {/* ══ TAB: TERMINAL ══════════════════════════════════════ */}
+        {tab === &quot;terminal&quot; &amp;&amp; (
+          &lt;div className=&quot;bg-slate-900/80 border border-slate-700 rounded-2xl overflow-hidden&quot; style={{ height: &quot;70vh&quot; }}&gt;
+            &lt;TerminalTab
+              projectReady={projectReady}
+              cfg={cfg}
+              files={files}
+              source={source}
+              ghToken={ghToken}
+              ghUser={ghUser}
+              onImportUrl={async (url) =&gt; {
+                setImportLoading(true);
+                setImportInfo(`Importando ${url}...`);
+                try {
+                  const { files: extracted } = await ghImportPublicRepo(url);
+                  const a = analyzeProject(extracted, url);
+                  const cleaned = extracted.filter(f =&gt; !a.unnecessaryFiles.includes(f.path));
+                  const { name, id } = guessConfig(cleaned, url);
+                  const newCfg = { ...DEFAULT_CFG, appName: name, appId: id };
+                  setFiles(cleaned);
+                  setAnalysis(a);
+                  setCustomName(name);
+                  setCfg(newCfg);
+                  const src = `URL: ${url} (${cleaned.length} arquivos)`;
+                  setSource(src);
+                  setProjectReady(true);
+                  setImportInfo(`✅ ${cleaned.length} arquivos carregados`);
+                  setTab(&quot;export&quot;);
+                  await doSave(newCfg, src, cleaned);
+                } catch (e) {
+                  setImportInfo(&quot;❌ &quot; + String(e));
+                  throw e;
+                } finally {
+                  setImportLoading(false);
+                }
+              }}
+              onExport={handleGenerate}
+              onPagesPublish={async (repoName) =&gt; {
+                setPagesRepoName(repoName);
+                await handlePublishPages();
+              }}
+              onPushGitHub={async (repoName) =&gt; {
+                setPushRepoName(repoName);
+                await handleGhPush();
+              }}
+            /&gt;
+          &lt;/div&gt;
+        )}
+
+        {/* ══ TAB: ANALISAR APK ══════════════════════════════════ */}
+        {tab === &quot;analisar&quot; &amp;&amp; (
+          &lt;div&gt;
+            &lt;ApkAnalyzer /&gt;
+          &lt;/div&gt;
+        )}
+
+        {/* ══ TAB: GUIA ══════════════════════════════════════════ */}
+        {tab === &quot;guide&quot; &amp;&amp; (
+          &lt;div className=&quot;space-y-3&quot;&gt;
+
+            {/* ══ DIAGNÓSTICO COMPLETO DO SISTEMA ══ */}
+            &lt;div className=&quot;bg-slate-900 border border-cyan-700/50 rounded-2xl p-4 space-y-4&quot;&gt;
+
+              {/* Header */}
+              &lt;div className=&quot;flex items-center justify-between&quot;&gt;
+                &lt;div&gt;
+                  &lt;h2 className=&quot;font-bold text-cyan-300 text-sm&quot;&gt;🖥️ Diagnóstico Completo do Sistema&lt;/h2&gt;
+                  &lt;p className=&quot;text-[10px] text-slate-500 mt-0.5&quot;&gt;
+                    {sysChecking ? &quot;⏳ Coletando dados...&quot; : `Última verificação: ${sysInfo.checkedAt || &quot;—&quot;} · Auto: 30s`}
+                  &lt;/p&gt;
+                &lt;/div&gt;
+                &lt;button onClick={checkSystem} disabled={sysChecking}
+                  className=&quot;text-[10px] bg-cyan-900/40 border border-cyan-700/40 text-cyan-300 px-3 py-1.5 rounded-lg hover:bg-cyan-800/40 disabled:opacity-50 transition font-semibold&quot;&gt;
+                  {sysChecking ? &quot;⏳ Verificando...&quot; : &quot;🔄 Atualizar&quot;}
+                &lt;/button&gt;
+              &lt;/div&gt;
+
+              {/* ─ Versão &amp; Status Geral ─ */}
+              &lt;div className={`rounded-xl p-3 border flex items-center gap-3 ${sysInfo.proxyOk === true ? &quot;bg-green-900/20 border-green-700/40&quot; : sysInfo.proxyOk === false ? &quot;bg-red-900/20 border-red-700/40&quot; : &quot;bg-slate-800/60 border-slate-700&quot;}`}&gt;
+                &lt;span className=&quot;text-2xl&quot;&gt;📱&lt;/span&gt;
+                &lt;div className=&quot;flex-1&quot;&gt;
+                  &lt;p className=&quot;font-bold text-sm text-violet-300&quot;&gt;ConstruAPK Pro {APP_VERSION} — Build {BUILD_DATE}&lt;/p&gt;
+                  &lt;p className={`text-xs font-bold mt-0.5 ${sysInfo.proxyOk === true ? &quot;text-green-400&quot; : sysInfo.proxyOk === false ? &quot;text-red-400&quot; : &quot;text-slate-400&quot;}`}&gt;
+                    {sysInfo.proxyOk === true ? &quot;✅ SISTEMA OPERACIONAL — TUDO PRONTO&quot; : sysInfo.proxyOk === false ? &quot;⚠️ PROXY OFFLINE — Verifique o servidor&quot; : &quot;⏳ Verificando...&quot;}
+                  &lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              {/* ─ REDE &amp; CONECTIVIDADE ─ */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;🌐 REDE &amp;amp; CONECTIVIDADE&lt;/p&gt;
+                &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;INTERNET&lt;/p&gt;
+                    &lt;p className={`text-sm font-bold ${sysInfo.online ? &quot;text-green-400&quot; : &quot;text-red-400&quot;}`}&gt;{sysInfo.online === null ? &quot;—&quot; : sysInfo.online ? &quot;✅ Online&quot; : &quot;❌ Offline&quot;}&lt;/p&gt;
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;PROXY IMPORT&lt;/p&gt;
+                    &lt;p className={`text-sm font-bold ${sysInfo.proxyOk === true ? &quot;text-green-400&quot; : sysInfo.proxyOk === false ? &quot;text-red-400&quot; : &quot;text-slate-400&quot;}`}&gt;
+                      {sysInfo.proxyOk === null ? &quot;⏳ —&quot; : sysInfo.proxyOk ? &quot;✅ Online&quot; : &quot;❌ Offline&quot;}
+                    &lt;/p&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;Sem CORS&lt;/p&gt;
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;TIPO DE CONEXÃO&lt;/p&gt;
+                    &lt;p className=&quot;text-sm font-bold text-cyan-300&quot;&gt;{sysInfo.connType ? sysInfo.connType.toUpperCase() : &quot;—&quot;}&lt;/p&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;{sysInfo.downlinkMbps != null ? `${sysInfo.downlinkMbps} Mbps down` : &quot;velocidade n/d&quot;}&lt;/p&gt;
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;LATÊNCIA (RTT)&lt;/p&gt;
+                    &lt;p className={`text-sm font-bold ${sysInfo.rttMs != null &amp;&amp; sysInfo.rttMs &lt; 100 ? &quot;text-green-400&quot; : sysInfo.rttMs != null &amp;&amp; sysInfo.rttMs &lt; 300 ? &quot;text-yellow-400&quot; : &quot;text-slate-400&quot;}`}&gt;
+                      {sysInfo.rttMs != null ? `${sysInfo.rttMs} ms` : &quot;—&quot;}
+                    &lt;/p&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;{sysInfo.rttMs != null ? (sysInfo.rttMs &lt; 100 ? &quot;Excelente&quot; : sysInfo.rttMs &lt; 300 ? &quot;Boa&quot; : &quot;Alta&quot;) : &quot;n/d&quot;}&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              {/* ─ MEMÓRIA ─ */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;🧠 MEMÓRIA&lt;/p&gt;
+                &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;HEAP JS USADO&lt;/p&gt;
+                    {sysInfo.memUsedMB != null
+                      ? &lt;&gt;&lt;p className=&quot;text-sm font-bold text-orange-300&quot;&gt;{sysInfo.memUsedMB} MB&lt;/p&gt;&lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;heap total: {sysInfo.memTotalMB} MB&lt;/p&gt;&lt;/&gt;
+                      : &lt;&gt;&lt;p className=&quot;text-sm font-bold text-slate-400&quot;&gt;—&lt;/p&gt;&lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;use Chrome&lt;/p&gt;&lt;/&gt;}
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;LIMITE HEAP JS&lt;/p&gt;
+                    {sysInfo.memLimitMB != null
+                      ? &lt;&gt;&lt;p className=&quot;text-sm font-bold text-orange-300&quot;&gt;{sysInfo.memLimitMB} MB&lt;/p&gt;&lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;máximo alocável&lt;/p&gt;&lt;/&gt;
+                      : &lt;p className=&quot;text-sm font-bold text-slate-400&quot;&gt;—&lt;/p&gt;}
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;RAM DO DISPOSITIVO&lt;/p&gt;
+                    {sysInfo.deviceMemGB != null
+                      ? &lt;&gt;&lt;p className=&quot;text-sm font-bold text-yellow-300&quot;&gt;{sysInfo.deviceMemGB} GB&lt;/p&gt;&lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;memória física&lt;/p&gt;&lt;/&gt;
+                      : &lt;p className=&quot;text-sm font-bold text-slate-400&quot;&gt;—&lt;/p&gt;}
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;ARQUIVOS EM RAM&lt;/p&gt;
+                    &lt;p className=&quot;text-sm font-bold text-yellow-300&quot;&gt;{files.length.toLocaleString(&quot;pt-BR&quot;)}&lt;/p&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;Limite: ∞ sem limite&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                {sysInfo.memUsedMB != null &amp;&amp; sysInfo.memLimitMB != null &amp;&amp; (
+                  &lt;div className=&quot;mt-2 bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;div className=&quot;flex justify-between text-[10px] text-slate-500 mb-1&quot;&gt;
+                      &lt;span&gt;Uso do heap&lt;/span&gt;
+                      &lt;span&gt;{Math.round((sysInfo.memUsedMB / sysInfo.memLimitMB) * 100)}%&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;div className=&quot;w-full bg-slate-700 rounded-full h-2&quot;&gt;
+                      &lt;div className=&quot;h-2 rounded-full bg-gradient-to-r from-orange-500 to-yellow-400 transition-all&quot;
+                        style={{ width: `${Math.min(100, Math.round((sysInfo.memUsedMB / sysInfo.memLimitMB) * 100))}%` }} /&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                )}
+              &lt;/div&gt;
+
+              {/* ─ ARMAZENAMENTO ─ */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;💾 ARMAZENAMENTO LOCAL (IndexedDB + Cache)&lt;/p&gt;
+                &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                  {sysInfo.storageQuotaMB != null
+                    ? &lt;&gt;
+                        &lt;div className=&quot;flex justify-between text-xs mb-2&quot;&gt;
+                          &lt;span className=&quot;text-blue-300 font-bold&quot;&gt;{sysInfo.storageUsedMB} MB usados&lt;/span&gt;
+                          &lt;span className=&quot;text-slate-400&quot;&gt;de {sysInfo.storageQuotaMB} MB disponíveis ({sysInfo.storagePct}%)&lt;/span&gt;
+                        &lt;/div&gt;
+                        &lt;div className=&quot;w-full bg-slate-700 rounded-full h-2.5 mb-2&quot;&gt;
+                          &lt;div className={`h-2.5 rounded-full transition-all ${(sysInfo.storagePct ?? 0) &gt; 80 ? &quot;bg-red-500&quot; : (sysInfo.storagePct ?? 0) &gt; 50 ? &quot;bg-yellow-400&quot; : &quot;bg-blue-500&quot;}`}
+                            style={{ width: `${Math.min(100, sysInfo.storagePct ?? 0)}%` }} /&gt;
+                        &lt;/div&gt;
+                        &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;{sysInfo.storageQuotaMB - (sysInfo.storageUsedMB ?? 0)} MB livres · sessão salva em IndexedDB&lt;/p&gt;
+                      &lt;/&gt;
+                    : &lt;p className=&quot;text-sm text-slate-400&quot;&gt;Não disponível neste browser&lt;/p&gt;}
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              {/* ─ DISPOSITIVO &amp; BROWSER ─ */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;⚙️ DISPOSITIVO &amp;amp; BROWSER&lt;/p&gt;
+                &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;BROWSER&lt;/p&gt;
+                    &lt;p className=&quot;text-sm font-bold text-slate-200&quot;&gt;{sysInfo.browserInfo || &quot;—&quot;}&lt;/p&gt;
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;NÚCLEOS CPU&lt;/p&gt;
+                    &lt;p className=&quot;text-sm font-bold text-slate-200&quot;&gt;{sysInfo.cores != null ? `${sysInfo.cores} cores` : &quot;—&quot;}&lt;/p&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;concorrência JS&lt;/p&gt;
+                  &lt;/div&gt;
+                  &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3 col-span-2&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;PLATAFORMA&lt;/p&gt;
+                    &lt;p className=&quot;text-sm font-bold text-slate-200&quot;&gt;{sysInfo.platform || &quot;—&quot;}&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              {/* ─ GITHUB RATE LIMIT ─ */}
+              {ghToken &amp;&amp; (
+                &lt;div&gt;
+                  &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;🐙 GITHUB API — RATE LIMIT&lt;/p&gt;
+                  &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                    &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                      &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;REQUESTS RESTANTES&lt;/p&gt;
+                      &lt;p className={`text-sm font-bold ${sysInfo.ghRateLimit != null &amp;&amp; sysInfo.ghRateLimit &gt; 500 ? &quot;text-green-400&quot; : sysInfo.ghRateLimit != null &amp;&amp; sysInfo.ghRateLimit &gt; 100 ? &quot;text-yellow-400&quot; : &quot;text-red-400&quot;}`}&gt;
+                        {sysInfo.ghRateLimit != null ? `${sysInfo.ghRateLimit.toLocaleString(&quot;pt-BR&quot;)} / 5.000` : &quot;—&quot;}
+                      &lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                      &lt;p className=&quot;text-[10px] text-slate-500 mb-1&quot;&gt;RESET EM&lt;/p&gt;
+                      &lt;p className=&quot;text-sm font-bold text-slate-200&quot;&gt;{sysInfo.ghRateLimitReset || &quot;—&quot;}&lt;/p&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                  {sysInfo.ghRateLimit != null &amp;&amp; (
+                    &lt;div className=&quot;mt-2 bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                      &lt;div className=&quot;w-full bg-slate-700 rounded-full h-2&quot;&gt;
+                        &lt;div className={`h-2 rounded-full transition-all ${sysInfo.ghRateLimit &gt; 500 ? &quot;bg-green-500&quot; : sysInfo.ghRateLimit &gt; 100 ? &quot;bg-yellow-400&quot; : &quot;bg-red-500&quot;}`}
+                          style={{ width: `${Math.min(100, Math.round((sysInfo.ghRateLimit / 5000) * 100))}%` }} /&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  )}
+                &lt;/div&gt;
+              )}
+
+              {/* ─ LIMITES DE TOKEN IA ─ */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;🤖 LIMITES DE TOKENS POR MODELO DE IA&lt;/p&gt;
+                &lt;div className=&quot;bg-slate-800/60 rounded-xl overflow-hidden&quot;&gt;
+                  &lt;div className=&quot;grid grid-cols-4 text-[9px] text-slate-500 font-semibold px-3 py-1.5 border-b border-slate-700&quot;&gt;
+                    &lt;span&gt;PROVEDOR&lt;/span&gt;&lt;span&gt;MODELO&lt;/span&gt;&lt;span className=&quot;text-center&quot;&gt;CONTEXTO&lt;/span&gt;&lt;span className=&quot;text-center&quot;&gt;MAX OUT&lt;/span&gt;
+                  &lt;/div&gt;
+                  {AI_TOKEN_LIMITS.map((row, i) =&gt; (
+                    &lt;div key={i} className={`grid grid-cols-4 text-[10px] px-3 py-1.5 items-center ${i % 2 === 0 ? &quot;bg-slate-800/40&quot; : &quot;&quot;}`}&gt;
+                      &lt;span className=&quot;font-semibold&quot; style={{ color: row.color }}&gt;{row.provider}&lt;/span&gt;
+                      &lt;span className=&quot;text-slate-300 font-mono text-[9px]&quot;&gt;{row.model}&lt;/span&gt;
+                      &lt;span className=&quot;text-center font-bold text-cyan-300&quot;&gt;{row.ctx}&lt;/span&gt;
+                      &lt;span className=&quot;text-center text-slate-400&quot;&gt;{row.out}&lt;/span&gt;
+                    &lt;/div&gt;
+                  ))}
+                &lt;/div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-600 mt-1 px-1&quot;&gt;ctx = contexto total da conversa · out = máximo por resposta&lt;/p&gt;
+              &lt;/div&gt;
+
+              {/* ─ LIMITES DO APP ─ */}
+              &lt;div&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-semibold tracking-widest mb-2&quot;&gt;📦 LIMITES DO APK BUILDER&lt;/p&gt;
+                &lt;div className=&quot;grid grid-cols-2 gap-2 text-[10px]&quot;&gt;
+                  {[
+                    { label: &quot;Arquivos por import&quot;, val: &quot;∞ Sem limite&quot;, ok: true },
+                    { label: &quot;Tamanho ZIP import&quot;, val: &quot;Sem limite (stream)&quot;, ok: true },
+                    { label: &quot;Repos GitHub&quot;, val: &quot;Qualquer tamanho&quot;, ok: true },
+                    { label: &quot;Export ZIP Android&quot;, val: &quot;Até RAM disponível&quot;, ok: true },
+                    { label: &quot;Sessão salva&quot;, val: &quot;IndexedDB (GBs)&quot;, ok: true },
+                    { label: &quot;Push GitHub&quot;, val: &quot;Até 100 MB por arquivo&quot;, ok: true },
+                  ].map((item, i) =&gt; (
+                    &lt;div key={i} className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                      &lt;p className=&quot;text-slate-500 mb-0.5&quot;&gt;{item.label}&lt;/p&gt;
+                      &lt;p className={`font-bold ${item.ok ? &quot;text-green-400&quot; : &quot;text-yellow-400&quot;}`}&gt;{item.val}&lt;/p&gt;
+                    &lt;/div&gt;
+                  ))}
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+            &lt;/div&gt;
+
+            &lt;div className=&quot;bg-violet-900/20 border border-violet-700/40 rounded-2xl p-4&quot;&gt;
+              &lt;h2 className=&quot;font-bold text-violet-300 mb-1&quot;&gt;📖 Do PWA ao APK instalado&lt;/h2&gt;
+              &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Passo a passo completo — do projeto web ao app no celular.&lt;/p&gt;
+            &lt;/div&gt;
+            {[
+              { icon: &quot;1️⃣&quot;, t: &quot;Gere o build do seu PWA&quot;, b: &quot;No terminal do projeto: `pnpm build` ou `npm run build`. Isso cria a pasta `dist/`. Compacte como ZIP ou use o GitHub.&quot; },
+              { icon: &quot;2️⃣&quot;, t: &quot;Importe aqui&quot;, b: &quot;Aba Importar → arraste o ZIP. Ou aba GitHub → cole o token → selecione o repositório. Detecção automática de nome e ID.&quot; },
+              { icon: &quot;3️⃣&quot;, t: &quot;Configure o APK&quot;, b: &quot;Na aba Exportar: defina nome, package ID único (ex: com.seunome.meuapp), versão e cores. O ID não pode mudar depois que o app for instalado.&quot; },
+              { icon: &quot;4️⃣&quot;, t: &quot;Gere e baixe&quot;, b: &quot;Clique em 'Gerar Projeto Android'. Baixa um ZIP com o projeto Android Studio completo + seus arquivos já embutidos na pasta dist/.&quot; },
+              { icon: &quot;5️⃣&quot;, t: &quot;Abra no Android Studio&quot;, b: &quot;Extraia o ZIP. Android Studio → File → Open → pasta android/ dentro do ZIP. Aguarde Gradle sync (5-10 min na primeira vez).&quot; },
+              { icon: &quot;6️⃣&quot;, t: &quot;Compile o APK&quot;, b: &quot;Build → Build Bundle(s)/APK(s) → Build APK(s). APK em: android/app/build/outputs/apk/debug/app-debug.apk&quot; },
+              { icon: &quot;7️⃣&quot;, t: &quot;Instale no celular&quot;, b: &quot;Configurações → Segurança → Instalar de fontes desconhecidas ✓. Transfira o .apk via USB, WhatsApp ou Drive e instale.&quot; },
+              { icon: &quot;8️⃣&quot;, t: &quot;Para corrigir algo&quot;, b: &quot;Use o ProCode Studio (botão na aba Exportar), edite os arquivos, exporte novamente como ZIP e reimporte aqui. A sessão fica salva.&quot; },
+            ].map((s, i) =&gt; (
+              &lt;div key={i} className=&quot;bg-slate-900/60 border border-slate-700 rounded-xl p-4 flex gap-3&quot;&gt;
+                &lt;span className=&quot;text-xl mt-0.5 shrink-0&quot;&gt;{s.icon}&lt;/span&gt;
+                &lt;div&gt;
+                  &lt;p className=&quot;font-semibold text-sm mb-0.5&quot;&gt;{s.t}&lt;/p&gt;
+                  &lt;p className=&quot;text-xs text-slate-400 leading-relaxed&quot;&gt;{s.b}&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            ))}
+            &lt;div className=&quot;bg-slate-900/60 border border-slate-700 rounded-xl p-4&quot;&gt;
+              &lt;p className=&quot;font-semibold text-sm text-blue-300 mb-1&quot;&gt;💡 Assinar para a Google Play Store&lt;/p&gt;
+              &lt;p className=&quot;text-xs text-slate-400&quot;&gt;No Android Studio: Build → Generate Signed Bundle/APK → crie um keystore (.jks). Guarde o keystore com segurança — sem ele não é possível atualizar o app na loja.&lt;/p&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+
+        {/* ══ TAB: DOWNLOADS ══════════════════════════════════════ */}
+        {tab === &quot;downloads&quot; &amp;&amp; (
+          &lt;div className=&quot;space-y-4&quot;&gt;
+            &lt;div className=&quot;bg-green-900/20 border border-green-700/50 rounded-2xl p-4&quot;&gt;
+              &lt;h2 className=&quot;font-bold text-green-300 text-base mb-1&quot;&gt;⬇ APKs Prontos para Instalar&lt;/h2&gt;
+              &lt;p className=&quot;text-xs text-slate-400&quot;&gt;Arquivos assinados com v1 + v2 APK Signature Scheme. Instale direto no Android — sem precisar compilar nada.&lt;/p&gt;
+            &lt;/div&gt;
+
+            {[
+              { name: &quot;ConstruAPK Pro&quot;, ver: &quot;v2.0&quot;, pkg: &quot;br.construapk.pro.main&quot;, size: &quot;61 MB&quot;, icon: &quot;📦&quot;, color: &quot;violet&quot;, desc: &quot;Construtor de APKs Android direto do navegador&quot;, file: &quot;ConstruAPK-Pro-v2.0.apk&quot; },
+              { name: &quot;ProCode Studio&quot;, ver: &quot;v3.0&quot;, pkg: &quot;br.procode.studio.main&quot;, size: &quot;8.5 MB&quot;, icon: &quot;💻&quot;, color: &quot;blue&quot;, desc: &quot;Editor de código com IA — assistente Raquel&quot;, file: &quot;ProCode-Studio-v3.0.apk&quot; },
+              { name: &quot;JurisPro&quot;, ver: &quot;v2.0&quot;, pkg: &quot;br.jurispro.legal.main&quot;, size: &quot;8.8 MB&quot;, icon: &quot;⚖️&quot;, color: &quot;green&quot;, desc: &quot;Assistente jurídico com IA — Iara&quot;, file: &quot;JurisPro-v2.0.apk&quot; },
+            ].map(app =&gt; (
+              &lt;div key={app.pkg} className=&quot;bg-slate-900/60 border border-slate-700 rounded-2xl p-4 space-y-3&quot;&gt;
+                &lt;div className=&quot;flex items-start gap-3&quot;&gt;
+                  &lt;span className=&quot;text-3xl&quot;&gt;{app.icon}&lt;/span&gt;
+                  &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                    &lt;div className=&quot;flex items-center gap-2 flex-wrap&quot;&gt;
+                      &lt;h3 className=&quot;font-bold text-white&quot;&gt;{app.name}&lt;/h3&gt;
+                      &lt;span className=&quot;text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-600 px-1.5 py-0.5 rounded-full&quot;&gt;{app.ver}&lt;/span&gt;
+                      &lt;span className=&quot;text-[10px] text-slate-500&quot;&gt;{app.size}&lt;/span&gt;
+                    &lt;/div&gt;
+                    &lt;p className=&quot;text-xs text-slate-400 mt-0.5&quot;&gt;{app.desc}&lt;/p&gt;
+                    &lt;p className=&quot;text-[10px] font-mono text-slate-600 mt-0.5&quot;&gt;{app.pkg}&lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;flex gap-2 flex-wrap&quot;&gt;
+                  &lt;a
+                    href={`${import.meta.env.BASE_URL}apks/${app.file}`}
+                    download={app.file}
+                    className=&quot;flex-1 min-w-[140px] py-2.5 bg-green-700 hover:bg-green-600 rounded-xl font-bold text-sm text-white text-center transition-all&quot;
+                  &gt;
+                    ⬇ Baixar APK
+                  &lt;/a&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;bg-slate-800/60 rounded-xl p-3 text-xs text-slate-400 space-y-1&quot;&gt;
+                  &lt;p className=&quot;font-semibold text-slate-300&quot;&gt;📲 Como instalar:&lt;/p&gt;
+                  &lt;p&gt;1. Baixe o APK acima&lt;/p&gt;
+                  &lt;p&gt;2. Configurações → Segurança → Fontes desconhecidas ✓&lt;/p&gt;
+                  &lt;p&gt;3. Abra o arquivo APK no celular → Instalar&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            ))}
+
+            &lt;div className=&quot;bg-amber-900/20 border border-amber-700/40 rounded-xl p-3 text-xs text-amber-300 space-y-1&quot;&gt;
+              &lt;p className=&quot;font-semibold&quot;&gt;✅ Assinatura verificada:&lt;/p&gt;
+              &lt;p&gt;Todos os APKs têm assinatura v1 + v2 válida. Android 5.0+ (API 21) ou superior.&lt;/p&gt;
+              &lt;p className=&quot;text-slate-500 mt-1&quot;&gt;Certificado: CN=Maikon Caldeira · OAB/MG 183712 · O=SK Juridico&lt;/p&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+
+      &lt;/main&gt;
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
