@@ -1,0 +1,432 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>relatorio-AssistenteJuridico-PWA-8zip  714d7dd (3).md</title><style>
+    body{font-family:Georgia,Cambria,'Times New Roman',serif;max-width:860px;margin:30px auto;padding:0 24px;color:#222;line-height:1.7;background:#fafafa}
+    h1,h2,h3,h4{color:#2d4a1e;margin-top:28px;margin-bottom:12px}
+    h1{border-bottom:2px solid #5aab56;padding-bottom:8px}
+    h2{border-bottom:1px solid #ccc;padding-bottom:6px}
+    a{color:#0066cc}
+    code{background:#eee;padding:2px 5px;border-radius:3px;font-family:Consolas,monospace;font-size:90%}
+    pre{background:#0d1309;color:#a8d5a2;padding:14px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5}
+    pre code{background:transparent;color:inherit;padding:0}
+    blockquote{border-left:4px solid #5aab56;padding:6px 14px;margin:14px 0;background:#f0f7ed;color:#444}
+    table{border-collapse:collapse;margin:14px 0;width:100%}
+    th,td{border:1px solid #ccc;padding:8px 12px;text-align:left}
+    th{background:#e8f5e9}
+    .copy-btn{font-size:11px;padding:4px 10px;border:1px solid #5aab56;background:#fff;color:#2d4a1e;border-radius:5px;cursor:pointer;margin-left:8px}
+    .copy-btn:hover{background:#5aab56;color:#fff}
+    .code-wrap{position:relative;margin:14px 0}
+    .code-wrap .copy-btn{position:absolute;top:8px;right:8px}
+    @media print{.copy-btn{display:none}body{background:#fff}}
+  </style></head><body><h1 style="border:none">relatorio-AssistenteJuridico-PWA-8zip  714d7dd (3).md</h1><div class="md" id="md"><h1 id="relatorio-do-projeto-assistentejuridico-pwa-8zip-714d7dd" data-heading="1" data-raw="Relatório do projeto AssistenteJuridico-PWA-8zip @ 714d7dd">Relatório do projeto "AssistenteJuridico-PWA-8zip @ 714d7dd"<button class="copy-btn" data-section="relatorio-do-projeto-assistentejuridico-pwa-8zip-714d7dd">📋 Seção</button></h1><p>246 arquivos lidos (17.0 MB), 0 ignorados (node_modules/caches).</p>
+<h2 id="estrutura-detectada" data-heading="2" data-raw="Estrutura detectada">Estrutura detectada<button class="copy-btn" data-section="estrutura-detectada">📋 Seção</button></h2><ul>
+<li>assistente-juridico (@workspace/assistente-juridico): Vite, React, Tailwind, TypeScript, Drizzle — scripts: dev="vite"; build="vite build"; preview="vite preview"; check="tsc --noEmit"</li>
+<li>(raiz) (workspace-root):  — scripts: </li>
+<li>assistente-juridico (Assistente Jurídico IA): Replit artifact</li>
+</ul>
+<h2 id="problemas-detectados-47" data-heading="2" data-raw="Problemas detectados (47)">Problemas detectados (47)<button class="copy-btn" data-section="problemas-detectados-47">📋 Seção</button></h2><ul>
+<li>[CRITICO] Import quebrado: Importa "./audio" mas o arquivo não existe — assistente-juridico/client/replit_integrations/audio/index.ts:10<br>Sugestão: Arquivo apagado/renomeado ou caminho errado. Confira o nome e a pasta.</li>
+<li>[CRITICO] Import quebrado: Importa "./replit_integrations/batch" mas o arquivo não existe — assistente-juridico/server/replit_integrations/batch/utils.ts:13<br>Sugestão: Arquivo apagado/renomeado ou caminho errado. Confira o nome e a pasta.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — assistente-juridico/client/src/pages/configuracoes.tsx:289<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/client/src/pages/robo-djen.tsx:887<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/server/routes.ts:3776<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — assistente-juridico/src/pages/configuracoes.tsx:305<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/src/pages/robo-djen.tsx:890<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[ALTO] Dependência faltando: "express" é importado mas não está no assistente-juridico/package.json (8 import(s)) — assistente-juridico/client/index.ts:1<br>Sugestão: Rode: npm install express  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "express-session" é importado mas não está no assistente-juridico/package.json (2 import(s)) — assistente-juridico/client/index.ts:2<br>Sugestão: Rode: npm install express-session  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "connect-pg-simple" é importado mas não está no assistente-juridico/package.json (2 import(s)) — assistente-juridico/client/index.ts:3<br>Sugestão: Rode: npm install connect-pg-simple  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "pg" é importado mas não está no assistente-juridico/package.json (5 import(s)) — assistente-juridico/client/index.ts:4<br>Sugestão: Rode: npm install pg  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "drizzle-kit" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/drizzle.config.ts:1<br>Sugestão: Rode: npm install drizzle-kit  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "esbuild" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/script/build.ts:1<br>Sugestão: Rode: npm install esbuild  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "jsonwebtoken" é importado mas não está no assistente-juridico/package.json (2 import(s)) — assistente-juridico/server/djen.ts:82<br>Sugestão: Rode: npm install jsonwebtoken  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "p-limit" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/server/replit_integrations/batch/utils.ts:1<br>Sugestão: Rode: npm install p-limit  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "p-retry" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/server/replit_integrations/batch/utils.ts:2<br>Sugestão: Rode: npm install p-retry  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "multer" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/server/routes.ts:15<br>Sugestão: Rode: npm install multer  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "html-entities" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/server/routes.ts:29<br>Sugestão: Rode: npm install html-entities  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "jszip" é importado mas não está no assistente-juridico/package.json (2 import(s)) — assistente-juridico/server/routes.ts:1624<br>Sugestão: Rode: npm install jszip  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Replit: Arquivo de configuração do Replit (.replit) — .replit<br>Sugestão: Pode apagar ao tirar o projeto do Replit.</li>
+<li>[ALTO] Replit: Metadados de "artifact" do Replit (.replit-artifact) — assistente-juridico/.replit-artifact/<br>Sugestão: Pode apagar ao tirar o projeto do Replit.</li>
+<li>[ALTO] Replit: Ambiente Nix do Replit (replit.nix) — replit.nix<br>Sugestão: Pode apagar ao tirar o projeto do Replit.</li>
+<li>[MEDIO] API: Frontend chama /api/ mas não achei essa rota no servidor — assistente-juridico/client/public/sw.js:36<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/voice-conversations/1/messages mas não achei essa rota no servidor — assistente-juridico/client/replit_integrations/audio/index.ts:23<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/... mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:674<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/settings/ mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:785<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/demo-key mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:790<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ai-usage mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:793<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ai/chat mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:797<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ai/ mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:797<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/jwt mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:879<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/token mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:879<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/jurisprudencia mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:901<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/previdenciario mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:915<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/tramitacao mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:926<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/djen mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:929<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/publicacoes mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:930<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/pdpj mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:951<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/datajud mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:956<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/cnj mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:956<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/comunicacoes mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:956<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/export/ mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:961<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/voice mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:974<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] Configuração: O código lê 15 variável(is) de ambiente e não há .env.example (PORT, DATABASE_URL, SESSION_SECRET, BASE_PATH, APP_PASSWORD, AI_INTEGRATIONS_OPENAI_API_KEY, AI_INTEGRATIONS_OPENAI_BASE_URL, PUBLIC_API_KEY, AI_INTEGRATIONS_GEMINI_API_KEY, AI_INTEGRATIONS_GEMINI_BASE_URL, PDPJ_PEM_PRIVATE_KEY, PUBLIC_API_MODEL, PUBLIC_API_URL, DATAJUD_API_KEY, PERPLEXITY_API_KEY) — (projeto)<br>Sugestão: Crie um .env com esses nomes (valores fora do Git). Sem elas o app pode não iniciar.</li>
+<li>[MEDIO] Dependências: Vários gerenciadores misturados: package-lock.json, pnpm-lock.yaml — (projeto)<br>Sugestão: Escolha um só (npm ou pnpm) e apague os outros lockfiles.</li>
+<li>[MEDIO] Replit: Endereço fixo do Replit: seu-app.replit.app — assistente-juridico/client/src/pages/configuracoes.tsx:455<br>Sugestão: Fora do Replit esse endereço não vai responder. Use URL configurável.</li>
+<li>[INFO] Pendências no código: 6 marcações TODO/FIXME em 6 arquivo(s) (assistente-juridico/client/src/pages/jurisprudencia.tsx (1), assistente-juridico/client/src/pages/legal-assistant.tsx (1), assistente-juridico/client/src/pages/legal-assistant.tsx.recovered (1), assistente-juridico/src/pages/jurisprudencia.tsx (1), assistente-juridico/src/pages/legal-assistant.tsx (1), assistente-juridico/src/pages/legal-assistant.tsx.recovered (1)) — assistente-juridico/client/src/pages/jurisprudencia.tsx<br>Sugestão: Trechos que o autor (ou a IA) deixou incompletos.</li>
+</ul>
+<h2 id="variaveis-de-ambiente-usadas" data-heading="2" data-raw="Variáveis de ambiente usadas">Variáveis de ambiente usadas<button class="copy-btn" data-section="variaveis-de-ambiente-usadas">📋 Seção</button></h2><p>AI_INTEGRATIONS_GEMINI_API_KEY, AI_INTEGRATIONS_GEMINI_BASE_URL, AI_INTEGRATIONS_OPENAI_API_KEY, AI_INTEGRATIONS_OPENAI_BASE_URL, APP_PASSWORD, BASE_PATH, BASE_URL, DATABASE_URL, DATAJUD_API_KEY, NODE_ENV, PDPJ_PEM_PRIVATE_KEY, PERPLEXITY_API_KEY, PORT, PUBLIC_API_KEY, PUBLIC_API_MODEL, PUBLIC_API_URL, SESSION_SECRET</p>
+<h2 id="rotas-de-api" data-heading="2" data-raw="Rotas de API">Rotas de API<button class="copy-btn" data-section="rotas-de-api">📋 Seção</button></h2><ul>
+<li>GET /api/conversations (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>GET /api/conversations/:id (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>POST /api/conversations (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>DELETE /api/conversations/:id (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>POST /api/conversations/:id/messages (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>GET /api/conversations (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>GET /api/conversations/:id (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>POST /api/conversations (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>DELETE /api/conversations/:id (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>POST /api/conversations/:id/messages (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>POST /api/generate-image (assistente-juridico/server/replit_integrations/image/routes.ts)</li>
+<li>GET /sw.js (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/auth/check (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/auth/login (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/auth/logout (assistente-juridico/server/routes.ts)</li>
+<li>GET /parecer/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tjmg/fatores (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/test-connection (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pdpj/status (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/comunicacoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/representados (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/habilitacao (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/pessoa (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/webhooks/tramitacao (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/demo-key-status (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/demo-key-config (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/demo-key-config (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/perplexity-key-status (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/demo-key-test (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tts (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/voice-chat (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/share/parecer (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/snippets (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/snippets/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/snippets (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/snippets/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/snippets/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/custom-actions (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/custom-actions (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/custom-actions/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/custom-actions/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/ementas (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ementas (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/ementas/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/ementas/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/jurisprudencia/buscar (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/ai-history (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai-history (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/ai-history/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/ai-history (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/ai-usage-summary (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai-usage-credit (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/prompt-templates (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/prompt-templates (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/prompt-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/prompt-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/doc-templates (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/doc-templates (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/doc-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/doc-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/doc-templates/upload-docx (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/export/word-with-template (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/import/url (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/upload/extract-text (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/upload/transcribe (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai/process (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai/refine (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/export/word (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/jwt/generate (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/jwt/status (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/processos (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/processos/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/processos (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/processos/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/processos/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/datajud/consulta (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/datajud/consulta-oab (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/cpf/:cpf (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/oab/:uf/:inscricao (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/magistrados/:tribunal (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pdpj/status (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/test-connection (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/comunicacoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/representados (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/habilitacao (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/pessoa (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/datajud/tribunais (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/cnj/comunicacoes (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/cnj/comunicacoes/certidao/:hash (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/ai-config (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/ai-config (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/settings/database-reconnect (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/database-status (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/system-status (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/app-password (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/session-secret (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/settings/test-ai-key (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/:key (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/:key (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/clientes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tramitacao/clientes (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/clientes/:id (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/tramitacao/clientes/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/notas (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tramitacao/notas (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/tramitacao/notas/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/usuarios (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/test (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/publicacoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tramitacao/sync-publicacoes (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/tramitacao/publicacoes/:id/lida (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/code/run (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/previdenciario/extrair (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pesquisa/oab (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pesquisa/processo (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/config (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/djen/config (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/clientes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/djen/clientes (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/djen/clientes/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/publicacoes (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/execucoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/djen/executar (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/djen/gerar-token (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/cpf/:cpf (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/oab/:uf/:numero (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/magistrados/:tribunal (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/code-assistant (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/git-push (assistente-juridico/server/routes.ts)</li>
+</ul>
+<h2 id="assistente-juridicopackagejson" data-heading="2" data-raw="assistente-juridico/package.json">assistente-juridico/package.json<button class="copy-btn" data-section="assistente-juridicopackagejson">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="{
+  &quot;name&quot;: &quot;@workspace/assistente-juridico&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;license&quot;: &quot;MIT&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite&quot;,
+    &quot;build&quot;: &quot;vite build&quot;,
+    &quot;preview&quot;: &quot;vite preview&quot;,
+    &quot;check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@google/genai&quot;: &quot;^1.43.0&quot;,
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.1.5&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.7&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.3&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.0&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.0&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;^5.60.5&quot;,
+    &quot;@tiptap/core&quot;: &quot;^3.22.5&quot;,
+    &quot;@tiptap/extension-color&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-font-family&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-highlight&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-link&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-cell&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-header&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-row&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-text-align&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-text-style&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-underline&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/pm&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/react&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/starter-kit&quot;: &quot;^3.20.1&quot;,
+    &quot;class-variance-authority&quot;: &quot;^0.7.1&quot;,
+    &quot;clsx&quot;: &quot;^2.1.1&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;docx&quot;: &quot;^9.5.1&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;framer-motion&quot;: &quot;^11.13.1&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;lucide-react&quot;: &quot;^0.453.0&quot;,
+    &quot;mammoth&quot;: &quot;^1.12.0&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;openai&quot;: &quot;^6.18.0&quot;,
+    &quot;pdfjs-dist&quot;: &quot;^4.9.155&quot;,
+    &quot;react&quot;: &quot;^18.3.1&quot;,
+    &quot;react-day-picker&quot;: &quot;^8.10.1&quot;,
+    &quot;react-dom&quot;: &quot;^18.3.1&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.55.0&quot;,
+    &quot;react-icons&quot;: &quot;^5.4.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.7&quot;,
+    &quot;recharts&quot;: &quot;^2.15.2&quot;,
+    &quot;tailwind-merge&quot;: &quot;^2.6.0&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;wouter&quot;: &quot;^3.3.5&quot;,
+    &quot;zod&quot;: &quot;^3.25.76&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.15&quot;,
+    &quot;@types/node&quot;: &quot;20.19.27&quot;,
+    &quot;@types/react&quot;: &quot;^18.3.11&quot;,
+    &quot;@types/react-dom&quot;: &quot;^18.3.1&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;^4.7.0&quot;,
+    &quot;autoprefixer&quot;: &quot;^10.4.20&quot;,
+    &quot;drizzle-orm&quot;: &quot;^0.45.2&quot;,
+    &quot;drizzle-zod&quot;: &quot;^0.8.3&quot;,
+    &quot;postcss&quot;: &quot;^8.4.47&quot;,
+    &quot;tailwindcss&quot;: &quot;^3.4.17&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;typescript&quot;: &quot;5.6.3&quot;,
+    &quot;vite&quot;: &quot;^7.3.0&quot;
+  }
+}">📋 Copiar</button><pre><code class="language-json">{
+  "name": "@workspace/assistente-juridico",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-accordion": "^1.2.4",
+    "@radix-ui/react-alert-dialog": "^1.1.7",
+    "@radix-ui/react-aspect-ratio": "^1.1.3",
+    "@radix-ui/react-avatar": "^1.1.4",
+    "@radix-ui/react-checkbox": "^1.1.5",
+    "@radix-ui/react-collapsible": "^1.1.4",
+    "@radix-ui/react-context-menu": "^2.2.7",
+    "@radix-ui/react-dialog": "^1.1.7",
+    "@radix-ui/react-dropdown-menu": "^2.1.7",
+    "@radix-ui/react-hover-card": "^1.1.7",
+    "@radix-ui/react-label": "^2.1.3",
+    "@radix-ui/react-menubar": "^1.1.7",
+    "@radix-ui/react-navigation-menu": "^1.2.6",
+    "@radix-ui/react-popover": "^1.1.7",
+    "@radix-ui/react-progress": "^1.1.3",
+    "@radix-ui/react-radio-group": "^1.2.4",
+    "@radix-ui/react-scroll-area": "^1.2.4",
+    "@radix-ui/react-select": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.3",
+    "@radix-ui/react-slider": "^1.2.4",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-switch": "^1.1.4",
+    "@radix-ui/react-tabs": "^1.1.4",
+    "@radix-ui/react-toast": "^1.2.7",
+    "@radix-ui/react-toggle": "^1.1.3",
+    "@radix-ui/react-toggle-group": "^1.1.3",
+    "@radix-ui/react-tooltip": "^1.2.0",
+    "@tanstack/react-query": "^5.60.5",
+    "@tiptap/core": "^3.22.5",
+    "@tiptap/extension-color": "^3.20.1",
+    "@tiptap/extension-font-family": "^3.20.1",
+    "@tiptap/extension-highlight": "^3.20.1",
+    "@tiptap/extension-link": "^3.20.1",
+    "@tiptap/extension-table": "^3.20.1",
+    "@tiptap/extension-table-cell": "^3.20.1",
+    "@tiptap/extension-table-header": "^3.20.1",
+    "@tiptap/extension-table-row": "^3.20.1",
+    "@tiptap/extension-text-align": "^3.20.1",
+    "@tiptap/extension-text-style": "^3.20.1",
+    "@tiptap/extension-underline": "^3.20.1",
+    "@tiptap/pm": "^3.20.1",
+    "@tiptap/react": "^3.20.1",
+    "@tiptap/starter-kit": "^3.20.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^3.6.0",
+    "docx": "^9.5.1",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^11.13.1",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.453.0",
+    "mammoth": "^1.12.0",
+    "next-themes": "^0.4.6",
+    "openai": "^6.18.0",
+    "pdfjs-dist": "^4.9.155",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.55.0",
+    "react-icons": "^5.4.0",
+    "react-resizable-panels": "^2.1.7",
+    "recharts": "^2.15.2",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^1.1.2",
+    "wouter": "^3.3.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/node": "20.19.27",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.20",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "5.6.3",
+    "vite": "^7.3.0"
+  }
+}</code></pre></div><h2 id="packagejson" data-heading="2" data-raw="package.json">package.json<button class="copy-btn" data-section="packagejson">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="{
+  &quot;name&quot;: &quot;workspace-root&quot;,
+  &quot;private&quot;: true,
+  &quot;version&quot;: &quot;1.0.0&quot;
+}">📋 Copiar</button><pre><code class="language-json">{
+  "name": "workspace-root",
+  "private": true,
+  "version": "1.0.0"
+}</code></pre></div><h2 id="arvore-de-arquivos-sem-git" data-heading="2" data-raw="Árvore de arquivos (sem .git)">Árvore de arquivos (sem .git)<button class="copy-btn" data-section="arvore-de-arquivos-sem-git">📋 Seção</button></h2><p>.agents/agent_assets_metadata.toml<br>.agents/memory/MEMORY.md<br>.agents/memory/assistente-juridico-arch.md<br>.replit<br>assistente-juridico/.gitignore<br>assistente-juridico/.replit-artifact/artifact.toml<br>assistente-juridico/MANUAL_APK_ANDROID.md<br>assistente-juridico/MANUAL_APK_ORIENTADO.md<br>assistente-juridico/README.md<br>assistente-juridico/RELATORIO_CORRECOES.md<br>assistente-juridico/SECURITY.md<br>assistente-juridico/TABELAS_SQL.sql<br>assistente-juridico/api/.ts<br>assistente-juridico/client/api.ts<br>assistente-juridico/client/index.html<br>assistente-juridico/client/index.ts<br>assistente-juridico/client/public/auditoria.html<br>assistente-juridico/client/public/codigo-formatacao.txt<br>assistente-juridico/client/public/comparador.html<br>assistente-juridico/client/public/favicon.png<br>assistente-juridico/client/public/icon-192.png<br>assistente-juridico/client/public/icon-384.png<br>assistente-juridico/client/public/icon-512.png<br>assistente-juridico/client/public/icon-96.png<br>assistente-juridico/client/public/manifest.json<br>assistente-juridico/client/public/sw.js<br>assistente-juridico/client/replit_integrations/audio/audio-playback-worklet.js<br>assistente-juridico/client/replit_integrations/audio/audio-utils.ts<br>assistente-juridico/client/replit_integrations/audio/index.ts<br>assistente-juridico/client/replit_integrations/audio/useAudioPlayback.ts<br>assistente-juridico/client/replit_integrations/audio/useVoiceRecorder.ts<br>assistente-juridico/client/replit_integrations/audio/useVoiceStream.ts<br>assistente-juridico/client/src/App.tsx<br>assistente-juridico/client/src/components/pwa-install.tsx<br>assistente-juridico/client/src/components/theme-provider.tsx<br>assistente-juridico/client/src/components/theme-toggle.tsx<br>assistente-juridico/client/src/components/tiptap-editor.tsx<br>assistente-juridico/client/src/components/ui/accordion.tsx<br>assistente-juridico/client/src/components/ui/alert-dialog.tsx<br>assistente-juridico/client/src/components/ui/alert.tsx<br>assistente-juridico/client/src/components/ui/aspect-ratio.tsx<br>assistente-juridico/client/src/components/ui/avatar.tsx<br>assistente-juridico/client/src/components/ui/badge.tsx<br>assistente-juridico/client/src/components/ui/breadcrumb.tsx<br>assistente-juridico/client/src/components/ui/button.tsx<br>assistente-juridico/client/src/components/ui/calendar.tsx<br>assistente-juridico/client/src/components/ui/card.tsx<br>assistente-juridico/client/src/components/ui/carousel.tsx<br>assistente-juridico/client/src/components/ui/chart.tsx<br>assistente-juridico/client/src/components/ui/checkbox.tsx<br>assistente-juridico/client/src/components/ui/collapsible.tsx<br>assistente-juridico/client/src/components/ui/command.tsx<br>assistente-juridico/client/src/components/ui/context-menu.tsx<br>assistente-juridico/client/src/components/ui/dialog.tsx<br>assistente-juridico/client/src/components/ui/drawer.tsx<br>assistente-juridico/client/src/components/ui/dropdown-menu.tsx<br>assistente-juridico/client/src/components/ui/form.tsx<br>assistente-juridico/client/src/components/ui/hover-card.tsx<br>assistente-juridico/client/src/components/ui/input-otp.tsx<br>assistente-juridico/client/src/components/ui/input.tsx<br>assistente-juridico/client/src/components/ui/label.tsx<br>assistente-juridico/client/src/components/ui/menubar.tsx<br>assistente-juridico/client/src/components/ui/navigation-menu.tsx<br>assistente-juridico/client/src/components/ui/pagination.tsx<br>assistente-juridico/client/src/components/ui/popover.tsx<br>assistente-juridico/client/src/components/ui/progress.tsx<br>assistente-juridico/client/src/components/ui/radio-group.tsx<br>assistente-juridico/client/src/components/ui/resizable.tsx<br>assistente-juridico/client/src/components/ui/scroll-area.tsx<br>assistente-juridico/client/src/components/ui/select.tsx<br>assistente-juridico/client/src/components/ui/separator.tsx<br>assistente-juridico/client/src/components/ui/sheet.tsx<br>assistente-juridico/client/src/components/ui/sidebar.tsx<br>assistente-juridico/client/src/components/ui/skeleton.tsx<br>assistente-juridico/client/src/components/ui/slider.tsx<br>assistente-juridico/client/src/components/ui/switch.tsx<br>assistente-juridico/client/src/components/ui/table.tsx<br>assistente-juridico/client/src/components/ui/tabs.tsx<br>assistente-juridico/client/src/components/ui/textarea.tsx<br>assistente-juridico/client/src/components/ui/toast.tsx<br>assistente-juridico/client/src/components/ui/toaster.tsx<br>assistente-juridico/client/src/components/ui/toggle-group.tsx<br>assistente-juridico/client/src/components/ui/toggle.tsx<br>assistente-juridico/client/src/components/ui/tooltip.tsx<br>assistente-juridico/client/src/hooks/use-mobile.tsx<br>assistente-juridico/client/src/hooks/use-toast.ts<br>assistente-juridico/client/src/index.css<br>assistente-juridico/client/src/lib/queryClient.ts<br>assistente-juridico/client/src/lib/utils.ts<br>assistente-juridico/client/src/main.tsx<br>assistente-juridico/client/src/pages/auditoria-financeira.tsx<br>assistente-juridico/client/src/pages/code-assistant.tsx<br>assistente-juridico/client/src/pages/comparador-juridico.tsx<br>assistente-juridico/client/src/pages/comunicacoes-cnj.tsx<br>assistente-juridico/client/src/pages/configuracoes.tsx<br>assistente-juridico/client/src/pages/consulta-corporativo.tsx<br>assistente-juridico/client/src/pages/consulta-pdpj.tsx<br>assistente-juridico/client/src/pages/consulta-processual.tsx<br>assistente-juridico/client/src/pages/filtrador.tsx<br>assistente-juridico/client/src/pages/jurisprudencia.tsx<br>assistente-juridico/client/src/pages/legal-assistant.tsx<br>assistente-juridico/client/src/pages/legal-assistant.tsx.recovered<br>assistente-juridico/client/src/pages/login.tsx<br>assistente-juridico/client/src/pages/not-found.tsx<br>assistente-juridico/client/src/pages/painel-processos.tsx<br>assistente-juridico/client/src/pages/playground.tsx<br>assistente-juridico/client/src/pages/previdenciario.tsx<br>assistente-juridico/client/src/pages/robo-djen.tsx<br>assistente-juridico/client/src/pages/token-generator.tsx<br>assistente-juridico/client/src/pages/tramitacao.tsx<br>assistente-juridico/components.json<br>assistente-juridico/drizzle.config.ts<br>assistente-juridico/index.html<br>assistente-juridico/migrations/0000_init.sql<br>assistente-juridico/migrations/meta/0000_snapshot.json<br>assistente-juridico/migrations/meta/_journal.json<br>assistente-juridico/package-lock.json<br>assistente-juridico/package.json<br>assistente-juridico/postcss.config.js<br>assistente-juridico/public/auditoria.html<br>assistente-juridico/public/favicon.svg<br>assistente-juridico/public/icon-192.png<br>assistente-juridico/public/icon-512.png<br>assistente-juridico/public/icon.svg<br>assistente-juridico/public/manifest.webmanifest<br>assistente-juridico/public/opengraph.jpg<br>assistente-juridico/public/sw.js<br>assistente-juridico/script/build.ts<br>assistente-juridico/server/db.ts<br>assistente-juridico/server/djen.ts<br>assistente-juridico/server/index.ts<br>assistente-juridico/server/local-config.ts<br>assistente-juridico/server/replit_integrations/audio/client.ts<br>assistente-juridico/server/replit_integrations/audio/index.ts<br>assistente-juridico/server/replit_integrations/audio/routes.ts<br>assistente-juridico/server/replit_integrations/batch/index.ts<br>assistente-juridico/server/replit_integrations/batch/utils.ts<br>assistente-juridico/server/replit_integrations/chat/index.ts<br>assistente-juridico/server/replit_integrations/chat/routes.ts<br>assistente-juridico/server/replit_integrations/chat/storage.ts<br>assistente-juridico/server/replit_integrations/image/client.ts<br>assistente-juridico/server/replit_integrations/image/index.ts<br>assistente-juridico/server/replit_integrations/image/routes.ts<br>assistente-juridico/server/routes.ts<br>assistente-juridico/server/static.ts<br>assistente-juridico/server/storage.ts<br>assistente-juridico/server/vite.ts<br>assistente-juridico/shared/models/chat.ts<br>assistente-juridico/shared/schema.ts<br>assistente-juridico/shared/shared/schema.ts<br>assistente-juridico/src/App.tsx<br>assistente-juridico/src/components/pwa-install.tsx<br>assistente-juridico/src/components/theme-provider.tsx<br>assistente-juridico/src/components/theme-toggle.tsx<br>assistente-juridico/src/components/tiptap-editor.tsx<br>assistente-juridico/src/components/ui/accordion.tsx<br>assistente-juridico/src/components/ui/alert-dialog.tsx<br>assistente-juridico/src/components/ui/alert.tsx<br>assistente-juridico/src/components/ui/aspect-ratio.tsx<br>assistente-juridico/src/components/ui/avatar.tsx<br>assistente-juridico/src/components/ui/badge.tsx<br>assistente-juridico/src/components/ui/breadcrumb.tsx<br>assistente-juridico/src/components/ui/button.tsx<br>assistente-juridico/src/components/ui/calendar.tsx<br>assistente-juridico/src/components/ui/card.tsx<br>assistente-juridico/src/components/ui/carousel.tsx<br>assistente-juridico/src/components/ui/chart.tsx<br>assistente-juridico/src/components/ui/checkbox.tsx<br>assistente-juridico/src/components/ui/collapsible.tsx<br>assistente-juridico/src/components/ui/command.tsx<br>assistente-juridico/src/components/ui/context-menu.tsx<br>assistente-juridico/src/components/ui/dialog.tsx<br>assistente-juridico/src/components/ui/drawer.tsx<br>assistente-juridico/src/components/ui/dropdown-menu.tsx<br>assistente-juridico/src/components/ui/form.tsx<br>assistente-juridico/src/components/ui/hover-card.tsx<br>assistente-juridico/src/components/ui/input-otp.tsx<br>assistente-juridico/src/components/ui/input.tsx<br>assistente-juridico/src/components/ui/label.tsx<br>assistente-juridico/src/components/ui/menubar.tsx<br>assistente-juridico/src/components/ui/navigation-menu.tsx<br>assistente-juridico/src/components/ui/pagination.tsx<br>assistente-juridico/src/components/ui/popover.tsx<br>assistente-juridico/src/components/ui/progress.tsx<br>assistente-juridico/src/components/ui/radio-group.tsx<br>assistente-juridico/src/components/ui/resizable.tsx<br>assistente-juridico/src/components/ui/scroll-area.tsx<br>assistente-juridico/src/components/ui/select.tsx<br>assistente-juridico/src/components/ui/separator.tsx<br>assistente-juridico/src/components/ui/sheet.tsx<br>assistente-juridico/src/components/ui/sidebar.tsx<br>assistente-juridico/src/components/ui/skeleton.tsx<br>assistente-juridico/src/components/ui/slider.tsx<br>assistente-juridico/src/components/ui/switch.tsx<br>assistente-juridico/src/components/ui/table.tsx<br>assistente-juridico/src/components/ui/tabs.tsx<br>assistente-juridico/src/components/ui/textarea.tsx<br>assistente-juridico/src/components/ui/toast.tsx<br>assistente-juridico/src/components/ui/toaster.tsx<br>assistente-juridico/src/components/ui/toggle-group.tsx<br>assistente-juridico/src/components/ui/toggle.tsx<br>assistente-juridico/src/components/ui/tooltip.tsx<br>assistente-juridico/src/hooks/use-mobile.tsx<br>assistente-juridico/src/hooks/use-toast.ts<br>assistente-juridico/src/index.css<br>assistente-juridico/src/lib/offline-api.ts<br>assistente-juridico/src/lib/queryClient.ts<br>assistente-juridico/src/lib/utils.ts<br>assistente-juridico/src/main.tsx<br>assistente-juridico/src/pages/auditoria-financeira.tsx<br>assistente-juridico/src/pages/code-assistant.tsx<br>assistente-juridico/src/pages/comparador-juridico.tsx<br>assistente-juridico/src/pages/comunicacoes-cnj.tsx<br>assistente-juridico/src/pages/configuracoes.tsx<br>assistente-juridico/src/pages/consulta-corporativo.tsx<br>assistente-juridico/src/pages/consulta-pdpj.tsx<br>assistente-juridico/src/pages/consulta-processual.tsx<br>assistente-juridico/src/pages/filtrador.tsx<br>assistente-juridico/src/pages/jurisprudencia.tsx<br>assistente-juridico/src/pages/legal-assistant.tsx<br>assistente-juridico/src/pages/legal-assistant.tsx.recovered<br>assistente-juridico/src/pages/login.tsx<br>assistente-juridico/src/pages/not-found.tsx<br>assistente-juridico/src/pages/painel-processos.tsx<br>assistente-juridico/src/pages/playground.tsx<br>assistente-juridico/src/pages/previdenciario.tsx<br>assistente-juridico/src/pages/robo-djen.tsx<br>assistente-juridico/src/pages/token-generator.tsx<br>assistente-juridico/src/pages/tramitacao.tsx<br>assistente-juridico/src/vite-env.d.ts<br>assistente-juridico/tailwind.config.ts<br>assistente-juridico/tsconfig.json<br>assistente-juridico/vite.config.ts<br>package-lock.json<br>package.json<br>pnpm-lock.yaml<br>pnpm-workspace.yaml<br>releases/TABELAS_SQL (copy)..md<br>releases/TABELAS_SQL.txt<br>releases/assistente-juridico-capacitor.zip<br>releases/assistente-juridico-eas.zip<br>releases/assistente-juridico-electron.zip<br>releases/assistente-juridico-github-pages.zip<br>releases/assistente-juridico-netlify.zip<br>replit.nix<br>zipFile.zip</p>
+</div>
+    <script>
+    document.querySelectorAll('.copy-btn[data-code]').forEach(b=>{
+      b.onclick=()=>{navigator.clipboard.writeText(b.dataset.code);b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Copiar',1500)};
+    });
+    document.querySelectorAll('.copy-btn[data-section]').forEach(b=>{
+      b.onclick=()=>{
+        const h=document.getElementById(b.dataset.section);
+        const lvl=parseInt(h.tagName[1]);
+        let txt=h.innerText.replace('📋 Seção','').trim()+'\n\n';
+        let el=h.nextElementSibling;
+        while(el){
+          if(/^H[1-6]$/.test(el.tagName)&&parseInt(el.tagName[1])<=lvl)break;
+          txt+=el.innerText+'\n\n';
+          el=el.nextElementSibling;
+        }
+        navigator.clipboard.writeText(txt.trim());
+        b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Seção',1500);
+      };
+    });
+    </script>
+  </body></html>
