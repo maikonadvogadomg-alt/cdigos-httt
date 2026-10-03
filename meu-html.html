@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Builder — Iara Suite</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --bg2: #161b22;
+            --bg3: #21262d;
+            --border: #30363d;
+            --text: #e6edf3;
+            --muted: #8b949e;
+            --primary: #58a6ff;
+            --primary-bg: rgba(88, 166, 255, .12);
+            --green: #3fb950;
+            --red: #f85149;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            color: var(--muted);
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .drop-zone p {
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            background: var(--bg3);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        input[type="color"] {
+            width: 50px;
+            height: 40px;
+            padding: 2px;
+            cursor: pointer;
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-row input[type="text"] {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .target-toggle {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tgt-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: none;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .tgt-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tgt-btn.active {
+            border-color: var(--primary);
+            background: var(--primary-bg);
+            color: var(--primary);
+        }
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .alert-info {
+            background: rgba(88, 166, 255, .1);
+            border: 1px solid rgba(88, 166, 255, .3);
+            color: var(--primary);
+        }
+
+        .alert-success {
+            background: rgba(63, 185, 80, .1);
+            border: 1px solid rgba(63, 185, 80, .3);
+            color: var(--green);
+        }
+
+        .alert-error {
+            background: rgba(248, 81, 73, .1);
+            border: 1px solid rgba(248, 81, 73, .3);
+            color: var(--red);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #79c0ff;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg3);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: var(--bg3);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+
+        #log {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 100px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+            color: var(--green);
+            white-space: pre-wrap;
+            word-break: break-word;
+            display: none;
+        }
+
+        .flex {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .flex-between {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        @media (max-width: 640px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .target-toggle {
+                flex-direction: column;
+            }
+
+            .tgt-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 APK Builder</h1>
+        <p class="subtitle">Gera estrutura pronta para compilar APK (Android) ou Executável (PC/Electron)</p>
+
+        <!-- PASSO 1: Upload -->
+        <div class="card">
+            <div class="section-title">1️⃣ Projeto Web (ZIP)</div>
+            <div class="drop-zone" id="drop-zone" ondragover="dragOver(event)" ondragleave="dragLeave()" ondrop="drop(event)" onclick="document.getElementById('file-input').click()">
+                <div style="font-size: 48px">📂</div>
+                <p><strong>Arraste seu ZIP aqui</strong> ou clique para selecionar</p>
+                <p style="font-size: 12px; margin-top: 4px">Detecta automaticamente: dist/, www/, public/, build/</p>
+            </div>
+            <input type="file" id="file-input" accept=".zip" style="display: none" onchange="fileSelected(event)">
+            <div id="upload-info" style="display: none; margin-top: 15px"></div>
+        </div>
+
+        <!-- PASSO 2: Configuração -->
+        <div class="card">
+            <div class="section-title">2️⃣ Configuração do App</div>
+            
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Nome do App</label>
+                    <input id="app-name" type="text" placeholder="Meu App Jurídico" oninput="autoGenerateId()">
+                </div>
+                <div class="input-group">
+                    <label>Package ID (reverso)</label>
+                    <input id="package-id" type="text" placeholder="br.adv.maikoncaldeira.app">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Versão</label>
+                    <input id="version" type="text" value="1.0.0">
+                </div>
+                <div class="input-group">
+                    <label>Código da versão</label>
+                    <input id="version-code" type="number" value="1" min="1">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Cor primária</label>
+                    <div class="color-row">
+                        <input type="color" id="theme-color" value="#6366f1" oninput="syncColor('theme-color', 'theme-text')">
+                        <input type="text" id="theme-text" value="#6366f1" style="flex: 1; font-family: 'Courier New', monospace" oninput="syncColor('theme-text', 'theme-color')">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Cor de fundo (splash)</label>
+                    <div class="color-row">
+                        <input type="color" id="bg-color" value="#0f172a" oninput="syncColor('bg-color', 'bg-text')">
+                        <input type="text" id="bg-text" value="#0f172a" style="flex: 1; font-family: 'Courier New', monospace" oninput="syncColor('bg-text', 'bg-color')">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>Orientação (Android)</label>
+                    <select id="orientation">
+                        <option value="portrait">Retrato (portrait)</option>
+                        <option value="landscape">Paisagem (landscape)</option>
+                        <option value="any">Ambos (retrato + paisagem)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Android mínimo (Min SDK)</label>
+                    <select id="min-sdk">
+                        <option value="21">Android 5.0+ (API 21)</option>
+                        <option value="22" selected>Android 5.1+ (API 22)</option>
+                        <option value="24">Android 7.0+ (API 24)</option>
+                        <option value="26">Android 8.0+ (API 26)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- PASSO 3: Destino -->
+        <div class="card">
+            <div class="section-title">3️⃣ Escolha o Destino</div>
+            <div class="target-toggle">
+                <button class="tgt-btn active" id="tgt-apk" onclick="setTarget('apk')">📱 APK Android (Capacitor)</button>
+                <button class="tgt-btn" id="tgt-eas" onclick="setTarget('eas')">🚀 APK via GitHub Actions (EAS)</button>
+                <button class="tgt-btn" id="tgt-electron" onclick="setTarget('electron')">🖥 Executável PC (Electron)</button>
+            </div>
+            <div id="target-info" class="alert alert-info">
+                Gera ZIP com projeto Android Studio pronto. Abra no Android Studio → Build APK.
+            </div>
+        </div>
+
+        <!-- PASSO 4: Gerar -->
+        <div class="card">
+            <div class="section-title">4️⃣ Gerar</div>
+            <div class="progress-bar" id="progress" style="display: none">
+                <div class="progress-bar-inner" id="progress-bar" style="width: 0%"></div>
+            </div>
+            <div id="log"></div>
+            <button class="btn btn-primary" id="build-btn" onclick="build()" disabled>
+                ⚡ Gerar agora
+            </button>
+            <span id="status-text" style="font-size: 12px; color: var(--muted); margin-left: 10px">Selecione um ZIP e preencha os campos</span>
+        </div>
+    </div>
+
+    <script>
+        // ══════════════════════════════════════════════════════════
+        // UTILITIES
+        // ══════════════════════════════════════════════════════════
+        function qs(s) { return document.querySelector(s) }
+        function log(msg) {
+            const el = qs('#log');
+            el.textContent += msg + '\n';
+            el.scrollTop = el.scrollHeight;
+        }
+        function clearLog() { qs('#log').textContent = ''; qs('#log').style.display = 'none'; }
+        function showLog() { qs('#log').style.display = 'block'; }
+
+        // ══════════════════════════════════════════════════════════
+        // STATE
+        // ══════════════════════════════════════════════════════════
+        let uploadedZip = null;
+        let target = 'apk';
+
+        // ══════════════════════════════════════════════════════════
+        // FILE UPLOAD
+        // ══════════════════════════════════════════════════════════
+        function dragOver(e) {
+            e.preventDefault();
+            qs('#drop-zone').classList.add('drag-over');
+        }
+
+        function dragLeave() {
+            qs('#drop-zone').classList.remove('drag-over');
+        }
+
+        async function drop(e) {
+            e.preventDefault();
+            qs('#drop-zone').classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length) await handleFile(files[0]);
+        }
+
+        function fileSelected(e) {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        }
+
+        async function handleFile(file) {
+            if (!file.name.endsWith('.zip')) {
+                alert('⚠️ Selecione um arquivo ZIP');
+                return;
+            }
+
+            uploadedZip = file;
+            const info = qs('#upload-info');
+            info.innerHTML = `<div class="alert alert-success">✅ ZIP carregado: <strong>${file.name}</strong> (${(file.size / 1024 / 1024).toFixed(2)} MB)</div>`;
+            info.style.display = 'block';
+
+            qs('#build-btn').disabled = false;
+            qs('#status-text').textContent = 'Pronto para gerar!';
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // CONFIG
+        // ══════════════════════════════════════════════════════════
+        function autoGenerateId() {
+            const name = qs('#app-name').value;
+            if (!name) return;
+            const id = 'br.app.' + name.toLowerCase().replace(/\s+/g, '');
+            qs('#package-id').value = id;
+        }
+
+        function syncColor(from, to) {
+            const val = qs(`#${from}`).value;
+            qs(`#${to}`).value = val;
+        }
+
+        function setTarget(t) {
+            target = t;
+            document.querySelectorAll('.tgt-btn').forEach(b => b.classList.remove('active'));
+            qs(`#tgt-${t}`).classList.add('active');
+
+            const info = qs('#target-info');
+            const msgs = {
+                apk: 'Gera ZIP com projeto Android Studio pronto. Abra no Android Studio → Build APK.',
+                eas: 'Gera repositório com GitHub Actions. Suba no GitHub → APK compilado automaticamente na nuvem.',
+                electron: 'Gera projeto Electron com package.json pronto. Execute npm install && npm start para rodar no PC.'
+            };
+            info.textContent = msgs[t];
+        }
+
+        // ══════════════════════════════════════════════════════════
+        // BUILD
+        // ══════════════════════════════════════════════════════════
+        async function build() {
+            if (!uploadedZip) {
+                alert('⚠️ Carregue um ZIP primeiro');
+                return;
+            }
+
+            clearLog();
+            showLog();
+            qs('#progress').style.display = 'block';
+            qs('#build-btn').disabled = true;
+
+            try {
+                log('🔄 Iniciando build...');
+                log(`📦 Alvo: ${target}`);
+                log(`📱 App: ${qs('#app-name').value}`);
+                log(`🆔 Package: ${qs('#package-id').value}`);
+
+                const appName = qs('#app-name').value;
+                const packageId = qs('#package-id').value;
+                const version = qs('#version').value;
+                const versionCode = qs('#version-code').value;
+                const theme = qs('#theme-text').value;
+                const bg = qs('#bg-text').value;
+                const orient = qs('#orientation').value;
+                const minSdk = qs('#min-sdk').value;
+
+                if (!appName || !packageId) throw new Error('Preencha Nome e Package ID');
+
+                updateProgress(20);
+                log('📂 Lendo ZIP...');
+                const zipData = await uploadedZip.arrayBuffer();
+                const jszip = new JSZip();
+                const loaded = await jszip.loadAsync(zipData);
+
+                updateProgress(40);
+                log('🔍 Detectando estrutura...');
+                const webDir = detectWebDir(loaded);
+                log(`✅ Diretório web: ${webDir}`);
+
+                updateProgress(60);
+                log(`🏗️  Gerando estrutura ${target}...`);
+
+                let result;
+                if (target === 'apk') {
+                    result = await generateAndroidStudio(loaded, webDir, appName, packageId, version, versionCode, theme, bg, orient, minSdk);
+                } else if (target === 'eas') {
+                    result = await generateEAS(loaded, webDir, appName, packageId, version, versionCode);
+                } else if (target === 'electron') {
+                    result = await generateElectron(loaded, webDir, appName, packageId, version);
+                }
+
+                updateProgress(90);
+                log('💾 Salvando...');
+                const blob = await result.generateAsync({ type: 'blob' });
+                downloadBlob(blob, `${appName.toLowerCase().replace(/\s+/g, '-')}-${target}.zip`);
+
+                updateProgress(100);
+                log('✅ Build concluído! ZIP pronto para download.');
+                log(`📥 Arquivo: ${appName.toLowerCase().replace(/\s+/g, '-')}-${target}.zip`);
+
+            } catch (err) {
+                log(`❌ Erro: ${err.message}`);
+                console.error(err);
+            } finally {
+                qs('#build-btn').disabled = false;
+                setTimeout(() => { qs('#progress').style.display = 'none'; }, 2000);
+            }
+        }
+
+        function updateProgress(pct) {
+            qs('#progress-bar').style.width = pct + '%';
+        }
+
+        function detectWebDir(zip) {
+            const dirs = ['dist/', 'www/', 'public/', 'build/', ''];
+            for (const dir of dirs) {
+                if (zip.file(dir + 'index.html')) return dir;
+            }
+            return '';
+        }
+
+        async function generateAndroidStudio(zip, webDir, appName, packageId, version, versionCode, theme, bg, orient, minSdk) {
+            const out = new JSZip();
+            const pkgPath = packageId.replace(/\./g, '/');
+
+            // Copiar www
+            log('📋 Copiando arquivos web...');
+            for (const [path, file] of Object.entries(zip.files)) {
+                if (path.startsWith(webDir) && !file.dir) {
+                    const newPath = path.replace(webDir, '');
+                    out.file(`android/app/src/main/assets/public/${newPath}`, file);
+                }
+            }
+
+            // build.gradle
+            log('⚙️  Gerando build.gradle...');
+            const buildGradle = `
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace '${packageId}'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId '${packageId}'
+        minSdk ${minSdk}
+        targetSdk 34
+        versionCode ${versionCode}
+        versionName '${version}'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.getcapacitor:capacitor-android:5.7.0'
+    implementation 'com.getcapacitor:capacitor-core:5.7.0'
+}
+`;
+            out.file('android/app/build.gradle', buildGradle);
+
+            // AndroidManifest.xml
+            log('📄 Gerando AndroidManifest.xml...');
+            const manifest = `<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="${orient === 'landscape' ? 'landscape' : orient === 'portrait' ? 'portrait' : 'unspecified'}">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>`;
+            out.file(`android/app/src/main/AndroidManifest.xml`, manifest);
+
+            // MainActivity.java
+            log('☕ Gerando MainActivity.java...');
+            const mainActivity = `package ${packageId};
+
+import android.os.Bundle;
+import com.getcapacitor.BridgeActivity;
+
+public class MainActivity extends BridgeActivity {}
+`;
+            out.file(`android/app/src/main/java/${pkgPath}/MainActivity.java`, mainActivity);
+
+            // strings.xml
+            log('🎨 Gerando strings.xml...');
+            const strings = `<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">${appName}</string>
+    <color name="primary">${theme}</color>
+    <color name="background">${bg}</color>
+</resources>`;
+            out.file('android/app/src/main/res/values/strings.xml', strings);
+
+            // capacitor.config.json
+            log('⚡ Gerando capacitor.config.json...');
+            const capConfig = {
+                appId: packageId,
+                appName: appName,
+                webDir: 'public',
+                server: { androidScheme: 'https' },
+                plugins: {}
+            };
+            out.file('capacitor.config.json', JSON.stringify(capConfig, null, 2));
+
+            // README
+            log('📖 Gerando README...');
+            const readme = `# ${appName}
+
+Gerado pelo Iara Suite APK Builder
+
+## Como compilar
+
+1. Abra a pasta \`android/\` no Android Studio
+2. Clique em "Build" → "Build APK"
+3. O APK estará em: \`android/app/build/outputs/apk/debug/app-debug.apk\`
+
+## Configurações
+- **Package**: ${packageId}
+- **Versão**: ${version}
+- **Min SDK**: ${minSdk}
+- **Orientação**: ${orient}
+`;
+            out.file('README.md', readme);
+
+            return out;
+        }
+
+        async function generateEAS(zip, webDir, appName, packageId, version, versionCode) {
+            const out = new JSZip();
+
+            // Copiar www
+            for (const [path, file] of Object.entries(zip.files)) {
+                if (path.startsWith(webDir) && !file.dir) {
+                    const newPath = path.replace(webDir, '');
+                    out.file(`public/${newPath}`, file);
+                }
+            }
+
+            // app.json
+            const appJson = {
+                expo: {
+                    name: appName,
+                    slug: appName.toLowerCase().replace(/\s+/g, '-'),
+                    version: version,
+                    platforms: ['ios', 'android'],
+                    android: {
+                        package: packageId,
+                        versionCode: parseInt(versionCode)
+                    }
+                }
+            };
+            out.file('app.json', JSON.stringify(appJson, null, 2));
+
+            // GitHub Actions workflow
+            const workflow = `name: Build APK
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm run build
+`;
+            out.file('.github/workflows/build.yml', workflow);
+
+            return out;
+        }
+
+        async function generateElectron(zip, webDir, appName, packageId, version) {
+            const out = new JSZip();
+
+            // Copiar www
+            for (const [path, file] of Object.entries(zip.files)) {
+                if (path.startsWith(webDir) && !file.dir) {
+                    const newPath = path.replace(webDir, '');
+                    out.file(`src/app/${newPath}`, file);
+                }
+            }
+
+            // package.json
+            const pkg = {
+                name: appName.toLowerCase().replace(/\s+/g, '-'),
+                version: version,
+                description: appName,
+                main: 'src/main.js',
+                scripts: {
+                    start: 'electron .',
+                    dist: 'electron-builder'
+                },
+                devDependencies: {
+                    electron: '^latest',
+                    'electron-builder': '^latest'
+                }
+            };
+            out.file('package.json', JSON.stringify(pkg, null, 2));
+
+            // main.js
+            const mainJs = `const { app, BrowserWindow } = require('electron');
+const path = require('path');
+
+let mainWindow;
+
+app.on('ready', () => {
+    mainWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js')
+        }
+    });
+    mainWindow.loadFile(path.join(__dirname, 'app/index.html'));
+});
+
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+});
+`;
+            out.file('src/main.js', mainJs);
+
+            return out;
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
