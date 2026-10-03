@@ -1,0 +1,2477 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>analise_keys.tsx (3).md</title><style>
+    body{font-family:Georgia,Cambria,'Times New Roman',serif;max-width:860px;margin:30px auto;padding:0 24px;color:#222;line-height:1.7;background:#fafafa}
+    h1,h2,h3,h4{color:#2d4a1e;margin-top:28px;margin-bottom:12px}
+    h1{border-bottom:2px solid #5aab56;padding-bottom:8px}
+    h2{border-bottom:1px solid #ccc;padding-bottom:6px}
+    a{color:#0066cc}
+    code{background:#eee;padding:2px 5px;border-radius:3px;font-family:Consolas,monospace;font-size:90%}
+    pre{background:#0d1309;color:#a8d5a2;padding:14px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5}
+    pre code{background:transparent;color:inherit;padding:0}
+    blockquote{border-left:4px solid #5aab56;padding:6px 14px;margin:14px 0;background:#f0f7ed;color:#444}
+    table{border-collapse:collapse;margin:14px 0;width:100%}
+    th,td{border:1px solid #ccc;padding:8px 12px;text-align:left}
+    th{background:#e8f5e9}
+    .copy-btn{font-size:11px;padding:4px 10px;border:1px solid #5aab56;background:#fff;color:#2d4a1e;border-radius:5px;cursor:pointer;margin-left:8px}
+    .copy-btn:hover{background:#5aab56;color:#fff}
+    .code-wrap{position:relative;margin:14px 0}
+    .code-wrap .copy-btn{position:absolute;top:8px;right:8px}
+    @media print{.copy-btn{display:none}body{background:#fff}}
+  </style></head><body><h1 style="border:none">analise_keys.tsx (3).md</h1><div class="md" id="md"><h1 id="keystsx-analise-completa" data-heading="1" data-raw="keys.tsx — Análise Completa">keys.tsx — Análise Completa<button class="copy-btn" data-section="keystsx-analise-completa">📋 Seção</button></h1><h2 id="indice" data-heading="2" data-raw="📋 Índice">📋 Índice<button class="copy-btn" data-section="indice">📋 Seção</button></h2><ul>
+<li>L1 [import] import { Feather } from "@expo/vector-icons";</li>
+<li>L2 [import] import React, { useState, useEffect, useCallback, useRef } from "react";</li>
+<li>L3 [import] import {</li>
+<li>L7 [import] import { useSafeAreaInsets } from "react-native-safe-area-context";</li>
+<li>L8 [import] import { useProject } from "@/context/ProjectContext";</li>
+<li>L9 [import] import type { ApiKey } from "@/context/ProjectContext";</li>
+<li>L10 [import] import { detectProvider, PROVIDERS } from "@/lib/keyDetector";</li>
+<li>L11 [import] import type { ProviderProfile } from "@/lib/keyDetector";</li>
+<li>L12 [import] import { neonQuery, neonTestConnection, neonListTables, formatNeonResult } from </li>
+<li>L15 [const] CARD</li>
+<li>L16 [const] BORDER</li>
+<li>L17 [const] ACCENT</li>
+<li>L18 [const] MUTED</li>
+<li>L19 [const] WHITE</li>
+<li>L20 [const] GREEN</li>
+<li>L21 [const] RED</li>
+<li>L22 [const] YELLOW</li>
+<li>L23 [const] WEB_COLOR</li>
+<li>L25 [function] uid</li>
+<li>L26 [function] statusColor</li>
+<li>L30 [function] statusLabel</li>
+<li>L36 [const] MANUAL_SECTIONS</li>
+<li>L67 [component] ManualModal</li>
+<li>L109 [component] CreateTableModal</li>
+<li>L119 [function] addCol</li>
+<li>L120 [function] removeCol</li>
+<li>L121 [function] setColName</li>
+<li>L122 [function] setColType</li>
+<li>L126 [function] run</li>
+<li>L140 [const] TYPES</li>
+<li>L205 [component] KeysScreen</li>
+<li>L267 [function] pickManual</li>
+<li>L272 [function] addKey</li>
+<li>L284 [function] testKey</li>
+<li>L287 [function] base →</li>
+<li>L298 [function] testAll</li>
+<li>L301 [function] testNeon</li>
+<li>L312 [function] runSql</li>
+<li>L322 [function] runAiDb</li>
+<li>L329 [function] base →</li>
+<li>L363 [function] loadTableDetails</li>
+<li>L380 [function] push →</li>
+<li>L384 [function] update →</li>
+<li>L433 [function] base →</li>
+<li>L471 [const] SECTIONS</li>
+</ul>
+<hr>
+<h2 id="blocos" data-heading="2" data-raw="🧩 Blocos">🧩 Blocos<button class="copy-btn" data-section="blocos">📋 Seção</button></h2><h3 id="imports-e-configuracoes" data-heading="3" data-raw="📦 Imports e Configurações">📦 Imports e Configurações<button class="copy-btn" data-section="imports-e-configuracoes">📋 Seção</button></h3><blockquote>
+<p>Linhas 1–24</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="import { Feather } from &quot;@expo/vector-icons&quot;;
+import React, { useState, useEffect, useCallback, useRef } from &quot;react&quot;;
+import {
+  ActivityIndicator, Alert, Clipboard, Linking, Modal, Platform,
+  Pressable, ScrollView, StyleSheet, Text, TextInput, View,
+} from &quot;react-native&quot;;
+import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;
+import { useProject } from &quot;@/context/ProjectContext&quot;;
+import type { ApiKey } from &quot;@/context/ProjectContext&quot;;
+import { detectProvider, PROVIDERS } from &quot;@/lib/keyDetector&quot;;
+import type { ProviderProfile } from &quot;@/lib/keyDetector&quot;;
+import { neonQuery, neonTestConnection, neonListTables, formatNeonResult } from &quot;@/lib/neon&quot;;
+
+const BG = &quot;#080c18&quot;;
+const CARD = &quot;#0f1629&quot;;
+const BORDER = &quot;#1e293b&quot;;
+const ACCENT = &quot;#6366f1&quot;;
+const MUTED = &quot;#64748b&quot;;
+const WHITE = &quot;#f1f5f9&quot;;
+const GREEN = &quot;#4ade80&quot;;
+const RED = &quot;#f87171&quot;;
+const YELLOW = &quot;#fbbf24&quot;;
+const WEB_COLOR = &quot;#22d3ee&quot;;
+">📋 Copiar</button><pre><code class="language-texto">import { Feather } from "@expo/vector-icons";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import {
+  ActivityIndicator, Alert, Clipboard, Linking, Modal, Platform,
+  Pressable, ScrollView, StyleSheet, Text, TextInput, View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useProject } from "@/context/ProjectContext";
+import type { ApiKey } from "@/context/ProjectContext";
+import { detectProvider, PROVIDERS } from "@/lib/keyDetector";
+import type { ProviderProfile } from "@/lib/keyDetector";
+import { neonQuery, neonTestConnection, neonListTables, formatNeonResult } from "@/lib/neon";
+
+const BG = "#080c18";
+const CARD = "#0f1629";
+const BORDER = "#1e293b";
+const ACCENT = "#6366f1";
+const MUTED = "#64748b";
+const WHITE = "#f1f5f9";
+const GREEN = "#4ade80";
+const RED = "#f87171";
+const YELLOW = "#fbbf24";
+const WEB_COLOR = "#22d3ee";
+</code></pre></div><h3 id="uid" data-heading="3" data-raw="uid">uid<button class="copy-btn" data-section="uid">📋 Seção</button></h3><blockquote>
+<p>Linhas 25–25</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }">📋 Copiar</button><pre><code class="language-texto">function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }</code></pre></div><h3 id="statuscolor" data-heading="3" data-raw="statusColor">statusColor<button class="copy-btn" data-section="statuscolor">📋 Seção</button></h3><blockquote>
+<p>Linhas 26–29</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="function statusColor(s?: string) {
+  if (s === &quot;ok&quot;) return GREEN; if (s === &quot;error&quot;) return RED;
+  if (s === &quot;testing&quot;) return YELLOW; return MUTED;
+}">📋 Copiar</button><pre><code class="language-texto">function statusColor(s?: string) {
+  if (s === "ok") return GREEN; if (s === "error") return RED;
+  if (s === "testing") return YELLOW; return MUTED;
+}</code></pre></div><h3 id="statuslabel" data-heading="3" data-raw="statusLabel">statusLabel<button class="copy-btn" data-section="statuslabel">📋 Seção</button></h3><blockquote>
+<p>Linhas 30–66</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="function statusLabel(s?: string) {
+  if (s === &quot;ok&quot;) return &quot;✅ Online&quot;; if (s === &quot;error&quot;) return &quot;❌ Falhou&quot;;
+  if (s === &quot;testing&quot;) return &quot;⏳...&quot;; return &quot;—&quot;;
+}
+
+// ── MANUAL POPUP ─────────────────────────────────────────────────────────────
+const MANUAL_SECTIONS = [
+  {
+    icon: &quot;🔑&quot;, title: &quot;Chaves de IA&quot;,
+    content: &quot;Cole qualquer chave de API aqui. O app detecta o provedor automaticamente (OpenAI, Perplexity, Anthropic, Groq, etc.).\n\n🌐 PERPLEXITY = acessa a internet em tempo real! Use a chave pplx-xxxx.\n\nA chave ATIVA é a usada pela Iara no chat.&quot;,
+  },
+  {
+    icon: &quot;🤖&quot;, title: &quot;Chat Iara&quot;,
+    content: &quot;Toque no botão 💬 flutuante em qualquer tela.\n\n• Cole um link → a Iara acessa e analisa automaticamente\n• Toque 🌐 → busca na internet via DuckDuckGo\n• Toque 📋 → lista sessões / cria nova conversa\n• Segure uma mensagem → copiar / ouvir (TTS)\n• Sem limite de mensagens nem de tamanho&quot;,
+  },
+  {
+    icon: &quot;🐙&quot;, title: &quot;GitHub&quot;,
+    content: &quot;Cole seu token (ghp_xxx) e conecta automático.\n\nAba Importar: baixa qualquer repositório\nAba Analisar: vê a árvore de arquivos, abre qualquer arquivo\nAba Enviar: faz push para um repositório novo\nAba Config APK: configura o app (nome, package, cores)\n\nToken necessário: repo ✓ + workflow ✓ + pages ✓&quot;,
+  },
+  {
+    icon: &quot;📱&quot;, title: &quot;Gerar APK&quot;,
+    content: &quot;Aba Exportar:\n1. Importe um projeto (GitHub ou ZIP)\n2. Configure nome, package e cores\n3. Toque ⚡ Gerar Projeto → baixa o ZIP Android\n4. Toque 🔨 Compilar via EAS → compila na nuvem\n\nO APK usa WebView puro (sem Capacitor). A pasta dist/ é detectada automaticamente.&quot;,
+  },
+  {
+    icon: &quot;🗄️&quot;, title: &quot;Banco de Dados Neon&quot;,
+    content: &quot;Cole a connection string do console.neon.tech.\n\nFormato: postgresql://user:senha@host.neon.tech/db\n\n• Teste a conexão → lista as tabelas\n• Crie tabelas com o assistente\n• Na Iara: toque 🗄️ → console SQL direto\n• Peça para a Iara criar queries, tabelas, inserir dados&quot;,
+  },
+  {
+    icon: &quot;⚡&quot;, title: &quot;EAS Build&quot;,
+    content: &quot;Para compilar o APK na nuvem Expo:\n1. Crie conta em expo.dev\n2. Cole o token EAS aqui\n3. Na aba Exportar → gere o ZIP → compile via EAS\n\nToken: expo.dev → Conta → Access Tokens&quot;,
+  },
+  {
+    icon: &quot;🖥️&quot;, title: &quot;Editor / VS Code&quot;,
+    content: &quot;Aba Editor:\n• Veja e edite os arquivos do projeto\n• Toque VS Code Web → abre no vscode.dev\n• Toque github.dev → abre editor online\n• Toque Publicar → cria repo + GitHub Pages\n• Toque Exportar ZIP → baixa o projeto completo&quot;,
+  },
+];
+">📋 Copiar</button><pre><code class="language-texto">function statusLabel(s?: string) {
+  if (s === "ok") return "✅ Online"; if (s === "error") return "❌ Falhou";
+  if (s === "testing") return "⏳..."; return "—";
+}
+
+// ── MANUAL POPUP ─────────────────────────────────────────────────────────────
+const MANUAL_SECTIONS = [
+  {
+    icon: "🔑", title: "Chaves de IA",
+    content: "Cole qualquer chave de API aqui. O app detecta o provedor automaticamente (OpenAI, Perplexity, Anthropic, Groq, etc.).\n\n🌐 PERPLEXITY = acessa a internet em tempo real! Use a chave pplx-xxxx.\n\nA chave ATIVA é a usada pela Iara no chat.",
+  },
+  {
+    icon: "🤖", title: "Chat Iara",
+    content: "Toque no botão 💬 flutuante em qualquer tela.\n\n• Cole um link → a Iara acessa e analisa automaticamente\n• Toque 🌐 → busca na internet via DuckDuckGo\n• Toque 📋 → lista sessões / cria nova conversa\n• Segure uma mensagem → copiar / ouvir (TTS)\n• Sem limite de mensagens nem de tamanho",
+  },
+  {
+    icon: "🐙", title: "GitHub",
+    content: "Cole seu token (ghp_xxx) e conecta automático.\n\nAba Importar: baixa qualquer repositório\nAba Analisar: vê a árvore de arquivos, abre qualquer arquivo\nAba Enviar: faz push para um repositório novo\nAba Config APK: configura o app (nome, package, cores)\n\nToken necessário: repo ✓ + workflow ✓ + pages ✓",
+  },
+  {
+    icon: "📱", title: "Gerar APK",
+    content: "Aba Exportar:\n1. Importe um projeto (GitHub ou ZIP)\n2. Configure nome, package e cores\n3. Toque ⚡ Gerar Projeto → baixa o ZIP Android\n4. Toque 🔨 Compilar via EAS → compila na nuvem\n\nO APK usa WebView puro (sem Capacitor). A pasta dist/ é detectada automaticamente.",
+  },
+  {
+    icon: "🗄️", title: "Banco de Dados Neon",
+    content: "Cole a connection string do console.neon.tech.\n\nFormato: postgresql://user:senha@host.neon.tech/db\n\n• Teste a conexão → lista as tabelas\n• Crie tabelas com o assistente\n• Na Iara: toque 🗄️ → console SQL direto\n• Peça para a Iara criar queries, tabelas, inserir dados",
+  },
+  {
+    icon: "⚡", title: "EAS Build",
+    content: "Para compilar o APK na nuvem Expo:\n1. Crie conta em expo.dev\n2. Cole o token EAS aqui\n3. Na aba Exportar → gere o ZIP → compile via EAS\n\nToken: expo.dev → Conta → Access Tokens",
+  },
+  {
+    icon: "🖥️", title: "Editor / VS Code",
+    content: "Aba Editor:\n• Veja e edite os arquivos do projeto\n• Toque VS Code Web → abre no vscode.dev\n• Toque github.dev → abre editor online\n• Toque Publicar → cria repo + GitHub Pages\n• Toque Exportar ZIP → baixa o projeto completo",
+  },
+];
+</code></pre></div><h3 id="manualmodal" data-heading="3" data-raw="ManualModal">ManualModal<button class="copy-btn" data-section="manualmodal">📋 Seção</button></h3><blockquote>
+<p>Linhas 67–108</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="function ManualModal({ visible, onClose }: { visible: boolean; onClose: () =&gt; void }) {
+  const insets = useSafeAreaInsets();
+  const [section, setSection] = useState(0);
+  const item = MANUAL_SECTIONS[section];
+  return (
+    &lt;Modal visible={visible} animationType=&quot;slide&quot; presentationStyle=&quot;pageSheet&quot; onRequestClose={onClose}&gt;
+      &lt;View style={[man.root, { paddingTop: insets.top + 12 }]}&gt;
+        &lt;View style={man.header}&gt;
+          &lt;Text style={man.title}&gt;📖 Manual Rápido&lt;/Text&gt;
+          &lt;Pressable onPress={onClose} style={man.closeBtn}&gt;
+            &lt;Feather name=&quot;x&quot; size={20} color={WHITE} /&gt;
+          &lt;/Pressable&gt;
+        &lt;/View&gt;
+        {/* Section tabs */}
+        &lt;ScrollView horizontal showsHorizontalScrollIndicator={false} style={man.tabsRow} contentContainerStyle={{ gap: 8, paddingHorizontal: 14 }}&gt;
+          {MANUAL_SECTIONS.map((s, i) =&gt; (
+            &lt;Pressable key={i} onPress={() =&gt; setSection(i)}
+              style={[man.tab, i === section &amp;&amp; man.tabActive]}&gt;
+              &lt;Text style={{ fontSize: 16 }}&gt;{s.icon}&lt;/Text&gt;
+              &lt;Text style={[man.tabTxt, i === section &amp;&amp; { color: &quot;#fff&quot; }]}&gt;{s.title}&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          ))}
+        &lt;/ScrollView&gt;
+        {/* Content */}
+        &lt;ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}&gt;
+          &lt;View style={man.card}&gt;
+            &lt;Text style={{ fontSize: 40, marginBottom: 12, textAlign: &quot;center&quot; }}&gt;{item.icon}&lt;/Text&gt;
+            &lt;Text style={man.sTitle}&gt;{item.title}&lt;/Text&gt;
+            &lt;Text style={man.body}&gt;{item.content}&lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;View style={[man.card, { backgroundColor: ACCENT + &quot;15&quot;, borderColor: ACCENT + &quot;44&quot; }]}&gt;
+            &lt;Text style={[man.hint, { color: ACCENT }]}&gt;
+              💡 Toque nos itens da barra acima para navegar entre os tópicos.
+            &lt;/Text&gt;
+          &lt;/View&gt;
+        &lt;/ScrollView&gt;
+      &lt;/View&gt;
+    &lt;/Modal&gt;
+  );
+}
+
+// ── CREATE TABLE WIZARD ───────────────────────────────────────────────────────">📋 Copiar</button><pre><code class="language-texto">function ManualModal({ visible, onClose }: { visible: boolean; onClose: () =&gt; void }) {
+  const insets = useSafeAreaInsets();
+  const [section, setSection] = useState(0);
+  const item = MANUAL_SECTIONS[section];
+  return (
+    &lt;Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}&gt;
+      &lt;View style={[man.root, { paddingTop: insets.top + 12 }]}&gt;
+        &lt;View style={man.header}&gt;
+          &lt;Text style={man.title}&gt;📖 Manual Rápido&lt;/Text&gt;
+          &lt;Pressable onPress={onClose} style={man.closeBtn}&gt;
+            &lt;Feather name="x" size={20} color={WHITE} /&gt;
+          &lt;/Pressable&gt;
+        &lt;/View&gt;
+        {/* Section tabs */}
+        &lt;ScrollView horizontal showsHorizontalScrollIndicator={false} style={man.tabsRow} contentContainerStyle={{ gap: 8, paddingHorizontal: 14 }}&gt;
+          {MANUAL_SECTIONS.map((s, i) =&gt; (
+            &lt;Pressable key={i} onPress={() =&gt; setSection(i)}
+              style={[man.tab, i === section &amp;&amp; man.tabActive]}&gt;
+              &lt;Text style={{ fontSize: 16 }}&gt;{s.icon}&lt;/Text&gt;
+              &lt;Text style={[man.tabTxt, i === section &amp;&amp; { color: "#fff" }]}&gt;{s.title}&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          ))}
+        &lt;/ScrollView&gt;
+        {/* Content */}
+        &lt;ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20, paddingBottom: 40 }}&gt;
+          &lt;View style={man.card}&gt;
+            &lt;Text style={{ fontSize: 40, marginBottom: 12, textAlign: "center" }}&gt;{item.icon}&lt;/Text&gt;
+            &lt;Text style={man.sTitle}&gt;{item.title}&lt;/Text&gt;
+            &lt;Text style={man.body}&gt;{item.content}&lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;View style={[man.card, { backgroundColor: ACCENT + "15", borderColor: ACCENT + "44" }]}&gt;
+            &lt;Text style={[man.hint, { color: ACCENT }]}&gt;
+              💡 Toque nos itens da barra acima para navegar entre os tópicos.
+            &lt;/Text&gt;
+          &lt;/View&gt;
+        &lt;/ScrollView&gt;
+      &lt;/View&gt;
+    &lt;/Modal&gt;
+  );
+}
+
+// ── CREATE TABLE WIZARD ───────────────────────────────────────────────────────</code></pre></div><h3 id="createtablemodal" data-heading="3" data-raw="CreateTableModal">CreateTableModal<button class="copy-btn" data-section="createtablemodal">📋 Seção</button></h3><blockquote>
+<p>Linhas 109–118</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="function CreateTableModal({ visible, onClose, neonDbUrl }: { visible: boolean; onClose: () =&gt; void; neonDbUrl: string }) {
+  const insets = useSafeAreaInsets();
+  const [tableName, setTableName] = useState(&quot;&quot;);
+  const [cols, setCols] = useState([
+    { name: &quot;id&quot;, type: &quot;SERIAL PRIMARY KEY&quot; },
+    { name: &quot;created_at&quot;, type: &quot;TIMESTAMP DEFAULT NOW()&quot; },
+  ]);
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState(&quot;&quot;);
+">📋 Copiar</button><pre><code class="language-texto">function CreateTableModal({ visible, onClose, neonDbUrl }: { visible: boolean; onClose: () =&gt; void; neonDbUrl: string }) {
+  const insets = useSafeAreaInsets();
+  const [tableName, setTableName] = useState("");
+  const [cols, setCols] = useState([
+    { name: "id", type: "SERIAL PRIMARY KEY" },
+    { name: "created_at", type: "TIMESTAMP DEFAULT NOW()" },
+  ]);
+  const [running, setRunning] = useState(false);
+  const [result, setResult] = useState("");
+</code></pre></div><h3 id="addcol" data-heading="3" data-raw="addCol">addCol<button class="copy-btn" data-section="addcol">📋 Seção</button></h3><blockquote>
+<p>Linhas 119–119</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  function addCol() { setCols(c =&gt; [...c, { name: &quot;&quot;, type: &quot;TEXT&quot; }]); }">📋 Copiar</button><pre><code class="language-texto">  function addCol() { setCols(c =&gt; [...c, { name: "", type: "TEXT" }]); }</code></pre></div><h3 id="removecol" data-heading="3" data-raw="removeCol">removeCol<button class="copy-btn" data-section="removecol">📋 Seção</button></h3><blockquote>
+<p>Linhas 120–120</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  function removeCol(i: number) { setCols(c =&gt; c.filter((_, j) =&gt; j !== i)); }">📋 Copiar</button><pre><code class="language-texto">  function removeCol(i: number) { setCols(c =&gt; c.filter((_, j) =&gt; j !== i)); }</code></pre></div><h3 id="setcolname" data-heading="3" data-raw="setColName">setColName<button class="copy-btn" data-section="setcolname">📋 Seção</button></h3><blockquote>
+<p>Linhas 121–121</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  function setColName(i: number, v: string) { setCols(c =&gt; c.map((x, j) =&gt; j === i ? { ...x, name: v } : x)); }">📋 Copiar</button><pre><code class="language-texto">  function setColName(i: number, v: string) { setCols(c =&gt; c.map((x, j) =&gt; j === i ? { ...x, name: v } : x)); }</code></pre></div><h3 id="setcoltype" data-heading="3" data-raw="setColType">setColType<button class="copy-btn" data-section="setcoltype">📋 Seção</button></h3><blockquote>
+<p>Linhas 122–125</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  function setColType(i: number, v: string) { setCols(c =&gt; c.map((x, j) =&gt; j === i ? { ...x, type: v } : x)); }
+
+  const sql = `CREATE TABLE IF NOT EXISTS ${tableName || &quot;minha_tabela&quot;} (\n  ${cols.filter(c =&gt; c.name).map(c =&gt; `${c.name} ${c.type}`).join(&quot;,\n  &quot;)}\n);`;
+">📋 Copiar</button><pre><code class="language-texto">  function setColType(i: number, v: string) { setCols(c =&gt; c.map((x, j) =&gt; j === i ? { ...x, type: v } : x)); }
+
+  const sql = `CREATE TABLE IF NOT EXISTS ${tableName || "minha_tabela"} (\n  ${cols.filter(c =&gt; c.name).map(c =&gt; `${c.name} ${c.type}`).join(",\n  ")}\n);`;
+</code></pre></div><h3 id="run" data-heading="3" data-raw="run">run<button class="copy-btn" data-section="run">📋 Seção</button></h3><blockquote>
+<p>Linhas 126–204</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function run() {
+    if (!tableName.trim()) { Alert.alert(&quot;Nome obrigatório&quot;); return; }
+    if (!neonDbUrl) { Alert.alert(&quot;Configure o banco Neon primeiro&quot;); return; }
+    setRunning(true); setResult(&quot;&quot;);
+    try {
+      await neonQuery(neonDbUrl, sql);
+      setResult(&quot;✅ Tabela criada com sucesso!&quot;);
+    } catch (e) {
+      setResult(&quot;❌ &quot; + String(e));
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const TYPES = [&quot;TEXT&quot;, &quot;INTEGER&quot;, &quot;SERIAL&quot;, &quot;SERIAL PRIMARY KEY&quot;, &quot;BOOLEAN&quot;, &quot;FLOAT&quot;, &quot;TIMESTAMP&quot;, &quot;TIMESTAMP DEFAULT NOW()&quot;, &quot;UUID DEFAULT gen_random_uuid()&quot;, &quot;JSONB&quot;];
+
+  return (
+    &lt;Modal visible={visible} animationType=&quot;slide&quot; presentationStyle=&quot;pageSheet&quot; onRequestClose={onClose}&gt;
+      &lt;View style={[man.root, { paddingTop: insets.top + 12 }]}&gt;
+        &lt;View style={man.header}&gt;
+          &lt;Text style={man.title}&gt;🗄️ Criar Tabela&lt;/Text&gt;
+          &lt;Pressable onPress={onClose} style={man.closeBtn}&gt;&lt;Feather name=&quot;x&quot; size={20} color={WHITE} /&gt;&lt;/Pressable&gt;
+        &lt;/View&gt;
+        &lt;ScrollView contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }} keyboardShouldPersistTaps=&quot;handled&quot;&gt;
+          &lt;Text style={s.fieldLabel}&gt;NOME DA TABELA&lt;/Text&gt;
+          &lt;TextInput style={s.input} value={tableName} onChangeText={setTableName}
+            placeholder=&quot;clientes, produtos, pedidos...&quot; placeholderTextColor={MUTED}
+            autoCapitalize=&quot;none&quot; autoCorrect={false} /&gt;
+
+          &lt;Text style={s.fieldLabel}&gt;COLUNAS&lt;/Text&gt;
+          {cols.map((col, i) =&gt; (
+            &lt;View key={i} style={{ flexDirection: &quot;row&quot;, gap: 8, alignItems: &quot;flex-start&quot; }}&gt;
+              &lt;TextInput style={[s.input, { flex: 1 }]} value={col.name}
+                onChangeText={v =&gt; setColName(i, v)} placeholder=&quot;nome_coluna&quot;
+                placeholderTextColor={MUTED} autoCapitalize=&quot;none&quot; autoCorrect={false} /&gt;
+              &lt;ScrollView horizontal style={{ flex: 1.2 }}&gt;
+                &lt;View style={{ flexDirection: &quot;row&quot;, gap: 4 }}&gt;
+                  {TYPES.map(t =&gt; (
+                    &lt;Pressable key={t} onPress={() =&gt; setColType(i, t)}
+                      style={[man.tab, { paddingVertical: 5, paddingHorizontal: 8 }, col.type === t &amp;&amp; man.tabActive]}&gt;
+                      &lt;Text style={{ fontSize: 9, color: col.type === t ? &quot;#fff&quot; : MUTED }}&gt;{t}&lt;/Text&gt;
+                    &lt;/Pressable&gt;
+                  ))}
+                &lt;/View&gt;
+              &lt;/ScrollView&gt;
+              &lt;Pressable onPress={() =&gt; removeCol(i)} style={{ padding: 10 }}&gt;
+                &lt;Feather name=&quot;trash-2&quot; size={14} color={RED} /&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+          ))}
+          &lt;Pressable onPress={addCol} style={[man.tab, { alignSelf: &quot;flex-start&quot; }]}&gt;
+            &lt;Feather name=&quot;plus&quot; size={14} color={ACCENT} /&gt;
+            &lt;Text style={{ color: ACCENT, fontSize: 12 }}&gt;Adicionar coluna&lt;/Text&gt;
+          &lt;/Pressable&gt;
+
+          {/* Preview SQL */}
+          &lt;Text style={s.fieldLabel}&gt;SQL GERADO&lt;/Text&gt;
+          &lt;View style={{ backgroundColor: &quot;#050810&quot;, borderRadius: 10, padding: 12, borderWidth: 1, borderColor: &quot;#1e3a5f&quot; }}&gt;
+            &lt;Text selectable style={{ fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 11, color: &quot;#e2e8f0&quot;, lineHeight: 17 }}&gt;
+              {sql}
+            &lt;/Text&gt;
+          &lt;/View&gt;
+
+          {result !== &quot;&quot; &amp;&amp; (
+            &lt;Text style={{ color: result.startsWith(&quot;✅&quot;) ? GREEN : RED, fontFamily: &quot;Inter_500Medium&quot;, fontSize: 13 }}&gt;{result}&lt;/Text&gt;
+          )}
+
+          &lt;Pressable onPress={run} disabled={running}
+            style={{ backgroundColor: &quot;#166534&quot;, borderRadius: 12, paddingVertical: 13, flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot;, gap: 8 }}&gt;
+            {running ? &lt;ActivityIndicator size=&quot;small&quot; color={GREEN} /&gt; : &lt;Feather name=&quot;database&quot; size={16} color={GREEN} /&gt;}
+            &lt;Text style={{ color: GREEN, fontSize: 14, fontFamily: &quot;Inter_700Bold&quot; }}&gt;{running ? &quot;Criando...&quot; : &quot;Criar Tabela&quot;}&lt;/Text&gt;
+          &lt;/Pressable&gt;
+        &lt;/ScrollView&gt;
+      &lt;/View&gt;
+    &lt;/Modal&gt;
+  );
+}
+
+// ── MAIN COMPONENT ────────────────────────────────────────────────────────────">📋 Copiar</button><pre><code class="language-texto">  async function run() {
+    if (!tableName.trim()) { Alert.alert("Nome obrigatório"); return; }
+    if (!neonDbUrl) { Alert.alert("Configure o banco Neon primeiro"); return; }
+    setRunning(true); setResult("");
+    try {
+      await neonQuery(neonDbUrl, sql);
+      setResult("✅ Tabela criada com sucesso!");
+    } catch (e) {
+      setResult("❌ " + String(e));
+    } finally {
+      setRunning(false);
+    }
+  }
+
+  const TYPES = ["TEXT", "INTEGER", "SERIAL", "SERIAL PRIMARY KEY", "BOOLEAN", "FLOAT", "TIMESTAMP", "TIMESTAMP DEFAULT NOW()", "UUID DEFAULT gen_random_uuid()", "JSONB"];
+
+  return (
+    &lt;Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}&gt;
+      &lt;View style={[man.root, { paddingTop: insets.top + 12 }]}&gt;
+        &lt;View style={man.header}&gt;
+          &lt;Text style={man.title}&gt;🗄️ Criar Tabela&lt;/Text&gt;
+          &lt;Pressable onPress={onClose} style={man.closeBtn}&gt;&lt;Feather name="x" size={20} color={WHITE} /&gt;&lt;/Pressable&gt;
+        &lt;/View&gt;
+        &lt;ScrollView contentContainerStyle={{ padding: 16, gap: 12, paddingBottom: 40 }} keyboardShouldPersistTaps="handled"&gt;
+          &lt;Text style={s.fieldLabel}&gt;NOME DA TABELA&lt;/Text&gt;
+          &lt;TextInput style={s.input} value={tableName} onChangeText={setTableName}
+            placeholder="clientes, produtos, pedidos..." placeholderTextColor={MUTED}
+            autoCapitalize="none" autoCorrect={false} /&gt;
+
+          &lt;Text style={s.fieldLabel}&gt;COLUNAS&lt;/Text&gt;
+          {cols.map((col, i) =&gt; (
+            &lt;View key={i} style={{ flexDirection: "row", gap: 8, alignItems: "flex-start" }}&gt;
+              &lt;TextInput style={[s.input, { flex: 1 }]} value={col.name}
+                onChangeText={v =&gt; setColName(i, v)} placeholder="nome_coluna"
+                placeholderTextColor={MUTED} autoCapitalize="none" autoCorrect={false} /&gt;
+              &lt;ScrollView horizontal style={{ flex: 1.2 }}&gt;
+                &lt;View style={{ flexDirection: "row", gap: 4 }}&gt;
+                  {TYPES.map(t =&gt; (
+                    &lt;Pressable key={t} onPress={() =&gt; setColType(i, t)}
+                      style={[man.tab, { paddingVertical: 5, paddingHorizontal: 8 }, col.type === t &amp;&amp; man.tabActive]}&gt;
+                      &lt;Text style={{ fontSize: 9, color: col.type === t ? "#fff" : MUTED }}&gt;{t}&lt;/Text&gt;
+                    &lt;/Pressable&gt;
+                  ))}
+                &lt;/View&gt;
+              &lt;/ScrollView&gt;
+              &lt;Pressable onPress={() =&gt; removeCol(i)} style={{ padding: 10 }}&gt;
+                &lt;Feather name="trash-2" size={14} color={RED} /&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+          ))}
+          &lt;Pressable onPress={addCol} style={[man.tab, { alignSelf: "flex-start" }]}&gt;
+            &lt;Feather name="plus" size={14} color={ACCENT} /&gt;
+            &lt;Text style={{ color: ACCENT, fontSize: 12 }}&gt;Adicionar coluna&lt;/Text&gt;
+          &lt;/Pressable&gt;
+
+          {/* Preview SQL */}
+          &lt;Text style={s.fieldLabel}&gt;SQL GERADO&lt;/Text&gt;
+          &lt;View style={{ backgroundColor: "#050810", borderRadius: 10, padding: 12, borderWidth: 1, borderColor: "#1e3a5f" }}&gt;
+            &lt;Text selectable style={{ fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 11, color: "#e2e8f0", lineHeight: 17 }}&gt;
+              {sql}
+            &lt;/Text&gt;
+          &lt;/View&gt;
+
+          {result !== "" &amp;&amp; (
+            &lt;Text style={{ color: result.startsWith("✅") ? GREEN : RED, fontFamily: "Inter_500Medium", fontSize: 13 }}&gt;{result}&lt;/Text&gt;
+          )}
+
+          &lt;Pressable onPress={run} disabled={running}
+            style={{ backgroundColor: "#166534", borderRadius: 12, paddingVertical: 13, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}&gt;
+            {running ? &lt;ActivityIndicator size="small" color={GREEN} /&gt; : &lt;Feather name="database" size={16} color={GREEN} /&gt;}
+            &lt;Text style={{ color: GREEN, fontSize: 14, fontFamily: "Inter_700Bold" }}&gt;{running ? "Criando..." : "Criar Tabela"}&lt;/Text&gt;
+          &lt;/Pressable&gt;
+        &lt;/ScrollView&gt;
+      &lt;/View&gt;
+    &lt;/Modal&gt;
+  );
+}
+
+// ── MAIN COMPONENT ────────────────────────────────────────────────────────────</code></pre></div><h3 id="keysscreen" data-heading="3" data-raw="KeysScreen">KeysScreen<button class="copy-btn" data-section="keysscreen">📋 Seção</button></h3><blockquote>
+<p>Linhas 205–266</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="export default function KeysScreen() {
+  const insets = useSafeAreaInsets();
+  const {
+    apiKeys, activeKeyId, addApiKey, removeApiKey, updateApiKey, setActiveKeyId,
+    neonDbUrl, setNeonDbUrl, easToken, setEasToken,
+    ghToken, setGhToken,
+  } = useProject();
+
+  const [section, setSection] = useState&lt;&quot;keys&quot; | &quot;db&quot; | &quot;tokens&quot; | &quot;status&quot;&gt;(&quot;keys&quot;);
+
+  // ── Keys state ──────────────────────────────────────────────────────────────
+  const [rawKey, setRawKey] = useState(&quot;&quot;);
+  const [detected, setDetected] = useState&lt;ProviderProfile | null&gt;(null);
+  const [undetected, setUndetected] = useState(false);
+  const [manualProvider, setManualProvider] = useState&lt;ProviderProfile | null&gt;(null);
+  const [customUrl, setCustomUrl] = useState(&quot;&quot;);
+  const [customModel, setCustomModel] = useState(&quot;&quot;);
+  const [customLabel, setCustomLabel] = useState(&quot;&quot;);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [testing, setTesting] = useState&lt;string | null&gt;(null);
+  const [manualOpen, setManualOpen] = useState(false);
+
+  // ── Neon state ──────────────────────────────────────────────────────────────
+  const [neonInput, setNeonInput] = useState(neonDbUrl);
+  const [neonStatus, setNeonStatus] = useState&lt;&quot;idle&quot; | &quot;testing&quot; | &quot;ok&quot; | &quot;error&quot;&gt;(&quot;idle&quot;);
+  const [neonMsg, setNeonMsg] = useState(&quot;&quot;);
+  const [neonTables, setNeonTables] = useState&lt;string[]&gt;([]);
+  const [createTableOpen, setCreateTableOpen] = useState(false);
+  const [sqlConsole, setSqlConsole] = useState(&quot;&quot;);
+  const [sqlResult, setSqlResult] = useState(&quot;&quot;);
+  const [sqlRunning, setSqlRunning] = useState(false);
+  const [selectedTable, setSelectedTable] = useState&lt;string | null&gt;(null);
+  const [tableDetails, setTableDetails] = useState(&quot;&quot;);
+  const [aiDbPrompt, setAiDbPrompt] = useState(&quot;&quot;);
+  const [aiDbRunning, setAiDbRunning] = useState(false);
+  const [aiDbResult, setAiDbResult] = useState(&quot;&quot;);
+
+  // ── Tokens state ────────────────────────────────────────────────────────────
+  const [easInput, setEasInput] = useState(easToken);
+  const [ghInput, setGhInput] = useState(ghToken);
+
+  // ── Status state ────────────────────────────────────────────────────────────
+  const [statusResults, setStatusResults] = useState&lt;Array&lt;{ label: string; status: &quot;ok&quot; | &quot;error&quot; | &quot;checking&quot; | &quot;idle&quot;; msg: string }&gt;&gt;([]);
+  const [statusRunning, setStatusRunning] = useState(false);
+
+  // Auto-detect key
+  useEffect(() =&gt; {
+    const k = rawKey.trim();
+    if (!k) { setDetected(null); setUndetected(false); setManualProvider(null); return; }
+    const result = detectProvider(k);
+    if (result) {
+      setDetected(result); setUndetected(false); setManualProvider(null);
+      setCustomUrl(result.url); setCustomModel(result.model);
+      if (!customLabel) setCustomLabel(result.name);
+    } else {
+      setDetected(null); setUndetected(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawKey]);
+
+  const activeProfile = detected ?? manualProvider;
+">📋 Copiar</button><pre><code class="language-texto">export default function KeysScreen() {
+  const insets = useSafeAreaInsets();
+  const {
+    apiKeys, activeKeyId, addApiKey, removeApiKey, updateApiKey, setActiveKeyId,
+    neonDbUrl, setNeonDbUrl, easToken, setEasToken,
+    ghToken, setGhToken,
+  } = useProject();
+
+  const [section, setSection] = useState&lt;"keys" | "db" | "tokens" | "status"&gt;("keys");
+
+  // ── Keys state ──────────────────────────────────────────────────────────────
+  const [rawKey, setRawKey] = useState("");
+  const [detected, setDetected] = useState&lt;ProviderProfile | null&gt;(null);
+  const [undetected, setUndetected] = useState(false);
+  const [manualProvider, setManualProvider] = useState&lt;ProviderProfile | null&gt;(null);
+  const [customUrl, setCustomUrl] = useState("");
+  const [customModel, setCustomModel] = useState("");
+  const [customLabel, setCustomLabel] = useState("");
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [testing, setTesting] = useState&lt;string | null&gt;(null);
+  const [manualOpen, setManualOpen] = useState(false);
+
+  // ── Neon state ──────────────────────────────────────────────────────────────
+  const [neonInput, setNeonInput] = useState(neonDbUrl);
+  const [neonStatus, setNeonStatus] = useState&lt;"idle" | "testing" | "ok" | "error"&gt;("idle");
+  const [neonMsg, setNeonMsg] = useState("");
+  const [neonTables, setNeonTables] = useState&lt;string[]&gt;([]);
+  const [createTableOpen, setCreateTableOpen] = useState(false);
+  const [sqlConsole, setSqlConsole] = useState("");
+  const [sqlResult, setSqlResult] = useState("");
+  const [sqlRunning, setSqlRunning] = useState(false);
+  const [selectedTable, setSelectedTable] = useState&lt;string | null&gt;(null);
+  const [tableDetails, setTableDetails] = useState("");
+  const [aiDbPrompt, setAiDbPrompt] = useState("");
+  const [aiDbRunning, setAiDbRunning] = useState(false);
+  const [aiDbResult, setAiDbResult] = useState("");
+
+  // ── Tokens state ────────────────────────────────────────────────────────────
+  const [easInput, setEasInput] = useState(easToken);
+  const [ghInput, setGhInput] = useState(ghToken);
+
+  // ── Status state ────────────────────────────────────────────────────────────
+  const [statusResults, setStatusResults] = useState&lt;Array&lt;{ label: string; status: "ok" | "error" | "checking" | "idle"; msg: string }&gt;&gt;([]);
+  const [statusRunning, setStatusRunning] = useState(false);
+
+  // Auto-detect key
+  useEffect(() =&gt; {
+    const k = rawKey.trim();
+    if (!k) { setDetected(null); setUndetected(false); setManualProvider(null); return; }
+    const result = detectProvider(k);
+    if (result) {
+      setDetected(result); setUndetected(false); setManualProvider(null);
+      setCustomUrl(result.url); setCustomModel(result.model);
+      if (!customLabel) setCustomLabel(result.name);
+    } else {
+      setDetected(null); setUndetected(true);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawKey]);
+
+  const activeProfile = detected ?? manualProvider;
+</code></pre></div><h3 id="pickmanual" data-heading="3" data-raw="pickManual">pickManual<button class="copy-btn" data-section="pickmanual">📋 Seção</button></h3><blockquote>
+<p>Linhas 267–271</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  function pickManual(p: ProviderProfile) {
+    setManualProvider(p); setCustomUrl(p.url); setCustomModel(p.model);
+    if (!customLabel) setCustomLabel(p.name);
+  }
+">📋 Copiar</button><pre><code class="language-texto">  function pickManual(p: ProviderProfile) {
+    setManualProvider(p); setCustomUrl(p.url); setCustomModel(p.model);
+    if (!customLabel) setCustomLabel(p.name);
+  }
+</code></pre></div><h3 id="addkey" data-heading="3" data-raw="addKey">addKey<button class="copy-btn" data-section="addkey">📋 Seção</button></h3><blockquote>
+<p>Linhas 272–283</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  function addKey() {
+    const k = rawKey.trim();
+    if (!k) { Alert.alert(&quot;Cole sua chave primeiro.&quot;); return; }
+    if (!activeProfile) { Alert.alert(&quot;Selecione o provedor&quot;, &quot;Escolha um da lista abaixo.&quot;); return; }
+    const label = customLabel.trim() || activeProfile.name;
+    const newKey: ApiKey = { id: uid(), label, url: customUrl.trim() || activeProfile.url, key: k, model: customModel.trim() || activeProfile.model, status: &quot;unknown&quot; };
+    addApiKey(newKey);
+    if (apiKeys.length === 0) setActiveKeyId(newKey.id);
+    setRawKey(&quot;&quot;); setDetected(null); setUndetected(false);
+    setManualProvider(null); setCustomLabel(&quot;&quot;); setCustomUrl(&quot;&quot;); setCustomModel(&quot;&quot;); setShowAdvanced(false);
+  }
+">📋 Copiar</button><pre><code class="language-texto">  function addKey() {
+    const k = rawKey.trim();
+    if (!k) { Alert.alert("Cole sua chave primeiro."); return; }
+    if (!activeProfile) { Alert.alert("Selecione o provedor", "Escolha um da lista abaixo."); return; }
+    const label = customLabel.trim() || activeProfile.name;
+    const newKey: ApiKey = { id: uid(), label, url: customUrl.trim() || activeProfile.url, key: k, model: customModel.trim() || activeProfile.model, status: "unknown" };
+    addApiKey(newKey);
+    if (apiKeys.length === 0) setActiveKeyId(newKey.id);
+    setRawKey(""); setDetected(null); setUndetected(false);
+    setManualProvider(null); setCustomLabel(""); setCustomUrl(""); setCustomModel(""); setShowAdvanced(false);
+  }
+</code></pre></div><h3 id="testkey" data-heading="3" data-raw="testKey">testKey<button class="copy-btn" data-section="testkey">📋 Seção</button></h3><blockquote>
+<p>Linhas 284–286</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function testKey(k: ApiKey) {
+    setTesting(k.id); updateApiKey(k.id, { status: &quot;testing&quot; });
+    try {">📋 Copiar</button><pre><code class="language-texto">  async function testKey(k: ApiKey) {
+    setTesting(k.id); updateApiKey(k.id, { status: "testing" });
+    try {</code></pre></div><h3 id="base" data-heading="3" data-raw="base →">base →<button class="copy-btn" data-section="base">📋 Seção</button></h3><blockquote>
+<p>Linhas 287–297</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="      const base = (k.url || &quot;https://api.openai.com/v1&quot;).replace(/\/$/, &quot;&quot;);
+      const r = await fetch(`${base}/chat/completions`, {
+        method: &quot;POST&quot;,
+        headers: { &quot;Content-Type&quot;: &quot;application/json&quot;, Authorization: `Bearer ${k.key}` },
+        body: JSON.stringify({ model: k.model || &quot;gpt-4o-mini&quot;, messages: [{ role: &quot;user&quot;, content: &quot;hi&quot; }], max_tokens: 5 }),
+      });
+      updateApiKey(k.id, { status: r.ok || r.status === 400 ? &quot;ok&quot; : &quot;error&quot; });
+    } catch { updateApiKey(k.id, { status: &quot;error&quot; }); }
+    finally { setTesting(null); }
+  }
+">📋 Copiar</button><pre><code class="language-texto">      const base = (k.url || "https://api.openai.com/v1").replace(/\/$/, "");
+      const r = await fetch(`${base}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${k.key}` },
+        body: JSON.stringify({ model: k.model || "gpt-4o-mini", messages: [{ role: "user", content: "hi" }], max_tokens: 5 }),
+      });
+      updateApiKey(k.id, { status: r.ok || r.status === 400 ? "ok" : "error" });
+    } catch { updateApiKey(k.id, { status: "error" }); }
+    finally { setTesting(null); }
+  }
+</code></pre></div><h3 id="testall" data-heading="3" data-raw="testAll">testAll<button class="copy-btn" data-section="testall">📋 Seção</button></h3><blockquote>
+<p>Linhas 298–300</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function testAll() { for (const k of apiKeys) await testKey(k); }
+
+  // ── Neon functions ──────────────────────────────────────────────────────────">📋 Copiar</button><pre><code class="language-texto">  async function testAll() { for (const k of apiKeys) await testKey(k); }
+
+  // ── Neon functions ──────────────────────────────────────────────────────────</code></pre></div><h3 id="testneon" data-heading="3" data-raw="testNeon">testNeon<button class="copy-btn" data-section="testneon">📋 Seção</button></h3><blockquote>
+<p>Linhas 301–311</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function testNeon() {
+    const conn = neonInput.trim();
+    if (!conn) { Alert.alert(&quot;Cole a URL de conexão Neon primeiro.&quot;); return; }
+    setNeonStatus(&quot;testing&quot;); setNeonMsg(&quot;Conectando...&quot;); setNeonTables([]);
+    try {
+      const msg = await neonTestConnection(conn);
+      const tables = await neonListTables(conn).catch(() =&gt; []);
+      setNeonDbUrl(conn); setNeonStatus(&quot;ok&quot;); setNeonMsg(msg); setNeonTables(tables);
+    } catch (e) { setNeonStatus(&quot;error&quot;); setNeonMsg(&quot;❌ &quot; + String(e)); }
+  }
+">📋 Copiar</button><pre><code class="language-texto">  async function testNeon() {
+    const conn = neonInput.trim();
+    if (!conn) { Alert.alert("Cole a URL de conexão Neon primeiro."); return; }
+    setNeonStatus("testing"); setNeonMsg("Conectando..."); setNeonTables([]);
+    try {
+      const msg = await neonTestConnection(conn);
+      const tables = await neonListTables(conn).catch(() =&gt; []);
+      setNeonDbUrl(conn); setNeonStatus("ok"); setNeonMsg(msg); setNeonTables(tables);
+    } catch (e) { setNeonStatus("error"); setNeonMsg("❌ " + String(e)); }
+  }
+</code></pre></div><h3 id="runsql" data-heading="3" data-raw="runSql">runSql<button class="copy-btn" data-section="runsql">📋 Seção</button></h3><blockquote>
+<p>Linhas 312–321</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function runSql() {
+    if (!neonDbUrl || !sqlConsole.trim()) return;
+    setSqlRunning(true); setSqlResult(&quot;&quot;);
+    try {
+      const res = await neonQuery(neonDbUrl, sqlConsole.trim());
+      setSqlResult(formatNeonResult(res));
+    } catch (e) { setSqlResult(&quot;❌ &quot; + String(e)); }
+    finally { setSqlRunning(false); }
+  }
+">📋 Copiar</button><pre><code class="language-texto">  async function runSql() {
+    if (!neonDbUrl || !sqlConsole.trim()) return;
+    setSqlRunning(true); setSqlResult("");
+    try {
+      const res = await neonQuery(neonDbUrl, sqlConsole.trim());
+      setSqlResult(formatNeonResult(res));
+    } catch (e) { setSqlResult("❌ " + String(e)); }
+    finally { setSqlRunning(false); }
+  }
+</code></pre></div><h3 id="runaidb" data-heading="3" data-raw="runAiDb">runAiDb<button class="copy-btn" data-section="runaidb">📋 Seção</button></h3><blockquote>
+<p>Linhas 322–328</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function runAiDb() {
+    const activeKey = apiKeys.find(k =&gt; k.id === activeKeyId) ?? apiKeys[0];
+    if (!activeKey) { Alert.alert(&quot;Configure uma chave de IA primeiro na aba Chaves IA.&quot;); return; }
+    if (!aiDbPrompt.trim()) return;
+    setAiDbRunning(true); setAiDbResult(&quot;&quot;);
+    try {
+      const tableCtx = neonTables.length &gt; 0 ? `\nTabelas existentes: ${neonTables.join(&quot;, &quot;)}` : &quot;\nBanco ainda sem tabelas.&quot;;">📋 Copiar</button><pre><code class="language-texto">  async function runAiDb() {
+    const activeKey = apiKeys.find(k =&gt; k.id === activeKeyId) ?? apiKeys[0];
+    if (!activeKey) { Alert.alert("Configure uma chave de IA primeiro na aba Chaves IA."); return; }
+    if (!aiDbPrompt.trim()) return;
+    setAiDbRunning(true); setAiDbResult("");
+    try {
+      const tableCtx = neonTables.length &gt; 0 ? `\nTabelas existentes: ${neonTables.join(", ")}` : "\nBanco ainda sem tabelas.";</code></pre></div><h3 id="base" data-heading="3" data-raw="base →">base →<button class="copy-btn" data-section="base">📋 Seção</button></h3><blockquote>
+<p>Linhas 329–362</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="      const base = (activeKey.url || &quot;https://api.openai.com/v1&quot;).replace(/\/$/, &quot;&quot;);
+      const r = await fetch(`${base}/chat/completions`, {
+        method: &quot;POST&quot;,
+        headers: { &quot;Content-Type&quot;: &quot;application/json&quot;, Authorization: `Bearer ${activeKey.key}` },
+        body: JSON.stringify({
+          model: activeKey.model,
+          messages: [
+            { role: &quot;system&quot;, content: `Você é um especialista em PostgreSQL (Neon). Gere SQL válido para PostgreSQL baseado no pedido do usuário.${tableCtx}\n\nRetorne APENAS o SQL, sem explicações, sem markdown, sem blocos de código. Apenas SQL puro executável.` },
+            { role: &quot;user&quot;, content: aiDbPrompt.trim() },
+          ],
+          max_tokens: 800,
+        }),
+      });
+      const data = await r.json();
+      const sql = data.choices?.[0]?.message?.content?.trim() ?? &quot;&quot;;
+      if (!sql) { setAiDbResult(&quot;❌ Sem resposta da IA.&quot;); return; }
+      setAiDbResult(&quot;⏳ Executando: &quot; + sql.slice(0, 60) + &quot;...&quot;);
+      if (neonDbUrl) {
+        try {
+          const res = await neonQuery(neonDbUrl, sql);
+          const fmt = formatNeonResult(res);
+          setAiDbResult(&quot;✅ SQL gerado e executado!\n\n&quot; + sql + &quot;\n\n--- Resultado ---\n&quot; + fmt);
+          const tables = await neonListTables(neonDbUrl).catch(() =&gt; neonTables);
+          setNeonTables(tables);
+        } catch (e) {
+          setAiDbResult(&quot;⚠️ SQL gerado mas erro ao executar:\n\n&quot; + sql + &quot;\n\n❌ &quot; + String(e) + &quot;\n\nCopie o SQL acima e execute no console abaixo.&quot;);
+        }
+      } else {
+        setAiDbResult(&quot;📋 SQL gerado (cole no console abaixo para executar):\n\n&quot; + sql);
+      }
+    } catch (e) { setAiDbResult(&quot;❌ Erro na IA: &quot; + String(e)); }
+    finally { setAiDbRunning(false); }
+  }
+">📋 Copiar</button><pre><code class="language-texto">      const base = (activeKey.url || "https://api.openai.com/v1").replace(/\/$/, "");
+      const r = await fetch(`${base}/chat/completions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${activeKey.key}` },
+        body: JSON.stringify({
+          model: activeKey.model,
+          messages: [
+            { role: "system", content: `Você é um especialista em PostgreSQL (Neon). Gere SQL válido para PostgreSQL baseado no pedido do usuário.${tableCtx}\n\nRetorne APENAS o SQL, sem explicações, sem markdown, sem blocos de código. Apenas SQL puro executável.` },
+            { role: "user", content: aiDbPrompt.trim() },
+          ],
+          max_tokens: 800,
+        }),
+      });
+      const data = await r.json();
+      const sql = data.choices?.[0]?.message?.content?.trim() ?? "";
+      if (!sql) { setAiDbResult("❌ Sem resposta da IA."); return; }
+      setAiDbResult("⏳ Executando: " + sql.slice(0, 60) + "...");
+      if (neonDbUrl) {
+        try {
+          const res = await neonQuery(neonDbUrl, sql);
+          const fmt = formatNeonResult(res);
+          setAiDbResult("✅ SQL gerado e executado!\n\n" + sql + "\n\n--- Resultado ---\n" + fmt);
+          const tables = await neonListTables(neonDbUrl).catch(() =&gt; neonTables);
+          setNeonTables(tables);
+        } catch (e) {
+          setAiDbResult("⚠️ SQL gerado mas erro ao executar:\n\n" + sql + "\n\n❌ " + String(e) + "\n\nCopie o SQL acima e execute no console abaixo.");
+        }
+      } else {
+        setAiDbResult("📋 SQL gerado (cole no console abaixo para executar):\n\n" + sql);
+      }
+    } catch (e) { setAiDbResult("❌ Erro na IA: " + String(e)); }
+    finally { setAiDbRunning(false); }
+  }
+</code></pre></div><h3 id="loadtabledetails" data-heading="3" data-raw="loadTableDetails">loadTableDetails<button class="copy-btn" data-section="loadtabledetails">📋 Seção</button></h3><blockquote>
+<p>Linhas 363–379</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="  async function loadTableDetails(table: string) {
+    if (!neonDbUrl) return;
+    setSelectedTable(table); setTableDetails(&quot;carregando...&quot;);
+    try {
+      const res = await neonQuery(neonDbUrl,
+        `SELECT column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_schema='public' AND table_name='${table}' ORDER BY ordinal_position`);
+      setTableDetails(formatNeonResult(res));
+    } catch (e) { setTableDetails(&quot;❌ &quot; + String(e)); }
+  }
+
+  // ── System status check ─────────────────────────────────────────────────────
+  const runStatusCheck = useCallback(async () =&gt; {
+    if (statusRunning) return;
+    setStatusRunning(true);
+    setStatusResults([]);
+    const results: typeof statusResults = [];
+">📋 Copiar</button><pre><code class="language-texto">  async function loadTableDetails(table: string) {
+    if (!neonDbUrl) return;
+    setSelectedTable(table); setTableDetails("carregando...");
+    try {
+      const res = await neonQuery(neonDbUrl,
+        `SELECT column_name, data_type, is_nullable, column_default FROM information_schema.columns WHERE table_schema='public' AND table_name='${table}' ORDER BY ordinal_position`);
+      setTableDetails(formatNeonResult(res));
+    } catch (e) { setTableDetails("❌ " + String(e)); }
+  }
+
+  // ── System status check ─────────────────────────────────────────────────────
+  const runStatusCheck = useCallback(async () =&gt; {
+    if (statusRunning) return;
+    setStatusRunning(true);
+    setStatusResults([]);
+    const results: typeof statusResults = [];
+</code></pre></div><h3 id="push" data-heading="3" data-raw="push →">push →<button class="copy-btn" data-section="push">📋 Seção</button></h3><blockquote>
+<p>Linhas 380–383</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="    const push = (item: (typeof statusResults)[0]) =&gt; {
+      results.push(item);
+      setStatusResults([...results]);
+    };">📋 Copiar</button><pre><code class="language-texto">    const push = (item: (typeof statusResults)[0]) =&gt; {
+      results.push(item);
+      setStatusResults([...results]);
+    };</code></pre></div><h3 id="update" data-heading="3" data-raw="update →">update →<button class="copy-btn" data-section="update">📋 Seção</button></h3><blockquote>
+<p>Linhas 384–432</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="    const update = (label: string, patch: Partial&lt;(typeof statusResults)[0]&gt;) =&gt; {
+      const idx = results.findLastIndex(r =&gt; r.label === label);
+      if (idx &gt;= 0) results[idx] = { ...results[idx], ...patch };
+      setStatusResults([...results]);
+    };
+
+    try {
+      // 1. Internet
+      push({ label: &quot;🌐 Internet&quot;, status: &quot;checking&quot;, msg: &quot;Verificando...&quot; });
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() =&gt; ctrl.abort(), 5000);
+        const r = await fetch(&quot;https://httpbin.org/get&quot;, { signal: ctrl.signal });
+        clearTimeout(tid);
+        update(&quot;🌐 Internet&quot;, { status: r.ok ? &quot;ok&quot; : &quot;error&quot;, msg: r.ok ? &quot;Conectado&quot; : `HTTP ${r.status}` });
+      } catch (e) { update(&quot;🌐 Internet&quot;, { status: &quot;error&quot;, msg: &quot;Sem conexão&quot; }); }
+
+      // 2. Proxy do servidor
+      push({ label: &quot;⚡ Proxy do servidor&quot;, status: &quot;checking&quot;, msg: &quot;Verificando...&quot; });
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() =&gt; ctrl.abort(), 5000);
+        const domain = process.env.EXPO_PUBLIC_DOMAIN;
+        const base = domain ? `https://${domain}` : &quot;&quot;;
+        const r = await fetch(`${base}/api/healthz`, { signal: ctrl.signal });
+        clearTimeout(tid);
+        update(&quot;⚡ Proxy do servidor&quot;, { status: r.ok ? &quot;ok&quot; : &quot;error&quot;, msg: r.ok ? &quot;Online — import sem CORS&quot; : `HTTP ${r.status}` });
+      } catch { update(&quot;⚡ Proxy do servidor&quot;, { status: &quot;error&quot;, msg: &quot;Sem resposta — verifique conexão&quot; }); }
+
+      // 3. GitHub token
+      if (ghToken) {
+        push({ label: &quot;🐙 GitHub&quot;, status: &quot;checking&quot;, msg: &quot;Verificando...&quot; });
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() =&gt; ctrl.abort(), 8000);
+          const r = await fetch(&quot;https://api.github.com/user&quot;, { headers: { Authorization: `token ${ghToken}` }, signal: ctrl.signal });
+          clearTimeout(tid);
+          const u = await r.json().catch(() =&gt; ({}));
+          update(&quot;🐙 GitHub&quot;, { status: r.ok ? &quot;ok&quot; : &quot;error&quot;, msg: r.ok ? `@${u.login}` : `HTTP ${r.status}` });
+        } catch (e) { update(&quot;🐙 GitHub&quot;, { status: &quot;error&quot;, msg: &quot;Falhou — verifique o token&quot; }); }
+      } else {
+        push({ label: &quot;🐙 GitHub&quot;, status: &quot;idle&quot;, msg: &quot;Token não configurado — aba Tokens&quot; });
+      }
+
+      // 4. IA ativa
+      const activeKey = apiKeys.find(k =&gt; k.id === activeKeyId) ?? apiKeys[0];
+      if (activeKey) {
+        push({ label: `🤖 IA: ${activeKey.label}`, status: &quot;checking&quot;, msg: &quot;Testando...&quot; });
+        try {">📋 Copiar</button><pre><code class="language-texto">    const update = (label: string, patch: Partial&lt;(typeof statusResults)[0]&gt;) =&gt; {
+      const idx = results.findLastIndex(r =&gt; r.label === label);
+      if (idx &gt;= 0) results[idx] = { ...results[idx], ...patch };
+      setStatusResults([...results]);
+    };
+
+    try {
+      // 1. Internet
+      push({ label: "🌐 Internet", status: "checking", msg: "Verificando..." });
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() =&gt; ctrl.abort(), 5000);
+        const r = await fetch("https://httpbin.org/get", { signal: ctrl.signal });
+        clearTimeout(tid);
+        update("🌐 Internet", { status: r.ok ? "ok" : "error", msg: r.ok ? "Conectado" : `HTTP ${r.status}` });
+      } catch (e) { update("🌐 Internet", { status: "error", msg: "Sem conexão" }); }
+
+      // 2. Proxy do servidor
+      push({ label: "⚡ Proxy do servidor", status: "checking", msg: "Verificando..." });
+      try {
+        const ctrl = new AbortController();
+        const tid = setTimeout(() =&gt; ctrl.abort(), 5000);
+        const domain = process.env.EXPO_PUBLIC_DOMAIN;
+        const base = domain ? `https://${domain}` : "";
+        const r = await fetch(`${base}/api/healthz`, { signal: ctrl.signal });
+        clearTimeout(tid);
+        update("⚡ Proxy do servidor", { status: r.ok ? "ok" : "error", msg: r.ok ? "Online — import sem CORS" : `HTTP ${r.status}` });
+      } catch { update("⚡ Proxy do servidor", { status: "error", msg: "Sem resposta — verifique conexão" }); }
+
+      // 3. GitHub token
+      if (ghToken) {
+        push({ label: "🐙 GitHub", status: "checking", msg: "Verificando..." });
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() =&gt; ctrl.abort(), 8000);
+          const r = await fetch("https://api.github.com/user", { headers: { Authorization: `token ${ghToken}` }, signal: ctrl.signal });
+          clearTimeout(tid);
+          const u = await r.json().catch(() =&gt; ({}));
+          update("🐙 GitHub", { status: r.ok ? "ok" : "error", msg: r.ok ? `@${u.login}` : `HTTP ${r.status}` });
+        } catch (e) { update("🐙 GitHub", { status: "error", msg: "Falhou — verifique o token" }); }
+      } else {
+        push({ label: "🐙 GitHub", status: "idle", msg: "Token não configurado — aba Tokens" });
+      }
+
+      // 4. IA ativa
+      const activeKey = apiKeys.find(k =&gt; k.id === activeKeyId) ?? apiKeys[0];
+      if (activeKey) {
+        push({ label: `🤖 IA: ${activeKey.label}`, status: "checking", msg: "Testando..." });
+        try {</code></pre></div><h3 id="base" data-heading="3" data-raw="base →">base →<button class="copy-btn" data-section="base">📋 Seção</button></h3><blockquote>
+<p>Linhas 433–1182</p>
+</blockquote>
+<div class="code-wrap"><button class="copy-btn" data-code="          const base = (activeKey.url || &quot;https://api.openai.com/v1&quot;).replace(/\/$/, &quot;&quot;);
+          const ctrl = new AbortController();
+          const tid = setTimeout(() =&gt; ctrl.abort(), 10000);
+          const r = await fetch(`${base}/chat/completions`, {
+            method: &quot;POST&quot;, signal: ctrl.signal,
+            headers: { &quot;Content-Type&quot;: &quot;application/json&quot;, Authorization: `Bearer ${activeKey.key}` },
+            body: JSON.stringify({ model: activeKey.model, messages: [{ role: &quot;user&quot;, content: &quot;hi&quot; }], max_tokens: 3 }),
+          });
+          clearTimeout(tid);
+          update(`🤖 IA: ${activeKey.label}`, { status: r.ok || r.status === 400 ? &quot;ok&quot; : &quot;error&quot;, msg: `HTTP ${r.status}` });
+        } catch { update(`🤖 IA: ${activeKey.label}`, { status: &quot;error&quot;, msg: &quot;Falhou — verifique a chave&quot; }); }
+      } else {
+        push({ label: &quot;🤖 IA&quot;, status: &quot;error&quot;, msg: &quot;Nenhuma chave — configure na aba Chaves IA&quot; });
+      }
+
+      // 5. Neon DB
+      if (neonDbUrl) {
+        push({ label: &quot;🐘 Banco Neon&quot;, status: &quot;checking&quot;, msg: &quot;Conectando...&quot; });
+        try {
+          const msg = await neonTestConnection(neonDbUrl);
+          update(&quot;🐘 Banco Neon&quot;, { status: &quot;ok&quot;, msg });
+        } catch (e) { update(&quot;🐘 Banco Neon&quot;, { status: &quot;error&quot;, msg: String(e) }); }
+      } else {
+        push({ label: &quot;🐘 Banco Neon&quot;, status: &quot;idle&quot;, msg: &quot;Não configurado&quot; });
+      }
+
+    } finally {
+      setStatusRunning(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiKeys, activeKeyId, ghToken, neonDbUrl, statusRunning]);
+
+  // Auto-run status check when user enters the Status tab
+  useEffect(() =&gt; {
+    if (section === &quot;status&quot;) runStatusCheck();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section]);
+
+  const SECTIONS = [
+    { id: &quot;keys&quot;, icon: &quot;🔑&quot;, label: &quot;Chaves IA&quot; },
+    { id: &quot;db&quot;, icon: &quot;🗄️&quot;, label: &quot;Banco DB&quot; },
+    { id: &quot;tokens&quot;, icon: &quot;🔐&quot;, label: &quot;Tokens&quot; },
+    { id: &quot;status&quot;, icon: &quot;📊&quot;, label: &quot;Status&quot; },
+  ] as const;
+
+  return (
+    &lt;View style={[s.root, { backgroundColor: BG }]}&gt;
+      &lt;ManualModal visible={manualOpen} onClose={() =&gt; setManualOpen(false)} /&gt;
+      &lt;CreateTableModal visible={createTableOpen} onClose={() =&gt; setCreateTableOpen(false)} neonDbUrl={neonDbUrl} /&gt;
+
+      &lt;ScrollView
+        contentContainerStyle={[s.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps=&quot;handled&quot;
+      &gt;
+        {/* Header */}
+        &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;space-between&quot; }}&gt;
+          &lt;View&gt;
+            &lt;Text style={s.title}&gt;⚙️ Configurações&lt;/Text&gt;
+            &lt;Text style={[s.hint, { color: MUTED }]}&gt;Chaves IA · Banco · Tokens · Status&lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;Pressable onPress={() =&gt; setManualOpen(true)} style={s.helpBtn}&gt;
+            &lt;Feather name=&quot;book-open&quot; size={16} color={ACCENT} /&gt;
+            &lt;Text style={[s.hint, { color: ACCENT, fontFamily: &quot;Inter_600SemiBold&quot; }]}&gt;Manual&lt;/Text&gt;
+          &lt;/Pressable&gt;
+        &lt;/View&gt;
+
+        {/* Section Tabs */}
+        &lt;View style={s.sectionTabs}&gt;
+          {SECTIONS.map(sec =&gt; (
+            &lt;Pressable key={sec.id} onPress={() =&gt; setSection(sec.id as any)}
+              style={[s.secTab, section === sec.id &amp;&amp; s.secTabActive]}&gt;
+              &lt;Text style={{ fontSize: 18 }}&gt;{sec.icon}&lt;/Text&gt;
+              &lt;Text style={[s.secTabTxt, section === sec.id &amp;&amp; { color: &quot;#fff&quot; }]}&gt;{sec.label}&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          ))}
+        &lt;/View&gt;
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: CHAVES IA                                             */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === &quot;keys&quot; &amp;&amp; (
+          &lt;&gt;
+            {/* Perplexity highlight */}
+            &lt;Pressable onPress={() =&gt; Linking.openURL(&quot;https://www.perplexity.ai/settings/api&quot;)}
+              style={[s.card, { borderColor: WEB_COLOR + &quot;55&quot;, backgroundColor: &quot;#041a1f&quot; }]}&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8 }}&gt;
+                &lt;Text style={{ fontSize: 22 }}&gt;🔍&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={[s.keyName, { color: WEB_COLOR }]}&gt;Perplexity — Acessa a Internet!&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: &quot;#67e8f9&quot; }]}&gt;A Iara poderá pesquisar em tempo real. Chave começa com pplx-&lt;/Text&gt;
+                &lt;/View&gt;
+                &lt;View style={[s.pill, { backgroundColor: WEB_COLOR + &quot;22&quot;, borderColor: WEB_COLOR + &quot;55&quot; }]}&gt;
+                  &lt;Feather name=&quot;globe&quot; size={11} color={WEB_COLOR} /&gt;
+                  &lt;Text style={[s.pillTxt, { color: WEB_COLOR }]}&gt;Web&lt;/Text&gt;
+                &lt;/View&gt;
+              &lt;/View&gt;
+              &lt;Text style={[s.hint, { color: WEB_COLOR + &quot;aa&quot; }]}&gt;Toque para obter sua chave Perplexity →&lt;/Text&gt;
+            &lt;/Pressable&gt;
+
+            {/* Auto-detect input */}
+            &lt;View style={[s.card, activeProfile &amp;&amp; { borderColor: activeProfile.color + &quot;88&quot; }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;CAMPO LIVRE — COLE QUALQUER CHAVE&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.keyInput, activeProfile &amp;&amp; { borderColor: activeProfile.color + &quot;66&quot; }]}
+                value={rawKey}
+                onChangeText={setRawKey}
+                placeholder={&quot;sk-...  /  pplx-...  /  sk-ant-...  /  gsk_...  /  AIza...&quot;}
+                placeholderTextColor={MUTED}
+                autoCapitalize=&quot;none&quot;
+                autoCorrect={false}
+                secureTextEntry={rawKey.length &gt; 0}
+              /&gt;
+
+              {detected &amp;&amp; (
+                &lt;View style={[s.detectedBadge, { backgroundColor: detected.color + &quot;22&quot;, borderColor: detected.color + &quot;55&quot; }]}&gt;
+                  &lt;Text style={{ fontSize: 22 }}&gt;{detected.icon}&lt;/Text&gt;
+                  &lt;View style={{ flex: 1 }}&gt;
+                    &lt;Text style={[s.detectedName, { color: detected.color }]}&gt;{detected.name}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                      Detectado automaticamente · {detected.hint}
+                      {detected.id === &quot;perplexity&quot; ? &quot;\n🌐 Este provedor acessa a internet em tempo real!&quot; : &quot;&quot;}
+                    &lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;View style={[s.pill, { backgroundColor: GREEN + &quot;22&quot;, borderColor: GREEN + &quot;55&quot; }]}&gt;
+                    &lt;Feather name=&quot;check-circle&quot; size={12} color={GREEN} /&gt;
+                    &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Auto&lt;/Text&gt;
+                  &lt;/View&gt;
+                &lt;/View&gt;
+              )}
+
+              {undetected &amp;&amp; !manualProvider &amp;&amp; (
+                &lt;View style={{ gap: 8 }}&gt;
+                  &lt;View style={s.warnBadge}&gt;
+                    &lt;Feather name=&quot;help-circle&quot; size={14} color={YELLOW} /&gt;
+                    &lt;Text style={[s.hint, { color: YELLOW, flex: 1 }]}&gt;Formato não reconhecido — escolha o provedor:&lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;ScrollView horizontal showsHorizontalScrollIndicator={false}&gt;
+                    &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8 }}&gt;
+                      {PROVIDERS.map(p =&gt; (
+                        &lt;Pressable key={p.id} onPress={() =&gt; pickManual(p)}
+                          style={[s.providerChip, { borderColor: p.color + &quot;66&quot; }]}&gt;
+                          &lt;Text style={{ fontSize: 16 }}&gt;{p.icon}&lt;/Text&gt;
+                          &lt;Text style={[s.chipTxt, { color: p.color }]}&gt;{p.name}&lt;/Text&gt;
+                        &lt;/Pressable&gt;
+                      ))}
+                    &lt;/View&gt;
+                  &lt;/ScrollView&gt;
+                &lt;/View&gt;
+              )}
+
+              {manualProvider &amp;&amp; (
+                &lt;View style={[s.detectedBadge, { backgroundColor: manualProvider.color + &quot;22&quot;, borderColor: manualProvider.color + &quot;55&quot; }]}&gt;
+                  &lt;Text style={{ fontSize: 22 }}&gt;{manualProvider.icon}&lt;/Text&gt;
+                  &lt;View style={{ flex: 1 }}&gt;
+                    &lt;Text style={[s.detectedName, { color: manualProvider.color }]}&gt;{manualProvider.name}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;Selecionado manualmente&lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;Pressable onPress={() =&gt; setManualProvider(null)} style={[s.pill, { backgroundColor: &quot;#1e293b&quot; }]}&gt;
+                    &lt;Feather name=&quot;x&quot; size={12} color={MUTED} /&gt;
+                    &lt;Text style={s.pillTxt}&gt;Trocar&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                &lt;/View&gt;
+              )}
+
+              {activeProfile &amp;&amp; (
+                &lt;&gt;
+                  &lt;Pressable onPress={() =&gt; setShowAdvanced(v =&gt; !v)} style={s.advancedToggle}&gt;
+                    &lt;Feather name={showAdvanced ? &quot;chevron-up&quot; : &quot;chevron-down&quot;} size={13} color={MUTED} /&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                      {showAdvanced ? &quot;Ocultar configuração&quot; : &quot;Editar URL / modelo (avançado)&quot;}
+                    &lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                  {showAdvanced &amp;&amp; (
+                    &lt;View style={{ gap: 6 }}&gt;
+                      &lt;Text style={s.fieldLabel}&gt;NOME / LABEL&lt;/Text&gt;
+                      &lt;TextInput style={s.input} value={customLabel} onChangeText={setCustomLabel}
+                        placeholder={activeProfile.name} placeholderTextColor={MUTED} autoCapitalize=&quot;none&quot; /&gt;
+                      &lt;Text style={s.fieldLabel}&gt;URL DA API&lt;/Text&gt;
+                      &lt;TextInput style={s.input} value={customUrl} onChangeText={setCustomUrl}
+                        placeholder={activeProfile.url} placeholderTextColor={MUTED} autoCapitalize=&quot;none&quot; autoCorrect={false} /&gt;
+                      &lt;Text style={s.fieldLabel}&gt;MODELO&lt;/Text&gt;
+                      &lt;TextInput style={s.input} value={customModel} onChangeText={setCustomModel}
+                        placeholder={activeProfile.model} placeholderTextColor={MUTED} autoCapitalize=&quot;none&quot; autoCorrect={false} /&gt;
+                    &lt;/View&gt;
+                  )}
+                  &lt;Pressable onPress={addKey} style={[s.addBtn, { backgroundColor: activeProfile.color }]}&gt;
+                    &lt;Feather name=&quot;plus-circle&quot; size={16} color=&quot;#fff&quot; /&gt;
+                    &lt;Text style={s.addBtnTxt}&gt;Adicionar {customLabel || activeProfile.name}&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                &lt;/&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Saved keys */}
+            {apiKeys.length &gt; 0 &amp;&amp; (
+              &lt;&gt;
+                &lt;View style={s.listHeader}&gt;
+                  &lt;Text style={[s.sectionLabel, { flex: 1 }]}&gt;CHAVES SALVAS ({apiKeys.length})&lt;/Text&gt;
+                  &lt;Pressable onPress={testAll} style={s.testAllBtn}&gt;
+                    &lt;Feather name=&quot;wifi&quot; size={12} color={WHITE} /&gt;
+                    &lt;Text style={[s.hint, { color: WHITE }]}&gt;Testar todas&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                &lt;/View&gt;
+                {apiKeys.map(k =&gt; {
+                  const profile = detectProvider(k.key) ?? PROVIDERS.find(p =&gt; k.url?.includes(p.url.split(&quot;/&quot;)[2] ?? &quot;&quot;));
+                  const isPerplexity = profile?.id === &quot;perplexity&quot;;
+                  return (
+                    &lt;View key={k.id} style={[s.keyCard, k.id === activeKeyId &amp;&amp; { borderColor: ACCENT }, isPerplexity &amp;&amp; { borderColor: WEB_COLOR + &quot;44&quot; }]}&gt;
+                      &lt;View style={s.keyHeader}&gt;
+                        &lt;Text style={{ fontSize: 20 }}&gt;{profile?.icon ?? &quot;🔑&quot;}&lt;/Text&gt;
+                        &lt;View style={{ flex: 1 }}&gt;
+                          &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6 }}&gt;
+                            &lt;Text style={[s.keyName, k.id === activeKeyId &amp;&amp; { color: ACCENT }]}&gt;{k.label}&lt;/Text&gt;
+                            {isPerplexity &amp;&amp; (
+                              &lt;View style={[s.pill, { backgroundColor: WEB_COLOR + &quot;22&quot;, borderColor: WEB_COLOR + &quot;44&quot; }]}&gt;
+                                &lt;Feather name=&quot;globe&quot; size={9} color={WEB_COLOR} /&gt;
+                                &lt;Text style={[s.pillTxt, { color: WEB_COLOR, fontSize: 9 }]}&gt;Internet&lt;/Text&gt;
+                              &lt;/View&gt;
+                            )}
+                          &lt;/View&gt;
+                          &lt;Text style={[s.hint, { color: MUTED }]}&gt;{k.model} · {(k.url || &quot;&quot;).replace(&quot;https://&quot;, &quot;&quot;).split(&quot;/&quot;)[0]}&lt;/Text&gt;
+                        &lt;/View&gt;
+                        &lt;View style={[s.statusPill, { backgroundColor: statusColor(k.status) + &quot;22&quot; }]}&gt;
+                          &lt;View style={[s.dot, { backgroundColor: statusColor(k.status) }]} /&gt;
+                          &lt;Text style={[s.hint, { color: statusColor(k.status) }]}&gt;{statusLabel(k.status)}&lt;/Text&gt;
+                        &lt;/View&gt;
+                      &lt;/View&gt;
+                      &lt;View style={s.keyActions}&gt;
+                        &lt;Pressable onPress={() =&gt; setActiveKeyId(k.id)}
+                          style={[s.smallBtn, k.id === activeKeyId ? { backgroundColor: ACCENT } : { backgroundColor: &quot;#1e293b&quot; }]}&gt;
+                          &lt;Feather name={k.id === activeKeyId ? &quot;check-circle&quot; : &quot;circle&quot;} size={13} color={k.id === activeKeyId ? &quot;#fff&quot; : MUTED} /&gt;
+                          &lt;Text style={[s.smallTxt, k.id === activeKeyId &amp;&amp; { color: &quot;#fff&quot; }]}&gt;{k.id === activeKeyId ? &quot;Ativa&quot; : &quot;Usar&quot;}&lt;/Text&gt;
+                        &lt;/Pressable&gt;
+                        &lt;Pressable onPress={() =&gt; testKey(k)} disabled={testing === k.id}
+                          style={[s.smallBtn, { backgroundColor: &quot;#1e3a5f&quot; }]}&gt;
+                          {testing === k.id ? &lt;ActivityIndicator size=&quot;small&quot; color={WHITE} /&gt; : &lt;Feather name=&quot;wifi&quot; size={13} color={WHITE} /&gt;}
+                          &lt;Text style={[s.smallTxt, { color: WHITE }]}&gt;Testar&lt;/Text&gt;
+                        &lt;/Pressable&gt;
+                        &lt;Pressable onPress={() =&gt; Alert.alert(&quot;Remover&quot;, `Remover &quot;${k.label}&quot;?`, [
+                          { text: &quot;Cancelar&quot; },
+                          { text: &quot;Remover&quot;, style: &quot;destructive&quot;, onPress: () =&gt; removeApiKey(k.id) },
+                        ])} style={[s.smallBtn, { backgroundColor: &quot;#1c0505&quot; }]}&gt;
+                          &lt;Feather name=&quot;trash-2&quot; size={13} color={RED} /&gt;
+                        &lt;/Pressable&gt;
+                      &lt;/View&gt;
+                    &lt;/View&gt;
+                  );
+                })}
+              &lt;/&gt;
+            )}
+
+            {apiKeys.length === 0 &amp;&amp; !rawKey &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: &quot;center&quot;, paddingVertical: 28 }]}&gt;
+                &lt;Text style={{ fontSize: 36, marginBottom: 8 }}&gt;🔐&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, textAlign: &quot;center&quot; }]}&gt;
+                  Cole qualquer chave acima{&quot;\n&quot;}o provedor é detectado automaticamente
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* Providers list */}
+            &lt;View style={[s.card, { borderColor: &quot;#1e3a5f&quot;, backgroundColor: &quot;#060d1a&quot; }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;PROVEDORES SUPORTADOS&lt;/Text&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, flexWrap: &quot;wrap&quot;, gap: 6, marginTop: 4 }}&gt;
+                {PROVIDERS.map(p =&gt; (
+                  &lt;View key={p.id} style={[s.pill, { backgroundColor: p.color + &quot;18&quot;, borderColor: p.color + &quot;44&quot; }]}&gt;
+                    &lt;Text style={{ fontSize: 12 }}&gt;{p.icon}&lt;/Text&gt;
+                    &lt;Text style={[s.pillTxt, { color: p.color }]}&gt;{p.name}&lt;/Text&gt;
+                    {p.id === &quot;perplexity&quot; &amp;&amp; &lt;Feather name=&quot;globe&quot; size={9} color={WEB_COLOR} /&gt;}
+                  &lt;/View&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: BANCO DB                                              */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === &quot;db&quot; &amp;&amp; (
+          &lt;&gt;
+            &lt;View style={[s.card, { borderColor: neonStatus === &quot;ok&quot; ? GREEN : neonStatus === &quot;error&quot; ? RED : &quot;#1e3a5f&quot; }]}&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8 }}&gt;
+                &lt;Text style={{ fontSize: 22 }}&gt;🐘&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;Neon PostgreSQL&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Cole a connection string abaixo&lt;/Text&gt;
+                &lt;/View&gt;
+                {neonStatus === &quot;ok&quot; &amp;&amp; (
+                  &lt;View style={[s.pill, { backgroundColor: &quot;#052e16&quot;, borderColor: GREEN + &quot;44&quot; }]}&gt;
+                    &lt;Feather name=&quot;database&quot; size={11} color={GREEN} /&gt;
+                    &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Conectado&lt;/Text&gt;
+                  &lt;/View&gt;
+                )}
+              &lt;/View&gt;
+
+              &lt;Text style={s.fieldLabel}&gt;CONNECTION STRING&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.input, { fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 11 }]}
+                value={neonInput}
+                onChangeText={setNeonInput}
+                placeholder=&quot;postgresql://user:senha@ep-xxx.us-east-2.aws.neon.tech/neondb&quot;
+                placeholderTextColor={MUTED}
+                autoCapitalize=&quot;none&quot;
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={() =&gt; Linking.openURL(&quot;https://console.neon.tech&quot;)}&gt;
+                &lt;Text style={[s.hint, { color: ACCENT }]}&gt;
+                  Obter string em console.neon.tech → seu projeto → Connect →
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+
+              &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8 }}&gt;
+                &lt;Pressable onPress={testNeon} disabled={neonStatus === &quot;testing&quot;}
+                  style={[s.smallBtn, { flex: 1, backgroundColor: &quot;#1e3a5f&quot;, justifyContent: &quot;center&quot; }]}&gt;
+                  {neonStatus === &quot;testing&quot; ? &lt;ActivityIndicator size=&quot;small&quot; color={WHITE} /&gt; : &lt;Feather name=&quot;wifi&quot; size={14} color={WHITE} /&gt;}
+                  &lt;Text style={[s.smallTxt, { color: WHITE }]}&gt;{neonStatus === &quot;testing&quot; ? &quot;Testando...&quot; : &quot;Testar e Salvar&quot;}&lt;/Text&gt;
+                &lt;/Pressable&gt;
+                &lt;Pressable onPress={() =&gt; setCreateTableOpen(true)} style={[s.smallBtn, { backgroundColor: &quot;#166534&quot; }]}&gt;
+                  &lt;Feather name=&quot;plus-square&quot; size={14} color={GREEN} /&gt;
+                  &lt;Text style={[s.smallTxt, { color: GREEN }]}&gt;Criar Tabela&lt;/Text&gt;
+                &lt;/Pressable&gt;
+              &lt;/View&gt;
+
+              {neonMsg !== &quot;&quot; &amp;&amp; (
+                &lt;View style={{ backgroundColor: neonStatus === &quot;ok&quot; ? &quot;#052e16&quot; : &quot;#1c0505&quot;, borderWidth: 1, borderColor: neonStatus === &quot;ok&quot; ? &quot;#166534&quot; : &quot;#7f1d1d&quot;, borderRadius: 10, padding: 10, gap: 4 }}&gt;
+                  &lt;Text style={[s.hint, { color: neonStatus === &quot;ok&quot; ? GREEN : RED, lineHeight: 17 }]}&gt;{neonMsg}&lt;/Text&gt;
+                &lt;/View&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Tables */}
+            {neonTables.length &gt; 0 &amp;&amp; (
+              &lt;View style={s.card}&gt;
+                &lt;Text style={s.sectionLabel}&gt;TABELAS ({neonTables.length})&lt;/Text&gt;
+                {neonTables.map(t =&gt; (
+                  &lt;Pressable key={t} onPress={() =&gt; loadTableDetails(t === selectedTable ? null! : t)}
+                    style={[s.tableRow, t === selectedTable &amp;&amp; { backgroundColor: ACCENT + &quot;22&quot; }]}&gt;
+                    &lt;Feather name=&quot;table&quot; size={14} color={t === selectedTable ? ACCENT : MUTED} /&gt;
+                    &lt;Text style={[s.hint, { color: t === selectedTable ? ACCENT : WHITE, flex: 1, fontFamily: &quot;Inter_500Medium&quot;, fontSize: 13 }]}&gt;{t}&lt;/Text&gt;
+                    &lt;Feather name={t === selectedTable ? &quot;chevron-up&quot; : &quot;chevron-right&quot;} size={13} color={MUTED} /&gt;
+                  &lt;/Pressable&gt;
+                ))}
+                {selectedTable &amp;&amp; tableDetails &amp;&amp; (
+                  &lt;ScrollView horizontal showsHorizontalScrollIndicator style={{ backgroundColor: &quot;#050810&quot;, borderRadius: 8, padding: 8, borderWidth: 1, borderColor: &quot;#1e3a5f&quot; }}&gt;
+                    &lt;Text style={{ fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 10, color: &quot;#4ade80&quot;, lineHeight: 15 }}&gt;{tableDetails}&lt;/Text&gt;
+                  &lt;/ScrollView&gt;
+                )}
+              &lt;/View&gt;
+            )}
+
+            {neonTables.length === 0 &amp;&amp; neonStatus === &quot;ok&quot; &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: &quot;center&quot;, gap: 10, paddingVertical: 20 }]}&gt;
+                &lt;Text style={{ fontSize: 32 }}&gt;📭&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, textAlign: &quot;center&quot; }]}&gt;Banco vazio. Crie uma tabela ou peça para a Iara criar!&lt;/Text&gt;
+                &lt;Pressable onPress={() =&gt; setCreateTableOpen(true)} style={[s.addBtn, { backgroundColor: &quot;#166534&quot;, paddingVertical: 10, paddingHorizontal: 20 }]}&gt;
+                  &lt;Feather name=&quot;plus-circle&quot; size={16} color={GREEN} /&gt;
+                  &lt;Text style={[s.addBtnTxt, { color: GREEN }]}&gt;Criar primeira tabela&lt;/Text&gt;
+                &lt;/Pressable&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* IA para banco */}
+            &lt;View style={[s.card, { borderColor: &quot;#7c3aed44&quot; }]}&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, marginBottom: 8 }}&gt;
+                &lt;Text style={{ fontSize: 22 }}&gt;🤖&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;IA constrói o banco&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Descreva em português — a IA gera e executa o SQL&lt;/Text&gt;
+                &lt;/View&gt;
+              &lt;/View&gt;
+              &lt;TextInput
+                style={[s.input, { minHeight: 70, maxHeight: 120 }]}
+                value={aiDbPrompt}
+                onChangeText={setAiDbPrompt}
+                placeholder={&quot;Ex: Crie uma tabela de clientes com nome, email, telefone e data de cadastro\n\nEx: Liste todas as tabelas e seus dados\n\nEx: Insira 3 clientes de exemplo&quot;}
+                placeholderTextColor={MUTED}
+                multiline
+                autoCapitalize=&quot;none&quot;
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={runAiDb} disabled={aiDbRunning || !aiDbPrompt.trim()}
+                style={[s.addBtn, { backgroundColor: aiDbRunning ? &quot;#3b1d6e&quot; : &quot;#7c3aed&quot;, paddingVertical: 10, opacity: !aiDbPrompt.trim() ? 0.5 : 1 }]}&gt;
+                {aiDbRunning ? &lt;ActivityIndicator size=&quot;small&quot; color=&quot;#fff&quot; /&gt; : &lt;Feather name=&quot;zap&quot; size={15} color=&quot;#fff&quot; /&gt;}
+                &lt;Text style={s.addBtnTxt}&gt;{aiDbRunning ? &quot;Gerando SQL e executando...&quot; : &quot;⚡ Gerar e Executar com IA&quot;}&lt;/Text&gt;
+              &lt;/Pressable&gt;
+              {aiDbResult !== &quot;&quot; &amp;&amp; (
+                &lt;ScrollView showsVerticalScrollIndicator style={{ backgroundColor: &quot;#08051a&quot;, borderRadius: 8, borderWidth: 1, borderColor: &quot;#7c3aed44&quot;, maxHeight: 200, padding: 10, marginTop: 4 }}&gt;
+                  &lt;Text style={{ fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 10, color: aiDbResult.startsWith(&quot;✅&quot;) ? &quot;#4ade80&quot; : aiDbResult.startsWith(&quot;⚠️&quot;) ? &quot;#fbbf24&quot; : &quot;#f87171&quot;, lineHeight: 15 }}&gt;{aiDbResult}&lt;/Text&gt;
+                &lt;/ScrollView&gt;
+              )}
+              {!neonDbUrl &amp;&amp; (
+                &lt;Text style={[s.hint, { color: YELLOW, textAlign: &quot;center&quot;, marginTop: 4 }]}&gt;⚠️ Configure o banco Neon acima para executar automaticamente&lt;/Text&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Quick SQL Console */}
+            {neonDbUrl &amp;&amp; (
+              &lt;View style={s.card}&gt;
+                &lt;Text style={s.sectionLabel}&gt;CONSOLE SQL RÁPIDO&lt;/Text&gt;
+                &lt;TextInput
+                  style={[s.input, { fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 11, minHeight: 80, maxHeight: 140 }]}
+                  value={sqlConsole}
+                  onChangeText={setSqlConsole}
+                  placeholder={&quot;SELECT * FROM tabela LIMIT 10;&quot;}
+                  placeholderTextColor={MUTED}
+                  multiline
+                  autoCapitalize=&quot;none&quot;
+                  autoCorrect={false}
+                /&gt;
+                &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8 }}&gt;
+                  &lt;Pressable onPress={runSql} disabled={sqlRunning || !sqlConsole.trim()}
+                    style={[s.smallBtn, { flex: 1, backgroundColor: &quot;#166534&quot;, justifyContent: &quot;center&quot; }]}&gt;
+                    {sqlRunning ? &lt;ActivityIndicator size=&quot;small&quot; color={GREEN} /&gt; : &lt;Feather name=&quot;play&quot; size={13} color={GREEN} /&gt;}
+                    &lt;Text style={[s.smallTxt, { color: GREEN }]}&gt;{sqlRunning ? &quot;Executando...&quot; : &quot;Executar&quot;}&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                  &lt;Pressable onPress={() =&gt; { setSqlConsole(&quot;&quot;); setSqlResult(&quot;&quot;); }} style={[s.smallBtn, { backgroundColor: &quot;#1a2540&quot; }]}&gt;
+                    &lt;Feather name=&quot;trash-2&quot; size={13} color={MUTED} /&gt;
+                  &lt;/Pressable&gt;
+                &lt;/View&gt;
+                {sqlResult !== &quot;&quot; &amp;&amp; (
+                  &lt;ScrollView horizontal showsHorizontalScrollIndicator style={{ backgroundColor: &quot;#050810&quot;, borderRadius: 8, borderWidth: 1, borderColor: &quot;#1e3a5f&quot;, maxHeight: 180, padding: 8 }}&gt;
+                    &lt;Text style={{ fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 10, color: &quot;#4ade80&quot;, lineHeight: 15 }}&gt;{sqlResult}&lt;/Text&gt;
+                  &lt;/ScrollView&gt;
+                )}
+              &lt;/View&gt;
+            )}
+          &lt;/&gt;
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: TOKENS (EAS + GitHub)                                 */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === &quot;tokens&quot; &amp;&amp; (
+          &lt;&gt;
+            &lt;View style={s.card}&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, marginBottom: 6 }}&gt;
+                &lt;Text style={{ fontSize: 20 }}&gt;⚡&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;Token EAS (Expo)&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Necessário para compilar APK na nuvem&lt;/Text&gt;
+                &lt;/View&gt;
+                {easToken &amp;&amp; &lt;View style={[s.pill, { backgroundColor: GREEN + &quot;22&quot;, borderColor: GREEN + &quot;44&quot; }]}&gt;
+                  &lt;Feather name=&quot;check&quot; size={11} color={GREEN} /&gt;
+                  &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Salvo&lt;/Text&gt;
+                &lt;/View&gt;}
+              &lt;/View&gt;
+              &lt;Text style={s.fieldLabel}&gt;TOKEN EAS&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.input, { letterSpacing: 0.5 }]}
+                value={easInput}
+                onChangeText={setEasInput}
+                placeholder=&quot;dYEa4ppg...&quot;
+                placeholderTextColor={MUTED}
+                secureTextEntry={easInput.length &gt; 0}
+                autoCapitalize=&quot;none&quot;
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={() =&gt; Linking.openURL(&quot;https://expo.dev/accounts/[account]/settings/access-tokens&quot;)}&gt;
+                &lt;Text style={[s.hint, { color: ACCENT }]}&gt;Obter token em expo.dev → Conta → Access Tokens →&lt;/Text&gt;
+              &lt;/Pressable&gt;
+              &lt;Pressable onPress={() =&gt; { setEasToken(easInput.trim()); Alert.alert(&quot;✅ Token EAS salvo!&quot;); }}
+                style={[s.addBtn, { backgroundColor: ACCENT, paddingVertical: 10 }]}&gt;
+                &lt;Feather name=&quot;save&quot; size={15} color=&quot;#fff&quot; /&gt;
+                &lt;Text style={[s.addBtnTxt, { fontSize: 13 }]}&gt;Salvar Token EAS&lt;/Text&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+
+            &lt;View style={s.card}&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, marginBottom: 6 }}&gt;
+                &lt;Text style={{ fontSize: 20 }}&gt;🐙&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;Token GitHub (PAT)&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Para importar repositórios e fazer push&lt;/Text&gt;
+                &lt;/View&gt;
+                {ghToken &amp;&amp; &lt;View style={[s.pill, { backgroundColor: GREEN + &quot;22&quot;, borderColor: GREEN + &quot;44&quot; }]}&gt;
+                  &lt;Feather name=&quot;check&quot; size={11} color={GREEN} /&gt;
+                  &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Conectado&lt;/Text&gt;
+                &lt;/View&gt;}
+              &lt;/View&gt;
+              &lt;Text style={s.fieldLabel}&gt;TOKEN GITHUB&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.input, { letterSpacing: 0.5 }]}
+                value={ghInput}
+                onChangeText={setGhInput}
+                placeholder=&quot;ghp_xxxxxxxxxxxxxxxxxxxx&quot;
+                placeholderTextColor={MUTED}
+                secureTextEntry={ghInput.length &gt; 0}
+                autoCapitalize=&quot;none&quot;
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={() =&gt; Linking.openURL(&quot;https://github.com/settings/tokens/new?scopes=repo,workflow,pages&amp;description=APK+Builder&quot;)}&gt;
+                &lt;Text style={[s.hint, { color: ACCENT }]}&gt;
+                  Gerar token em GitHub → Settings → Developer settings → PAT (classic) → repo ✓ + workflow ✓ + pages ✓ →
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+              &lt;Pressable onPress={() =&gt; { setGhToken(ghInput.trim()); Alert.alert(&quot;✅ Token GitHub salvo!&quot;); }}
+                style={[s.addBtn, { backgroundColor: &quot;#1a2a1a&quot;, paddingVertical: 10, borderWidth: 1, borderColor: GREEN + &quot;44&quot; }]}&gt;
+                &lt;Feather name=&quot;save&quot; size={15} color={GREEN} /&gt;
+                &lt;Text style={[s.addBtnTxt, { fontSize: 13, color: GREEN }]}&gt;Salvar Token GitHub&lt;/Text&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+
+            &lt;View style={[s.card, { backgroundColor: &quot;#060d1a&quot;, borderColor: &quot;#1e3a5f&quot; }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;💡 SOBRE OS TOKENS&lt;/Text&gt;
+              &lt;Text style={[s.hint, { color: &quot;#94a3b8&quot;, lineHeight: 18 }]}&gt;
+                • Todos os tokens ficam salvos localmente no app{&quot;\n&quot;}
+                • EAS Token: só necessário para compilar APK na nuvem{&quot;\n&quot;}
+                • GitHub Token: necessário para importar/exportar repositórios{&quot;\n&quot;}
+                • Os tokens são usados diretamente nas APIs — o app não tem servidor
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: STATUS                                                 */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === &quot;status&quot; &amp;&amp; (
+          &lt;&gt;
+            {/* Versão do app */}
+            &lt;View style={[s.card, { backgroundColor: &quot;#0a0d1f&quot;, borderColor: &quot;#312e81&quot;, flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 12 }]}&gt;
+              &lt;Text style={{ fontSize: 28 }}&gt;📱&lt;/Text&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;Text style={[s.keyName, { color: &quot;#a5b4fc&quot; }]}&gt;APK Builder — v2.0.0&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                  {Platform.OS === &quot;android&quot; ? &quot;Android APK nativo&quot; : Platform.OS === &quot;ios&quot; ? &quot;iOS&quot; : &quot;Web Preview&quot;} · {new Date().toLocaleDateString(&quot;pt-BR&quot;)}
+                &lt;/Text&gt;
+              &lt;/View&gt;
+              &lt;View style={[s.pill, { backgroundColor: &quot;#312e81&quot;, borderColor: &quot;#4f46e5&quot; }]}&gt;
+                &lt;Feather name=&quot;check-circle&quot; size={11} color=&quot;#a5b4fc&quot; /&gt;
+                &lt;Text style={[s.pillTxt, { color: &quot;#a5b4fc&quot; }]}&gt;Instalado&lt;/Text&gt;
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            {/* Botão verificar */}
+            &lt;Pressable onPress={runStatusCheck} disabled={statusRunning}
+              style={[s.addBtn, { backgroundColor: statusRunning ? &quot;#1e293b&quot; : &quot;#0f766e&quot;, borderWidth: 1, borderColor: statusRunning ? BORDER : &quot;#14b8a6&quot; }]}&gt;
+              {statusRunning
+                ? &lt;ActivityIndicator size=&quot;small&quot; color=&quot;#5eead4&quot; /&gt;
+                : &lt;Feather name=&quot;refresh-cw&quot; size={18} color=&quot;#5eead4&quot; /&gt;}
+              &lt;Text style={[s.addBtnTxt, { color: statusRunning ? MUTED : &quot;#5eead4&quot; }]}&gt;
+                {statusRunning ? &quot;Verificando todos os serviços...&quot; : &quot;🔄 Verificar Status Agora&quot;}
+              &lt;/Text&gt;
+            &lt;/Pressable&gt;
+
+            {/* Resultados */}
+            {statusResults.map((r, i) =&gt; (
+              &lt;View key={i} style={[s.card, {
+                borderColor: r.status === &quot;ok&quot; ? GREEN + &quot;55&quot; : r.status === &quot;error&quot; ? RED + &quot;55&quot; : r.status === &quot;checking&quot; ? YELLOW + &quot;44&quot; : BORDER,
+                backgroundColor: r.status === &quot;ok&quot; ? &quot;#052e16&quot; : r.status === &quot;error&quot; ? &quot;#1c0505&quot; : CARD,
+              }]}&gt;
+                &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 10 }}&gt;
+                  &lt;View style={[s.dot, {
+                    width: 12, height: 12,
+                    backgroundColor: r.status === &quot;ok&quot; ? GREEN : r.status === &quot;error&quot; ? RED : r.status === &quot;checking&quot; ? YELLOW : MUTED,
+                  }]} /&gt;
+                  &lt;Text style={[s.keyName, { flex: 1,
+                    color: r.status === &quot;ok&quot; ? GREEN : r.status === &quot;error&quot; ? RED : r.status === &quot;checking&quot; ? YELLOW : WHITE,
+                  }]}&gt;{r.label}&lt;/Text&gt;
+                  {r.status === &quot;checking&quot; &amp;&amp; &lt;ActivityIndicator size=&quot;small&quot; color={YELLOW} /&gt;}
+                &lt;/View&gt;
+                {r.msg !== &quot;&quot; &amp;&amp; (
+                  &lt;Text style={[s.hint, { color: r.status === &quot;ok&quot; ? &quot;#86efac&quot; : r.status === &quot;error&quot; ? &quot;#fca5a5&quot; : r.status === &quot;checking&quot; ? &quot;#fef08a&quot; : MUTED, marginLeft: 22 }]}&gt;
+                    {r.msg}
+                  &lt;/Text&gt;
+                )}
+              &lt;/View&gt;
+            ))}
+
+            {statusResults.length === 0 &amp;&amp; statusRunning &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: &quot;center&quot;, paddingVertical: 24 }]}&gt;
+                &lt;ActivityIndicator size=&quot;large&quot; color={ACCENT} /&gt;
+                &lt;Text style={[s.hint, { color: MUTED, marginTop: 12, textAlign: &quot;center&quot; }]}&gt;Verificando Internet · Proxy · GitHub · IA · Banco...&lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {statusResults.length === 0 &amp;&amp; !statusRunning &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: &quot;center&quot;, paddingVertical: 30 }]}&gt;
+                &lt;Text style={{ fontSize: 40, marginBottom: 12 }}&gt;📊&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, textAlign: &quot;center&quot; }]}&gt;
+                  Verificação automática iniciando...{&quot;\n&quot;}ou toque no botão acima
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* Resumo de configuração */}
+            &lt;View style={[s.card, { backgroundColor: &quot;#060d1a&quot;, borderColor: &quot;#1e3a5f&quot; }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;📋 RESUMO DE CONFIGURAÇÃO&lt;/Text&gt;
+              &lt;View style={{ gap: 6, marginTop: 4 }}&gt;
+                {[
+                  { ok: apiKeys.length &gt; 0, text: apiKeys.length &gt; 0 ? `✅ ${apiKeys.length} chave(s) de IA configurada(s)` : &quot;⚠️ Nenhuma chave de IA — configure na aba Chaves IA&quot; },
+                  { ok: !!neonDbUrl, text: neonDbUrl ? &quot;✅ Banco Neon configurado&quot; : &quot;⚪ Banco Neon não configurado&quot; },
+                  { ok: !!ghToken, text: ghToken ? &quot;✅ GitHub conectado&quot; : &quot;⚪ GitHub não configurado — configure na aba Tokens&quot; },
+                  { ok: !!easToken, text: easToken ? &quot;✅ Token EAS configurado&quot; : &quot;⚪ Token EAS não configurado&quot; },
+                ].map((item, i) =&gt; (
+                  &lt;Text key={i} style={[s.hint, { color: item.ok ? GREEN : MUTED, lineHeight: 18 }]}&gt;{item.text}&lt;/Text&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            {/* Limites do app */}
+            &lt;View style={[s.card, { backgroundColor: &quot;#060d1a&quot;, borderColor: &quot;#1e3a5f&quot; }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;📦 LIMITES DO APK BUILDER v2.0.0&lt;/Text&gt;
+              &lt;View style={{ gap: 4, marginTop: 4 }}&gt;
+                {[
+                  { label: &quot;Arquivos por import&quot;, val: &quot;∞ Sem limite&quot; },
+                  { label: &quot;Tamanho ZIP / repo GitHub&quot;, val: &quot;Sem limite (streaming)&quot; },
+                  { label: &quot;RAM do app (Android)&quot;, val: &quot;Até 512 MB – 2 GB (device)&quot; },
+                  { label: &quot;Export ZIP Android&quot;, val: &quot;Até memória disponível&quot; },
+                  { label: &quot;Sessão salva (AsyncStorage)&quot;, val: &quot;Até 6 MB por chave&quot; },
+                  { label: &quot;Push GitHub por arquivo&quot;, val: &quot;Até 100 MB&quot; },
+                  { label: &quot;EAS Build na nuvem&quot;, val: &quot;Sem limite de tamanho&quot; },
+                ].map((item, i) =&gt; (
+                  &lt;View key={i} style={{ flexDirection: &quot;row&quot;, justifyContent: &quot;space-between&quot;, paddingVertical: 4, borderBottomWidth: i &lt; 6 ? 1 : 0, borderBottomColor: BORDER }}&gt;
+                    &lt;Text style={[s.hint, { color: MUTED, flex: 1 }]}&gt;{item.label}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: GREEN, fontFamily: &quot;Inter_600SemiBold&quot;, textAlign: &quot;right&quot; }]}&gt;{item.val}&lt;/Text&gt;
+                  &lt;/View&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            {/* Tabela de Tokens IA */}
+            &lt;View style={[s.card, { backgroundColor: &quot;#06091a&quot;, borderColor: &quot;#312e81&quot; }]}&gt;
+              &lt;Text style={[s.sectionLabel, { color: &quot;#a5b4fc&quot; }]}&gt;🤖 LIMITES DE TOKENS POR MODELO DE IA&lt;/Text&gt;
+              &lt;Text style={[s.hint, { color: MUTED, marginBottom: 6 }]}&gt;ctx = contexto total · out = máx por resposta&lt;/Text&gt;
+
+              {/* Header */}
+              &lt;View style={{ flexDirection: &quot;row&quot;, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: BORDER }}&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 1.2, fontFamily: &quot;Inter_600SemiBold&quot;, fontSize: 9, letterSpacing: 0.5 }]}&gt;PROVEDOR&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 2, fontFamily: &quot;Inter_600SemiBold&quot;, fontSize: 9, letterSpacing: 0.5 }]}&gt;MODELO&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 0.8, fontFamily: &quot;Inter_600SemiBold&quot;, fontSize: 9, textAlign: &quot;center&quot;, letterSpacing: 0.5 }]}&gt;CTX&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 0.8, fontFamily: &quot;Inter_600SemiBold&quot;, fontSize: 9, textAlign: &quot;center&quot;, letterSpacing: 0.5 }]}&gt;OUT&lt;/Text&gt;
+              &lt;/View&gt;
+
+              {[
+                { p: &quot;OpenAI&quot;,     m: &quot;gpt-4o&quot;,            ctx: &quot;128k&quot;,  out: &quot;16k&quot;,  c: &quot;#10b981&quot; },
+                { p: &quot;OpenAI&quot;,     m: &quot;gpt-4o-mini&quot;,       ctx: &quot;128k&quot;,  out: &quot;16k&quot;,  c: &quot;#10b981&quot; },
+                { p: &quot;OpenAI&quot;,     m: &quot;gpt-4-turbo&quot;,       ctx: &quot;128k&quot;,  out: &quot;4k&quot;,   c: &quot;#10b981&quot; },
+                { p: &quot;OpenAI&quot;,     m: &quot;gpt-3.5-turbo&quot;,     ctx: &quot;16k&quot;,   out: &quot;4k&quot;,   c: &quot;#10b981&quot; },
+                { p: &quot;OpenAI&quot;,     m: &quot;o1 / o3&quot;,           ctx: &quot;200k&quot;,  out: &quot;100k&quot;, c: &quot;#10b981&quot; },
+                { p: &quot;Anthropic&quot;,  m: &quot;claude-3.5-sonnet&quot;, ctx: &quot;200k&quot;,  out: &quot;8k&quot;,   c: &quot;#f59e0b&quot; },
+                { p: &quot;Anthropic&quot;,  m: &quot;claude-3-opus&quot;,     ctx: &quot;200k&quot;,  out: &quot;4k&quot;,   c: &quot;#f59e0b&quot; },
+                { p: &quot;Anthropic&quot;,  m: &quot;claude-3-haiku&quot;,    ctx: &quot;200k&quot;,  out: &quot;4k&quot;,   c: &quot;#f59e0b&quot; },
+                { p: &quot;Google&quot;,     m: &quot;gemini-1.5-pro&quot;,    ctx: &quot;1M&quot;,    out: &quot;8k&quot;,   c: &quot;#3b82f6&quot; },
+                { p: &quot;Google&quot;,     m: &quot;gemini-2.0-flash&quot;,  ctx: &quot;1M&quot;,    out: &quot;8k&quot;,   c: &quot;#3b82f6&quot; },
+                { p: &quot;Groq&quot;,       m: &quot;llama-3.1-70b&quot;,     ctx: &quot;128k&quot;,  out: &quot;8k&quot;,   c: &quot;#8b5cf6&quot; },
+                { p: &quot;Groq&quot;,       m: &quot;mixtral-8x7b&quot;,      ctx: &quot;32k&quot;,   out: &quot;32k&quot;,  c: &quot;#8b5cf6&quot; },
+                { p: &quot;Perplexity&quot;, m: &quot;sonar-pro&quot;,         ctx: &quot;200k&quot;,  out: &quot;8k&quot;,   c: &quot;#22d3ee&quot; },
+                { p: &quot;Perplexity&quot;, m: &quot;sonar&quot;,             ctx: &quot;128k&quot;,  out: &quot;8k&quot;,   c: &quot;#22d3ee&quot; },
+                { p: &quot;DeepSeek&quot;,   m: &quot;deepseek-chat&quot;,     ctx: &quot;64k&quot;,   out: &quot;8k&quot;,   c: &quot;#ec4899&quot; },
+                { p: &quot;Mistral&quot;,    m: &quot;mistral-large&quot;,     ctx: &quot;128k&quot;,  out: &quot;8k&quot;,   c: &quot;#f97316&quot; },
+              ].map((row, i) =&gt; (
+                &lt;View key={i} style={{ flexDirection: &quot;row&quot;, paddingVertical: 5, borderBottomWidth: i &lt; 15 ? 1 : 0, borderBottomColor: BORDER + &quot;55&quot;, backgroundColor: i % 2 === 0 ? &quot;#ffffff05&quot; : &quot;transparent&quot; }}&gt;
+                  &lt;Text style={[s.hint, { flex: 1.2, color: row.c, fontFamily: &quot;Inter_600SemiBold&quot;, fontSize: 10 }]}&gt;{row.p}&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { flex: 2, color: &quot;#cbd5e1&quot;, fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;, fontSize: 9 }]}&gt;{row.m}&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { flex: 0.8, color: &quot;#67e8f9&quot;, fontFamily: &quot;Inter_700Bold&quot;, textAlign: &quot;center&quot;, fontSize: 11 }]}&gt;{row.ctx}&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { flex: 0.8, color: &quot;#94a3b8&quot;, textAlign: &quot;center&quot;, fontSize: 10 }]}&gt;{row.out}&lt;/Text&gt;
+                &lt;/View&gt;
+              ))}
+            &lt;/View&gt;
+
+            {/* Info do device */}
+            &lt;View style={[s.card, { backgroundColor: &quot;#060d1a&quot;, borderColor: &quot;#1e3a5f&quot; }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;⚙️ INFORMAÇÕES DO DEVICE&lt;/Text&gt;
+              &lt;View style={{ gap: 4, marginTop: 4 }}&gt;
+                {[
+                  { label: &quot;Plataforma&quot;, val: Platform.OS === &quot;android&quot; ? `Android (API ${Platform.Version})` : Platform.OS === &quot;ios&quot; ? `iOS ${Platform.Version}` : &quot;Web&quot; },
+                  { label: &quot;Expo SDK&quot;, val: &quot;54&quot; },
+                  { label: &quot;React Native&quot;, val: &quot;0.76.x&quot; },
+                  { label: &quot;Engine&quot;, val: &quot;Hermes JS&quot; },
+                  { label: &quot;App Version&quot;, val: &quot;2.0.0 (build 1)&quot; },
+                ].map((item, i) =&gt; (
+                  &lt;View key={i} style={{ flexDirection: &quot;row&quot;, justifyContent: &quot;space-between&quot;, paddingVertical: 4, borderBottomWidth: i &lt; 4 ? 1 : 0, borderBottomColor: BORDER }}&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;{item.label}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: WHITE, fontFamily: &quot;Inter_500Medium&quot; }]}&gt;{item.val}&lt;/Text&gt;
+                  &lt;/View&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}
+
+const s = StyleSheet.create({
+  root: { flex: 1 },
+  content: { paddingHorizontal: 14, gap: 10 },
+  title: { fontSize: 22, fontFamily: &quot;Inter_700Bold&quot;, color: WHITE, letterSpacing: -0.5 },
+  sectionLabel: { fontSize: 10, fontFamily: &quot;Inter_600SemiBold&quot;, color: MUTED, letterSpacing: 0.8 },
+  hint: { fontSize: 11, fontFamily: &quot;Inter_400Regular&quot;, color: MUTED, lineHeight: 16 },
+  fieldLabel: { fontSize: 10, fontFamily: &quot;Inter_600SemiBold&quot;, color: MUTED, letterSpacing: 0.8, marginBottom: 4 },
+  card: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 14, gap: 8 },
+  keyCard: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 14, padding: 12, gap: 10 },
+  keyInput: {
+    backgroundColor: &quot;#06091a&quot;, borderWidth: 2, borderColor: BORDER,
+    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 14,
+    fontSize: 14, fontFamily: &quot;Inter_400Regular&quot;, color: WHITE, letterSpacing: 1,
+  },
+  input: {
+    backgroundColor: &quot;#06091a&quot;, borderWidth: 1, borderColor: BORDER,
+    borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10,
+    fontSize: 13, fontFamily: &quot;Inter_400Regular&quot;, color: WHITE,
+  },
+  detectedBadge: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 10, padding: 12, borderRadius: 12, borderWidth: 1 },
+  detectedName: { fontSize: 15, fontFamily: &quot;Inter_700Bold&quot; },
+  warnBadge: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, backgroundColor: &quot;#1c1500&quot;, borderRadius: 10, padding: 10, borderWidth: 1, borderColor: &quot;#854d0e&quot; },
+  providerChip: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1, backgroundColor: &quot;#0a0f1e&quot; },
+  chipTxt: { fontSize: 12, fontFamily: &quot;Inter_600SemiBold&quot; },
+  advancedToggle: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, paddingVertical: 4 },
+  addBtn: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot;, gap: 8, borderRadius: 12, paddingVertical: 13 },
+  addBtnTxt: { fontSize: 15, fontFamily: &quot;Inter_700Bold&quot;, color: &quot;#fff&quot; },
+  listHeader: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, paddingHorizontal: 4 },
+  testAllBtn: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 5, backgroundColor: &quot;#1e3a5f&quot;, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  keyHeader: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 10 },
+  keyName: { fontSize: 14, fontFamily: &quot;Inter_600SemiBold&quot;, color: WHITE },
+  keyActions: { flexDirection: &quot;row&quot;, gap: 8 },
+  statusPill: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1, borderColor: &quot;transparent&quot; },
+  dot: { width: 7, height: 7, borderRadius: 4 },
+  smallBtn: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 5, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 9 },
+  smallTxt: { fontSize: 12, fontFamily: &quot;Inter_500Medium&quot;, color: MUTED },
+  pill: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1, borderColor: &quot;transparent&quot; },
+  pillTxt: { fontSize: 11, fontFamily: &quot;Inter_600SemiBold&quot;, color: MUTED },
+  helpBtn: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, backgroundColor: ACCENT + &quot;22&quot;, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: ACCENT + &quot;44&quot; },
+  sectionTabs: { flexDirection: &quot;row&quot;, flexWrap: &quot;wrap&quot;, gap: 6 },
+  secTab: { flex: 1, minWidth: &quot;45%&quot;, alignItems: &quot;center&quot;, gap: 4, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: BORDER, backgroundColor: &quot;#0a0f1e&quot; },
+  secTabActive: { backgroundColor: ACCENT, borderColor: ACCENT },
+  secTabTxt: { fontSize: 11, fontFamily: &quot;Inter_500Medium&quot;, color: MUTED },
+  tableRow: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: BORDER },
+});
+
+// ── Manual styles ─────────────────────────────────────────────────────────────
+const man = StyleSheet.create({
+  root: { flex: 1, backgroundColor: BG },
+  header: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;space-between&quot;, paddingHorizontal: 16, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: BORDER },
+  title: { fontSize: 18, fontFamily: &quot;Inter_700Bold&quot;, color: WHITE },
+  closeBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: &quot;#1a2540&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot; },
+  tabsRow: { borderBottomWidth: 1, borderBottomColor: BORDER, paddingVertical: 10 },
+  tab: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10, borderWidth: 1, borderColor: BORDER, backgroundColor: &quot;#0a0f1e&quot; },
+  tabActive: { backgroundColor: ACCENT, borderColor: ACCENT },
+  tabTxt: { fontSize: 12, fontFamily: &quot;Inter_500Medium&quot;, color: MUTED },
+  card: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 18, gap: 10, alignItems: &quot;center&quot; },
+  sTitle: { fontSize: 20, fontFamily: &quot;Inter_700Bold&quot;, color: WHITE, textAlign: &quot;center&quot; },
+  body: { fontSize: 14, fontFamily: &quot;Inter_400Regular&quot;, color: &quot;#cbd5e1&quot;, lineHeight: 22, textAlign: &quot;left&quot;, width: &quot;100%&quot; },
+  hint: { fontSize: 12, fontFamily: &quot;Inter_400Regular&quot;, color: MUTED, lineHeight: 18, textAlign: &quot;center&quot; },
+});
+">📋 Copiar</button><pre><code class="language-texto">          const base = (activeKey.url || "https://api.openai.com/v1").replace(/\/$/, "");
+          const ctrl = new AbortController();
+          const tid = setTimeout(() =&gt; ctrl.abort(), 10000);
+          const r = await fetch(`${base}/chat/completions`, {
+            method: "POST", signal: ctrl.signal,
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${activeKey.key}` },
+            body: JSON.stringify({ model: activeKey.model, messages: [{ role: "user", content: "hi" }], max_tokens: 3 }),
+          });
+          clearTimeout(tid);
+          update(`🤖 IA: ${activeKey.label}`, { status: r.ok || r.status === 400 ? "ok" : "error", msg: `HTTP ${r.status}` });
+        } catch { update(`🤖 IA: ${activeKey.label}`, { status: "error", msg: "Falhou — verifique a chave" }); }
+      } else {
+        push({ label: "🤖 IA", status: "error", msg: "Nenhuma chave — configure na aba Chaves IA" });
+      }
+
+      // 5. Neon DB
+      if (neonDbUrl) {
+        push({ label: "🐘 Banco Neon", status: "checking", msg: "Conectando..." });
+        try {
+          const msg = await neonTestConnection(neonDbUrl);
+          update("🐘 Banco Neon", { status: "ok", msg });
+        } catch (e) { update("🐘 Banco Neon", { status: "error", msg: String(e) }); }
+      } else {
+        push({ label: "🐘 Banco Neon", status: "idle", msg: "Não configurado" });
+      }
+
+    } finally {
+      setStatusRunning(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiKeys, activeKeyId, ghToken, neonDbUrl, statusRunning]);
+
+  // Auto-run status check when user enters the Status tab
+  useEffect(() =&gt; {
+    if (section === "status") runStatusCheck();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section]);
+
+  const SECTIONS = [
+    { id: "keys", icon: "🔑", label: "Chaves IA" },
+    { id: "db", icon: "🗄️", label: "Banco DB" },
+    { id: "tokens", icon: "🔐", label: "Tokens" },
+    { id: "status", icon: "📊", label: "Status" },
+  ] as const;
+
+  return (
+    &lt;View style={[s.root, { backgroundColor: BG }]}&gt;
+      &lt;ManualModal visible={manualOpen} onClose={() =&gt; setManualOpen(false)} /&gt;
+      &lt;CreateTableModal visible={createTableOpen} onClose={() =&gt; setCreateTableOpen(false)} neonDbUrl={neonDbUrl} /&gt;
+
+      &lt;ScrollView
+        contentContainerStyle={[s.content, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 100 }]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      &gt;
+        {/* Header */}
+        &lt;View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}&gt;
+          &lt;View&gt;
+            &lt;Text style={s.title}&gt;⚙️ Configurações&lt;/Text&gt;
+            &lt;Text style={[s.hint, { color: MUTED }]}&gt;Chaves IA · Banco · Tokens · Status&lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;Pressable onPress={() =&gt; setManualOpen(true)} style={s.helpBtn}&gt;
+            &lt;Feather name="book-open" size={16} color={ACCENT} /&gt;
+            &lt;Text style={[s.hint, { color: ACCENT, fontFamily: "Inter_600SemiBold" }]}&gt;Manual&lt;/Text&gt;
+          &lt;/Pressable&gt;
+        &lt;/View&gt;
+
+        {/* Section Tabs */}
+        &lt;View style={s.sectionTabs}&gt;
+          {SECTIONS.map(sec =&gt; (
+            &lt;Pressable key={sec.id} onPress={() =&gt; setSection(sec.id as any)}
+              style={[s.secTab, section === sec.id &amp;&amp; s.secTabActive]}&gt;
+              &lt;Text style={{ fontSize: 18 }}&gt;{sec.icon}&lt;/Text&gt;
+              &lt;Text style={[s.secTabTxt, section === sec.id &amp;&amp; { color: "#fff" }]}&gt;{sec.label}&lt;/Text&gt;
+            &lt;/Pressable&gt;
+          ))}
+        &lt;/View&gt;
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: CHAVES IA                                             */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === "keys" &amp;&amp; (
+          &lt;&gt;
+            {/* Perplexity highlight */}
+            &lt;Pressable onPress={() =&gt; Linking.openURL("https://www.perplexity.ai/settings/api")}
+              style={[s.card, { borderColor: WEB_COLOR + "55", backgroundColor: "#041a1f" }]}&gt;
+              &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}&gt;
+                &lt;Text style={{ fontSize: 22 }}&gt;🔍&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={[s.keyName, { color: WEB_COLOR }]}&gt;Perplexity — Acessa a Internet!&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: "#67e8f9" }]}&gt;A Iara poderá pesquisar em tempo real. Chave começa com pplx-&lt;/Text&gt;
+                &lt;/View&gt;
+                &lt;View style={[s.pill, { backgroundColor: WEB_COLOR + "22", borderColor: WEB_COLOR + "55" }]}&gt;
+                  &lt;Feather name="globe" size={11} color={WEB_COLOR} /&gt;
+                  &lt;Text style={[s.pillTxt, { color: WEB_COLOR }]}&gt;Web&lt;/Text&gt;
+                &lt;/View&gt;
+              &lt;/View&gt;
+              &lt;Text style={[s.hint, { color: WEB_COLOR + "aa" }]}&gt;Toque para obter sua chave Perplexity →&lt;/Text&gt;
+            &lt;/Pressable&gt;
+
+            {/* Auto-detect input */}
+            &lt;View style={[s.card, activeProfile &amp;&amp; { borderColor: activeProfile.color + "88" }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;CAMPO LIVRE — COLE QUALQUER CHAVE&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.keyInput, activeProfile &amp;&amp; { borderColor: activeProfile.color + "66" }]}
+                value={rawKey}
+                onChangeText={setRawKey}
+                placeholder={"sk-...  /  pplx-...  /  sk-ant-...  /  gsk_...  /  AIza..."}
+                placeholderTextColor={MUTED}
+                autoCapitalize="none"
+                autoCorrect={false}
+                secureTextEntry={rawKey.length &gt; 0}
+              /&gt;
+
+              {detected &amp;&amp; (
+                &lt;View style={[s.detectedBadge, { backgroundColor: detected.color + "22", borderColor: detected.color + "55" }]}&gt;
+                  &lt;Text style={{ fontSize: 22 }}&gt;{detected.icon}&lt;/Text&gt;
+                  &lt;View style={{ flex: 1 }}&gt;
+                    &lt;Text style={[s.detectedName, { color: detected.color }]}&gt;{detected.name}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                      Detectado automaticamente · {detected.hint}
+                      {detected.id === "perplexity" ? "\n🌐 Este provedor acessa a internet em tempo real!" : ""}
+                    &lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;View style={[s.pill, { backgroundColor: GREEN + "22", borderColor: GREEN + "55" }]}&gt;
+                    &lt;Feather name="check-circle" size={12} color={GREEN} /&gt;
+                    &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Auto&lt;/Text&gt;
+                  &lt;/View&gt;
+                &lt;/View&gt;
+              )}
+
+              {undetected &amp;&amp; !manualProvider &amp;&amp; (
+                &lt;View style={{ gap: 8 }}&gt;
+                  &lt;View style={s.warnBadge}&gt;
+                    &lt;Feather name="help-circle" size={14} color={YELLOW} /&gt;
+                    &lt;Text style={[s.hint, { color: YELLOW, flex: 1 }]}&gt;Formato não reconhecido — escolha o provedor:&lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;ScrollView horizontal showsHorizontalScrollIndicator={false}&gt;
+                    &lt;View style={{ flexDirection: "row", gap: 8 }}&gt;
+                      {PROVIDERS.map(p =&gt; (
+                        &lt;Pressable key={p.id} onPress={() =&gt; pickManual(p)}
+                          style={[s.providerChip, { borderColor: p.color + "66" }]}&gt;
+                          &lt;Text style={{ fontSize: 16 }}&gt;{p.icon}&lt;/Text&gt;
+                          &lt;Text style={[s.chipTxt, { color: p.color }]}&gt;{p.name}&lt;/Text&gt;
+                        &lt;/Pressable&gt;
+                      ))}
+                    &lt;/View&gt;
+                  &lt;/ScrollView&gt;
+                &lt;/View&gt;
+              )}
+
+              {manualProvider &amp;&amp; (
+                &lt;View style={[s.detectedBadge, { backgroundColor: manualProvider.color + "22", borderColor: manualProvider.color + "55" }]}&gt;
+                  &lt;Text style={{ fontSize: 22 }}&gt;{manualProvider.icon}&lt;/Text&gt;
+                  &lt;View style={{ flex: 1 }}&gt;
+                    &lt;Text style={[s.detectedName, { color: manualProvider.color }]}&gt;{manualProvider.name}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;Selecionado manualmente&lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;Pressable onPress={() =&gt; setManualProvider(null)} style={[s.pill, { backgroundColor: "#1e293b" }]}&gt;
+                    &lt;Feather name="x" size={12} color={MUTED} /&gt;
+                    &lt;Text style={s.pillTxt}&gt;Trocar&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                &lt;/View&gt;
+              )}
+
+              {activeProfile &amp;&amp; (
+                &lt;&gt;
+                  &lt;Pressable onPress={() =&gt; setShowAdvanced(v =&gt; !v)} style={s.advancedToggle}&gt;
+                    &lt;Feather name={showAdvanced ? "chevron-up" : "chevron-down"} size={13} color={MUTED} /&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                      {showAdvanced ? "Ocultar configuração" : "Editar URL / modelo (avançado)"}
+                    &lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                  {showAdvanced &amp;&amp; (
+                    &lt;View style={{ gap: 6 }}&gt;
+                      &lt;Text style={s.fieldLabel}&gt;NOME / LABEL&lt;/Text&gt;
+                      &lt;TextInput style={s.input} value={customLabel} onChangeText={setCustomLabel}
+                        placeholder={activeProfile.name} placeholderTextColor={MUTED} autoCapitalize="none" /&gt;
+                      &lt;Text style={s.fieldLabel}&gt;URL DA API&lt;/Text&gt;
+                      &lt;TextInput style={s.input} value={customUrl} onChangeText={setCustomUrl}
+                        placeholder={activeProfile.url} placeholderTextColor={MUTED} autoCapitalize="none" autoCorrect={false} /&gt;
+                      &lt;Text style={s.fieldLabel}&gt;MODELO&lt;/Text&gt;
+                      &lt;TextInput style={s.input} value={customModel} onChangeText={setCustomModel}
+                        placeholder={activeProfile.model} placeholderTextColor={MUTED} autoCapitalize="none" autoCorrect={false} /&gt;
+                    &lt;/View&gt;
+                  )}
+                  &lt;Pressable onPress={addKey} style={[s.addBtn, { backgroundColor: activeProfile.color }]}&gt;
+                    &lt;Feather name="plus-circle" size={16} color="#fff" /&gt;
+                    &lt;Text style={s.addBtnTxt}&gt;Adicionar {customLabel || activeProfile.name}&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                &lt;/&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Saved keys */}
+            {apiKeys.length &gt; 0 &amp;&amp; (
+              &lt;&gt;
+                &lt;View style={s.listHeader}&gt;
+                  &lt;Text style={[s.sectionLabel, { flex: 1 }]}&gt;CHAVES SALVAS ({apiKeys.length})&lt;/Text&gt;
+                  &lt;Pressable onPress={testAll} style={s.testAllBtn}&gt;
+                    &lt;Feather name="wifi" size={12} color={WHITE} /&gt;
+                    &lt;Text style={[s.hint, { color: WHITE }]}&gt;Testar todas&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                &lt;/View&gt;
+                {apiKeys.map(k =&gt; {
+                  const profile = detectProvider(k.key) ?? PROVIDERS.find(p =&gt; k.url?.includes(p.url.split("/")[2] ?? ""));
+                  const isPerplexity = profile?.id === "perplexity";
+                  return (
+                    &lt;View key={k.id} style={[s.keyCard, k.id === activeKeyId &amp;&amp; { borderColor: ACCENT }, isPerplexity &amp;&amp; { borderColor: WEB_COLOR + "44" }]}&gt;
+                      &lt;View style={s.keyHeader}&gt;
+                        &lt;Text style={{ fontSize: 20 }}&gt;{profile?.icon ?? "🔑"}&lt;/Text&gt;
+                        &lt;View style={{ flex: 1 }}&gt;
+                          &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}&gt;
+                            &lt;Text style={[s.keyName, k.id === activeKeyId &amp;&amp; { color: ACCENT }]}&gt;{k.label}&lt;/Text&gt;
+                            {isPerplexity &amp;&amp; (
+                              &lt;View style={[s.pill, { backgroundColor: WEB_COLOR + "22", borderColor: WEB_COLOR + "44" }]}&gt;
+                                &lt;Feather name="globe" size={9} color={WEB_COLOR} /&gt;
+                                &lt;Text style={[s.pillTxt, { color: WEB_COLOR, fontSize: 9 }]}&gt;Internet&lt;/Text&gt;
+                              &lt;/View&gt;
+                            )}
+                          &lt;/View&gt;
+                          &lt;Text style={[s.hint, { color: MUTED }]}&gt;{k.model} · {(k.url || "").replace("https://", "").split("/")[0]}&lt;/Text&gt;
+                        &lt;/View&gt;
+                        &lt;View style={[s.statusPill, { backgroundColor: statusColor(k.status) + "22" }]}&gt;
+                          &lt;View style={[s.dot, { backgroundColor: statusColor(k.status) }]} /&gt;
+                          &lt;Text style={[s.hint, { color: statusColor(k.status) }]}&gt;{statusLabel(k.status)}&lt;/Text&gt;
+                        &lt;/View&gt;
+                      &lt;/View&gt;
+                      &lt;View style={s.keyActions}&gt;
+                        &lt;Pressable onPress={() =&gt; setActiveKeyId(k.id)}
+                          style={[s.smallBtn, k.id === activeKeyId ? { backgroundColor: ACCENT } : { backgroundColor: "#1e293b" }]}&gt;
+                          &lt;Feather name={k.id === activeKeyId ? "check-circle" : "circle"} size={13} color={k.id === activeKeyId ? "#fff" : MUTED} /&gt;
+                          &lt;Text style={[s.smallTxt, k.id === activeKeyId &amp;&amp; { color: "#fff" }]}&gt;{k.id === activeKeyId ? "Ativa" : "Usar"}&lt;/Text&gt;
+                        &lt;/Pressable&gt;
+                        &lt;Pressable onPress={() =&gt; testKey(k)} disabled={testing === k.id}
+                          style={[s.smallBtn, { backgroundColor: "#1e3a5f" }]}&gt;
+                          {testing === k.id ? &lt;ActivityIndicator size="small" color={WHITE} /&gt; : &lt;Feather name="wifi" size={13} color={WHITE} /&gt;}
+                          &lt;Text style={[s.smallTxt, { color: WHITE }]}&gt;Testar&lt;/Text&gt;
+                        &lt;/Pressable&gt;
+                        &lt;Pressable onPress={() =&gt; Alert.alert("Remover", `Remover "${k.label}"?`, [
+                          { text: "Cancelar" },
+                          { text: "Remover", style: "destructive", onPress: () =&gt; removeApiKey(k.id) },
+                        ])} style={[s.smallBtn, { backgroundColor: "#1c0505" }]}&gt;
+                          &lt;Feather name="trash-2" size={13} color={RED} /&gt;
+                        &lt;/Pressable&gt;
+                      &lt;/View&gt;
+                    &lt;/View&gt;
+                  );
+                })}
+              &lt;/&gt;
+            )}
+
+            {apiKeys.length === 0 &amp;&amp; !rawKey &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: "center", paddingVertical: 28 }]}&gt;
+                &lt;Text style={{ fontSize: 36, marginBottom: 8 }}&gt;🔐&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, textAlign: "center" }]}&gt;
+                  Cole qualquer chave acima{"\n"}o provedor é detectado automaticamente
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* Providers list */}
+            &lt;View style={[s.card, { borderColor: "#1e3a5f", backgroundColor: "#060d1a" }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;PROVEDORES SUPORTADOS&lt;/Text&gt;
+              &lt;View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, marginTop: 4 }}&gt;
+                {PROVIDERS.map(p =&gt; (
+                  &lt;View key={p.id} style={[s.pill, { backgroundColor: p.color + "18", borderColor: p.color + "44" }]}&gt;
+                    &lt;Text style={{ fontSize: 12 }}&gt;{p.icon}&lt;/Text&gt;
+                    &lt;Text style={[s.pillTxt, { color: p.color }]}&gt;{p.name}&lt;/Text&gt;
+                    {p.id === "perplexity" &amp;&amp; &lt;Feather name="globe" size={9} color={WEB_COLOR} /&gt;}
+                  &lt;/View&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: BANCO DB                                              */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === "db" &amp;&amp; (
+          &lt;&gt;
+            &lt;View style={[s.card, { borderColor: neonStatus === "ok" ? GREEN : neonStatus === "error" ? RED : "#1e3a5f" }]}&gt;
+              &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}&gt;
+                &lt;Text style={{ fontSize: 22 }}&gt;🐘&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;Neon PostgreSQL&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Cole a connection string abaixo&lt;/Text&gt;
+                &lt;/View&gt;
+                {neonStatus === "ok" &amp;&amp; (
+                  &lt;View style={[s.pill, { backgroundColor: "#052e16", borderColor: GREEN + "44" }]}&gt;
+                    &lt;Feather name="database" size={11} color={GREEN} /&gt;
+                    &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Conectado&lt;/Text&gt;
+                  &lt;/View&gt;
+                )}
+              &lt;/View&gt;
+
+              &lt;Text style={s.fieldLabel}&gt;CONNECTION STRING&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.input, { fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 11 }]}
+                value={neonInput}
+                onChangeText={setNeonInput}
+                placeholder="postgresql://user:senha@ep-xxx.us-east-2.aws.neon.tech/neondb"
+                placeholderTextColor={MUTED}
+                autoCapitalize="none"
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={() =&gt; Linking.openURL("https://console.neon.tech")}&gt;
+                &lt;Text style={[s.hint, { color: ACCENT }]}&gt;
+                  Obter string em console.neon.tech → seu projeto → Connect →
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+
+              &lt;View style={{ flexDirection: "row", gap: 8 }}&gt;
+                &lt;Pressable onPress={testNeon} disabled={neonStatus === "testing"}
+                  style={[s.smallBtn, { flex: 1, backgroundColor: "#1e3a5f", justifyContent: "center" }]}&gt;
+                  {neonStatus === "testing" ? &lt;ActivityIndicator size="small" color={WHITE} /&gt; : &lt;Feather name="wifi" size={14} color={WHITE} /&gt;}
+                  &lt;Text style={[s.smallTxt, { color: WHITE }]}&gt;{neonStatus === "testing" ? "Testando..." : "Testar e Salvar"}&lt;/Text&gt;
+                &lt;/Pressable&gt;
+                &lt;Pressable onPress={() =&gt; setCreateTableOpen(true)} style={[s.smallBtn, { backgroundColor: "#166534" }]}&gt;
+                  &lt;Feather name="plus-square" size={14} color={GREEN} /&gt;
+                  &lt;Text style={[s.smallTxt, { color: GREEN }]}&gt;Criar Tabela&lt;/Text&gt;
+                &lt;/Pressable&gt;
+              &lt;/View&gt;
+
+              {neonMsg !== "" &amp;&amp; (
+                &lt;View style={{ backgroundColor: neonStatus === "ok" ? "#052e16" : "#1c0505", borderWidth: 1, borderColor: neonStatus === "ok" ? "#166534" : "#7f1d1d", borderRadius: 10, padding: 10, gap: 4 }}&gt;
+                  &lt;Text style={[s.hint, { color: neonStatus === "ok" ? GREEN : RED, lineHeight: 17 }]}&gt;{neonMsg}&lt;/Text&gt;
+                &lt;/View&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Tables */}
+            {neonTables.length &gt; 0 &amp;&amp; (
+              &lt;View style={s.card}&gt;
+                &lt;Text style={s.sectionLabel}&gt;TABELAS ({neonTables.length})&lt;/Text&gt;
+                {neonTables.map(t =&gt; (
+                  &lt;Pressable key={t} onPress={() =&gt; loadTableDetails(t === selectedTable ? null! : t)}
+                    style={[s.tableRow, t === selectedTable &amp;&amp; { backgroundColor: ACCENT + "22" }]}&gt;
+                    &lt;Feather name="table" size={14} color={t === selectedTable ? ACCENT : MUTED} /&gt;
+                    &lt;Text style={[s.hint, { color: t === selectedTable ? ACCENT : WHITE, flex: 1, fontFamily: "Inter_500Medium", fontSize: 13 }]}&gt;{t}&lt;/Text&gt;
+                    &lt;Feather name={t === selectedTable ? "chevron-up" : "chevron-right"} size={13} color={MUTED} /&gt;
+                  &lt;/Pressable&gt;
+                ))}
+                {selectedTable &amp;&amp; tableDetails &amp;&amp; (
+                  &lt;ScrollView horizontal showsHorizontalScrollIndicator style={{ backgroundColor: "#050810", borderRadius: 8, padding: 8, borderWidth: 1, borderColor: "#1e3a5f" }}&gt;
+                    &lt;Text style={{ fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 10, color: "#4ade80", lineHeight: 15 }}&gt;{tableDetails}&lt;/Text&gt;
+                  &lt;/ScrollView&gt;
+                )}
+              &lt;/View&gt;
+            )}
+
+            {neonTables.length === 0 &amp;&amp; neonStatus === "ok" &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: "center", gap: 10, paddingVertical: 20 }]}&gt;
+                &lt;Text style={{ fontSize: 32 }}&gt;📭&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, textAlign: "center" }]}&gt;Banco vazio. Crie uma tabela ou peça para a Iara criar!&lt;/Text&gt;
+                &lt;Pressable onPress={() =&gt; setCreateTableOpen(true)} style={[s.addBtn, { backgroundColor: "#166534", paddingVertical: 10, paddingHorizontal: 20 }]}&gt;
+                  &lt;Feather name="plus-circle" size={16} color={GREEN} /&gt;
+                  &lt;Text style={[s.addBtnTxt, { color: GREEN }]}&gt;Criar primeira tabela&lt;/Text&gt;
+                &lt;/Pressable&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* IA para banco */}
+            &lt;View style={[s.card, { borderColor: "#7c3aed44" }]}&gt;
+              &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}&gt;
+                &lt;Text style={{ fontSize: 22 }}&gt;🤖&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;IA constrói o banco&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Descreva em português — a IA gera e executa o SQL&lt;/Text&gt;
+                &lt;/View&gt;
+              &lt;/View&gt;
+              &lt;TextInput
+                style={[s.input, { minHeight: 70, maxHeight: 120 }]}
+                value={aiDbPrompt}
+                onChangeText={setAiDbPrompt}
+                placeholder={"Ex: Crie uma tabela de clientes com nome, email, telefone e data de cadastro\n\nEx: Liste todas as tabelas e seus dados\n\nEx: Insira 3 clientes de exemplo"}
+                placeholderTextColor={MUTED}
+                multiline
+                autoCapitalize="none"
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={runAiDb} disabled={aiDbRunning || !aiDbPrompt.trim()}
+                style={[s.addBtn, { backgroundColor: aiDbRunning ? "#3b1d6e" : "#7c3aed", paddingVertical: 10, opacity: !aiDbPrompt.trim() ? 0.5 : 1 }]}&gt;
+                {aiDbRunning ? &lt;ActivityIndicator size="small" color="#fff" /&gt; : &lt;Feather name="zap" size={15} color="#fff" /&gt;}
+                &lt;Text style={s.addBtnTxt}&gt;{aiDbRunning ? "Gerando SQL e executando..." : "⚡ Gerar e Executar com IA"}&lt;/Text&gt;
+              &lt;/Pressable&gt;
+              {aiDbResult !== "" &amp;&amp; (
+                &lt;ScrollView showsVerticalScrollIndicator style={{ backgroundColor: "#08051a", borderRadius: 8, borderWidth: 1, borderColor: "#7c3aed44", maxHeight: 200, padding: 10, marginTop: 4 }}&gt;
+                  &lt;Text style={{ fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 10, color: aiDbResult.startsWith("✅") ? "#4ade80" : aiDbResult.startsWith("⚠️") ? "#fbbf24" : "#f87171", lineHeight: 15 }}&gt;{aiDbResult}&lt;/Text&gt;
+                &lt;/ScrollView&gt;
+              )}
+              {!neonDbUrl &amp;&amp; (
+                &lt;Text style={[s.hint, { color: YELLOW, textAlign: "center", marginTop: 4 }]}&gt;⚠️ Configure o banco Neon acima para executar automaticamente&lt;/Text&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Quick SQL Console */}
+            {neonDbUrl &amp;&amp; (
+              &lt;View style={s.card}&gt;
+                &lt;Text style={s.sectionLabel}&gt;CONSOLE SQL RÁPIDO&lt;/Text&gt;
+                &lt;TextInput
+                  style={[s.input, { fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 11, minHeight: 80, maxHeight: 140 }]}
+                  value={sqlConsole}
+                  onChangeText={setSqlConsole}
+                  placeholder={"SELECT * FROM tabela LIMIT 10;"}
+                  placeholderTextColor={MUTED}
+                  multiline
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                /&gt;
+                &lt;View style={{ flexDirection: "row", gap: 8 }}&gt;
+                  &lt;Pressable onPress={runSql} disabled={sqlRunning || !sqlConsole.trim()}
+                    style={[s.smallBtn, { flex: 1, backgroundColor: "#166534", justifyContent: "center" }]}&gt;
+                    {sqlRunning ? &lt;ActivityIndicator size="small" color={GREEN} /&gt; : &lt;Feather name="play" size={13} color={GREEN} /&gt;}
+                    &lt;Text style={[s.smallTxt, { color: GREEN }]}&gt;{sqlRunning ? "Executando..." : "Executar"}&lt;/Text&gt;
+                  &lt;/Pressable&gt;
+                  &lt;Pressable onPress={() =&gt; { setSqlConsole(""); setSqlResult(""); }} style={[s.smallBtn, { backgroundColor: "#1a2540" }]}&gt;
+                    &lt;Feather name="trash-2" size={13} color={MUTED} /&gt;
+                  &lt;/Pressable&gt;
+                &lt;/View&gt;
+                {sqlResult !== "" &amp;&amp; (
+                  &lt;ScrollView horizontal showsHorizontalScrollIndicator style={{ backgroundColor: "#050810", borderRadius: 8, borderWidth: 1, borderColor: "#1e3a5f", maxHeight: 180, padding: 8 }}&gt;
+                    &lt;Text style={{ fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 10, color: "#4ade80", lineHeight: 15 }}&gt;{sqlResult}&lt;/Text&gt;
+                  &lt;/ScrollView&gt;
+                )}
+              &lt;/View&gt;
+            )}
+          &lt;/&gt;
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: TOKENS (EAS + GitHub)                                 */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === "tokens" &amp;&amp; (
+          &lt;&gt;
+            &lt;View style={s.card}&gt;
+              &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}&gt;
+                &lt;Text style={{ fontSize: 20 }}&gt;⚡&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;Token EAS (Expo)&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Necessário para compilar APK na nuvem&lt;/Text&gt;
+                &lt;/View&gt;
+                {easToken &amp;&amp; &lt;View style={[s.pill, { backgroundColor: GREEN + "22", borderColor: GREEN + "44" }]}&gt;
+                  &lt;Feather name="check" size={11} color={GREEN} /&gt;
+                  &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Salvo&lt;/Text&gt;
+                &lt;/View&gt;}
+              &lt;/View&gt;
+              &lt;Text style={s.fieldLabel}&gt;TOKEN EAS&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.input, { letterSpacing: 0.5 }]}
+                value={easInput}
+                onChangeText={setEasInput}
+                placeholder="dYEa4ppg..."
+                placeholderTextColor={MUTED}
+                secureTextEntry={easInput.length &gt; 0}
+                autoCapitalize="none"
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={() =&gt; Linking.openURL("https://expo.dev/accounts/[account]/settings/access-tokens")}&gt;
+                &lt;Text style={[s.hint, { color: ACCENT }]}&gt;Obter token em expo.dev → Conta → Access Tokens →&lt;/Text&gt;
+              &lt;/Pressable&gt;
+              &lt;Pressable onPress={() =&gt; { setEasToken(easInput.trim()); Alert.alert("✅ Token EAS salvo!"); }}
+                style={[s.addBtn, { backgroundColor: ACCENT, paddingVertical: 10 }]}&gt;
+                &lt;Feather name="save" size={15} color="#fff" /&gt;
+                &lt;Text style={[s.addBtnTxt, { fontSize: 13 }]}&gt;Salvar Token EAS&lt;/Text&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+
+            &lt;View style={s.card}&gt;
+              &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 6 }}&gt;
+                &lt;Text style={{ fontSize: 20 }}&gt;🐙&lt;/Text&gt;
+                &lt;View style={{ flex: 1 }}&gt;
+                  &lt;Text style={s.keyName}&gt;Token GitHub (PAT)&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;Para importar repositórios e fazer push&lt;/Text&gt;
+                &lt;/View&gt;
+                {ghToken &amp;&amp; &lt;View style={[s.pill, { backgroundColor: GREEN + "22", borderColor: GREEN + "44" }]}&gt;
+                  &lt;Feather name="check" size={11} color={GREEN} /&gt;
+                  &lt;Text style={[s.pillTxt, { color: GREEN }]}&gt;Conectado&lt;/Text&gt;
+                &lt;/View&gt;}
+              &lt;/View&gt;
+              &lt;Text style={s.fieldLabel}&gt;TOKEN GITHUB&lt;/Text&gt;
+              &lt;TextInput
+                style={[s.input, { letterSpacing: 0.5 }]}
+                value={ghInput}
+                onChangeText={setGhInput}
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                placeholderTextColor={MUTED}
+                secureTextEntry={ghInput.length &gt; 0}
+                autoCapitalize="none"
+                autoCorrect={false}
+              /&gt;
+              &lt;Pressable onPress={() =&gt; Linking.openURL("https://github.com/settings/tokens/new?scopes=repo,workflow,pages&amp;description=APK+Builder")}&gt;
+                &lt;Text style={[s.hint, { color: ACCENT }]}&gt;
+                  Gerar token em GitHub → Settings → Developer settings → PAT (classic) → repo ✓ + workflow ✓ + pages ✓ →
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+              &lt;Pressable onPress={() =&gt; { setGhToken(ghInput.trim()); Alert.alert("✅ Token GitHub salvo!"); }}
+                style={[s.addBtn, { backgroundColor: "#1a2a1a", paddingVertical: 10, borderWidth: 1, borderColor: GREEN + "44" }]}&gt;
+                &lt;Feather name="save" size={15} color={GREEN} /&gt;
+                &lt;Text style={[s.addBtnTxt, { fontSize: 13, color: GREEN }]}&gt;Salvar Token GitHub&lt;/Text&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+
+            &lt;View style={[s.card, { backgroundColor: "#060d1a", borderColor: "#1e3a5f" }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;💡 SOBRE OS TOKENS&lt;/Text&gt;
+              &lt;Text style={[s.hint, { color: "#94a3b8", lineHeight: 18 }]}&gt;
+                • Todos os tokens ficam salvos localmente no app{"\n"}
+                • EAS Token: só necessário para compilar APK na nuvem{"\n"}
+                • GitHub Token: necessário para importar/exportar repositórios{"\n"}
+                • Os tokens são usados diretamente nas APIs — o app não tem servidor
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {/* SECTION: STATUS                                                 */}
+        {/* ═══════════════════════════════════════════════════════════════ */}
+        {section === "status" &amp;&amp; (
+          &lt;&gt;
+            {/* Versão do app */}
+            &lt;View style={[s.card, { backgroundColor: "#0a0d1f", borderColor: "#312e81", flexDirection: "row", alignItems: "center", gap: 12 }]}&gt;
+              &lt;Text style={{ fontSize: 28 }}&gt;📱&lt;/Text&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;Text style={[s.keyName, { color: "#a5b4fc" }]}&gt;APK Builder — v2.0.0&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                  {Platform.OS === "android" ? "Android APK nativo" : Platform.OS === "ios" ? "iOS" : "Web Preview"} · {new Date().toLocaleDateString("pt-BR")}
+                &lt;/Text&gt;
+              &lt;/View&gt;
+              &lt;View style={[s.pill, { backgroundColor: "#312e81", borderColor: "#4f46e5" }]}&gt;
+                &lt;Feather name="check-circle" size={11} color="#a5b4fc" /&gt;
+                &lt;Text style={[s.pillTxt, { color: "#a5b4fc" }]}&gt;Instalado&lt;/Text&gt;
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            {/* Botão verificar */}
+            &lt;Pressable onPress={runStatusCheck} disabled={statusRunning}
+              style={[s.addBtn, { backgroundColor: statusRunning ? "#1e293b" : "#0f766e", borderWidth: 1, borderColor: statusRunning ? BORDER : "#14b8a6" }]}&gt;
+              {statusRunning
+                ? &lt;ActivityIndicator size="small" color="#5eead4" /&gt;
+                : &lt;Feather name="refresh-cw" size={18} color="#5eead4" /&gt;}
+              &lt;Text style={[s.addBtnTxt, { color: statusRunning ? MUTED : "#5eead4" }]}&gt;
+                {statusRunning ? "Verificando todos os serviços..." : "🔄 Verificar Status Agora"}
+              &lt;/Text&gt;
+            &lt;/Pressable&gt;
+
+            {/* Resultados */}
+            {statusResults.map((r, i) =&gt; (
+              &lt;View key={i} style={[s.card, {
+                borderColor: r.status === "ok" ? GREEN + "55" : r.status === "error" ? RED + "55" : r.status === "checking" ? YELLOW + "44" : BORDER,
+                backgroundColor: r.status === "ok" ? "#052e16" : r.status === "error" ? "#1c0505" : CARD,
+              }]}&gt;
+                &lt;View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}&gt;
+                  &lt;View style={[s.dot, {
+                    width: 12, height: 12,
+                    backgroundColor: r.status === "ok" ? GREEN : r.status === "error" ? RED : r.status === "checking" ? YELLOW : MUTED,
+                  }]} /&gt;
+                  &lt;Text style={[s.keyName, { flex: 1,
+                    color: r.status === "ok" ? GREEN : r.status === "error" ? RED : r.status === "checking" ? YELLOW : WHITE,
+                  }]}&gt;{r.label}&lt;/Text&gt;
+                  {r.status === "checking" &amp;&amp; &lt;ActivityIndicator size="small" color={YELLOW} /&gt;}
+                &lt;/View&gt;
+                {r.msg !== "" &amp;&amp; (
+                  &lt;Text style={[s.hint, { color: r.status === "ok" ? "#86efac" : r.status === "error" ? "#fca5a5" : r.status === "checking" ? "#fef08a" : MUTED, marginLeft: 22 }]}&gt;
+                    {r.msg}
+                  &lt;/Text&gt;
+                )}
+              &lt;/View&gt;
+            ))}
+
+            {statusResults.length === 0 &amp;&amp; statusRunning &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: "center", paddingVertical: 24 }]}&gt;
+                &lt;ActivityIndicator size="large" color={ACCENT} /&gt;
+                &lt;Text style={[s.hint, { color: MUTED, marginTop: 12, textAlign: "center" }]}&gt;Verificando Internet · Proxy · GitHub · IA · Banco...&lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {statusResults.length === 0 &amp;&amp; !statusRunning &amp;&amp; (
+              &lt;View style={[s.card, { alignItems: "center", paddingVertical: 30 }]}&gt;
+                &lt;Text style={{ fontSize: 40, marginBottom: 12 }}&gt;📊&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, textAlign: "center" }]}&gt;
+                  Verificação automática iniciando...{"\n"}ou toque no botão acima
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* Resumo de configuração */}
+            &lt;View style={[s.card, { backgroundColor: "#060d1a", borderColor: "#1e3a5f" }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;📋 RESUMO DE CONFIGURAÇÃO&lt;/Text&gt;
+              &lt;View style={{ gap: 6, marginTop: 4 }}&gt;
+                {[
+                  { ok: apiKeys.length &gt; 0, text: apiKeys.length &gt; 0 ? `✅ ${apiKeys.length} chave(s) de IA configurada(s)` : "⚠️ Nenhuma chave de IA — configure na aba Chaves IA" },
+                  { ok: !!neonDbUrl, text: neonDbUrl ? "✅ Banco Neon configurado" : "⚪ Banco Neon não configurado" },
+                  { ok: !!ghToken, text: ghToken ? "✅ GitHub conectado" : "⚪ GitHub não configurado — configure na aba Tokens" },
+                  { ok: !!easToken, text: easToken ? "✅ Token EAS configurado" : "⚪ Token EAS não configurado" },
+                ].map((item, i) =&gt; (
+                  &lt;Text key={i} style={[s.hint, { color: item.ok ? GREEN : MUTED, lineHeight: 18 }]}&gt;{item.text}&lt;/Text&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            {/* Limites do app */}
+            &lt;View style={[s.card, { backgroundColor: "#060d1a", borderColor: "#1e3a5f" }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;📦 LIMITES DO APK BUILDER v2.0.0&lt;/Text&gt;
+              &lt;View style={{ gap: 4, marginTop: 4 }}&gt;
+                {[
+                  { label: "Arquivos por import", val: "∞ Sem limite" },
+                  { label: "Tamanho ZIP / repo GitHub", val: "Sem limite (streaming)" },
+                  { label: "RAM do app (Android)", val: "Até 512 MB – 2 GB (device)" },
+                  { label: "Export ZIP Android", val: "Até memória disponível" },
+                  { label: "Sessão salva (AsyncStorage)", val: "Até 6 MB por chave" },
+                  { label: "Push GitHub por arquivo", val: "Até 100 MB" },
+                  { label: "EAS Build na nuvem", val: "Sem limite de tamanho" },
+                ].map((item, i) =&gt; (
+                  &lt;View key={i} style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: i &lt; 6 ? 1 : 0, borderBottomColor: BORDER }}&gt;
+                    &lt;Text style={[s.hint, { color: MUTED, flex: 1 }]}&gt;{item.label}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: GREEN, fontFamily: "Inter_600SemiBold", textAlign: "right" }]}&gt;{item.val}&lt;/Text&gt;
+                  &lt;/View&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            {/* Tabela de Tokens IA */}
+            &lt;View style={[s.card, { backgroundColor: "#06091a", borderColor: "#312e81" }]}&gt;
+              &lt;Text style={[s.sectionLabel, { color: "#a5b4fc" }]}&gt;🤖 LIMITES DE TOKENS POR MODELO DE IA&lt;/Text&gt;
+              &lt;Text style={[s.hint, { color: MUTED, marginBottom: 6 }]}&gt;ctx = contexto total · out = máx por resposta&lt;/Text&gt;
+
+              {/* Header */}
+              &lt;View style={{ flexDirection: "row", paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: BORDER }}&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 1.2, fontFamily: "Inter_600SemiBold", fontSize: 9, letterSpacing: 0.5 }]}&gt;PROVEDOR&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 2, fontFamily: "Inter_600SemiBold", fontSize: 9, letterSpacing: 0.5 }]}&gt;MODELO&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 0.8, fontFamily: "Inter_600SemiBold", fontSize: 9, textAlign: "center", letterSpacing: 0.5 }]}&gt;CTX&lt;/Text&gt;
+                &lt;Text style={[s.hint, { color: MUTED, flex: 0.8, fontFamily: "Inter_600SemiBold", fontSize: 9, textAlign: "center", letterSpacing: 0.5 }]}&gt;OUT&lt;/Text&gt;
+              &lt;/View&gt;
+
+              {[
+                { p: "OpenAI",     m: "gpt-4o",            ctx: "128k",  out: "16k",  c: "#10b981" },
+                { p: "OpenAI",     m: "gpt-4o-mini",       ctx: "128k",  out: "16k",  c: "#10b981" },
+                { p: "OpenAI",     m: "gpt-4-turbo",       ctx: "128k",  out: "4k",   c: "#10b981" },
+                { p: "OpenAI",     m: "gpt-3.5-turbo",     ctx: "16k",   out: "4k",   c: "#10b981" },
+                { p: "OpenAI",     m: "o1 / o3",           ctx: "200k",  out: "100k", c: "#10b981" },
+                { p: "Anthropic",  m: "claude-3.5-sonnet", ctx: "200k",  out: "8k",   c: "#f59e0b" },
+                { p: "Anthropic",  m: "claude-3-opus",     ctx: "200k",  out: "4k",   c: "#f59e0b" },
+                { p: "Anthropic",  m: "claude-3-haiku",    ctx: "200k",  out: "4k",   c: "#f59e0b" },
+                { p: "Google",     m: "gemini-1.5-pro",    ctx: "1M",    out: "8k",   c: "#3b82f6" },
+                { p: "Google",     m: "gemini-2.0-flash",  ctx: "1M",    out: "8k",   c: "#3b82f6" },
+                { p: "Groq",       m: "llama-3.1-70b",     ctx: "128k",  out: "8k",   c: "#8b5cf6" },
+                { p: "Groq",       m: "mixtral-8x7b",      ctx: "32k",   out: "32k",  c: "#8b5cf6" },
+                { p: "Perplexity", m: "sonar-pro",         ctx: "200k",  out: "8k",   c: "#22d3ee" },
+                { p: "Perplexity", m: "sonar",             ctx: "128k",  out: "8k",   c: "#22d3ee" },
+                { p: "DeepSeek",   m: "deepseek-chat",     ctx: "64k",   out: "8k",   c: "#ec4899" },
+                { p: "Mistral",    m: "mistral-large",     ctx: "128k",  out: "8k",   c: "#f97316" },
+              ].map((row, i) =&gt; (
+                &lt;View key={i} style={{ flexDirection: "row", paddingVertical: 5, borderBottomWidth: i &lt; 15 ? 1 : 0, borderBottomColor: BORDER + "55", backgroundColor: i % 2 === 0 ? "#ffffff05" : "transparent" }}&gt;
+                  &lt;Text style={[s.hint, { flex: 1.2, color: row.c, fontFamily: "Inter_600SemiBold", fontSize: 10 }]}&gt;{row.p}&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { flex: 2, color: "#cbd5e1", fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace", fontSize: 9 }]}&gt;{row.m}&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { flex: 0.8, color: "#67e8f9", fontFamily: "Inter_700Bold", textAlign: "center", fontSize: 11 }]}&gt;{row.ctx}&lt;/Text&gt;
+                  &lt;Text style={[s.hint, { flex: 0.8, color: "#94a3b8", textAlign: "center", fontSize: 10 }]}&gt;{row.out}&lt;/Text&gt;
+                &lt;/View&gt;
+              ))}
+            &lt;/View&gt;
+
+            {/* Info do device */}
+            &lt;View style={[s.card, { backgroundColor: "#060d1a", borderColor: "#1e3a5f" }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;⚙️ INFORMAÇÕES DO DEVICE&lt;/Text&gt;
+              &lt;View style={{ gap: 4, marginTop: 4 }}&gt;
+                {[
+                  { label: "Plataforma", val: Platform.OS === "android" ? `Android (API ${Platform.Version})` : Platform.OS === "ios" ? `iOS ${Platform.Version}` : "Web" },
+                  { label: "Expo SDK", val: "54" },
+                  { label: "React Native", val: "0.76.x" },
+                  { label: "Engine", val: "Hermes JS" },
+                  { label: "App Version", val: "2.0.0 (build 1)" },
+                ].map((item, i) =&gt; (
+                  &lt;View key={i} style={{ flexDirection: "row", justifyContent: "space-between", paddingVertical: 4, borderBottomWidth: i &lt; 4 ? 1 : 0, borderBottomColor: BORDER }}&gt;
+                    &lt;Text style={[s.hint, { color: MUTED }]}&gt;{item.label}&lt;/Text&gt;
+                    &lt;Text style={[s.hint, { color: WHITE, fontFamily: "Inter_500Medium" }]}&gt;{item.val}&lt;/Text&gt;
+                  &lt;/View&gt;
+                ))}
+              &lt;/View&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}
+
+const s = StyleSheet.create({
+  root: { flex: 1 },
+  content: { paddingHorizontal: 14, gap: 10 },
+  title: { fontSize: 22, fontFamily: "Inter_700Bold", color: WHITE, letterSpacing: -0.5 },
+  sectionLabel: { fontSize: 10, fontFamily: "Inter_600SemiBold", color: MUTED, letterSpacing: 0.8 },
+  hint: { fontSize: 11, fontFamily: "Inter_400Regular", color: MUTED, lineHeight: 16 },
+  fieldLabel: { fontSize: 10, fontFamily: "Inter_600SemiBold", color: MUTED, letterSpacing: 0.8, marginBottom: 4 },
+  card: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 14, gap: 8 },
+  keyCard: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 14, padding: 12, gap: 10 },
+  keyInput: {
+    backgroundColor: "#06091a", borderWidth: 2, borderColor: BORDER,
+    borderRadius: 12, paddingHorizontal: 14, paddingVertical: 14,
+    fontSize: 14, fontFamily: "Inter_400Regular", color: WHITE, letterSpacing: 1,
+  },
+  input: {
+    backgroundColor: "#06091a", borderWidth: 1, borderColor: BORDER,
+    borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10,
+    fontSize: 13, fontFamily: "Inter_400Regular", color: WHITE,
+  },
+  detectedBadge: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 12, borderWidth: 1 },
+  detectedName: { fontSize: 15, fontFamily: "Inter_700Bold" },
+  warnBadge: { flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#1c1500", borderRadius: 10, padding: 10, borderWidth: 1, borderColor: "#854d0e" },
+  providerChip: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1, backgroundColor: "#0a0f1e" },
+  chipTxt: { fontSize: 12, fontFamily: "Inter_600SemiBold" },
+  advancedToggle: { flexDirection: "row", alignItems: "center", gap: 6, paddingVertical: 4 },
+  addBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 12, paddingVertical: 13 },
+  addBtnTxt: { fontSize: 15, fontFamily: "Inter_700Bold", color: "#fff" },
+  listHeader: { flexDirection: "row", alignItems: "center", paddingHorizontal: 4 },
+  testAllBtn: { flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "#1e3a5f", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 },
+  keyHeader: { flexDirection: "row", alignItems: "center", gap: 10 },
+  keyName: { fontSize: 14, fontFamily: "Inter_600SemiBold", color: WHITE },
+  keyActions: { flexDirection: "row", gap: 8 },
+  statusPill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1, borderColor: "transparent" },
+  dot: { width: 7, height: 7, borderRadius: 4 },
+  smallBtn: { flexDirection: "row", alignItems: "center", gap: 5, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 9 },
+  smallTxt: { fontSize: 12, fontFamily: "Inter_500Medium", color: MUTED },
+  pill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1, borderColor: "transparent" },
+  pillTxt: { fontSize: 11, fontFamily: "Inter_600SemiBold", color: MUTED },
+  helpBtn: { flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: ACCENT + "22", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1, borderColor: ACCENT + "44" },
+  sectionTabs: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
+  secTab: { flex: 1, minWidth: "45%", alignItems: "center", gap: 4, paddingVertical: 10, borderRadius: 12, borderWidth: 1, borderColor: BORDER, backgroundColor: "#0a0f1e" },
+  secTabActive: { backgroundColor: ACCENT, borderColor: ACCENT },
+  secTabTxt: { fontSize: 11, fontFamily: "Inter_500Medium", color: MUTED },
+  tableRow: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: BORDER },
+});
+
+// ── Manual styles ─────────────────────────────────────────────────────────────
+const man = StyleSheet.create({
+  root: { flex: 1, backgroundColor: BG },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingBottom: 12, borderBottomWidth: 1, borderBottomColor: BORDER },
+  title: { fontSize: 18, fontFamily: "Inter_700Bold", color: WHITE },
+  closeBtn: { width: 34, height: 34, borderRadius: 10, backgroundColor: "#1a2540", alignItems: "center", justifyContent: "center" },
+  tabsRow: { borderBottomWidth: 1, borderBottomColor: BORDER, paddingVertical: 10 },
+  tab: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10, borderWidth: 1, borderColor: BORDER, backgroundColor: "#0a0f1e" },
+  tabActive: { backgroundColor: ACCENT, borderColor: ACCENT },
+  tabTxt: { fontSize: 12, fontFamily: "Inter_500Medium", color: MUTED },
+  card: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 18, gap: 10, alignItems: "center" },
+  sTitle: { fontSize: 20, fontFamily: "Inter_700Bold", color: WHITE, textAlign: "center" },
+  body: { fontSize: 14, fontFamily: "Inter_400Regular", color: "#cbd5e1", lineHeight: 22, textAlign: "left", width: "100%" },
+  hint: { fontSize: 12, fontFamily: "Inter_400Regular", color: MUTED, lineHeight: 18, textAlign: "center" },
+});
+</code></pre></div></div>
+    <script>
+    document.querySelectorAll('.copy-btn[data-code]').forEach(b=>{
+      b.onclick=()=>{navigator.clipboard.writeText(b.dataset.code);b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Copiar',1500)};
+    });
+    document.querySelectorAll('.copy-btn[data-section]').forEach(b=>{
+      b.onclick=()=>{
+        const h=document.getElementById(b.dataset.section);
+        const lvl=parseInt(h.tagName[1]);
+        let txt=h.innerText.replace('📋 Seção','').trim()+'\n\n';
+        let el=h.nextElementSibling;
+        while(el){
+          if(/^H[1-6]$/.test(el.tagName)&&parseInt(el.tagName[1])<=lvl)break;
+          txt+=el.innerText+'\n\n';
+          el=el.nextElementSibling;
+        }
+        navigator.clipboard.writeText(txt.trim());
+        b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Seção',1500);
+      };
+    });
+    </script>
+  </body></html>
