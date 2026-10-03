@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: export.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 export.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:29:13 • 28 elementos • 8 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { Feather } from &quot;@expo/vector-icons&quot;;</div><div class="idx-item">L2 [import] import * as _FileSystem from &quot;expo-file-system&quot;;</div><div class="idx-item">L4 [import] import * as Sharing from &quot;expo-sharing&quot;;</div><div class="idx-item">L5 [import] import * as Linking from &quot;expo-linking&quot;;</div><div class="idx-item">L6 [import] import { router } from &quot;expo-router&quot;;</div><div class="idx-item">L7 [import] import React, { useState, useMemo } from &quot;react&quot;;</div><div class="idx-item">L8 [import] import {</div><div class="idx-item">L19 [import] import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;</div><div class="idx-item">L20 [import] import { useProject } from &quot;@/context/ProjectContext&quot;;</div><div class="idx-item">L21 [import] import type { AppConfig } from &quot;@/context/ProjectContext&quot;;</div><div class="idx-item">L22 [import] import { buildAndroidZip, selectWebFiles } from &quot;@/lib/android&quot;;</div><div class="idx-item">L23 [import] import {</div><div class="idx-item">L30 [interface] EasBuild</div><div class="idx-item">L34 [const] CARD</div><div class="idx-item">L35 [const] BORDER</div><div class="idx-item">L36 [const] ACCENT</div><div class="idx-item">L37 [const] MUTED</div><div class="idx-item">L38 [const] WHITE</div><div class="idx-item">L39 [const] GREEN</div><div class="idx-item">L40 [const] ORANGE</div><div class="idx-item">L42 [interface] BuildPhase</div><div class="idx-item">L51 [component] ExportScreen</div><div class="idx-item">L79 [function] handleGenerate</div><div class="idx-item">L98 [function] handleShare</div><div class="idx-item">L102 [function] uri →</div><div class="idx-item">L118 [function] handleEasBuild</div><div class="idx-item">L193 [function] openEasDashboard</div><div class="idx-item">L200 [component] Field</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L50</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { Feather } from &quot;@expo/vector-icons&quot;;
+import * as _FileSystem from &quot;expo-file-system&quot;;
+const FileSystem = _FileSystem as any;
+import * as Sharing from &quot;expo-sharing&quot;;
+import * as Linking from &quot;expo-linking&quot;;
+import { router } from &quot;expo-router&quot;;
+import React, { useState, useMemo } from &quot;react&quot;;
+import {
+  ActivityIndicator,
+  Alert,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from &quot;react-native&quot;;
+import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;
+import { useProject } from &quot;@/context/ProjectContext&quot;;
+import type { AppConfig } from &quot;@/context/ProjectContext&quot;;
+import { buildAndroidZip, selectWebFiles } from &quot;@/lib/android&quot;;
+import {
+  easGetMe,
+  easEnsureApp,
+  easGetUploadUrl,
+  easUploadTarball,
+  easCreateBuild,
+  easGetBuild,
+  type EasBuild,
+} from &quot;@/lib/eas&quot;;
+
+const BG = &quot;#080c18&quot;;
+const CARD = &quot;#0f1629&quot;;
+const BORDER = &quot;#1e293b&quot;;
+const ACCENT = &quot;#6366f1&quot;;
+const MUTED = &quot;#64748b&quot;;
+const WHITE = &quot;#f1f5f9&quot;;
+const GREEN = &quot;#4ade80&quot;;
+const ORANGE = &quot;#f97316&quot;;
+
+type BuildPhase =
+  | &quot;idle&quot;
+  | &quot;generating&quot;
+  | &quot;validating&quot;
+  | &quot;uploading&quot;
+  | &quot;building&quot;
+  | &quot;done&quot;
+  | &quot;error&quot;;
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>ExportScreen</span>
+    <div>
+      <small>L51–L78</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">export default function ExportScreen() {
+  const insets = useSafeAreaInsets();
+  const {
+    files, cfg, setCfg, source, projectReady,
+    resultBase64, resultName, setResult,
+    easToken, setEasToken,
+  } = useProject();
+
+  const [generating, setGenerating] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [sharing, setSharing] = useState(false);
+
+  // Smart file detection
+  const { files: webFiles, fromSubfolder } = React.useMemo(
+    () =&gt; selectWebFiles(files),
+    [files]
+  );
+  const hasIndexHtml = webFiles.some(
+    f =&gt; f.path === &quot;index.html&quot; || f.path.replace(/^\//, &quot;&quot;) === &quot;index.html&quot;
+  );
+
+  // EAS Build state
+  const [easInput, setEasInput] = useState(easToken);
+  const [phase, setPhase] = useState&lt;BuildPhase&gt;(&quot;idle&quot;);
+  const [easMsg, setEasMsg] = useState(&quot;&quot;);
+  const [easBuild, setEasBuild] = useState&lt;EasBuild | null&gt;(null);
+  const [easUser, setEasUser] = useState&lt;{ username: string } | null&gt;(null);
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>handleGenerate</span>
+    <div>
+      <small>L79–L97</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">  async function handleGenerate() {
+    if (!cfg.appName || !cfg.appId || !files.length) return;
+    setGenerating(true);
+    setProgress(10);
+    try {
+      await new Promise(r =&gt; setTimeout(r, 100)); setProgress(30);
+      const base64 = await buildAndroidZip(cfg, files, source);
+      setProgress(90);
+      const safeName = cfg.appName.replace(/[^a-zA-Z0-9]/g, &quot;-&quot;).toLowerCase();
+      const name = `${safeName}-android-v${cfg.versionName}.zip`;
+      setResult(base64, name);
+      setProgress(100);
+    } catch (e) {
+      Alert.alert(&quot;Erro&quot;, String(e));
+    } finally {
+      setGenerating(false);
+    }
+  }
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>handleShare</span>
+    <div>
+      <small>L98–L101</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">  async function handleShare() {
+    if (!resultBase64 || !resultName) return;
+    setSharing(true);
+    try {</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>uri →</span>
+    <div>
+      <small>L102–L117</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">      const uri = (FileSystem.cacheDirectory ?? &quot;&quot;) + resultName;
+      await FileSystem.writeAsStringAsync(uri, resultBase64, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      await Sharing.shareAsync(uri, {
+        mimeType: &quot;application/zip&quot;,
+        dialogTitle: `Salvar ${resultName}`,
+        UTI: &quot;public.zip-archive&quot;,
+      });
+    } catch (e) {
+      Alert.alert(&quot;Erro ao compartilhar&quot;, String(e));
+    } finally {
+      setSharing(false);
+    }
+  }
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>handleEasBuild</span>
+    <div>
+      <small>L118–L192</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">  async function handleEasBuild() {
+    const token = easInput.trim();
+    if (!token) { Alert.alert(&quot;Token EAS necessário&quot;, &quot;Cole seu token EAS primeiro.&quot;); return; }
+    if (!resultBase64) { Alert.alert(&quot;Gere o ZIP primeiro&quot;, &quot;Toque em ⚡ Gerar Projeto antes de compilar via EAS.&quot;); return; }
+
+    setEasToken(token);
+    setEasBuild(null);
+
+    try {
+      // 1. Validar token
+      setPhase(&quot;validating&quot;);
+      setEasMsg(&quot;🔐 Verificando token EAS...&quot;);
+      const me = await easGetMe(token);
+      setEasUser({ username: me.username });
+      setEasMsg(`✅ Logado como @${me.username}`);
+
+      // 2. Registrar/obter app
+      const slug = cfg.appId.replace(/\./g, &quot;-&quot;).toLowerCase();
+      setEasMsg(&quot;📦 Registrando app no Expo...&quot;);
+      const app = await easEnsureApp(token, me.primaryAccount.name, slug, cfg.appName);
+      setEasMsg(`✅ App: ${app.fullName}`);
+
+      // 3. Obter URL de upload
+      setPhase(&quot;uploading&quot;);
+      setEasMsg(&quot;☁️ Obtendo URL de upload...&quot;);
+      const uploadUrl = await easGetUploadUrl(token);
+
+      // 4. Upload do ZIP
+      setEasMsg(&quot;⬆️ Enviando projeto para o EAS...&quot;);
+      await easUploadTarball(uploadUrl, resultBase64);
+      setEasMsg(&quot;✅ Projeto enviado!&quot;);
+
+      // 5. Criar build
+      setPhase(&quot;building&quot;);
+      setEasMsg(&quot;🔨 Iniciando compilação no EAS...&quot;);
+      const build = await easCreateBuild(token, app.id, uploadUrl.bucketKey, {
+        appId: cfg.appId,
+        versionName: cfg.versionName,
+        versionCode: cfg.versionCode,
+        minSdk: cfg.minSdk,
+      });
+      setEasBuild(build);
+      setEasMsg(`🏗️ Build iniciado! ID: ${build.id.slice(0, 8)}...`);
+
+      // 6. Polling do status
+      let current = build;
+      let tries = 0;
+      while (
+        current.status !== &quot;FINISHED&quot; &amp;&amp;
+        current.status !== &quot;ERRORED&quot; &amp;&amp;
+        current.status !== &quot;CANCELED&quot; &amp;&amp;
+        tries &lt; 60
+      ) {
+        await new Promise(r =&gt; setTimeout(r, 15000));
+        tries++;
+        current = await easGetBuild(token, build.id);
+        setEasBuild({ ...current });
+        const mins = Math.round((tries * 15) / 60);
+        setEasMsg(`🏗️ Compilando... ~${mins} min (${current.status})`);
+      }
+
+      if (current.status === &quot;FINISHED&quot;) {
+        setPhase(&quot;done&quot;);
+        setEasBuild({ ...current });
+        setEasMsg(`✅ APK pronto! Baixe em expo.dev`);
+      } else {
+        setPhase(&quot;error&quot;);
+        setEasMsg(`❌ Build ${current.status}. Veja em expo.dev/accounts/${me.username}/builds/${build.id}`);
+      }
+    } catch (e) {
+      setPhase(&quot;error&quot;);
+      setEasMsg(&quot;❌ &quot; + String(e));
+    }
+  }
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>openEasDashboard</span>
+    <div>
+      <small>L193–L199</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  function openEasDashboard() {
+    const url = easUser &amp;&amp; easBuild
+      ? `https://expo.dev/accounts/${easUser.username}/builds/${easBuild.id}`
+      : &quot;https://expo.dev/builds&quot;;
+    Linking.openURL(url);
+  }
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>Field</span>
+    <div>
+      <small>L200–L565</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">  function Field({
+    label, value, onChange, placeholder, mono,
+  }: {
+    label: string; value: string; onChange: (v: string) =&gt; void;
+    placeholder?: string; mono?: boolean;
+  }) {
+    return (
+      &lt;View&gt;
+        &lt;Text style={s.fieldLabel}&gt;{label}&lt;/Text&gt;
+        &lt;TextInput
+          style={[s.input, mono &amp;&amp; { fontFamily: &quot;Inter_400Regular&quot; }]}
+          value={value}
+          onChangeText={onChange}
+          placeholder={placeholder}
+          placeholderTextColor={MUTED}
+          autoCapitalize=&quot;none&quot;
+          autoCorrect={false}
+        /&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  const orientationOptions: Array&lt;{ label: string; value: AppConfig[&quot;orientation&quot;] }&gt; = [
+    { label: &quot;Retrato&quot;, value: &quot;portrait&quot; },
+    { label: &quot;Paisagem&quot;, value: &quot;landscape&quot; },
+    { label: &quot;Ambas&quot;, value: &quot;any&quot; },
+  ];
+  const sdkOptions = [21, 22, 24, 26, 28];
+  const isBuildingEas = phase === &quot;validating&quot; || phase === &quot;uploading&quot; || phase === &quot;building&quot;;
+
+  if (!projectReady) {
+    return (
+      &lt;View style={[s.root, { backgroundColor: BG, justifyContent: &quot;center&quot;, alignItems: &quot;center&quot; }]}&gt;
+        &lt;Feather name=&quot;package&quot; size={48} color={MUTED} style={{ opacity: 0.5, marginBottom: 16 }} /&gt;
+        &lt;Text style={[s.title, { textAlign: &quot;center&quot; }]}&gt;Nenhum projeto carregado&lt;/Text&gt;
+        &lt;Text style={[s.hint, { color: MUTED, textAlign: &quot;center&quot;, marginTop: 8, paddingHorizontal: 32 }]}&gt;
+          Importe um ZIP ou clone um repositório GitHub primeiro
+        &lt;/Text&gt;
+        &lt;Pressable
+          onPress={() =&gt; router.push(&quot;/(tabs)/index&quot; as any)}
+          style={({ pressed }) =&gt; [s.btn, { marginTop: 24, opacity: pressed ? 0.85 : 1 }]}
+        &gt;
+          &lt;Feather name=&quot;package&quot; size={16} color=&quot;#fff&quot; /&gt;
+          &lt;Text style={s.btnText}&gt;→ Importar projeto&lt;/Text&gt;
+        &lt;/Pressable&gt;
+      &lt;/View&gt;
+    );
+  }
+
+  return (
+    &lt;View style={[s.root, { backgroundColor: BG }]}&gt;
+      &lt;ScrollView
+        contentContainerStyle={[
+          s.content,
+          { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 100 },
+        ]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps=&quot;handled&quot;
+      &gt;
+        &lt;Text style={s.title}&gt;⚙ Configurar APK&lt;/Text&gt;
+        &lt;Text style={[s.hint, { color: MUTED }]}&gt;{source}&lt;/Text&gt;
+
+        {/* Pure WebView badge */}
+        &lt;View style={[s.card, { padding: 12, borderColor: &quot;#166534&quot;, backgroundColor: &quot;#052e16&quot; }]}&gt;
+          &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, marginBottom: 6 }}&gt;
+            &lt;Text style={{ fontSize: 16 }}&gt;📱&lt;/Text&gt;
+            &lt;Text style={[s.hint, { color: &quot;#4ade80&quot;, fontFamily: &quot;Inter_600SemiBold&quot;, fontSize: 12 }]}&gt;
+              PURO WEBVIEW ANDROID — SEM CAPACITOR
+            &lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;Text style={[s.hint, { color: &quot;#86efac&quot;, lineHeight: 17 }]}&gt;
+            Usa WebViewAssetLoader nativo do Android. Mais estável, tela cheia, back button, armazenamento local, links externos abrem no browser.
+          &lt;/Text&gt;
+          {fromSubfolder &amp;&amp; (
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginTop: 8,
+              backgroundColor: &quot;#0f2a1a&quot;, borderRadius: 8, padding: 8 }}&gt;
+              &lt;Feather name=&quot;folder&quot; size={13} color=&quot;#4ade80&quot; /&gt;
+              &lt;Text style={[s.hint, { color: &quot;#4ade80&quot; }]}&gt;
+                Detectado: pasta &lt;Text style={{ fontFamily: &quot;Inter_600SemiBold&quot; }}&gt;{fromSubfolder}/&lt;/Text&gt; será usada como root do app ({webFiles.length} arquivos)
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          )}
+          {!fromSubfolder &amp;&amp; (
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginTop: 8,
+              backgroundColor: &quot;#1c1000&quot;, borderRadius: 8, padding: 8 }}&gt;
+              &lt;Feather name=&quot;info&quot; size={13} color=&quot;#fbbf24&quot; /&gt;
+              &lt;Text style={[s.hint, { color: &quot;#fbbf24&quot; }]}&gt;
+                Usando todos os {webFiles.length} arquivos importados como root do app
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          )}
+          {!hasIndexHtml &amp;&amp; (
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginTop: 6,
+              backgroundColor: &quot;#1c0505&quot;, borderRadius: 8, padding: 8 }}&gt;
+              &lt;Feather name=&quot;alert-triangle&quot; size={13} color=&quot;#f87171&quot; /&gt;
+              &lt;Text style={[s.hint, { color: &quot;#f87171&quot; }]}&gt;
+                ⚠ index.html não encontrado! Importe os arquivos compilados (dist/).
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          )}
+        &lt;/View&gt;
+
+        {/* Config form */}
+        &lt;View style={s.card}&gt;
+          &lt;Text style={s.sectionLabel}&gt;CONFIGURAÇÃO DO APLICATIVO&lt;/Text&gt;
+          &lt;Field label=&quot;Nome do App *&quot; value={cfg.appName}
+            onChange={v =&gt; setCfg(c =&gt; ({ ...c, appName: v }))} placeholder=&quot;Meu App&quot; /&gt;
+          &lt;Field label=&quot;Package ID *&quot; value={cfg.appId}
+            onChange={v =&gt; setCfg(c =&gt; ({ ...c, appId: v }))}
+            placeholder=&quot;com.meuapp.app&quot; mono /&gt;
+          &lt;View style={s.row}&gt;
+            &lt;View style={{ flex: 1 }}&gt;
+              &lt;Field label=&quot;Versão&quot; value={cfg.versionName}
+                onChange={v =&gt; setCfg(c =&gt; ({ ...c, versionName: v }))} /&gt;
+            &lt;/View&gt;
+            &lt;View style={{ width: 90 }}&gt;
+              &lt;Text style={s.fieldLabel}&gt;Código&lt;/Text&gt;
+              &lt;TextInput
+                style={s.input}
+                value={String(cfg.versionCode)}
+                onChangeText={v =&gt; setCfg(c =&gt; ({ ...c, versionCode: Number(v) || 1 }))}
+                keyboardType=&quot;numeric&quot;
+                placeholderTextColor={MUTED}
+              /&gt;
+            &lt;/View&gt;
+          &lt;/View&gt;
+
+          &lt;Text style={s.fieldLabel}&gt;Cor do tema&lt;/Text&gt;
+          &lt;View style={s.colorRow}&gt;
+            &lt;View style={[s.colorSwatch, { backgroundColor: cfg.themeColor }]} /&gt;
+            &lt;TextInput
+              style={[s.input, { flex: 1, marginBottom: 0 }]}
+              value={cfg.themeColor}
+              onChangeText={v =&gt; setCfg(c =&gt; ({ ...c, themeColor: v }))}
+              placeholderTextColor={MUTED}
+              autoCapitalize=&quot;none&quot;
+            /&gt;
+          &lt;/View&gt;
+          &lt;Text style={s.fieldLabel}&gt;Cor de fundo (splash)&lt;/Text&gt;
+          &lt;View style={s.colorRow}&gt;
+            &lt;View style={[s.colorSwatch, { backgroundColor: cfg.bgColor }]} /&gt;
+            &lt;TextInput
+              style={[s.input, { flex: 1, marginBottom: 0 }]}
+              value={cfg.bgColor}
+              onChangeText={v =&gt; setCfg(c =&gt; ({ ...c, bgColor: v }))}
+              placeholderTextColor={MUTED}
+              autoCapitalize=&quot;none&quot;
+            /&gt;
+          &lt;/View&gt;
+
+          &lt;Text style={s.fieldLabel}&gt;Orientação&lt;/Text&gt;
+          &lt;View style={s.toggleRow}&gt;
+            {orientationOptions.map(o =&gt; (
+              &lt;Pressable
+                key={o.value}
+                onPress={() =&gt; setCfg(c =&gt; ({ ...c, orientation: o.value }))}
+                style={[s.toggle, cfg.orientation === o.value &amp;&amp; s.toggleActive]}
+              &gt;
+                &lt;Text style={[s.toggleText, cfg.orientation === o.value &amp;&amp; { color: &quot;#fff&quot; }]}&gt;
+                  {o.label}
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+            ))}
+          &lt;/View&gt;
+
+          &lt;Text style={s.fieldLabel}&gt;Android mínimo&lt;/Text&gt;
+          &lt;View style={s.toggleRow}&gt;
+            {sdkOptions.map(sdk =&gt; (
+              &lt;Pressable
+                key={sdk}
+                onPress={() =&gt; setCfg(c =&gt; ({ ...c, minSdk: sdk }))}
+                style={[s.toggle, cfg.minSdk === sdk &amp;&amp; s.toggleActive]}
+              &gt;
+                &lt;Text style={[s.toggleText, cfg.minSdk === sdk &amp;&amp; { color: &quot;#fff&quot; }]}&gt;
+                  {sdk}+
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+            ))}
+          &lt;/View&gt;
+        &lt;/View&gt;
+
+        {/* Gerar ZIP */}
+        &lt;Pressable
+          onPress={handleGenerate}
+          disabled={generating || !cfg.appName || !cfg.appId}
+          style={({ pressed }) =&gt; [
+            s.btn,
+            (!cfg.appName || !cfg.appId) &amp;&amp; s.btnDisabled,
+            { opacity: pressed ? 0.85 : 1 },
+          ]}
+        &gt;
+          {generating
+            ? &lt;ActivityIndicator size=&quot;small&quot; color=&quot;#fff&quot; /&gt;
+            : &lt;Feather name=&quot;zap&quot; size={18} color=&quot;#fff&quot; /&gt;}
+          &lt;Text style={s.btnText}&gt;
+            {generating ? `Gerando... ${progress}%` : &quot;⚡ Gerar Projeto Android (.zip)&quot;}
+          &lt;/Text&gt;
+        &lt;/Pressable&gt;
+
+        {generating &amp;&amp; (
+          &lt;View style={s.progressBar}&gt;
+            &lt;View style={[s.progressFill, { width: `${progress}%` as any }]} /&gt;
+          &lt;/View&gt;
+        )}
+
+        {/* Resultado gerado */}
+        {resultBase64 !== &quot;&quot; &amp;&amp; (
+          &lt;&gt;
+            {/* Compartilhar ZIP */}
+            &lt;View style={[s.card, { borderColor: &quot;#1e3a5f&quot; }]}&gt;
+              &lt;Text style={[s.sectionLabel, { color: &quot;#60a5fa&quot; }]}&gt;📦 ZIP GERADO&lt;/Text&gt;
+              &lt;Text style={[s.hint, { color: MUTED }]} numberOfLines={1}&gt;{resultName}&lt;/Text&gt;
+              &lt;Pressable
+                onPress={handleShare}
+                disabled={sharing}
+                style={({ pressed }) =&gt; [s.btn, { backgroundColor: &quot;#1e3a8a&quot;, opacity: pressed ? 0.85 : 1 }]}
+              &gt;
+                {sharing
+                  ? &lt;ActivityIndicator size=&quot;small&quot; color=&quot;#fff&quot; /&gt;
+                  : &lt;Feather name=&quot;share-2&quot; size={16} color=&quot;#fff&quot; /&gt;}
+                &lt;Text style={s.btnText}&gt;
+                  {sharing ? &quot;Compartilhando...&quot; : &quot;Salvar / Compartilhar ZIP&quot;}
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+            &lt;/View&gt;
+
+            {/* EAS Build */}
+            &lt;View style={[s.card, { borderColor: phase === &quot;done&quot; ? &quot;#166534&quot; : phase === &quot;error&quot; ? &quot;#7f1d1d&quot; : BORDER }]}&gt;
+              &lt;Text style={s.sectionLabel}&gt;🚀 COMPILAR APK VIA EAS BUILD&lt;/Text&gt;
+              &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                O EAS compila o APK na nuvem. Você baixa direto do expo.dev.
+              &lt;/Text&gt;
+
+              {/* Token input */}
+              &lt;Text style={s.fieldLabel}&gt;Token EAS (expo.dev → Account → Access Tokens)&lt;/Text&gt;
+              &lt;TextInput
+                style={s.input}
+                value={easInput}
+                onChangeText={setEasInput}
+                placeholder=&quot;eas_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx&quot;
+                placeholderTextColor={MUTED}
+                secureTextEntry
+                autoCapitalize=&quot;none&quot;
+                autoCorrect={false}
+                editable={!isBuildingEas}
+              /&gt;
+
+              {/* Botão de build */}
+              &lt;Pressable
+                onPress={handleEasBuild}
+                disabled={isBuildingEas || !easInput.trim()}
+                style={({ pressed }) =&gt; [
+                  s.btn,
+                  { backgroundColor: &quot;#7c3aed&quot; },
+                  (isBuildingEas || !easInput.trim()) &amp;&amp; s.btnDisabled,
+                  { opacity: pressed ? 0.85 : 1 },
+                ]}
+              &gt;
+                {isBuildingEas
+                  ? &lt;ActivityIndicator size=&quot;small&quot; color=&quot;#fff&quot; /&gt;
+                  : &lt;Feather name=&quot;cpu&quot; size={18} color=&quot;#fff&quot; /&gt;}
+                &lt;Text style={s.btnText}&gt;
+                  {isBuildingEas ? &quot;Compilando na nuvem...&quot; : &quot;🔨 Compilar APK via EAS&quot;}
+                &lt;/Text&gt;
+              &lt;/Pressable&gt;
+
+              {/* Status */}
+              {easMsg !== &quot;&quot; &amp;&amp; (
+                &lt;View style={[
+                  s.statusBox,
+                  phase === &quot;done&quot; &amp;&amp; { borderColor: &quot;#166534&quot;, backgroundColor: &quot;#052e16&quot; },
+                  phase === &quot;error&quot; &amp;&amp; { borderColor: &quot;#7f1d1d&quot;, backgroundColor: &quot;#1c0505&quot; },
+                ]}&gt;
+                  &lt;Text style={[s.hint, {
+                    color: phase === &quot;done&quot; ? GREEN : phase === &quot;error&quot; ? &quot;#f87171&quot; : &quot;#93c5fd&quot;,
+                    lineHeight: 18,
+                  }]}&gt;
+                    {easMsg}
+                  &lt;/Text&gt;
+                &lt;/View&gt;
+              )}
+
+              {/* Polling spinner */}
+              {phase === &quot;building&quot; &amp;&amp; (
+                &lt;View style={[s.row, { alignItems: &quot;center&quot;, gap: 8 }]}&gt;
+                  &lt;ActivityIndicator size=&quot;small&quot; color={ACCENT} /&gt;
+                  &lt;Text style={[s.hint, { color: MUTED }]}&gt;
+                    Verificando a cada 15 segundos... Pode levar 5–15 min.
+                  &lt;/Text&gt;
+                &lt;/View&gt;
+              )}
+
+              {/* Botão abrir expo.dev */}
+              {(phase === &quot;done&quot; || phase === &quot;building&quot; || (phase === &quot;error&quot; &amp;&amp; easBuild)) &amp;&amp; (
+                &lt;Pressable
+                  onPress={openEasDashboard}
+                  style={({ pressed }) =&gt; [s.btn, { backgroundColor: &quot;#0f172a&quot;, borderWidth: 1, borderColor: ACCENT, opacity: pressed ? 0.8 : 1 }]}
+                &gt;
+                  &lt;Feather name=&quot;external-link&quot; size={16} color={ACCENT} /&gt;
+                  &lt;Text style={[s.btnText, { color: ACCENT }]}&gt;
+                    {phase === &quot;done&quot; ? &quot;⬇ Baixar APK no expo.dev&quot; : &quot;Ver build no expo.dev&quot;}
+                  &lt;/Text&gt;
+                &lt;/Pressable&gt;
+              )}
+
+              {/* Download direto se disponível */}
+              {phase === &quot;done&quot; &amp;&amp; easBuild?.artifacts?.buildUrl &amp;&amp; (
+                &lt;Pressable
+                  onPress={() =&gt; Linking.openURL(easBuild.artifacts!.buildUrl!)}
+                  style={({ pressed }) =&gt; [s.btn, { backgroundColor: &quot;#166534&quot;, opacity: pressed ? 0.85 : 1 }]}
+                &gt;
+                  &lt;Feather name=&quot;download&quot; size={16} color=&quot;#fff&quot; /&gt;
+                  &lt;Text style={s.btnText}&gt;⬇ Download direto do APK&lt;/Text&gt;
+                &lt;/Pressable&gt;
+              )}
+
+              &lt;Text style={[s.hint, { color: &quot;#475569&quot;, marginTop: 4 }]}&gt;
+                💡 Gere o token em: expo.dev → Configurações → Access Tokens
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}
+
+const s = StyleSheet.create({
+  root: { flex: 1 },
+  content: { paddingHorizontal: 16, gap: 12 },
+  title: { fontSize: 22, fontFamily: &quot;Inter_700Bold&quot;, color: WHITE, letterSpacing: -0.5 },
+  card: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 14, gap: 10 },
+  sectionLabel: { fontSize: 10, fontFamily: &quot;Inter_600SemiBold&quot;, color: MUTED, letterSpacing: 0.8 },
+  fieldLabel: { fontSize: 11, fontFamily: &quot;Inter_500Medium&quot;, color: MUTED, marginBottom: 4, marginTop: 2 },
+  input: {
+    backgroundColor: &quot;#0a0f1e&quot;, borderWidth: 1, borderColor: BORDER,
+    borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10,
+    fontSize: 13, fontFamily: &quot;Inter_400Regular&quot;, color: WHITE,
+    marginBottom: 4,
+  },
+  row: { flexDirection: &quot;row&quot;, gap: 8, alignItems: &quot;flex-end&quot; },
+  colorRow: { flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 10, marginBottom: 4 },
+  colorSwatch: { width: 36, height: 36, borderRadius: 8, borderWidth: 1, borderColor: BORDER },
+  toggleRow: { flexDirection: &quot;row&quot;, gap: 6, flexWrap: &quot;wrap&quot; },
+  toggle: {
+    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 8,
+    borderWidth: 1, borderColor: BORDER, backgroundColor: &quot;#0a0f1e&quot;,
+  },
+  toggleActive: { backgroundColor: ACCENT, borderColor: ACCENT },
+  toggleText: { fontSize: 12, fontFamily: &quot;Inter_500Medium&quot;, color: MUTED },
+  btn: {
+    backgroundColor: ACCENT, borderRadius: 14, paddingVertical: 13,
+    flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot;, gap: 8,
+  },
+  btnDisabled: { backgroundColor: &quot;#1e293b&quot; },
+  btnText: { fontSize: 14, fontFamily: &quot;Inter_600SemiBold&quot;, color: &quot;#fff&quot; },
+  progressBar: { height: 4, backgroundColor: &quot;#1e293b&quot;, borderRadius: 2, overflow: &quot;hidden&quot;, marginTop: -6 },
+  progressFill: { height: &quot;100%&quot;, backgroundColor: ACCENT, borderRadius: 2 },
+  hint: { fontSize: 11, fontFamily: &quot;Inter_400Regular&quot;, color: MUTED, lineHeight: 16 },
+  statusBox: {
+    backgroundColor: &quot;#0a1628&quot;, borderWidth: 1, borderColor: &quot;#1e3a5f&quot;,
+    borderRadius: 10, padding: 10,
+  },
+  _unused: { color: ORANGE },
+});
+</pre>
+</div>
+</body>
+</html>
