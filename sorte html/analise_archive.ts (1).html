@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: archive.ts</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 archive.ts</h1>
+<div class="meta">Gerado em 03/10/2026, 06:46:57 • 15 elementos • 11 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import pako from &quot;pako&quot;;</div><div class="idx-item">L3 [interface] ArchiveFile</div><div class="idx-item">L9 [function] isBinary</div><div class="idx-item">L21 [function] getEncoding</div><div class="idx-item">L26 [function] decodeText</div><div class="idx-item">L35 [function] readString</div><div class="idx-item">L44 [function] parseTar</div><div class="idx-item">L72 [const] SKIP</div><div class="idx-item">L75 [interface] ExtractResult</div><div class="idx-item">L81 [function] extractArchive</div><div class="idx-item">L162 [function] guessConfig</div><div class="idx-item">L166 [function] decode</div><div class="idx-item">L230 [interface] TreeNode</div><div class="idx-item">L239 [function] buildFileTree</div><div class="idx-item">L269 [function] sortNode</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L8</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import pako from &quot;pako&quot;;
+
+export interface ArchiveFile {
+  path: string;
+  content: ArrayBuffer;
+}
+
+/* ── Binary detection ────────────────────────────────────── */</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>isBinary</span>
+    <div>
+      <small>L9–L20</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">export function isBinary(buf: ArrayBuffer): boolean {
+  const bytes = new Uint8Array(buf.byteLength &gt; 8000 ? buf.slice(0, 8000) : buf);
+  let nulls = 0;
+  let high = 0;
+  for (let i = 0; i &lt; bytes.length; i++) {
+    if (bytes[i] === 0) nulls++;
+    if (bytes[i] &gt; 127) high++;
+  }
+  if (nulls &gt; 0) return true;
+  return bytes.length &gt; 0 &amp;&amp; high / bytes.length &gt; 0.30;
+}
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>getEncoding</span>
+    <div>
+      <small>L21–L25</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">export function getEncoding(buf: ArrayBuffer, charset?: string): string {
+  if (!charset || charset === &quot;utf-8&quot;) return &quot;utf-8&quot;;
+  return charset;
+}
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>decodeText</span>
+    <div>
+      <small>L26–L34</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">export function decodeText(buf: ArrayBuffer, charset?: string): string {
+  try {
+    return new TextDecoder(charset || &quot;utf-8&quot;, { fatal: false }).decode(buf);
+  } catch {
+    try { return new TextDecoder(&quot;utf-8&quot;, { fatal: false }).decode(buf); } catch { return &quot;&quot;; }
+  }
+}
+
+/* ── TAR parser ─────────────────────────────────────────── */</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>readString</span>
+    <div>
+      <small>L35–L43</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">function readString(buf: Uint8Array, offset: number, len: number): string {
+  let s = &quot;&quot;;
+  for (let i = offset; i &lt; offset + len; i++) {
+    if (buf[i] === 0) break;
+    s += String.fromCharCode(buf[i]);
+  }
+  return s;
+}
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>parseTar</span>
+    <div>
+      <small>L44–L80</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">export function parseTar(buffer: ArrayBuffer): ArchiveFile[] {
+  const bytes = new Uint8Array(buffer);
+  const files: ArchiveFile[] = [];
+  let offset = 0;
+
+  while (offset + 512 &lt;= bytes.length) {
+    const header = bytes.slice(offset, offset + 512);
+    const name = readString(header, 0, 100).trim();
+    const prefix = readString(header, 345, 155).trim();
+    const fullName = prefix ? prefix + &quot;/&quot; + name : name;
+    if (!fullName || fullName === &quot;./&quot; || fullName === &quot;.&quot;) { offset += 512; continue; }
+
+    const sizeStr = readString(header, 124, 12).trim();
+    const size = sizeStr ? parseInt(sizeStr, 8) : 0;
+    const typeFlag = String.fromCharCode(header[156]);
+    offset += 512;
+
+    if ((typeFlag === &quot;0&quot; || typeFlag === &quot;\0&quot; || typeFlag === &quot;&quot;) &amp;&amp; size &gt; 0) {
+      const content = buffer.slice(offset, offset + size);
+      const cleanPath = fullName.replace(/^\.\//, &quot;&quot;).replace(/^[^/]+\//, &quot;&quot;);
+      if (cleanPath) files.push({ path: cleanPath, content });
+    }
+
+    offset += Math.ceil(size / 512) * 512;
+  }
+  return files;
+}
+
+const SKIP = /(?:^|\/)(node_modules|\.git|\.svn|\.hg|__pycache__|\.DS_Store)(?:\/|$)/i;
+
+/* ── Detect &amp; extract any archive ──────────────────────── */
+export interface ExtractResult {
+  files: ArchiveFile[];
+  skipped: number;
+  failed: string[];
+}
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>extractArchive</span>
+    <div>
+      <small>L81–L161</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">export async function extractArchive(
+  file: File,
+  options?: { skipNodeModules?: boolean }
+): Promise&lt;ExtractResult&gt; {
+  const skipNodeModules = options?.skipNodeModules === true; // default: NÃO filtrar
+  let buffer: ArrayBuffer;
+  try {
+    buffer = await file.arrayBuffer();
+  } catch (e) {
+    const code = e instanceof DOMException ? ` (código ${e.code})` : &quot;&quot;;
+    throw new Error(`Falha ao ler o arquivo${code}. Se o arquivo for muito grande, pode haver limitação de memória do navegador — tente fechar outras abas.`);
+  }
+  const name = file.name.toLowerCase();
+
+  // TAR.GZ / TGZ
+  if (name.endsWith(&quot;.tar.gz&quot;) || name.endsWith(&quot;.tgz&quot;)) {
+    const decompressed = pako.ungzip(new Uint8Array(buffer)).buffer;
+    const all = parseTar(decompressed);
+    const skipped = skipNodeModules ? all.filter(f =&gt; SKIP.test(f.path)).length : 0;
+    const files = skipNodeModules ? all.filter(f =&gt; !SKIP.test(f.path)) : all;
+    return { files, skipped, failed: [] };
+  }
+
+  // TAR.BZ2 — not supported natively, graceful error
+  if (name.endsWith(&quot;.tar.bz2&quot;) || name.endsWith(&quot;.tbz2&quot;)) {
+    throw new Error(&quot;Formato .tar.bz2 não suportado diretamente. Converta para .zip ou .tar.gz e reimporte.&quot;);
+  }
+
+  // RAR — tenta como arquivo único se não conseguir extrair
+  // Plain TAR
+  if (name.endsWith(&quot;.tar&quot;)) {
+    const all = parseTar(buffer);
+    const skipped = skipNodeModules ? all.filter(f =&gt; SKIP.test(f.path)).length : 0;
+    const files = skipNodeModules ? all.filter(f =&gt; !SKIP.test(f.path)) : all;
+    return { files, skipped, failed: [] };
+  }
+
+  // ZIP (default) — se falhar, inclui o arquivo como asset único sem restrição
+  const { default: JSZip } = await import(&quot;jszip&quot;);
+  let zip: InstanceType&lt;typeof JSZip&gt; | null = null;
+  try {
+    zip = await JSZip.loadAsync(buffer);
+  } catch {
+    // Tenta decodificação Latin-1 / CP437 para ZIPs legados com nomes não-UTF8
+    try {
+      zip = await JSZip.loadAsync(buffer, {
+        decodeFileName: (bytes: Uint8Array) =&gt;
+          Array.from(bytes).map(b =&gt; String.fromCharCode(b)).join(&quot;&quot;),
+      });
+    } catch {
+      // Não é um ZIP — inclui como arquivo único (exe, dll, dmg, etc.)
+      return { files: [{ path: file.name, content: buffer }], skipped: 0, failed: [] };
+    }
+  }
+  const entries = Object.entries(zip!.files);
+
+  const keys = entries.filter(([, v]) =&gt; !v.dir).map(([k]) =&gt; k);
+
+  // Remove apenas o prefixo raiz único que o GitHub/ZIP adiciona (ex: &quot;repo-main/&quot;)
+  const tops = [...new Set(keys.map(k =&gt; k.split(&quot;/&quot;)[0]))];
+  const prefix = tops.length === 1 ? tops[0] + &quot;/&quot; : &quot;&quot;;
+
+  const result: ArchiveFile[] = [];
+  let skipped = 0;
+  const failed: string[] = [];
+  for (const [path, entry] of entries) {
+    if (entry.dir) continue;
+    if (skipNodeModules &amp;&amp; SKIP.test(path)) { skipped++; continue; }
+    const rel = prefix ? path.slice(prefix.length) : path;
+    if (!rel) continue;
+    try {
+      const content = await entry.async(&quot;arraybuffer&quot;);
+      result.push({ path: rel, content });
+    } catch {
+      failed.push(rel || path);
+    }
+  }
+  return { files: result, skipped, failed };
+}
+
+/* ── Guess config (package.json + Android + Capacitor + Expo) ── */</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>guessConfig</span>
+    <div>
+      <small>L162–L165</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">export function guessConfig(files: ArchiveFile[], fallbackName: string) {
+  let name = fallbackName.replace(/\.(zip|tar\.gz|tgz|tar)$/i, &quot;&quot;).replace(/[_-]/g, &quot; &quot;);
+  let id = &quot;com.meuapp.&quot; + fallbackName.replace(/\.(zip|tar\.gz|tgz|tar)$/i, &quot;&quot;).replace(/[^a-z0-9]/gi, &quot;&quot;).toLowerCase();
+</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>decode</span>
+    <div>
+      <small>L166–L238</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">  function decode(f: ArchiveFile): string {
+    try { return new TextDecoder(&quot;utf-8&quot;, { fatal: false }).decode(f.content); } catch { return &quot;&quot;; }
+  }
+
+  // 1. package.json
+  const pkgFile = files.find(f =&gt; f.path === &quot;package.json&quot; || f.path.endsWith(&quot;/package.json&quot;));
+  if (pkgFile) {
+    try {
+      const pkg = JSON.parse(decode(pkgFile));
+      if (pkg.name) { name = pkg.name; id = &quot;com.meuapp.&quot; + pkg.name.replace(/[^a-z0-9]/gi, &quot;&quot;).toLowerCase(); }
+    } catch {}
+  }
+
+  // 2. capacitor.config.ts/js/json
+  const capFile = files.find(f =&gt; /capacitor\.config\.(ts|js|json)$/.test(f.path));
+  if (capFile) {
+    const txt = decode(capFile);
+    const idM = txt.match(/appId\s*[:=]\s*['&quot;`]([^'&quot;`]+)['&quot;`]/);
+    const nmM = txt.match(/appName\s*[:=]\s*['&quot;`]([^'&quot;`]+)['&quot;`]/);
+    if (idM) id = idM[1];
+    if (nmM) name = nmM[1];
+  }
+
+  // 3. app.json (Expo)
+  const appJson = files.find(f =&gt; f.path === &quot;app.json&quot; || f.path.endsWith(&quot;/app.json&quot;));
+  if (appJson) {
+    try {
+      const j = JSON.parse(decode(appJson));
+      const expo = j.expo ?? j;
+      if (expo.name) name = expo.name;
+      if (expo.android?.package) id = expo.android.package;
+    } catch {}
+  }
+
+  // 4. AndroidManifest.xml
+  const manifest = files.find(f =&gt; f.path.endsWith(&quot;AndroidManifest.xml&quot;));
+  if (manifest) {
+    const txt = decode(manifest);
+    const m = txt.match(/package\s*=\s*[&quot;']([^&quot;']+)[&quot;']/);
+    if (m) id = m[1];
+    const lm = txt.match(/android:label\s*=\s*[&quot;']([^&quot;'@]+)[&quot;']/);
+    if (lm) name = lm[1];
+  }
+
+  // 5. app/build.gradle
+  const gradle = files.find(f =&gt; /app[/\\]build\.gradle(\.kts)?$/.test(f.path));
+  if (gradle) {
+    const txt = decode(gradle);
+    const m = txt.match(/applicationId\s+[&quot;']([^&quot;']+)[&quot;']/);
+    if (m) id = m[1];
+  }
+
+  // 6. settings.gradle
+  const settings = files.find(f =&gt; /settings\.gradle(\.kts)?$/.test(f.path));
+  if (settings) {
+    const txt = decode(settings);
+    const m = txt.match(/rootProject\.name\s*=\s*[&quot;']([^&quot;']+)[&quot;']/);
+    if (m &amp;&amp; !name) name = m[1];
+  }
+
+  return { name: name || fallbackName, id };
+}
+
+/* ── File tree builder ──────────────────────────────────── */
+export interface TreeNode {
+  name: string;
+  path: string;
+  type: &quot;file&quot; | &quot;dir&quot;;
+  children?: TreeNode[];
+  binary?: boolean;
+  size?: number;
+}
+</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>buildFileTree</span>
+    <div>
+      <small>L239–L268</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">export function buildFileTree(files: ArchiveFile[]): TreeNode[] {
+  const root: TreeNode = { name: &quot;&quot;, path: &quot;&quot;, type: &quot;dir&quot;, children: [] };
+
+  for (const f of files) {
+    const parts = f.path.replace(/^\//, &quot;&quot;).split(&quot;/&quot;);
+    let node = root;
+    for (let i = 0; i &lt; parts.length; i++) {
+      const part = parts[i];
+      if (!part) continue;
+      const isLast = i === parts.length - 1;
+      if (isLast) {
+        node.children!.push({
+          name: part,
+          path: f.path,
+          type: &quot;file&quot;,
+          binary: isBinary(f.content),
+          size: f.content.byteLength,
+        });
+      } else {
+        let dir = node.children!.find(c =&gt; c.type === &quot;dir&quot; &amp;&amp; c.name === part);
+        if (!dir) {
+          dir = { name: part, path: parts.slice(0, i + 1).join(&quot;/&quot;), type: &quot;dir&quot;, children: [] };
+          node.children!.push(dir);
+        }
+        node = dir;
+      }
+    }
+  }
+
+  // Sort: dirs first, then files, both alphabetical</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>sortNode</span>
+    <div>
+      <small>L269–L280</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">  function sortNode(n: TreeNode) {
+    if (!n.children) return;
+    n.children.sort((a, b) =&gt; {
+      if (a.type !== b.type) return a.type === &quot;dir&quot; ? -1 : 1;
+      return a.name.localeCompare(b.name);
+    });
+    n.children.forEach(sortNode);
+  }
+  sortNode(root);
+  return root.children!;
+}
+</pre>
+</div>
+</body>
+</html>
