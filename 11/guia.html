@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Guia de Instalação - Controle de Tokens</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+        }
+
+        .step.ativo {
+            background: #e8eef7;
+            border-left-color: #51cf66;
+        }
+
+        .step-numero {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .step.ativo .step-numero {
+            background: #51cf66;
+        }
+
+        .step-titulo {
+            display: inline-block;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            vertical-align: middle;
+        }
+
+        .step-conteudo {
+            margin-top: 20px;
+            margin-left: 55px;
+        }
+
+        .descricao {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .comando {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+            position: relative;
+            border: 1px solid #333;
+        }
+
+        .comando-label {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .btn-copiar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-copiar:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .btn-copiar.copiado {
+            background: #51cf66;
+        }
+
+        .arquivo {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .arquivo-nome {
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .arquivo-conteudo {
+            color: #333;
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .checklist {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #51cf66;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checklist-item label {
+            cursor: pointer;
+            flex: 1;
+            margin: 0;
+        }
+
+        .checklist-item input[type="checkbox"]:checked + label {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .aviso {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .sucesso {
+            background: #d4edda;
+            border: 1px solid #51cf66;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #155724;
+            border-left: 4px solid #51cf66;
+        }
+
+        .estrutura {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            margin: 15px 0;
+            border: 1px solid #ddd;
+        }
+
+        .estrutura-titulo {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-proximo {
+            background: #667eea;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-proximo:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-anterior {
+            background: #f0f0f0;
+            color: #333;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-anterior:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-download {
+            background: #51cf66;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-download:hover {
+            background: #37b24d;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(81, 207, 102, 0.3);
+        }
+
+        .progresso {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progresso-barra {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .dica {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #1565c0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .dica-titulo {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Guia de Instalação</h1>
+            <p>Controle de Tokens e Custos - Sistema Completo</p>
+        </div>
+
+        <div class="content">
+            <div class="progresso">
+                <div class="progresso-barra" id="progresso"></div>
+            </div>
+
+            <!-- PASSO 1 -->
+            <div class="step ativo" id="passo1">
+                <div>
+                    <span class="step-numero">1</span>
+                    <span class="step-titulo">Preparar o Terminal</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Primeiro, vamos abrir o terminal e navegar até o local onde você quer criar o projeto.
+                    </p>
+
+                    <div class="dica">
+                        <div class="dica-titulo">💡 Dica</div>
+                        <p>Se você está no Windows, use o PowerShell ou CMD. No Mac/Linux, use o Terminal.</p>
+                    </div>
+
+                    <p class="descricao"><strong>Escolha um local para o projeto:</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Windows (PowerShell)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+                        cd Desktop
+                    </div>
+
+                    <div class="comando">
+                        <div class="comando-label">Mac/Linux</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+                        cd ~/Desktop
+                    </div>
+
+                    <div class="aviso">
+                        ⚠️ <strong>Importante:</strong> Você pode trocar "Desktop" por qualquer outra pasta. Exemplo: Documents, Projetos, etc.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 2 -->
+            <div class="step" id="passo2">
+                <div>
+                    <span class="step-numero">2</span>
+                    <span class="step-titulo">Criar a Estrutura de Pastas</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Agora vamos criar todas as pastas que o projeto precisa.
+                    </p>
+
+                    <p class="descricao"><strong>Copie e cole este comando:</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Todos os Sistemas</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+mkdir controle-tokens && cd controle-tokens && mkdir js css lib && echo "Pastas criadas com sucesso!"
+                    </div>
+
+                    <p class="descricao"><strong>O que foi criado:</strong></p>
+
+                    <div class="estrutura">
+                        <div class="estrutura-titulo">📁 Estrutura do Projeto</div>
+                        controle-tokens/<br>
+                        ├── js/          (arquivos JavaScript)<br>
+                        ├── css/         (arquivos de estilo)<br>
+                        ├── lib/         (bibliotecas externas)<br>
+                        └── index.html   (página principal)
+                    </div>
+
+                    <div class="sucesso">
+                        ✅ Se você viu "Pastas criadas com sucesso!" tudo está certo!
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 3 -->
+            <div class="step" id="passo3">
+                <div>
+                    <span class="step-numero">3</span>
+                    <span class="step-titulo">Criar os Arquivos CSS</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Vamos criar os arquivos de estilo (CSS) que deixam o projeto bonito.
+                    </p>
+
+                    <p class="descricao"><strong>Arquivo 1: style.css</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Windows (PowerShell)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+New-Item -Path "css\style.css" -Force
+                    </div>
+
+                    <div class="comando">
+                        <div class="comando-label">Mac/Linux</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+touch css/style.css
+                    </div>
+
+                    <p class="descricao"><strong>Arquivo 2: dark-mode.css</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Windows (PowerShell)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+New-Item -Path "css\dark-mode.css" -Force
+                    </div>
+
+                    <div class="comando">
+                        <div class="comando-label">Mac/Linux</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+touch css/dark-mode.css
+                    </div>
+
+                    <div class="dica">
+                        <div class="dica-titulo">💡 Próximo Passo</div>
+                        <p>Depois de criar os arquivos, você vai colar o conteúdo CSS em cada um deles. Vamos fazer isso na próxima tela!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 4 -->
+            <div class="step" id="passo4">
+                <div>
+                    <span class="step-numero">4</span>
+                    <span class="step-titulo">Criar os Arquivos JavaScript</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Agora vamos criar os arquivos JavaScript que fazem o sistema funcionar.
+                    </p>
+
+                    <p class="descricao"><strong>Criar todos os arquivos JS de uma vez:</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Windows (PowerShell)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+New-Item -Path "js\controle-tokens.js" -Force; New-Item -Path "js\graficos.js" -Force; New-Item -Path "js\notificacoes.js" -Force; New-Item -Path "js\exportacao.js" -Force
+                    </div>
+
+                    <div class="comando">
+                        <div class="comando-label">Mac/Linux</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+touch js/controle-tokens.js js/graficos.js js/notificacoes.js js/exportacao.js
+                    </div>
+
+                    <p class="descricao"><strong>Arquivos criados:</strong></p>
+
+                    <div class="checklist">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check1">
+                            <label for="check1">controle-tokens.js (Sistema principal)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check2">
+                            <label for="check2">graficos.js (Gráficos de gastos)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check3">
+                            <label for="check3">notificacoes.js (Avisos e limites)</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="check4">
+                            <label for="check4">exportacao.js (Exportar dados)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 5 -->
+            <div class="step" id="passo5">
+                <div>
+                    <span class="step-numero">5</span>
+                    <span class="step-titulo">Criar o Arquivo HTML Principal</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Este é o arquivo que você vai abrir no navegador. É o "coração" do projeto.
+                    </p>
+
+                    <div class="comando">
+                        <div class="comando-label">Windows (PowerShell)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+New-Item -Path "index.html" -Force
+                    </div>
+
+                    <div class="comando">
+                        <div class="comando-label">Mac/Linux</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+touch index.html
+                    </div>
+
+                    <div class="sucesso">
+                        ✅ Arquivo criado! Agora vamos preencher com conteúdo.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 6 -->
+            <div class="step" id="passo6">
+                <div>
+                    <span class="step-numero">6</span>
+                    <span class="step-titulo">Abrir no Editor de Código</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Agora vamos abrir o projeto em um editor de código para colar os arquivos.
+                    </p>
+
+                    <p class="descricao"><strong>Se você tem VS Code instalado:</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Todos os Sistemas</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+code .
+                    </div>
+
+                    <p class="descricao"><strong>Se não tem VS Code, use:</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Windows (Bloco de Notas)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+notepad index.html
+                    </div>
+
+                    <div class="comando">
+                        <div class="comando-label">Mac (TextEdit)</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+open -a TextEdit index.html
+                    </div>
+
+                    <div class="dica">
+                        <div class="dica-titulo">💡 Recomendação</div>
+                        <p>Baixe o <strong>VS Code</strong> (é grátis): https://code.visualstudio.com/</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 7 -->
+            <div class="step" id="passo7">
+                <div>
+                    <span class="step-numero">7</span>
+                    <span class="step-titulo">Colar os Arquivos</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Agora você vai colar o conteúdo de cada arquivo. Vamos fazer em ordem:
+                    </p>
+
+                    <p class="descricao"><strong>Ordem de Colagem:</strong></p>
+
+                    <div class="checklist">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola1">
+                            <label for="cola1">1️⃣ css/style.css</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola2">
+                            <label for="cola2">2️⃣ css/dark-mode.css</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola3">
+                            <label for="cola3">3️⃣ js/controle-tokens.js</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola4">
+                            <label for="cola4">4️⃣ js/graficos.js</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola5">
+                            <label for="cola5">5️⃣ js/notificacoes.js</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola6">
+                            <label for="cola6">6️⃣ js/exportacao.js</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="cola7">
+                            <label for="cola7">7️⃣ index.html (por último!)</label>
+                        </div>
+                    </div>
+
+                    <div class="aviso">
+                        ⚠️ <strong>IMPORTANTE:</strong> Cole o index.html por último! Ele precisa dos outros arquivos.
+                    </div>
+
+                    <p class="descricao"><strong>Como colar:</strong></p>
+                    <ol style="margin-left: 20px; color: #666;">
+                        <li>Abra o arquivo no editor</li>
+                        <li>Selecione todo o conteúdo (Ctrl+A)</li>
+                        <li>Delete tudo</li>
+                        <li>Cole o novo conteúdo (Ctrl+V)</li>
+                        <li>Salve (Ctrl+S)</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- PASSO 8 -->
+            <div class="step" id="passo8">
+                <div>
+                    <span class="step-numero">8</span>
+                    <span class="step-titulo">Abrir no Navegador</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Agora vamos testar o projeto abrindo no navegador!
+                    </p>
+
+                    <p class="descricao"><strong>Opção 1: Arrastar o arquivo</strong></p>
+                    <ol style="margin-left: 20px; color: #666;">
+                        <li>Abra uma pasta no seu computador</li>
+                        <li>Navegue até a pasta "controle-tokens"</li>
+                        <li>Arraste o arquivo "index.html" para o navegador</li>
+                    </ol>
+
+                    <p class="descricao" style="margin-top: 20px;"><strong>Opção 2: Clicar com botão direito</strong></p>
+                    <ol style="margin-left: 20px; color: #666;">
+                        <li>Clique com botão direito em "index.html"</li>
+                        <li>Selecione "Abrir com" → "Navegador"</li>
+                    </ol>
+
+                    <p class="descricao" style="margin-top: 20px;"><strong>Opção 3: Usar servidor local (recomendado)</strong></p>
+
+                    <div class="comando">
+                        <div class="comando-label">Se tem Python instalado</div>
+                        <button class="btn-copiar" onclick="copiarComando(this)">Copiar</button>
+python -m http.server 8000
+                    </div>
+
+                    <p class="descricao">Depois abra: <strong>http://localhost:8000</strong></p>
+
+                    <div class="sucesso">
+                        ✅ Pronto! O projeto está funcionando!
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 9 -->
+            <div class="step" id="passo9">
+                <div>
+                    <span class="step-numero">9</span>
+                    <span class="step-titulo">Testar o Sistema</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Vamos fazer um teste rápido para garantir que tudo está funcionando!
+                    </p>
+
+                    <p class="descricao"><strong>Teste 1: Calcular Custo</strong></p>
+                    <ol style="margin-left: 20px; color: #666;">
+                        <li>Selecione uma IA (ex: Claude 3.5 Haiku)</li>
+                        <li>Digite tokens entrada: 250</li>
+                        <li>Digite tokens saída: 180</li>
+                        <li>Clique em "Calcular Custo"</li>
+                        <li>Veja o resultado aparecer</li>
+                    </ol>
+
+                    <p class="descricao" style="margin-top: 20px;"><strong>Teste 2: Modo Escuro</strong></p>
+                    <ol style="margin-left: 20px; color: #666;">
+                        <li>Clique no botão "🌙 Modo Escuro"</li>
+                        <li>A tela deve ficar escura</li>
+                        <li>Clique novamente para voltar</li>
+                    </ol>
+
+                    <p class="descricao" style="margin-top: 20px;"><strong>Teste 3: Exportar Dados</strong></p>
+                    <ol style="margin-left: 20px; color: #666;">
+                        <li>Clique em "Exportar CSV"</li>
+                        <li>Um arquivo deve ser baixado</li>
+                    </ol>
+
+                    <div class="sucesso">
+                        ✅ Se tudo funcionou, parabéns! Seu projeto está completo!
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASSO 10 -->
+            <div class="step" id="passo10">
+                <div>
+                    <span class="step-numero">10</span>
+                    <span class="step-titulo">Próximos Passos</span>
+                </div>
+                <div class="step-conteudo">
+                    <p class="descricao">
+                        Agora que o projeto está funcionando, aqui estão algumas ideias:
+                    </p>
+
+                    <div class="checklist">
+                        <div class="checklist-item">
+                            <input type="checkbox" id="prox1">
+                            <label for="prox1">📊 Usar os gráficos para acompanhar gastos</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="prox2">
+                            <label for="prox2">💾 Exportar dados em CSV/JSON regularmente</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="prox3">
+                            <label for="prox3">🔔 Configurar limites de alerta</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="prox4">
+                            <label for="prox4">🌙 Usar modo escuro para economizar bateria</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" id="prox5">
+                            <label for="prox5">📱 Testar em celular/tablet</label>
+                        </div>
+                    </div>
+
+                    <div class="dica">
+                        <div class="dica-titulo">💡 Dúvidas?</div>
+                        <p>Se algo não funcionou, volte aos passos anteriores e verifique se todos os arquivos foram criados corretamente.</p>
+                    </div>
+
+                    <div class="sucesso">
+                        ✅ Parabéns! Você completou o guia de instalação!
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTÕES DE NAVEGAÇÃO -->
+            <div class="button-group" style="margin-top: 40px;">
+                <button class="btn-anterior" onclick="passoAnterior()" id="btnAnterior" style="display: none;">← Anterior</button>
+                <button class="btn-proximo" onclick="proximoPasso()" id="btnProximo">Próximo →</button>
+                <button class="btn-download" onclick="baixarGuia()" id="btnBaixar" style="display: none;">⬇️ Baixar Guia Completo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let passoAtual = 1;
+        const totalPassos = 10;
+
+        function mostrarPasso(numero) {
+            // ESCONDER TODOS
+            for (let i = 1; i <= totalPassos; i++) {
+                document.getElementById(`passo${i}`).style.display = 'none';
+                document.getElementById(`passo${i}`).classList.remove('ativo');
+            }
+
+            // MOSTRAR PASSO ATUAL
+            document.getElementById(`passo${numero}`).style.display = 'block';
+            document.getElementById(`passo${numero}`).classList.add('ativo');
+
+            // ATUALIZAR BOTÕES
+            document.getElementById('btnAnterior').style.display = numero === 1 ? 'none' : 'block';
+            document.getElementById('btnProximo').style.display = numero === totalPassos ? 'none' : 'block';
+            document.getElementById('btnBaixar').style.display = numero === totalPassos ? 'block' : 'none';
+
+            // ATUALIZAR PROGRESSO
+            const progresso = (numero / totalPassos) * 100;
+            document.getElementById('progresso').style.width = progresso + '%';
+
+            // SCROLL PARA TOPO
+            window.scrollTo(0, 0);
+
+            passoAtual = numero;
+        }
+
+        function proximoPasso() {
+            if (passoAtual < totalPassos) {
+                mostrarPasso(passoAtual + 1);
+            }
+        }
+
+        function passoAnterior() {
+            if (passoAtual > 1) {
+                mostrarPasso(passoAtual - 1);
+            }
+        }
+
+        function copiarComando(botao) {
+            const comando = botao.nextSibling.textContent.trim();
+            navigator.clipboard.writeText(comando).then(() => {
+                const textoBotao = botao.textContent;
+                botao.textContent = '✅ Copiado!';
+                botao.classList.add('copiado');
+
+                setTimeout(() => {
+                    botao.textContent = textoBotao;
+                    botao.classList.remove('copiado');
+                }, 2000);
+            });
+        }
+
+        function baixarGuia() {
+            alert('📥 Guia completo!\n\nAgora você tem:\n✅ Estrutura criada\n✅ Arquivos CSS\n✅ Arquivos JavaScript\n✅ HTML principal\n✅ Sistema funcionando!\n\nPróximo: Colar os códigos em cada arquivo!');
+        }
+
+        // INICIALIZAR
+        mostrarPasso(1);
+    </script>
+</body>
+</html>
