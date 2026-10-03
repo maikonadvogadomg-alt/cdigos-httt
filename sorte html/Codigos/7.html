@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Scanner Pro - Detecção Completa</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; font-family: 'Courier New', monospace; background: #0d1117; color: #c9d1d9; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+    .header { background: linear-gradient(135deg, #ff6b6b, #ff0000); padding: 12px; text-align: center; color: white; }
+    .header h1 { font-size: 14px; margin: 0; }
+    .tabs { display: flex; background: #161b22; border-bottom: 1px solid #30363d; overflow-x: auto; flex-shrink: 0; }
+    .tab-btn { flex: 0 0 auto; padding: 8px 12px; background: transparent; border: none; color: #8b949e; font-size: 11px; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+    .tab-btn.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+    .content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+    .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+    .card h2 { font-size: 12px; color: #58a6ff; margin-bottom: 8px; font-weight: bold; }
+    .card p { font-size: 10px; color: #8b949e; margin-bottom: 8px; }
+    .file-input { width: 100%; padding: 10px; background: #21262d; border: 2px dashed #30363d; border-radius: 6px; color: #c9d1d9; font-size: 11px; cursor: pointer; margin-bottom: 10px; }
+    .input-text { width: 100%; padding: 8px; background: #21262d; border: 1px solid #30363d; border-radius: 4px; color: #c9d1d9; font-size: 11px; margin-bottom: 8px; }
+    .btn { padding: 8px 12px; background: #21262d; border: 1px solid #30363d; color: #c9d1d9; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; margin: 4px 4px 4px 0; }
+    .btn:active { background: #30363d; }
+    .btn.primary { background: #ff6b6b; color: white; }
+    .btn.success { background: #3fb950; color: white; }
+    .btn.danger { background: #f85149; color: white; }
+    .report { background: #0d1117; border: 1px solid #30363d; border-radius: 4px; padding: 10px; margin-top: 10px; max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; font-size: 10px; line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
+    .report.hidden { display: none; }
+    .error { color: #f85149; }
+    .warning { color: #d29922; }
+    .success { color: #3fb950; }
+    .info { color: #58a6ff; }
+    .toast { position: fixed; bottom: 12px; left: 12px; right: 12px; background: #21262d; border: 1px solid #30363d; color: #c9d1d9; padding: 10px; border-radius: 4px; font-size: 11px; z-index: 9999; opacity: 0; transform: translateY(20px); transition: all 0.3s; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { border-color: #f85149; color: #f85149; }
+    .toast.success { border-color: #3fb950; color: #3fb950; }
+    .progress { width: 100%; height: 3px; background: #21262d; border-radius: 2px; overflow: hidden; margin-top: 8px; }
+    .progress-bar { height: 100%; background: #58a6ff; width: 0%; transition: width 0.2s; }
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #30363d; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🔍 Scanner Pro - Detecção Completa (SEM SLICE!)</h1>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="APP.tab('upload')">📁 Upload</button>
+    <button class="tab-btn" onclick="APP.tab('auto')">🤖 Auto-Detect</button>
+    <button class="tab-btn" onclick="APP.tab('search')">🔎 Buscar</button>
+    <button class="tab-btn" onclick="APP.tab('rules')">📋 Regras</button>
+    <button class="tab-btn" onclick="APP.tab('proxy')">🔗 Proxy API</button>
+  </div>
+
+  <div class="content">
+    <!-- TAB: UPLOAD -->
+    <div id="upload" class="panel active">
+      <div class="card">
+        <h2>📁 Carregar (ZIP/TAR/TGZ/GZ)</h2>
+        <p>Suporta TUDO - SEM SLICE!</p>
+        
+        <input type="file" id="fileInput" class="file-input" onchange="APP.loadFile(event)" accept=".zip,.tar,.tgz,.gz">
+        
+        <div id="uploadProgress" class="progress hidden"><div class="progress-bar"></div></div>
+        <div id="uploadStatus" style="font-size: 10px; color: #8b949e; margin-top: 8px;"></div>
+        
+        <div style="margin-top: 10px;">
+          <button class="btn primary" onclick="APP.fullAnalysis()">🔴 Análise Completa</button>
+          <button class="btn success" onclick="APP.quickScan()">⚡ Scan Rápido</button>
+          <button class="btn" onclick="APP.clearAll()">🗑️ Limpar</button>
+        </div>
+
+        <div id="uploadReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: AUTO-DETECT -->
+    <div id="auto" class="panel">
+      <div class="card">
+        <h2>🤖 Auto-Detecção (Top 10 Problemas)</h2>
+        <p>Encontra os PIORES problemas automaticamente</p>
+        
+        <button class="btn danger" onclick="APP.autoDetect()">🔍 Detectar Agora</button>
+        <div id="autoReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: BUSCAR -->
+    <div id="search" class="panel">
+      <div class="card">
+        <h2>🔎 Buscar por Nome</h2>
+        <p>Procura em TODOS os arquivos (SEM SLICE!)</p>
+        
+        <input type="text" id="searchQuery" class="input-text" placeholder="Nome do arquivo, função, variável...">
+        
+        <div style="margin-bottom: 8px;">
+          <button class="btn primary" onclick="APP.searchByName()">🔍 Buscar</button>
+          <button class="btn" onclick="APP.searchRegex()">🔤 Regex</button>
+        </div>
+
+        <div id="searchReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: REGRAS -->
+    <div id="rules" class="panel">
+      <div class="card">
+        <h2>📋 Regras Customizáveis</h2>
+        <p>Crie suas próprias regras de detecção</p>
+        
+        <input type="text" id="ruleName" class="input-text" placeholder="Nome da regra">
+        <input type="text" id="rulePattern" class="input-text" placeholder="Padrão (regex)">
+        <input type="text" id="ruleSeverity" class="input-text" placeholder="Severidade (CRÍTICO/IMPORTANTE/MÉDIO)">
+        
+        <button class="btn success" onclick="APP.addRule()">➕ Adicionar Regra</button>
+        
+        <h3 style="font-size: 11px; color: #58a6ff; margin-top: 12px; margin-bottom: 8px;">Regras Ativas:</h3>
+        <div id="rulesList" style="font-size: 10px; color: #8b949e;"></div>
+
+        <button class="btn primary" onclick="APP.applyCustomRules()">🔍 Aplicar Regras</button>
+        <div id="rulesReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: PROXY API -->
+    <div id="proxy" class="panel">
+      <div class="card">
+        <h2>🔗 Testar APIs (Proxy em Cascata)</h2>
+        <p>Testa URLs com múltiplos proxys</p>
+        
+        <input type="text" id="apiUrl" class="input-text" placeholder="https://api.exemplo.com/endpoint">
+        
+        <button class="btn primary" onclick="APP.testAPIWithProxy()">🔗 Testar com Proxy</button>
+        <div id="proxyReport" class="report hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    'use strict';
+
+    const APP = {
+      files: {},
+      customRules: [
+        { name: 'console.log', pattern: /console\.(log|error|warn)/gi, severity: 'CRÍTICO' },
+        { name: 'var não removido', pattern: /\bvar\s+\w+/g, severity: 'IMPORTANTE' },
+        { name: 'Comparação fraca (==)', pattern: /[^=!]==[^=]/g, severity: 'IMPORTANTE' },
+        { name: 'Variável não preenchida', pattern: /\$\{[^}]+\}/g, severity: 'CRÍTICO' },
+        { name: 'Localhost', pattern: /http:\/\/localhost:\d+/g, severity: 'IMPORTANTE' },
+        { name: 'API sem token', pattern: /fetch\(['"]https?:\/\/api\./g, severity: 'CRÍTICO' },
+        { name: 'Promise sem await', pattern: /\.then\(/g, severity: 'MÉDIO' },
+        { name: 'window global', pattern: /window\.\w+\s*=/g, severity: 'IMPORTANTE' },
+        { name: 'eval() perigoso', pattern: /\beval\s*\(/g, severity: 'CRÍTICO' },
+        { name: 'Sem try-catch', pattern: /async\s+function[^{]*\{(?!.*try)/g, severity: 'IMPORTANTE' }
+      ],
+
+      proxies: [
+        'https://cors-anywhere.herokuapp.com/',
+        'https://api.allorigins.win/raw?url=',
+        'https://jsonp.afeld.me/?url=',
+        'https://thingproxy.freeboard.io/fetch/'
+      ],
+
+      toast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 3000);
+      },
+
+      tab(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        event.target.classList.add('active');
+      },
+
+      async loadFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const status = document.getElementById('uploadStatus');
+        const progress = document.getElementById('uploadProgress');
+        
+        status.textContent = '⏳ Carregando...';
+        progress.classList.remove('hidden');
+
+        try {
+          const fileName = file.name;
+          let files = {};
+
+          if (fileName.endsWith('.zip')) {
+            files = await this.extractZip(file, progress);
+          } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+            files = await this.extractTarGz(file, progress);
+          } else if (fileName.endsWith('.tar')) {
+            files = await this.extractTar(file, progress);
+          } else if (fileName.endsWith('.gz')) {
+            files = await this.extractGz(file, progress);
+          }
+
+          this.files = files;
+          const count = Object.keys(files).length;
+          status.textContent = `✅ ${count} arquivo(s) - ${this.formatSize(file.size)}`;
+          progress.classList.add('hidden');
+          this.toast(`✅ ${count} arquivo(s) carregado!`, 'success');
+        } catch (err) {
+          status.textContent = `❌ ${err.message}`;
+          progress.classList.add('hidden');
+          this.toast(`❌ ${err.message}`, 'error');
+        }
+      },
+
+      async extractZip(file, progress) {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        const files = {};
+        const entries = Object.entries(loaded.files);
+        const total = entries.length;
+        let processed = 0;
+
+        for (const [path, obj] of entries) {
+          if (!obj.dir) {
+            try {
+              files[path] = await obj.async('string');
+            } catch (e) {
+              files[path] = '[BINÁRIO]';
+            }
+          }
+          processed++;
+          this.updateProgress(progress, processed, total);
+        }
+        return files;
+      },
+
+      async extractTarGz(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        return this.extractTarBuffer(decompressed, progress);
+      },
+
+      async extractTar(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        return this.extractTarBuffer(arrayBuffer, progress);
+      },
+
+      async extractGz(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        const text = new TextDecoder().decode(decompressed);
+        return { 'decompressed.txt': text };
+      },
+
+      extractTarBuffer(buffer, progress) {
+        const files = {};
+        const view = new Uint8Array(buffer);
+        let offset = 0;
+        let processed = 0;
+        const total = Math.ceil(view.length / 512);
+
+        while (offset < view.length) {
+          const headerEnd = offset + 512;
+          if (headerEnd > view.length) break;
+
+          const header = view.slice(offset, headerEnd);
+          const nameBytes = header.slice(0, 100);
+          const name = new TextDecoder().decode(nameBytes).split('\0')[0];
+          const sizeStr = new TextDecoder().decode(header.slice(124, 136)).trim();
+          const size = parseInt(sizeStr, 8) || 0;
+
+          offset = headerEnd;
+
+          if (name && size > 0) {
+            try {
+              const content = new TextDecoder().decode(view.slice(offset, offset + size));
+              files[name] = content;
+            } catch (e) {
+              files[name] = '[BINÁRIO]';
+            }
+          }
+
+          offset += Math.ceil(size / 512) * 512;
+          processed++;
+          if (processed % 100 === 0) this.updateProgress(progress, processed, total);
+        }
+
+        return files;
+      },
+
+      updateProgress(progress, current, total) {
+        const percent = Math.min(100, Math.round((current / total) * 100));
+        progress.querySelector('.progress-bar').style.width = percent + '%';
+      },
+
+      autoDetect() {
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        let report = '=== AUTO-DETECÇÃO (TOP 10 PROBLEMAS) ===\n\n';
+
+        const problems = [];
+
+        for (const rule of this.customRules) {
+          let count = 0;
+          let files = [];
+
+          for (const [path, content] of Object.entries(this.files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+            const matches = content.match(rule.pattern) || [];
+            if (matches.length > 0) {
+              count += matches.length;
+              files.push({ path, count: matches.length });
+            }
+          }
+
+          if (count > 0) {
+            problems.push({ rule, count, files, severity: rule.severity });
+          }
+        }
+
+        // Ordena por severidade e quantidade
+        const severityOrder = { 'CRÍTICO': 0, 'IMPORTANTE': 1, 'MÉDIO': 2 };
+        problems.sort((a, b) => {
+          const diff = severityOrder[a.severity] - severityOrder[b.severity];
+          return diff !== 0 ? diff : b.count - a.count;
+        });
+
+        problems.slice(0, 10).forEach((p, idx) => {
+          report += `${idx + 1}. [${p.severity}] ${p.rule.name}\n`;
+          report += `   Total: ${p.count} ocorrência(s)\n`;
+          report += `   Em ${p.files.length} arquivo(s):\n`;
+          p.files.slice(0, 3).forEach(f => {
+            report += `   - ${f.path} (${f.count}x)\n`;
+          });
+          if (p.files.length > 3) report += `   ... e mais ${p.files.length - 3}\n`;
+          report += '\n';
+        });
+
+        this.showReport('autoReport', report);
+      },
+
+      searchByName() {
+        const query = document.getElementById('searchQuery').value.trim().toLowerCase();
+        if (!query) {
+          this.toast('Digite algo para buscar', 'error');
+          return;
+        }
+
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        let report = `=== BUSCA: "${query}" (SEM SLICE!) ===\n\n`;
+
+        let found = [];
+
+        for (const [path, content] of Object.entries(this.files)) {
+          if (path.toLowerCase().includes(query)) {
+            found.push({ type: 'arquivo', path, content: content.substring(0, 100) });
+          }
+
+          if (typeof content === 'string' && content !== '[BINÁRIO]') {
+            if (content.toLowerCase().includes(query)) {
+              found.push({ type: 'conteúdo', path, content: content.substring(0, 100) });
+            }
+          }
+        }
+
+        if (found.length === 0) {
+          report += '❌ Nenhum resultado\n';
+        } else {
+          report += `✅ ${found.length} resultado(s):\n\n`;
+          found.forEach(f => {
+            report += `📁 ${f.path}\n`;
+            report += `   Tipo: ${f.type}\n`;
+            report += `   Preview: ${f.content}...\n\n`;
+          });
+        }
+
+        this.showReport('searchReport', report);
+      },
+
+      searchRegex() {
+        const query = document.getElementById('searchQuery').value.trim();
+        if (!query) {
+          this.toast('Digite um regex', 'error');
+          return;
+        }
+
+        try {
+          const regex = new RegExp(query, 'gi');
+          let report = `=== REGEX: ${query} ===\n\n`;
+          let totalMatches = 0;
+
+          for (const [path, content] of Object.entries(this.files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+            const matches = content.match(regex) || [];
+            if (matches.length > 0) {
+              report += `📁 ${path}\n`;
+              report += `   ${matches.length} match(es):\n`;
+              matches.slice(0, 5).forEach(m => {
+                report += `   - ${m}\n`;
+              });
+              if (matches.length > 5) report += `   ... e mais ${matches.length - 5}\n`;
+              report += '\n';
+              totalMatches += matches.length;
+            }
+          }
+
+          report += `\n📊 TOTAL: ${totalMatches} matches\n`;
+          this.showReport('searchReport', report);
+        } catch (err) {
+          this.toast(`❌ Regex inválido: ${err.message}`, 'error');
+        }
+      },
+
+      addRule() {
+        const name = document.getElementById('ruleName').value.trim();
+        const pattern = document.getElementById('rulePattern').value.trim();
+        const severity = document.getElementById('ruleSeverity').value.trim();
+
+        if (!name || !pattern || !severity) {
+          this.toast('Preencha todos os campos', 'error');
+          return;
+        }
+
+        try {
+          const regex = new RegExp(pattern, 'gi');
+          this.customRules.push({ name, pattern: regex, severity });
+          document.getElementById('ruleName').value = '';
+          document.getElementById('rulePattern').value = '';
+          document.getElementById('ruleSeverity').value = '';
+          this.updateRulesList();
+          this.toast('✅ Regra adicionada!', 'success');
+        } catch (err) {
+          this.toast(`❌ Regex inválido: ${err.message}`, 'error');
+        }
+      },
+
+      updateRulesList() {
+        const list = document.getElementById('rulesList');
+        list.textContent = this.customRules.map((r, i) => `${i + 1}. ${r.name} [${r.severity}]`).join('\n');
+      },
+
+      applyCustomRules() {
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        let report = '=== APLICANDO REGRAS CUSTOMIZADAS ===\n\n';
+
+        for (const rule of this.customRules) {
+          let count = 0;
+          let files = [];
+
+          for (const [path, content] of Object.entries(this.files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+            const matches = content.match(rule.pattern) || [];
+            if (matches.length > 0) {
+              count += matches.length;
+              files.push({ path, count: matches.length });
+            }
+          }
+
+          if (count > 0) {
+            report += `[${rule.severity}] ${rule.name}: ${count}x\n`;
+            files.forEach(f => report += `   ${f.path}: ${f.count}x\n`);
+            report += '\n';
+          }
+        }
+
+        this.showReport('rulesReport', report);
+      },
+
+      async testAPIWithProxy() {
+        const url = document.getElementById('apiUrl').value.trim();
+        if (!url) {
+          this.toast('Digite uma URL', 'error');
+          return;
+        }
+
+        let report = `=== TESTANDO: ${url} ===\n\n`;
+
+        for (let i = 0; i < this.proxies.length; i++) {
+          const proxy = this.proxies[i];
+          const proxyUrl = proxy + encodeURIComponent(url);
+
+          report += `${i + 1}. ${proxy}\n`;
+
+          try {
+            const response = await fetch(proxyUrl, { timeout: 5000 });
+            report += `   ✅ Status: ${response.status}\n`;
+          } catch (err) {
+            report += `   ❌ Erro: ${err.message}\n`;
+          }
+        }
+
+        report += '\n💡 Use o proxy que funcionar no seu backend\n';
+        this.showReport('proxyReport', report);
+      },
+
+      fullAnalysis() {
+        this.autoDetect();
+        this.tab('auto');
+      },
+
+      quickScan() {
+        this.autoDetect();
+      },
+
+      showReport(elementId, content) {
+        const el = document.getElementById(elementId);
+        el.textContent = content;
+        el.classList.remove('hidden');
+      },
+
+      clearAll() {
+        this.files = {};
+        document.getElementById('fileInput').value = '';
+        document.getElementById('uploadStatus').textContent = '';
+        this.toast('✅ Limpo', 'success');
+      },
+
+      formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let idx = 0;
+        while (size >= 1024 && idx < units.length - 1) {
+          size /= 1024;
+          idx++;
+        }
+        return `${size.toFixed(1)} ${units[idx]}`;
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      APP.updateRulesList();
+    });
+  </script>
+
+</body>
+</html>
