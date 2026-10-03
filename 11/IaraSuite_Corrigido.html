@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Iara Suite — Code Editor · APK Builder · Site Extractor</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--red:#f85149;--yellow:#d29922;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+/* NAV */
+.nav{display:flex;align-items:center;background:#161b22;border-bottom:1px solid var(--border);height:44px;padding:0 8px;gap:4px;flex-shrink:0;}
+.nav-title{font-size:13px;font-weight:700;color:var(--blue);padding:0 8px;margin-right:4px;}
+.tab-btn{padding:6px 14px;font-size:12px;font-weight:500;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--muted);cursor:pointer;height:44px;}
+.tab-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+.tab-btn:hover:not(.active){color:var(--text);}
+.nav-right{margin-left:auto;display:flex;gap:6px;}
+.btn{padding:6px 12px;border-radius:6px;font-size:12px;border:none;cursor:pointer;font-family:inherit;}
+.btn-blue{background:var(--blue);color:#000;font-weight:600;}
+.btn-gray{background:#21262d;color:var(--text);border:1px solid var(--border);}
+.btn-gray:hover{background:#30363d;}
+.btn-green{background:#238636;color:#fff;font-weight:600;}
+.btn-red{background:#da3633;color:#fff;}
+/* PANELS */
+.panel{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.panel.active{display:flex;}
+/* EDITOR */
+.editor-layout{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:200px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:#161b22;}
+.sidebar-header{padding:8px;border-bottom:1px solid var(--border);display:flex;gap:4px;}
+#file-list{flex:1;overflow-y:auto;}
+.file-item{display:flex;align-items:center;gap:6px;padding:6px 8px;cursor:pointer;font-size:12px;border-bottom:1px solid #21262d;}
+.file-item:hover,.file-item.active{background:#1c2128;}
+.file-del{background:none;border:none;color:var(--red);cursor:pointer;padding:0 2px;opacity:0;font-size:14px;}
+.file-item:hover .file-del{opacity:1;}
+.editor-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.editor-toolbar{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#161b22;border-bottom:1px solid var(--border);flex-shrink:0;}
+.filename{font-size:12px;font-family:monospace;color:var(--muted);}
+#current-filename{font-size:12px;font-family:monospace;color:var(--blue);}
+.editor-area{display:flex;flex:1;overflow:hidden;}
+#code-textarea{flex:1;background:#0a0e14;color:var(--text);border:none;resize:none;padding:12px;font-family:'Courier New',monospace;font-size:13px;line-height:1.6;outline:none;tab-size:2;}
+/* AI PANEL */
+#ai-panel{width:300px;border-left:1px solid var(--border);display:flex;flex-direction:column;background:#161b22;}
+#ai-panel.hidden{display:none;}
+.ai-header{padding:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;}
+#ai-status{font-size:11px;color:var(--muted);}
+#ai-messages{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:8px;}
+.ai-msg{padding:8px 10px;border-radius:6px;font-size:12px;line-height:1.5;}
+.ai-msg.user{background:#1c2128;border-left:3px solid var(--blue);align-self:flex-end;max-width:90%;}
+.ai-msg.assistant{background:#161b22;border-left:3px solid var(--green);}
+.ai-input-area{padding:8px;border-top:1px solid var(--border);}
+#ai-prompt{width:100%;background:#0a0e14;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px;font-size:12px;resize:none;font-family:inherit;}
+#ai-model-info{font-size:10px;color:var(--muted);margin-top:4px;}
+/* APK */
+.apk-layout{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;max-width:700px;margin:0 auto;width:100%;}
+.apk-card{background:#161b22;border:1px solid var(--border);border-radius:8px;padding:16px;}
+.apk-card h3{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--blue);}
+#apk-drop{border:2px dashed var(--border);border-radius:8px;padding:32px;text-align:center;cursor:pointer;transition:.2s;}
+#apk-drop:hover,#apk-drop.drag-over{border-color:var(--blue);background:#0d1f40;}
+.target-btns{display:flex;gap:8px;margin-bottom:8px;}
+.tgt-btn{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);background:#21262d;color:var(--muted);cursor:pointer;font-size:12px;text-align:center;}
+.tgt-btn.active{background:#1f6feb;color:#fff;border-color:#1f6feb;}
+.tgt-info{font-size:11px;color:var(--muted);padding:8px;background:#0a0e14;border-radius:4px;display:none;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.form-group label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;}
+.form-group input,.form-group select{width:100%;background:#0a0e14;border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px 8px;font-size:12px;}
+#apk-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px;display:none;}
+#apk-bar{height:100%;background:var(--blue);border-radius:2px;width:0%;transition:width .3s;}
+#apk-log{background:#0a0e14;border-radius:6px;padding:10px;font-size:11px;font-family:monospace;max-height:200px;overflow-y:auto;color:var(--muted);white-space:pre-wrap;}
+/* EXTRACTOR */
+.ext-layout{flex:1;overflow-y:auto;padding:16px;max-width:800px;margin:0 auto;width:100%;}
+.ext-card{background:#161b22;border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px;}
+.ext-row{display:flex;gap:8px;margin-bottom:8px;}
+#ext-url{flex:1;background:#0a0e14;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px;font-size:13px;}
+.ext-tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.ext-tab{padding:6px 12px;font-size:12px;border:none;background:transparent;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;}
+.ext-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.ext-tab-content{display:none;}
+.ext-tab-content.active{display:block;}
+#ext-loading{display:none;text-align:center;padding:20px;color:var(--muted);}
+#ext-error{display:none;color:var(--red);padding:10px;background:#3d1f1f;border-radius:6px;}
+.ext-item{padding:6px 8px;border-bottom:1px solid #21262d;font-size:11px;font-family:monospace;cursor:pointer;}
+.ext-item:hover{background:#1c2128;}
+/* MODAIS */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:#161b22;border:1px solid var(--border);border-radius:10px;padding:20px;width:90%;max-width:480px;max-height:80vh;overflow-y:auto;}
+.modal h2{font-size:15px;margin-bottom:14px;color:var(--text);}
+.slot{background:#0a0e14;border:1px solid var(--border);border-radius:6px;padding:10px;margin-bottom:8px;}
+.slot-row{display:flex;gap:6px;margin-top:6px;}
+.slot input{flex:1;background:#161b22;border:1px solid var(--border);color:var(--text);border-radius:4px;padding:6px;font-size:12px;font-family:monospace;}
+/* CODE MODAL */
+#code-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;}
+#code-modal.open{display:flex;}
+.code-modal-inner{background:#161b22;border:1px solid var(--border);border-radius:8px;width:90%;max-width:700px;max-height:85vh;display:flex;flex-direction:column;}
+.code-modal-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);}
+#code-modal-title{font-size:13px;font-family:monospace;color:var(--blue);}
+#code-modal-content{flex:1;overflow-y:auto;padding:12px;font-size:12px;font-family:monospace;background:#0a0e14;white-space:pre-wrap;color:var(--text);}
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;background:#238636;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;display:none;z-index:300;}
+#toast.err{background:#da3633;}
+/* MISC */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--blue)!important;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <span class="nav-title">⚡ Iara Suite</span>
+  <button class="tab-btn active" onclick="switchTo('editor')">💻 Editor</button>
+  <button class="tab-btn" onclick="switchTo('apk')">📦 APK Builder</button>
+  <button class="tab-btn" onclick="switchTo('extractor')">🔍 Extractor</button>
+  <div class="nav-right">
+    <span id="ai-status" style="font-size:11px;padding:4px 8px;align-self:center;">IA: —</span>
+    <button class="btn btn-gray" onclick="openKeyModal()">🔑 Chaves</button>
+  </div>
+</nav>
+
+<!-- ══════════════ EDITOR PANEL ══════════════ -->
+<div id="editor-panel" class="panel active">
+  <div class="editor-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <button class="btn btn-gray" style="flex:1;font-size:11px;" onclick="newFile()">+ Novo</button>
+        <button class="btn btn-gray" style="font-size:11px;" onclick="uploadZip()" title="Importar ZIP">⬆ ZIP</button>
+        <button class="btn btn-gray" style="font-size:11px;" onclick="downloadZip()" title="Exportar ZIP">⬇</button>
+      </div>
+      <div id="file-list"></div>
+    </div>
+    <!-- Editor -->
+    <div class="editor-main">
+      <div class="editor-toolbar">
+        <span class="filename">📄</span>
+        <span id="current-filename">sem arquivo</span>
+        <div style="margin-left:auto;display:flex;gap:4px;">
+          <button class="btn btn-gray" style="font-size:11px;" onclick="saveFile()">💾 Salvar</button>
+          <button class="btn btn-gray" style="font-size:11px;" onclick="toggleAI()">🤖 IA</button>
+          <button class="btn btn-gray" style="font-size:11px;" onclick="clearChat()">🗑</button>
+        </div>
+      </div>
+      <div class="editor-area">
+        <textarea id="code-textarea" spellcheck="false" oninput="onCodeChange()" onkeydown="handleTabKey(event)" placeholder="Selecione ou crie um arquivo..."></textarea>
+        <!-- AI Panel -->
+        <div id="ai-panel" class="hidden">
+          <div class="ai-header">
+            <span style="font-size:12px;font-weight:600;">🤖 Assistente IA</span>
+            <button class="btn btn-gray" style="font-size:11px;padding:3px 8px;" onclick="toggleAI()">✕</button>
+          </div>
+          <div id="ai-messages"></div>
+          <div class="ai-input-area">
+            <textarea id="ai-prompt" rows="3" placeholder="Pergunte sobre o código... (Ctrl+Enter envia)" onkeydown="if(event.ctrlKey&&event.key==='Enter')sendAI()"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <span id="ai-model-info">—</span>
+              <button class="btn btn-blue" style="font-size:11px;padding:4px 10px;" onclick="sendAI()">▶ Enviar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input type="file" id="zip-upload" accept=".zip" style="display:none" onchange="handleZipUpload(event)">
+</div>
+
+<!-- ══════════════ APK PANEL ══════════════ -->
+<div id="apk-panel" class="panel">
+  <div class="apk-layout">
+    <div class="apk-card">
+      <h3>1. Importar Projeto Web (ZIP)</h3>
+      <div id="apk-drop" ondragover="apkDragOver(event)" ondragleave="apkDragLeave()" ondrop="apkDrop(event)" onclick="document.getElementById('apk-zip-input').click()">
+        <div style="font-size:28px;margin-bottom:8px;">📦</div>
+        <div style="font-size:13px;font-weight:600;">Arraste o ZIP ou clique para selecionar</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px;">Qualquer site ou app web (HTML/JS/CSS)</div>
+      </div>
+      <input type="file" id="apk-zip-input" accept=".zip" style="display:none" onchange="apkFileSelected(event)">
+      <div id="apk-upload-info" style="display:none;margin-top:8px;font-size:12px;color:var(--green);"></div>
+    </div>
+
+    <div class="apk-card">
+      <h3>2. Configurar App</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Nome do App</label><input id="apk-name" type="text" placeholder="Meu App"></div>
+        <div class="form-group"><label>Package ID</label><input id="apk-id" type="text" placeholder="br.com.meuapp"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Versão</label><input id="apk-version" type="text" value="1.0.0"></div>
+        <div class="form-group"><label>Version Code</label><input id="apk-version-code" type="number" value="1"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Min SDK</label><select id="apk-minsdk"><option value="24">Android 7 (API 24)</option><option value="26" selected>Android 8 (API 26)</option><option value="28">Android 9 (API 28)</option><option value="31">Android 12 (API 31)</option></select></div>
+        <div class="form-group"><label>Orientação</label><select id="apk-orient"><option value="portrait">Retrato</option><option value="landscape">Paisagem</option><option value="sensor">Ambos</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Cor do Tema</label><input id="apk-theme" type="color" value="#0d1117" oninput="document.getElementById('apk-theme-txt').value=this.value"></div>
+        <div class="form-group"><label>Hex da Cor</label><input id="apk-theme-txt" type="text" value="#0d1117" oninput="document.getElementById('apk-theme').value=this.value"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Cor de Fundo Splash</label><input id="apk-bg" type="color" value="#0d1117" oninput="document.getElementById('apk-bg-txt').value=this.value"></div>
+        <div class="form-group"><label>Hex Fundo</label><input id="apk-bg-txt" type="text" value="#0d1117" oninput="document.getElementById('apk-bg').value=this.value"></div>
+      </div>
+    </div>
+
+    <div class="apk-card">
+      <h3>3. Destino do Build</h3>
+      <div class="target-btns">
+        <button id="tgt-apk" class="tgt-btn active" onclick="setTarget('apk')">📱 APK Android</button>
+        <button id="tgt-eas" class="tgt-btn" onclick="setTarget('eas')">☁️ GitHub Actions</button>
+        <button id="tgt-electron" class="tgt-btn" onclick="setTarget('electron')">🖥 Electron PC</button>
+      </div>
+      <div id="tgt-apk-info" class="tgt-info" style="display:block;">Gera projeto Android Studio. Abra no Android Studio → Build → Generate APK.</div>
+      <div id="tgt-eas-info" class="tgt-info">Gera workflow GitHub Actions. Suba no GitHub → APK gerado na nuvem.</div>
+      <div id="tgt-electron-info" class="tgt-info">Gera projeto Electron. Execute: npm install && npm start</div>
+    </div>
+
+    <div class="apk-card">
+      <h3>4. Gerar</h3>
+      <div id="apk-progress"><div id="apk-bar"></div></div>
+      <button id="build-btn" class="btn btn-green" style="width:100%;padding:12px;font-size:14px;margin-bottom:10px;" onclick="buildApk()">⚡ Gerar Projeto</button>
+      <div id="apk-log" style="min-height:60px;">Aguardando...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ EXTRACTOR PANEL ══════════════ -->
+<div id="extractor-panel" class="panel">
+  <div class="ext-layout">
+    <div class="ext-card">
+      <h3 style="font-size:14px;font-weight:600;margin-bottom:10px;color:var(--blue);">🔍 Site Extractor — Scripts Jurídicos</h3>
+      <div class="ext-row">
+        <input id="ext-url" type="url" placeholder="https://site-juridico.com.br/calculadora">
+        <select id="ext-depth" style="background:#0a0e14;border:1px solid var(--border);color:var(--text);border-radius:6px;padding:8px;font-size:12px;">
+          <option value="1">Raso (1 nível)</option>
+          <option value="2" selected>Médio (2 níveis)</option>
+          <option value="3">Profundo (3 níveis)</option>
+        </select>
+        <button class="btn btn-blue" onclick="extractSite()">Extrair</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:var(--muted);">
+        <label>Tipo: <select id="ext-asset-type" style="background:#0a0e14;border:1px solid var(--border);color:var(--text);border-radius:4px;padding:3px 6px;font-size:11px;"><option value="all">Todos</option><option value="js">JS</option><option value="css">CSS</option><option value="api">APIs</option></select></label>
+        <label>Filtro: <input id="ext-asset-filter" type="text" placeholder="calcul, previdenci..." style="background:#0a0e14;border:1px solid var(--border);color:var(--text);border-radius:4px;padding:3px 6px;font-size:11px;width:140px;"></label>
+      </div>
+    </div>
+
+    <div id="ext-loading"><div style="font-size:24px;margin-bottom:8px;">⏳</div><div>Extraindo... pode demorar alguns segundos</div></div>
+    <div id="ext-error"></div>
+
+    <div id="ext-results" style="display:none;">
+      <div class="ext-card">
+        <div id="ext-stats" style="font-size:12px;color:var(--muted);margin-bottom:8px;"></div>
+        <div id="ext-meta" style="font-size:12px;margin-bottom:8px;"></div>
+        <div id="ext-tech" style="font-size:12px;color:var(--blue);"></div>
+      </div>
+
+      <div class="ext-card">
+        <div class="ext-tabs">
+          <button class="ext-tab active" onclick="showExtTab('scripts')">Scripts JS <span id="ext-scripts-badge" style="background:#1f6feb;color:#fff;border-radius:4px;padding:1px 6px;font-size:10px;margin-left:4px;">0</span></button>
+          <button class="ext-tab" onclick="showExtTab('links')">Links/APIs</button>
+          <button class="ext-tab" onclick="showExtTab('external')">Scripts Externos</button>
+        </div>
+        <div id="ext-tab-scripts" class="ext-tab-content active">
+          <div id="ext-scripts-summary" style="font-size:11px;color:var(--muted);margin-bottom:8px;"></div>
+          <div id="ext-scripts-list"></div>
+        </div>
+        <div id="ext-tab-links" class="ext-tab-content">
+          <div id="ext-links-list"></div>
+        </div>
+        <div id="ext-tab-external" class="ext-tab-content">
+          <div id="ext-external-scripts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MODAL CHAVES ══════════════ -->
+<div id="key-modal" class="modal-overlay">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="margin:0;">🔑 Chaves de API</h2>
+      <button class="btn btn-gray" onclick="closeKeyModal()" style="padding:4px 10px;">✕</button>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Auto-detecção: gsk_→Groq · AIza→Gemini · sk-ant-→Claude · sk-→OpenAI · sk-or-→OpenRouter · xai-→Grok</p>
+    <div id="slots-container"></div>
+    <button class="btn btn-green" onclick="renderSlots()" style="width:100%;margin-top:8px;font-size:12px;">+ Adicionar Slot</button>
+  </div>
+</div>
+
+<!-- ══════════════ CODE MODAL ══════════════ -->
+<div id="code-modal">
+  <div class="code-modal-inner">
+    <div class="code-modal-header">
+      <span id="code-modal-title"></span>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-gray" style="font-size:11px;" onclick="copyCodeModal()">📋 Copiar</button>
+        <button class="btn btn-gray" style="font-size:11px;" onclick="importToEditor()">➕ Importar</button>
+        <button class="btn btn-gray" style="font-size:11px;" onclick="closeCodeModal()">✕</button>
+      </div>
+    </div>
+    <div id="code-modal-content"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+
+// ══════════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════════
+function qs(s){return document.querySelector(s)}
+function qsa(s){return document.querySelectorAll(s)}
+function ls(k){try{return localStorage.getItem(k)}catch{return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch{}}
+
+function switchTab(name){
+  qsa('.tab-btn').forEach(b=>b.classList.remove('active'));
+  qsa('.panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  qs('#'+name+'-panel').classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+//  AI SERVICE — direto do navegador, sem servidor
+// ══════════════════════════════════════════════════════════
+const PROVIDERS = {
+  openai:    {name:'OpenAI',    url:'https://api.openai.com/v1/chat/completions',     model:'gpt-4o-mini'},
+  anthropic: {name:'Anthropic', url:'https://api.anthropic.com/v1/messages',           model:'claude-haiku-4-20250514'},
+  google:    {name:'Gemini',    url:'',                                                model:'gemini-2.0-flash'},
+  custom:    {name:'Custom',    url:'',                                                model:''},
+};
+
+function detectProvider(key){
+  if(!key||!key.trim()) return null;
+  const k=key.trim();
+  if(k.startsWith('sk-ant-'))  return {p:'anthropic', m:'claude-haiku-4-20250514', u:''};
+  if(k.startsWith('AIza')||k.startsWith('ya29.')) return {p:'google', m:'gemini-2.0-flash', u:''};
+  if(k.startsWith('sk-or-'))   return {p:'custom',    m:'anthropic/claude-haiku',  u:'https://openrouter.ai/api/v1'};
+  if(k.startsWith('gsk_'))     return {p:'custom',    m:'llama-3.3-70b-versatile', u:'https://api.groq.com/openai/v1'};
+  if(k.startsWith('xai-'))     return {p:'custom',    m:'grok-3-mini',             u:'https://api.x.ai/v1'};
+  if(k.startsWith('ap-')||k.startsWith('ms-')) return {p:'custom', m:'mistral-medium', u:'https://api.mistral.ai/v1'};
+  if(k.startsWith('sk-')||k.startsWith('ds-')) return {p:'openai', m:'gpt-4o-mini',    u:''};
+  if(k.length>20)  return {p:'custom', m:'', u:''};
+  return null;
+}
+
+// Slots de chave (4 slots)
+let slots = JSON.parse(ls('iara-slots')||'null') || [
+  {name:'Slot 1',key:'',provider:'',model:'',baseUrl:'',active:false},
+  {name:'Slot 2',key:'',provider:'',model:'',baseUrl:'',active:false},
+  {name:'Slot 3',key:'',provider:'',model:'',baseUrl:'',active:false},
+  {name:'Slot 4',key:'',provider:'',model:'',baseUrl:'',active:false},
+];
+
+function getActiveSlot(){return slots.find(s=>s.active&&s.key)||null}
+
+function updateAIStatus(){
+  const s=getActiveSlot();
+  const info=qs('#ai-model-info');
+  const badge=qs('#ai-status');
+  if(s){
+    const det=detectProvider(s.key);
+    const pname=det?{openai:'OpenAI',anthropic:'Anthropic',google:'Gemini',custom:'Custom'}[det.p]||'Custom':'Custom';
+    info.textContent=`${s.name} · ${pname} · ${s.model||det?.m||'auto'}`;
+    badge.textContent='pronto';badge.className='badge badge-green';
+  } else {
+    info.textContent='Nenhuma chave ativa';
+    badge.textContent='sem chave';badge.className='badge badge-red';
+  }
+}
+
+function openKeyModal(){
+  renderSlots();
+  qs('#key-modal').classList.add('open');
+}
+function closeKeyModal(){qs('#key-modal').classList.remove('open')}
+
+function renderSlots(){
+  const c=qs('#slots-container');
+  c.innerHTML=slots.map((s,i)=>`
+    <div class="slot-row">
+      <div class="input-group">
+        <label>Chave API (Slot ${i+1})</label>
+        <input type="password" id="slot-key-${i}" value="${s.key}" placeholder="sk-, gsk_, AIza, sk-ant-, xai-, sk-or-..."
+          oninput="autoDetectSlot(${i})" style="font-family:'Courier New',monospace;font-size:11px">
+        <span id="slot-det-${i}" style="font-size:10px;color:var(--muted);margin-top:2px"></span>
+      </div>
+      <div class="input-group">
+        <label>Modelo</label>
+        <input type="text" id="slot-model-${i}" value="${s.model}" placeholder="auto">
+      </div>
+      <button class="slot-active-btn ${s.active?'active':''}" onclick="toggleSlotActive(${i})" id="slot-act-${i}">
+        ${s.active?'✓ Ativo':'Ativar'}
+      </button>
+    </div>
+  `).join('');
+  slots.forEach((_,i)=>autoDetectSlot(i));
+}
+
+function autoDetectSlot(i){
+  const k=qs(`#slot-key-${i}`)?.value||'';
+  const det=detectProvider(k);
+  const detEl=qs(`#slot-det-${i}`);
+  if(det&&detEl){
+    const nm={openai:'OpenAI',anthropic:'Anthropic',google:'Gemini',custom:'Custom'}[det.p]||'Custom';
+    detEl.textContent=`→ ${nm} · ${det.m||'defina o modelo'}`;
+    if(!qs(`#slot-model-${i}`).value) qs(`#slot-model-${i}`).value=det.m||'';
+    if(det.u) qs(`#slot-model-${i}`).placeholder=det.u;
+  } else if(detEl) {
+    detEl.textContent=k?'→ formato não reconhecido':'';
+  }
+}
+
+function toggleSlotActive(i){
+  slots.forEach((s,j)=>s.active=(j===i)?!s.active:false);
+  renderSlots();
+}
+
+function saveSlots(){
+  slots.forEach((s,i)=>{
+    s.key=qs(`#slot-key-${i}`)?.value||'';
+    s.model=qs(`#slot-model-${i}`)?.value||'';
+    const det=detectProvider(s.key);
+    s.provider=det?.p||'custom';
+    s.baseUrl=det?.u||'';
+    s.active=qs(`#slot-act-${i}`)?.classList.contains('active')||false;
+  });
+  lsSet('iara-slots',JSON.stringify(slots));
+  updateAIStatus();
+  closeKeyModal();
+}
+
+async function callAI(messages){
+  const s=getActiveSlot();
+  if(!s) throw new Error('Nenhuma chave de API ativa. Configure em 🔑 Chaves.');
+  const det=detectProvider(s.key);
+  if(!det) throw new Error('Chave não reconhecida. Verifique o formato.');
+  const model=s.model||det.m;
+  const provider=det.p;
+  const baseUrl=s.baseUrl||det.u;
+
+  if(provider==='anthropic'){
+    const sys=messages.find(m=>m.role==='system')?.content||'';
+    const chat=messages.filter(m=>m.role!=='system');
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':s.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model,max_tokens:32768,system:sys,messages:chat,temperature:0.7})
+    });
+    if(!r.ok){const e=await r.text();throw new Error(`Anthropic ${r.status}: ${e.slice(0,300)}`);}
+    const d=await r.json();
+    return d.content?.[0]?.text||'Sem resposta';
+  }
+
+  if(provider==='google'){
+    const k=s.key;
+    const m2=messages.filter(m=>m.role!=='system').map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]}));
+    const sys=messages.find(m=>m.role==='system')?.content;
+    const body={contents:m2,generationConfig:{maxOutputTokens:8192,temperature:0.7}};
+    if(sys) body.systemInstruction={parts:[{text:sys}]};
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${k}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+    });
+    if(!r.ok){const e=await r.text();throw new Error(`Gemini ${r.status}: ${e.slice(0,300)}`);}
+    const d=await r.json();
+    return d.candidates?.[0]?.content?.parts?.[0]?.text||'Sem resposta';
+  }
+
+  // OpenAI-compatible (openai, groq, openrouter, xai, mistral, deepseek, custom)
+  const url=(baseUrl||'https://api.openai.com/v1').replace(/\/$/,'')+'/chat/completions';
+  const r=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${s.key}`,'HTTP-Referer':'https://iara-suite.app','X-Title':'Iara Suite'},
+    body:JSON.stringify({model,messages,max_tokens:16384,temperature:0.7})
+  });
+  if(!r.ok){const e=await r.text();let msg=e.slice(0,300);try{const j=JSON.parse(e);msg=j.error?.message||msg;}catch{}throw new Error(`${r.status}: ${msg}`);}
+  const d=await r.json();
+  return d.choices?.[0]?.message?.content||'Sem resposta';
+}
+
+// ══════════════════════════════════════════════════════════
+//  CODE EDITOR
+// ══════════════════════════════════════════════════════════
+let files={};   // {name: content}
+let currentFile=null;
+let aiHistory=[];
+let aiSending=false;
+
+const SYSTEM_PROMPT=`Você é Jasmim, assistente de programação do Iara Suite — ferramenta do advogado Maikon Caldeira (OAB/MG 183712). Ajude com código, bugs, cálculos jurídicos, HTML, CSS, JavaScript, Python, Java e Android. Responda em português. Quando gerar código, use blocos de código limpos e explique o que foi feito. Para cálculos previdenciários, use fórmulas oficiais do INSS/RGPS.`;
+
+function initEditor(){
+  const saved=ls('iara-files');
+  if(saved) files=JSON.parse(saved);
+  if(!Object.keys(files).length){
+    files['index.html']='<!DOCTYPE html>\n<html lang="pt-BR">\n<head>\n  <meta charset="UTF-8">\n  <title>Meu App</title>\n  <style>\n    body { font-family: sans-serif; padding: 20px; background: #0f172a; color: #e2e8f0; }\n    h1 { color: #58a6ff; }\n  </style>\n</head>\n<body>\n  <h1>Olá, Mundo!</h1>\n  <p>Edite este arquivo no Iara Suite.</p>\n</body>\n</html>';
+    files['style.css']='/* Estilos do projeto */\nbody {\n  margin: 0;\n  font-family: sans-serif;\n}\n';
+    files['script.js']='// JavaScript do projeto\nconsole.log("App iniciado!");\n';
+  }
+  renderFileList();
+  if(Object.keys(files).length) openFile(Object.keys(files)[0]);
+  updateAIStatus();
+}
+
+function renderFileList(){
+  const list=qs('#file-list');
+  list.innerHTML=Object.keys(files).map(f=>`
+    <div class="file-item ${f===currentFile?'active':''}" onclick="openFile('${escHtml(f)}')">
+      <span>${fileIcon(f)}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(f)}</span>
+      <button class="file-del" onclick="event.stopPropagation();deleteFile('${escHtml(f)}')" title="Deletar">✕</button>
+    </div>
+  `).join('');
+}
+
+function fileIcon(name){
+  const ext=name.split('.').pop()||'';
+  const icons={html:'🌐',css:'🎨',js:'📜',ts:'📜',jsx:'⚛',tsx:'⚛',json:'📋',md:'📝',py:'🐍',java:'☕',kt:'🟣',xml:'📄',sh:'⚙',bat:'⚙',txt:'📄',sql:'🗄'};
+  return icons[ext]||'📄';
+}
+
+function openFile(name){
+  if(currentFile&&files[currentFile]!==undefined) files[currentFile]=qs('#code-textarea').value;
+  currentFile=name;
+  qs('#code-textarea').value=files[name]||'';
+  qs('#current-filename').textContent=name;
+  renderFileList();
+}
+
+function onCodeChange(){
+  if(currentFile) files[currentFile]=qs('#code-textarea').value;
+}
+
+function saveFile(){
+  onCodeChange();
+  lsSet('iara-files',JSON.stringify(files));
+  showToast('💾 Salvo!');
+}
+
+function newFile(){
+  const name=prompt('Nome do arquivo:','novo.js');
+  if(!name||!name.trim()) return;
+  files[name.trim()]='';
+  renderFileList();
+  openFile(name.trim());
+  saveFile();
+}
+
+function deleteFile(name){
+  if(!confirm(`Deletar "${name}"?`)) return;
+  delete files[name];
+  if(currentFile===name) currentFile=null;
+  renderFileList();
+  if(Object.keys(files).length) openFile(Object.keys(files)[0]);
+  else{qs('#code-textarea').value='';qs('#current-filename').textContent='sem arquivo';}
+  lsSet('iara-files',JSON.stringify(files));
+}
+
+async function downloadZip(){
+  onCodeChange();
+  if(!window.JSZip){showToast('JSZip não carregado ainda','err');return;}
+  const zip=new JSZip();
+  for(const[name,content] of Object.entries(files)) zip.file(name,content);
+  const blob=await zip.generateAsync({type:'blob'});
+  dlBlob(blob,`iara-projeto-${Date.now()}.zip`);
+}
+
+function uploadZip(){qs('#zip-upload').click()}
+
+async function handleZipUpload(e){
+  const file=e.target.files[0];if(!file) return;
+  if(!window.JSZip){showToast('JSZip não carregado','err');return;}
+  const zip=await JSZip.loadAsync(file);
+  const newFiles={};
+  for(const[path,obj] of Object.entries(zip.files)){
+    if(obj.dir) continue;
+    const content=await obj.async('string');
+    newFiles[path]=content;
+  }
+  files=newFiles;
+  renderFileList();
+  const first=Object.keys(files)[0];
+  if(first) openFile(first);
+  saveFile();
+  showToast(`📤 ${Object.keys(files).length} arquivos importados`);
+  e.target.value='';
+}
+
+function handleTabKey(e){
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const ta=e.target;
+    const s=ta.selectionStart;
+    ta.value=ta.value.slice(0,s)+'  '+ta.value.slice(ta.selectionEnd);
+    ta.selectionStart=ta.selectionEnd=s+2;
+    onCodeChange();
+  }
+}
+
+// AI Chat
+function toggleAI(){
+  const p=qs('#ai-panel');
+  p.classList.toggle('hidden');
+}
+
+function clearChat(){aiHistory=[];qs('#ai-messages').innerHTML='';showToast('🗑 Chat limpo');}
+
+function aiKeyDown(e){
+  if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();sendAI();}
+}
+
+function addAIMsg(role,text){
+  const d=document.createElement('div');
+  d.className=`ai-msg ${role}`;
+  d.textContent=text;
+  const box=qs('#ai-messages');
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+  return d;
+}
+
+async function sendAI(extraCtx){
+  if(aiSending) return;
+  const input=qs('#ai-prompt');
+  const msg=(input.value||'').trim();
+  if(!msg) return;
+  aiSending=true;
+  qs('#ai-status').textContent='enviando…';qs('#ai-status').className='badge badge-yellow';
+  addAIMsg('user',msg+(extraCtx?'\n\n---CÓDIGO ATUAL---\n'+extraCtx:''));
+  input.value='';
+  aiHistory.push({role:'user',content:msg+(extraCtx?'\n\nCódigo atual do editor:\n```\n'+extraCtx+'\n```':'')});
+  const thinking=addAIMsg('assistant','⏳ Pensando...');
+  try{
+    const reply=await callAI([{role:'system',content:SYSTEM_PROMPT},...aiHistory]);
+    thinking.textContent=reply;
+    aiHistory.push({role:'assistant',content:reply});
+  } catch(err){
+    thinking.textContent='❌ Erro: '+err.message;
+    thinking.style.color='var(--red)';
+  } finally{
+    aiSending=false;
+    updateAIStatus();
+  }
+}
+
+function sendWithCode(){
+  onCodeChange();
+  const code=currentFile?files[currentFile]:'';
+  sendAI(code);
+}
+
+function insertCodeToEditor(){
+  const msgs=qsa('.ai-msg.assistant');
+  if(!msgs.length) return;
+  const last=msgs[msgs.length-1].textContent;
+  const match=last.match(/```[\w]*\n([\s\S]*?)```/);
+  const code=match?match[1]:last;
+  if(!currentFile){showToast('Selecione um arquivo primeiro','err');return;}
+  qs('#code-textarea').value=code;
+  onCodeChange();
+  showToast('✅ Código inserido no editor');
+}
+
+// ══════════════════════════════════════════════════════════
+//  APK BUILDER
+// ══════════════════════════════════════════════════════════
+let apkFiles=[];   // [{path, content}]
+let buildTarget='apk';
+
+function setTarget(t){
+  buildTarget=t;
+  ['apk','eas','electron'].forEach(x=>{
+    qs('#tgt-'+x).classList.toggle('active',x===t);
+    qs('#tgt-'+x+'-info').style.display=(x===t?'block':'none');
+  });
+}
+
+function apkDragOver(e){e.preventDefault();qs('#apk-drop').classList.add('drag-over')}
+function apkDragLeave(){qs('#apk-drop').classList.remove('drag-over')}
+function apkDrop(e){e.preventDefault();apkDragLeave();const f=e.dataTransfer.files[0];if(f) loadApkZip(f);}
+function apkFileSelected(e){const f=e.target.files[0];if(f) loadApkZip(f);e.target.value='';}
+
+async function loadApkZip(file){
+  if(!window.JSZip){showToast('JSZip não carregado','err');return;}
+  const zip=await JSZip.loadAsync(file);
+  apkFiles=[];
+  for(const[path,obj] of Object.entries(zip.files)){
+    if(obj.dir) continue;
+    const isBin=isBinary(path);
+    const content=isBin?await obj.async('uint8array'):await obj.async('string');
+    apkFiles.push({path,content,binary:isBin});
+  }
+  const webRoot=detectApkRoot(apkFiles);
+  const webFiles=apkFiles.filter(f=>{
+    const p=f.path.replace(/^\/+/,'');
+    return webRoot?p.startsWith(webRoot):true;
+  }).map(f=>({...f,path:f.path.replace(/^\/+/,'').slice(webRoot.length)}));
+  apkFiles=webFiles;
+  const info=qs('#apk-upload-info');
+  info.style.display='block';
+  info.textContent=`✅ ${file.name} — ${apkFiles.length} arquivos carregados (webRoot: /${webRoot||'raiz'})`;
+  apkLog(`Projeto carregado: ${file.name} — ${apkFiles.length} arquivos. WebRoot: /${webRoot||'raiz'}`);
+}
+
+function isBinary(path){
+  const ext=(path.split('.').pop()||'').toLowerCase();
+  return ['png','jpg','jpeg','gif','webp','ico','svg','woff','woff2','ttf','otf','eot','pdf','zip','mp3','mp4'].includes(ext);
+}
+
+function detectApkRoot(files){
+  const paths=files.map(f=>f.path.replace(/^\/+/,'').toLowerCase());
+  if(paths.some(p=>p==='index.html')) return '';
+  for(const d of['dist','www','public','build','out','html','app','static']){
+    if(paths.some(p=>p===d+'/index.html')) return d+'/';
+  }
+  const found=files.map(f=>f.path.replace(/^\/+/,'')).find(p=>p.toLowerCase().endsWith('/index.html'));
+  if(found){const i=found.lastIndexOf('/');return i>=0?found.slice(0,i+1):'';}
+  return '';
+}
+
+function apkAutoId(){
+  const name=qs('#apk-name').value.trim();
+  if(!name) return;
+  const slug=name.toLowerCase().replace(/[^a-z0-9]/g,'.').replace(/\.+/g,'.').replace(/^\.|\.$/g,'');
+  if(!qs('#apk-id').value) qs('#apk-id').value=`br.adv.${slug}`;
+}
+
+function syncColor(picId,txtId){
+  const txt=qs('#'+txtId).value;
+  if(/^#[0-9a-fA-F]{6}$/.test(txt)) qs('#'+picId).value=txt;
+}
+
+function apkCfg(){
+  return {
+    appName:qs('#apk-name').value||'Meu App',
+    appId:qs('#apk-id').value||'br.adv.app',
+    versionName:qs('#apk-version').value||'1.0.0',
+    versionCode:parseInt(qs('#apk-version-code').value)||1,
+    themeColor:qs('#apk-theme').value,
+    bgColor:qs('#apk-bg').value,
+    orientation:qs('#apk-orient').value,
+    minSdk:parseInt(qs('#apk-minsdk').value)||22,
+  };
+}
+
+function apkLog(msg){
+  const el=qs('#apk-log');
+  el.textContent+=(el.textContent?'\n':'')+msg;
+  el.scrollTop=el.scrollHeight;
+}
+
+function setProgress(pct){qs('#apk-bar').style.width=pct+'%';}
+
+async function buildTarget2(){
+  if(!apkFiles.length){showToast('Carregue um ZIP primeiro','err');return;}
+  const c=apkCfg();
+  qs('#apk-progress').style.display='block';
+  qs('#apk-log').textContent='';
+  setProgress(5);
+  const btn=qs('#build-btn');
+  btn.disabled=true;btn.textContent='⏳ Gerando...';
+
+  try{
+    if(buildTarget==='apk') await buildCapacitor(c);
+    else if(buildTarget==='eas') await buildEAS(c);
+    else if(buildTarget==='electron') await buildElectron(c);
+  } catch(err){
+    apkLog('❌ Erro: '+err.message);
+    showToast('Erro: '+err.message,'err');
+  } finally{
+    btn.disabled=false;btn.textContent='⚡ Gerar agora';
+    setProgress(100);
+  }
+}
+
+// alias para onclick
+function buildTarget(){buildTarget2();}
+
+async function buildCapacitor(c){
+  const zip=new JSZip();
+  apkLog('→ Criando estrutura Capacitor...');setProgress(15);
+
+  // Web files em dist/
+  apkFiles.forEach(f=>{
+    const p='dist/'+f.path;
+    if(f.binary) zip.file(p,f.content);
+    else zip.file(p,f.content);
+  });
+  setProgress(30);
+
+  // capacitor.config.js
+  zip.file('capacitor.config.js',genCapConfig(c));
+  zip.file('package.json',genPkgJson(c));
+  zip.file('.gitignore','node_modules/\ndist/\nandroid/app/build/\n*.keystore\n');
+  setProgress(40);
+
+  // Android project
+  const ap='android/';
+  zip.file(ap+'build.gradle',genRootGradle());
+  zip.file(ap+'settings.gradle',`rootProject.name = '${c.appName.replace(/[^a-zA-Z0-9]/g,'')}'\ninclude ':app'\n`);
+  zip.file(ap+'gradle.properties','org.gradle.jvmargs=-Xmx2048m\nandroid.useAndroidX=true\nandroid.enableJetifier=true\n');
+  zip.file(ap+'gradle/wrapper/gradle-wrapper.properties',genGradleWrapperProps());
+  setProgress(55);
+
+  const pkg=c.appId.split('.');
+  const sp=pkg.join('/');
+  const appBase=ap+'app/src/main/';
+  zip.file(appBase+'AndroidManifest.xml',genManifest(c));
+  zip.file(appBase+`java/${sp}/MainActivity.java`,`package ${c.appId};\nimport com.getcapacitor.BridgeActivity;\npublic class MainActivity extends BridgeActivity {}`);
+  zip.file(appBase+'res/values/strings.xml',`<?xml version="1.0" encoding="utf-8"?><resources><string name="app_name">${c.appName}</string><string name="title_activity_main">${c.appName}</string><string name="custom_url_scheme">${c.appId.replace(/\./g,'')}</string></resources>`);
+  zip.file(appBase+'res/values/styles.xml',genStyles(c));
+  zip.file(ap+'app/build.gradle',genAppGradle(c));
+  setProgress(75);
+
+  // .github/workflows
+  zip.file('.github/workflows/build-apk.yml',genGHActions(c));
+  apkLog('→ Adicionando GitHub Actions workflow...');
+  setProgress(88);
+
+  apkLog('→ Comprimindo ZIP...');
+  const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+  setProgress(98);
+  const safe=c.appName.replace(/[^a-zA-Z0-9]/g,'-');
+  dlBlob(blob,`${safe}-android.zip`);
+  apkLog(`✅ Download iniciado: ${safe}-android.zip`);
+  showToast('✅ ZIP Android gerado!');
+}
+
+async function buildElectron(c){
+  const zip=new JSZip();
+  apkLog('→ Criando estrutura Electron (PC)...');setProgress(20);
+
+  // Web em src/
+  apkFiles.forEach(f=>zip.file('src/'+f.path,f.content));
+  setProgress(40);
+
+  // main.js
+  zip.file('main.js',genElectronMain(c));
+  // package.json
+  zip.file('package.json',genElectronPkg(c));
+  // .gitignore
+  zip.file('.gitignore','node_modules/\ndist-electron/\n*.log\n');
+  // README
+  zip.file('LEIA-ME.txt',`${c.appName} — App de Mesa (Electron)\n${'='.repeat(40)}\n\nREQUISITOS:\n  Node.js 18+ (https://nodejs.org)\n\nCOMO RODAR:\n  1. Abra o terminal nesta pasta\n  2. npm install\n  3. npm start\n\nGERAR EXECUTÁVEL (.exe/.dmg/.AppImage):\n  npm run dist\n  O executável ficará em: dist-electron/\n\nCONFIGURAÇÃO:\n  App: ${c.appName}\n  Versão: ${c.versionName}\n  Dimensões: 1280×800\n`);
+  setProgress(70);
+
+  apkLog('→ Comprimindo...');
+  const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+  setProgress(96);
+  const safe=c.appName.replace(/[^a-zA-Z0-9]/g,'-');
+  dlBlob(blob,`${safe}-electron.zip`);
+  apkLog(`✅ Download: ${safe}-electron.zip`);
+  apkLog('');
+  apkLog('Para rodar:\n  1. Extraia o ZIP\n  2. npm install\n  3. npm start');
+  showToast('✅ ZIP Electron gerado!');
+}
+
+async function buildEAS(c){
+  const zip=new JSZip();
+  apkLog('→ Criando estrutura EAS (GitHub Actions)...');setProgress(20);
+  apkFiles.forEach(f=>zip.file('www/'+f.path,f.content));
+  zip.file('app.json',genEasAppJson(c));
+  zip.file('App.tsx',genEasAppTsx(c));
+  zip.file('package.json',genEasPkg(c));
+  zip.file('babel.config.js',`module.exports=function(api){api.cache(true);return{presets:['babel-preset-expo']};};`);
+  zip.file('eas.json',JSON.stringify({cli:{version:'>= 10.0.0',appVersionSource:'local'},build:{apk:{android:{buildType:'apk'}}}},null,2));
+  zip.file('.github/workflows/build-apk.yml',genEasGH(c));
+  zip.file('LEIA-ME.txt',`${c.appName} — Build via GitHub Actions\n\nColoque no GitHub e o APK será gerado automaticamente.\nBaixe o APK em: Releases → latest-apk\n`);
+  setProgress(80);
+  const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+  const safe=c.appName.replace(/[^a-zA-Z0-9]/g,'-');
+  dlBlob(blob,`${safe}-eas.zip`);
+  apkLog(`✅ Download: ${safe}-eas.zip`);
+  showToast('✅ ZIP EAS gerado!');
+}
+
+// ── File generators ──────────────────────────────────────
+function genCapConfig(c){
+  return `/** @type {import('@capacitor/cli').CapacitorConfig} */\nconst config = {\n  appId: '${c.appId}',\n  appName: '${c.appName}',\n  webDir: 'dist',\n  server: { androidScheme: 'https', cleartext: false },\n  android: { buildOptions: { releaseType: 'APK' } },\n  plugins: { SplashScreen: { launchShowDuration: 0 } },\n};\nmodule.exports = config;\n`;
+}
+function genPkgJson(c){
+  const safe=c.appName.replace(/[^a-zA-Z0-9-]/g,'-').toLowerCase()||'meu-app';
+  return JSON.stringify({name:safe,version:c.versionName,private:true,scripts:{copy:'npx cap copy android',build:'cd android && ./gradlew assembleDebug --no-daemon'},dependencies:{'@capacitor/android':'6.1.2','@capacitor/core':'6.1.2'},devDependencies:{'@capacitor/cli':'6.1.2'}},null,2);
+}
+function genRootGradle(){
+  return `buildscript {\n  ext.kotlin_version = '1.9.24'\n  repositories { google(); mavenCentral() }\n  dependencies {\n    classpath 'com.android.tools.build:gradle:8.3.2'\n    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"\n  }\n}\nallprojects { repositories { google(); mavenCentral() } }\ntask clean(type: Delete) { delete rootProject.buildDir }\n`;
+}
+function genGradleWrapperProps(){
+  return `distributionBase=GRADLE_USER_HOME\ndistributionPath=wrapper/dists\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-8.6-bin.zip\nnetworkTimeout=10000\nvalidateDistributionUrl=true\nzipStoreBase=GRADLE_USER_HOME\nzipStorePath=wrapper/dists\n`;
+}
+function genManifest(c){
+  const screen=c.orientation==='portrait'?'portrait':c.orientation==='landscape'?'landscape':'unspecified';
+  return `<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n  <uses-permission android:name="android.permission.INTERNET"/>\n  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>\n  <application android:allowBackup="true" android:label="@string/app_name" android:supportsRtl="true" android:theme="@style/AppTheme">\n    <activity android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale" android:name=".MainActivity" android:label="@string/title_activity_main" android:theme="@style/AppTheme.NoActionBarLaunch" android:launchMode="singleTask" android:screenOrientation="${screen}" android:windowSoftInputMode="adjustResize" android:exported="true">\n      <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>\n    </activity>\n  </application>\n</manifest>`;
+}
+function genStyles(c){
+  return `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">\n    <item name="colorPrimary">${c.themeColor}</item>\n    <item name="colorPrimaryDark">${c.bgColor}</item>\n    <item name="colorAccent">${c.themeColor}</item>\n  </style>\n  <style name="AppTheme.NoActionBarLaunch" parent="AppTheme">\n    <item name="android:background">${c.bgColor}</item>\n  </style>\n</resources>`;
+}
+function genAppGradle(c){
+  return `apply plugin: 'com.android.application'\napply plugin: 'org.jetbrains.kotlin.android'\nandroid {\n  namespace '${c.appId}'\n  compileSdk 34\n  defaultConfig {\n    applicationId '${c.appId}'\n    minSdk ${c.minSdk}\n    targetSdk 34\n    versionCode ${c.versionCode}\n    versionName '${c.versionName}'\n  }\n  buildTypes { release { minifyEnabled false } }\n  compileOptions {\n    sourceCompatibility JavaVersion.VERSION_17\n    targetCompatibility JavaVersion.VERSION_17\n  }\n  kotlinOptions { jvmTarget = '17' }\n}\ndependencies {\n  implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"\n  implementation 'com.getcapacitor:capacitor-android:6.1.2'\n  implementation 'androidx.appcompat:appcompat:1.7.0'\n  implementation 'com.google.android.material:material:1.12.0'\n  implementation 'androidx.webkit:webkit:1.11.0'\n  implementation 'androidx.core:core-ktx:1.13.1'\n}\n`;
+}
+function genGHActions(c){
+  const safe=c.appName.replace(/[^a-zA-Z0-9]/g,'-');
+  return `name: Build Android APK\non:\n  push:\n    branches: [main, master]\n  workflow_dispatch:\njobs:\n  build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 45\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-java@v4\n        with: {java-version: '17', distribution: 'temurin'}\n      - uses: gradle/actions/setup-gradle@v3\n        with: {gradle-version: '8.6'}\n      - uses: android-actions/setup-android@v3\n      - run: yes | sdkmanager --licenses > /dev/null 2>&1 || true && sdkmanager --install "platforms;android-34" "build-tools;34.0.0"\n      - uses: actions/setup-node@v4\n        with: {node-version: '20'}\n      - run: npm install --no-save @capacitor/cli@6.1.2 @capacitor/core@6.1.2 @capacitor/android@6.1.2\n      - run: npx cap copy android --inline\n      - run: chmod +x android/gradlew\n      - working-directory: android\n        run: ./gradlew assembleDebug --no-daemon\n        env:\n          GRADLE_OPTS: "-Xmx3g -Dorg.gradle.daemon=false"\n      - id: apk\n        run: echo "file=$(find android -name '*.apk' | head -1)" >> $GITHUB_OUTPUT\n      - if: steps.apk.outputs.file != ''\n        run: gh release delete latest-apk --yes 2>/dev/null || true && git push origin --delete latest-apk 2>/dev/null || true\n        env: {GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}}\n      - if: steps.apk.outputs.file != ''\n        run: gh release create latest-apk --title "✅ ${safe} — APK" --notes "APK gerado automaticamente" --latest \${{ steps.apk.outputs.file }}\n        env: {GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}}\n`;
+}
+
+function genElectronMain(c){
+  return `const { app, BrowserWindow } = require('electron');\nconst path = require('path');\n\nfunction createWindow() {\n  const win = new BrowserWindow({\n    width: 1280,\n    height: 800,\n    title: '${c.appName}',\n    backgroundColor: '${c.bgColor}',\n    webPreferences: {\n      nodeIntegration: false,\n      contextIsolation: true,\n    },\n  });\n  win.loadFile(path.join(__dirname, 'src', 'index.html'));\n  // win.webContents.openDevTools(); // descomente para debug\n}\n\napp.whenReady().then(() => {\n  createWindow();\n  app.on('activate', () => {\n    if (BrowserWindow.getAllWindows().length === 0) createWindow();\n  });\n});\n\napp.on('window-all-closed', () => {\n  if (process.platform !== 'darwin') app.quit();\n});\n`;
+}
+
+function genElectronPkg(c){
+  const safe=c.appName.replace(/[^a-zA-Z0-9-]/g,'-').toLowerCase()||'meu-app';
+  return JSON.stringify({
+    name:safe,version:c.versionName,description:c.appName,main:'main.js',private:true,
+    scripts:{start:'electron .',dist:'electron-builder --win --mac --linux'},
+    devDependencies:{electron:'^31.0.0','electron-builder':'^24.0.0'},
+    build:{
+      appId:c.appId,productName:c.appName,
+      win:{target:'nsis',icon:'src/favicon.ico'},
+      mac:{target:'dmg'},
+      linux:{target:'AppImage'},
+    }
+  },null,2);
+}
+
+function genEasAppJson(c){
+  const slug=c.appName.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'meu-app';
+  return JSON.stringify({expo:{name:c.appName,slug,version:c.versionName,orientation:c.orientation==='landscape'?'landscape':'portrait',backgroundColor:c.bgColor,android:{package:c.appId,versionCode:c.versionCode,adaptiveIcon:{backgroundColor:c.bgColor}},plugins:['./plugins/withCopyWww']}},null,2);
+}
+function genEasAppTsx(c){
+  return `import{SafeAreaView,StyleSheet,StatusBar}from'react-native';\nimport{WebView}from'react-native-webview';\nexport default function App(){\n  return(<SafeAreaView style={styles.c}><StatusBar backgroundColor="${c.bgColor}" barStyle="light-content"/><WebView source={{uri:'file:///android_asset/www/index.html'}} style={styles.w} javaScriptEnabled domStorageEnabled allowFileAccess allowFileAccessFromFileURLs allowUniversalAccessFromFileURLs originWhitelist={['*']} mixedContentMode="always"/></SafeAreaView>);\n}\nconst styles=StyleSheet.create({c:{flex:1,backgroundColor:'${c.bgColor}'},w:{flex:1}});\n`;
+}
+function genEasPkg(c){
+  const safe=c.appName.replace(/[^a-zA-Z0-9-]/g,'-').toLowerCase()||'meu-app';
+  return JSON.stringify({name:safe,version:c.versionName,main:'node_modules/expo/AppEntry.js',private:true,scripts:{start:'expo start',android:'expo run:android'},dependencies:{expo:'~51.0.28','expo-status-bar':'~1.12.1',react:'18.2.0','react-native':'0.74.5','react-native-webview':'13.10.2'},devDependencies:{'@babel/core':'^7.24.0','@expo/config-plugins':'~8.0.0',typescript:'~5.3.3'}},null,2);
+}
+function genEasGH(c){
+  return `name: Build APK (EAS Local)\non:\n  push:\n    branches: [main]\n  workflow_dispatch:\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with: {node-version: '20'}\n      - uses: actions/setup-java@v4\n        with: {java-version: '17', distribution: 'temurin'}\n      - uses: android-actions/setup-android@v3\n      - run: npm install -g eas-cli && npm install\n      - run: eas build --platform android --profile apk --local --output ./app.apk --non-interactive\n        env: {EXPO_TOKEN: \${{ secrets.EXPO_TOKEN }}}\n      - run: gh release delete latest-apk --yes 2>/dev/null || true\n        env: {GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}}\n      - run: gh release create latest-apk ./app.apk --title "✅ APK" --notes "Build automático" --latest\n        env: {GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}}\n`;
+}
+
+// color picker sync
+document.addEventListener('input',e=>{
+  if(e.target.id==='apk-theme'){qs('#apk-theme-txt').value=e.target.value;}
+  if(e.target.id==='apk-bg'){qs('#apk-bg-txt').value=e.target.value;}
+});
+
+// ══════════════════════════════════════════════════════════
+//  SITE EXTRACTOR — via proxy público (sem servidor)
+// ══════════════════════════════════════════════════════════
+const PROXY_URLS=[
+  url=>`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url=>`https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url=>`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+];
+
+let extResult=null;
+
+async function fetchViaProxy(url){
+  for(let i=0;i<PROXY_URLS.length;i++){
+    try{
+      const r=await fetch(PROXY_URLS[i](url),{signal:AbortSignal.timeout(15000)});
+      if(!r.ok) continue;
+      const d=await r.json();
+      const html=d.contents||d.data||d;
+      if(typeof html==='string'&&html.length>50) return html;
+    } catch(e){ if(i===PROXY_URLS.length-1) throw e; }
+  }
+  throw new Error('Todos os proxies falharam');
+}
+
+function quickExtract(url){qs('#ext-url').value=url;doExtract();}
+
+async function doExtract(){
+  let url=qs('#ext-url').value.trim();
+  if(!url){showToast('Digite uma URL','err');return;}
+  if(!/^https?:\/\//i.test(url)) url='https://'+url;
+
+  qs('#ext-error').style.display='none';
+  qs('#ext-results').style.display='none';
+  qs('#ext-loading').style.display='flex';
+
+  try{
+    const depth=parseInt(qs('#ext-depth').value)||1;
+    const html=await fetchViaProxy(url);
+    extResult=parseHtml(html,url);
+
+    if(depth>=2){
+      const subUrls=extractSameOriginLinks(html,url).slice(0,5);
+      for(const sub of subUrls){
+        try{
+          const subHtml=await fetchViaProxy(sub);
+          const subRes=parseHtml(subHtml,sub);
+          extResult.pages.push(...subRes.pages);
+          extResult.assets.push(...subRes.assets.filter(a=>!extResult.assets.some(e=>e.url===a.url)));
+          extResult.inlineScripts.push(...subRes.inlineScripts);
+          extResult.apiEndpoints.push(...subRes.apiEndpoints.filter(a=>!extResult.apiEndpoints.some(e=>e.url===a.url)));
+        } catch{}
+      }
+    }
+
+    extResult.rootUrl=url;
+    extResult.crawledAt=new Date().toISOString();
+    renderExtResults();
+    qs('#ext-results').style.display='block';
+    qs('#ext-loading').style.display='none';
+  } catch(err){
+    qs('#ext-loading').style.display='none';
+    qs('#ext-error').style.display='block';
+    qs('#ext-error').textContent='⚠️ '+err.message+' — Tente outro proxy ou verifique a URL.';
+  }
+}
+
+function parseHtml(html,baseUrl){
+  const meta=parseMeta(html,baseUrl);
+  const assets=extractAssets(html,baseUrl);
+  const links=extractLinks(html,baseUrl);
+  const apiEndpoints=extractApiEndpoints(html,baseUrl);
+  const inlineScripts=extractInlineScripts(html);
+  const techStack=detectTech(html,assets.map(a=>a.url));
+  return{
+    rootUrl:baseUrl,crawledAt:new Date().toISOString(),
+    pages:[{url:baseUrl,title:meta.title,statusCode:200,description:meta.description}],
+    meta,assets,links,apiEndpoints,inlineScripts,techStack,rawHtml:html
+  };
+}
+
+function parseMeta(html,base){
+  const get=p=>{const m=html.match(p);return m?m[1]?.trim()||null:null;};
+  return{
+    title:get(/<title[^>]*>([^<]*)<\/title>/i)||'',
+    description:get(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i)||get(/<meta[^>]+content=["']([^"']*)["'][^>]+name=["']description["']/i),
+    generator:get(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']*)["']/i),
+    lang:get(/<html[^>]+lang=["']([^"']*)["']/i),
+    ogTitle:get(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)["']/i),
+  };
+}
+
+function extractAssets(html,base){
+  const assets=[];const seen=new Set();
+  const patterns=[
+    [/<script[^>]+src=["']([^"']+)["']/gi,'script'],
+    [/<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']/gi,'stylesheet'],
+    [/<link[^>]+href=["']([^"']+\.css[^"']*)["']/gi,'stylesheet'],
+    [/<img[^>]+src=["']([^"']+)["']/gi,'image'],
+    [/url\(['"]?([^'")\s]+\.(?:woff2?|ttf|otf|eot))['"]?\)/gi,'font'],
+  ];
+  for(const[pat,type] of patterns){
+    let m;
+    while((m=pat.exec(html))!==null){
+      try{
+        const src=m[1].trim();
+        if(!src||src.startsWith('data:')) continue;
+        const abs=src.startsWith('http')?src:new URL(src,base).toString();
+        if(seen.has(abs)) continue;
+        seen.add(abs);
+        assets.push({url:abs,type,size:null,mimeType:null});
+      }catch{}
+    }
+  }
+  return assets.slice(0,200);
+}
+
+function extractLinks(html,base){
+  const links=[];const seen=new Set();
+  const baseHost=new URL(base).hostname;
+  let m;const pat=/<a[^>]+href=["']([^"'#][^"']*)["'][^>]*>([^<]*)<\/a>/gi;
+  while((m=pat.exec(html))!==null){
+    try{
+      const href=m[1].trim();
+      if(!href||href.startsWith('javascript:')||href.startsWith('mailto:')) continue;
+      const abs=href.startsWith('http')?href:new URL(href,base).toString();
+      if(seen.has(abs)) continue;seen.add(abs);
+      const lHost=new URL(abs).hostname;
+      links.push({url:abs,text:(m[2]||'').trim().slice(0,80),isExternal:lHost!==baseHost});
+    }catch{}
+  }
+  return links.slice(0,200);
+}
+
+function extractSameOriginLinks(html,base){
+  const urls=[];const seen=new Set();
+  const baseHost=new URL(base).hostname;
+  let m;const pat=/href=["']([^"'#?][^"']*)["']/gi;
+  while((m=pat.exec(html))!==null){
+    try{
+      const href=m[1].trim();
+      if(!href||href.startsWith('javascript:')||href.startsWith('mailto:')) continue;
+      const abs=href.startsWith('http')?href:new URL(href,base).toString();
+      const p=new URL(abs);
+      if(p.hostname!==baseHost) continue;
+      const norm=p.origin+p.pathname;
+      if(seen.has(norm)||norm===base.split('?')[0]) continue;
+      seen.add(norm);urls.push(norm);
+    }catch{}
+  }
+  return urls.slice(0,15);
+}
+
+function extractApiEndpoints(html,base){
+  const eps=[];const seen=new Set();
+  const patterns=[
+    /fetch\s*\(\s*['"`]([^'"`]+)['"`]/g,
+    /\$\.(?:ajax|get|post)\s*\(\s*['"`]([^'"`]+)['"`]/g,
+    /axios\s*\.\s*(?:get|post|put|delete)\s*\(\s*['"`]([^'"`]+)['"`]/g,
+    /['"`](\/api\/[^'"`\s?#]+)['"`]/g,
+    /action\s*=\s*['"]([^'"]+\.(?:php|aspx|jsp)[^'"]*)['"]/g,
+  ];
+  for(const pat of patterns){
+    let m;
+    while((m=pat.exec(html))!==null){
+      try{
+        let url=m[1];
+        if(!url) continue;
+        if(url.startsWith('/')) url=new URL(url,base).toString();
+        if(!url.startsWith('http')) continue;
+        const key=new URL(url).pathname;
+        if(seen.has(key)) continue;seen.add(key);
+        eps.push({url,method:'GET',pattern:key});
+      }catch{}
+    }
+  }
+  return eps.slice(0,80);
+}
+
+function extractInlineScripts(html){
+  const scripts=[];
+  const pat=/<script(?![^>]+src=)[^>]*>([\s\S]*?)<\/script>/gi;
+  let m;let idx=0;
+  while((m=pat.exec(html))!==null){
+    const content=(m[1]||'').trim();
+    if(!content||content.length<20) continue;
+    const hasCalculo=/calc[uú]|c[aá]lculo|remuner|salário|salario|benef[ií]cio|previdenci|inss|fator\s*previd|aposentad|pens[aã]o|corre[çc][aã]o\s*monet|coeficiente|rmc|rma|segurado|competência/i.test(content);
+    const hasFormula=/Math\.|function\s+calc|=\s*[\d.]+\s*[\*\/\+\-]|parseFloat|parseInt|\.toFixed\(|formula|f[oó]rmula/i.test(content);
+    const hasAjax=/fetch\s*\(|XMLHttpRequest|\.ajax\s*\(|axios\./i.test(content);
+    scripts.push({index:idx++,preview:content.slice(0,400),fullContent:content,size:content.length,hasCalculo,hasFormula,hasAjax});
+  }
+  return scripts;
+}
+
+const TECH_SIGS={
+  React:[/react(?:\.min)?\.js/,/__REACT_/,/data-reactroot/],
+  'Next.js':[/__NEXT_DATA__/,/\/_next\/static/],
+  'Vue.js':[/vue(?:\.min)?\.js/,/__vue_/],
+  Angular:[/angular(?:\.min)?\.js/,/ng-version/],
+  jQuery:[/jquery(?:\.min)?\.js/],
+  Bootstrap:[/bootstrap(?:\.min)?\.css/,/bootstrap(?:\.min)?\.js/],
+  WordPress:[/wp-content/,/wp-includes/],
+  'ASP.NET':[/__VIEWSTATE/,/\.aspx/],
+  PHP:[/\.php/,/PHPSESSID/],
+  'JSF/PrimeFaces':[/PrimeFaces/,/javax\.faces/],
+  Vite:[/\/@vite\//,/vite\.config/],
+  Tailwind:[/tailwindcss/,/tailwind(?:css)?(?:\.min)?\.css/],
+};
+function detectTech(html,assetUrls){
+  const all=html+' '+assetUrls.join(' ');
+  return Object.entries(TECH_SIGS).filter(([,pats])=>pats.some(p=>p.test(all))).map(([n])=>n);
+}
+
+function renderExtResults(){
+  if(!extResult) return;
+  const r=extResult;
+  const calcScripts=r.inlineScripts.filter(s=>s.hasCalculo||s.hasFormula);
+  const badge=qs('#ext-scripts-badge');
+  badge.textContent=calcScripts.length>0?calcScripts.length:'0';
+  badge.className='badge '+(calcScripts.length>0?'badge-yellow':'badge-blue');
+
+  // Scripts tab
+  const summary=qs('#ext-scripts-summary');
+  summary.textContent=`${r.inlineScripts.length} scripts inline encontrados — ${calcScripts.length} com lógica jurídica/fórmulas`;
+
+  const scriptsList=qs('#ext-scripts-list');
+  if(!r.inlineScripts.length){
+    scriptsList.innerHTML='<div class="alert alert-warn">Nenhum script inline encontrado. Verifique os arquivos .js externos abaixo.</div>';
+  } else {
+    scriptsList.innerHTML=r.inlineScripts.map(s=>`
+      <div class="script-card">
+        <div class="flex-between" style="margin-bottom:8px">
+          <div class="flex" style="gap:6px;flex-wrap:wrap">
+            <span class="badge badge-blue">Script #${s.index+1}</span>
+            ${s.hasCalculo?'<span class="badge badge-yellow">⚖️ Cálculo Jurídico</span>':''}
+            ${s.hasFormula?'<span class="badge badge-purple">📐 Fórmula</span>':''}
+            ${s.hasAjax?'<span class="badge badge-green">🌐 AJAX/Fetch</span>':''}
+            <span class="badge" style="background:var(--bg3);color:var(--muted)">${(s.size/1024).toFixed(1)} KB</span>
+          </div>
+          <div class="flex" style="gap:6px">
+            <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="copyText(extResult.inlineScripts[${s.index}].fullContent)">📋 Copiar</button>
+            <button class="btn btn-secondary" style="padding:3px 8px;font-size:11px" onclick="showCodeModal('Script #${s.index+1}',extResult.inlineScripts[${s.index}].fullContent)">👁 Ver</button>
+          </div>
+        </div>
+        <div class="script-preview">${escHtml(s.preview)}${s.fullContent.length>400?'\n...':''}</div>
+      </div>
+    `).join('');
+  }
+
+  // Scripts externos
+  const extScripts=r.assets.filter(a=>a.type==='script');
+  const extDiv=qs('#ext-external-scripts');
+  if(extScripts.length){
+    extDiv.innerHTML=`
+      <div class="section-title" style="margin-top:16px">📁 Arquivos JavaScript Externos (${extScripts.length})</div>
+      <div style="border:1px solid var(--border);border-radius:8px;max-height:300px;overflow-y:auto">
+        ${extScripts.map(a=>`
+          <div class="asset-row">
+            <span class="badge badge-blue" style="width:52px;justify-content:center">JS</span>
+            <span class="mono" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(a.url.split('/').pop()||a.url)}</span>
+            <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="fetchAndShowScript('${escHtml(a.url)}')">👁 Ver código</button>
+            <a href="${escHtml(a.url)}" target="_blank"><button class="btn btn-ghost" style="padding:3px 8px;font-size:11px">🔗</button></a>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } else extDiv.innerHTML='';
+
+  // Overview
+  const stats=qs('#ext-stats');
+  stats.innerHTML=[
+    {num:r.pages.length,lbl:'Páginas'},
+    {num:r.assets.length,lbl:'Arquivos'},
+    {num:r.apiEndpoints.length,lbl:'Rotas/API'},
+    {num:calcScripts.length,lbl:'Scripts Cálculo'},
+    {num:r.techStack.length,lbl:'Tecnologias'},
+    {num:r.links.filter(l=>l.isExternal).length,lbl:'Links Externos'},
+  ].map(s=>`<div class="stat-card"><div class="num">${s.num}</div><div class="lbl">${s.lbl}</div></div>`).join('');
+
+  qs('#ext-meta').innerHTML=`
+    <div class="card" style="padding:12px">
+      <div class="section-title">Metadados</div>
+      <div class="grid-2" style="gap:8px">
+        <div><div style="font-size:11px;color:var(--muted)">Título</div><div style="font-size:13px">${escHtml(r.meta.title||'N/A')}</div></div>
+        <div><div style="font-size:11px;color:var(--muted)">Idioma</div><div style="font-size:13px">${escHtml(r.meta.lang||'N/A')}</div></div>
+        <div style="grid-column:1/-1"><div style="font-size:11px;color:var(--muted)">Descrição</div><div style="font-size:12px;color:var(--muted)">${escHtml(r.meta.description||'N/A')}</div></div>
+      </div>
+    </div>
+  `;
+
+  qs('#ext-tech').innerHTML=r.techStack.length?`
+    <div class="card" style="padding:12px">
+      <div class="section-title">Tecnologias detectadas</div>
+      <div class="flex" style="flex-wrap:wrap;gap:6px">
+        ${r.techStack.map(t=>`<span class="badge badge-purple">${escHtml(t)}</span>`).join('')}
+      </div>
+    </div>
+  `:'';
+
+  renderAssets();
+  renderLinks();
+}
+
+function renderAssets(){
+  if(!extResult) return;
+  const filter=(qs('#ext-asset-filter')?.value||'').toLowerCase();
+  const type=qs('#ext-asset-type')?.value||'';
+  const filtered=extResult.assets.filter(a=>
+    (!type||a.type===type)&&(!filter||a.url.toLowerCase().includes(filter))
+  );
+  qs('#ext-assets-list').innerHTML=filtered.length?filtered.map(a=>`
+    <div class="asset-row">
+      <span class="badge badge-blue" style="width:60px;text-align:center;flex-shrink:0">${a.type}</span>
+      <span class="mono" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(a.url)}">${escHtml(a.url.split('/').pop()||a.url)}</span>
+      ${a.type==='script'?`<button class="btn btn-ghost" style="padding:2px 8px;font-size:11px" onclick="fetchAndShowScript('${escHtml(a.url)}')">👁 Ver</button>`:''}
+      <a href="${escHtml(a.url)}" target="_blank"><button class="btn btn-ghost" style="padding:2px 6px;font-size:11px">🔗</button></a>
+    </div>
+  `).join(''):'<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Nenhum arquivo encontrado</div>';
+}
+
+function renderLinks(){
+  if(!extResult) return;
+  qs('#ext-links-list').innerHTML=extResult.links.map(l=>`
+    <div class="link-row">
+      <div style="flex:1;overflow:hidden">
+        <div style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(l.text||'(sem texto)')}</div>
+        <a href="${escHtml(l.url)}" target="_blank" style="font-size:11px;font-family:'Courier New',monospace;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">${escHtml(l.url)}</a>
+      </div>
+      <span class="badge ${l.isExternal?'badge-yellow':'badge-blue'}" style="flex-shrink:0">${l.isExternal?'Externo':'Interno'}</span>
+    </div>
+  `).join('');
+}
+
+function extTab(name){
+  qsa('.ext-tab').forEach(b=>b.classList.remove('active'));
+  qsa('.ext-tab-content').forEach(c=>{c.classList.remove('active');c.style.display='none';});
+  event.target.classList.add('active');
+  const el=qs(`#ext-tab-${name}`);
+  el.classList.add('active');el.style.display='block';
+}
+
+async function fetchAndShowScript(url){
+  showCodeModal('Carregando '+url.split('/').pop(),'⏳ Carregando via proxy...');
+  try{
+    let content;
+    // Try direct first (may work for same-origin or open CORS)
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+      content=await r.text();
+    } catch{
+      content=await fetchViaProxy(url);
+    }
+    qs('#code-modal-content').textContent=content;
+    qs('#code-modal-title').textContent=url.split('/').pop()||url;
+  } catch(err){
+    qs('#code-modal-content').textContent='❌ Não foi possível carregar: '+err.message;
+  }
+}
+
+function downloadAllScripts(){
+  if(!extResult) return;
+  const content=extResult.inlineScripts.map((s,i)=>
+    `/* ═══ SCRIPT #${i+1} | ${s.size} chars | Cálculo:${s.hasCalculo?'SIM':'não'} | Fórmula:${s.hasFormula?'SIM':'não'} | AJAX:${s.hasAjax?'SIM':'não'} ═══ */\n\n${s.fullContent}`
+  ).join('\n\n\n');
+  dlBlob(new Blob([content],{type:'text/javascript'}),`scripts-${new URL(extResult.rootUrl).hostname}.js`);
+}
+
+function downloadHtml(){
+  if(!extResult) return;
+  dlBlob(new Blob([extResult.rawHtml],{type:'text/html'}),`pagina-${new URL(extResult.rootUrl).hostname}.html`);
+}
+
+// Code modal
+function showCodeModal(title,content){
+  qs('#code-modal-title').textContent=title;
+  qs('#code-modal-content').textContent=content;
+  qs('#code-modal').classList.add('open');
+}
+function closeCodeModal(){qs('#code-modal').classList.remove('open');}
+function copyModalCode(){copyText(qs('#code-modal-content').textContent);}
+
+// ══════════════════════════════════════════════════════════
+//  SHARED UTILS
+// ══════════════════════════════════════════════════════════
+function dlBlob(blob,filename){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+
+function copyText(text){
+  navigator.clipboard.writeText(text).then(()=>showToast('📋 Copiado!'));
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function showToast(msg,type){
+  let t=qs('#toast');
+  if(!t){t=document.createElement('div');t.id='toast';document.body.appendChild(t);
+    Object.assign(t.style,{position:'fixed',bottom:'24px',right:'24px',padding:'10px 18px',borderRadius:'8px',fontSize:'13px',fontWeight:'600',zIndex:'999',transition:'opacity .3s',opacity:'0'});}
+  t.textContent=msg;
+  t.style.background=type==='err'?'var(--red)':'var(--green)';
+  t.style.color='#fff';t.style.opacity='1';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{t.style.opacity='0';},2500);
+}
+
+// ══════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  initEditor();
+  // Fix tab buttons to use correct approach
+  qsa('.tab-btn').forEach(b=>{
+    b.addEventListener('click',function(){
+      qsa('.tab-btn').forEach(x=>x.classList.remove('active'));
+      qsa('.panel').forEach(p=>p.classList.remove('active'));
+      this.classList.add('active');
+      const names=['editor','apk','extractor'];
+      const idx=[...qsa('.tab-btn')].indexOf(this);
+      if(idx>=0) qs('#'+names[idx]+'-panel').classList.add('active');
+    });
+  });
+});
+
+// ── Funções de suporte não incluídas no JS original ──
+function switchTo(name) {
+  const names = ['editor','apk','extractor'];
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', names[i]===name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(name+'-panel').classList.add('active');
+}
+
+function showExtTab(tab) {
+  document.querySelectorAll('.ext-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ext-tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('ext-tab-'+tab)?.classList.add('active');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = type === 'err' ? 'err' : '';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+function closeCodeModal() {
+  document.getElementById('code-modal').classList.remove('open');
+}
+
+function copyCodeModal() {
+  const txt = document.getElementById('code-modal-content').textContent;
+  navigator.clipboard.writeText(txt).then(() => showToast('📋 Copiado!'));
+}
+
+function importToEditor() {
+  const txt = document.getElementById('code-modal-content').textContent;
+  const title = document.getElementById('code-modal-title').textContent;
+  const name = title.split('/').pop() || 'importado.js';
+  window.files = window.files || {};
+  window.files[name] = txt;
+  renderFileList && renderFileList();
+  openFile && openFile(name);
+  saveFile && saveFile();
+  closeCodeModal();
+}
+
+function sendAI() {
+  const input = document.getElementById('ai-prompt');
+  const msg = input.value.trim();
+  if (!msg) return;
+  
+  const msgs = document.getElementById('ai-messages');
+  const userDiv = document.createElement('div');
+  userDiv.className = 'ai-msg user';
+  userDiv.textContent = msg;
+  msgs.appendChild(userDiv);
+  input.value = '';
+  
+  const code = document.getElementById('code-textarea').value;
+  const fileName = document.getElementById('current-filename').textContent;
+  const system = `Você é um assistente de programação. O usuário está editando: ${fileName}
+
+Código atual:
+\`\`\`
+${code.slice(0,3000)}
+\`\`\``;
+  
+  callAI && callAI(msg, system).then(reply => {
+    const aDiv = document.createElement('div');
+    aDiv.className = 'ai-msg assistant';
+    aDiv.textContent = reply;
+    msgs.appendChild(aDiv);
+    msgs.scrollTop = 99999;
+  }).catch(e => {
+    const eDiv = document.createElement('div');
+    eDiv.className = 'ai-msg assistant';
+    eDiv.style.color = 'var(--red)';
+    eDiv.textContent = 'Erro: ' + e.message;
+    msgs.appendChild(eDiv);
+  });
+  
+  msgs.scrollTop = 99999;
+}
+
+function toggleAI() {
+  const p = document.getElementById('ai-panel');
+  p.classList.toggle('hidden');
+}
+
+window.files = {};
+window.currentFile = null;
+</script>
+</body>
+</html>
