@@ -1,0 +1,2217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: Manual.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 Manual.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:38:07 • 21 elementos • 15 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L6 [import] import { useState, useCallback, useEffect } from &quot;react&quot;;</div><div class="idx-item">L7 [import] import JSZip from &quot;jszip&quot;;</div><div class="idx-item">L8 [import] import { saveAs } from &quot;file-saver&quot;;</div><div class="idx-item">L9 [import] import { VirtualFileSystem } from &quot;../lib/virtual-fs&quot;;</div><div class="idx-item">L10 [import] import { exportAsZip } from &quot;../lib/zip-service&quot;;</div><div class="idx-item">L12 [interface] Section</div><div class="idx-item">L19 [interface] ManualProps</div><div class="idx-item">L24 [component] Manual</div><div class="idx-item">L92 [function] escape →</div><div class="idx-item">L169 [function] copy →</div><div class="idx-item">L175 [function] Code →</div><div class="idx-item">L199 [function] H2 →</div><div class="idx-item">L205 [function] H3 →</div><div class="idx-item">L213 [function] Li →</div><div class="idx-item">L220 [function] Badge →</div><div class="idx-item">L308 [function] Step →</div><div class="idx-item">L315 [function] Alert →</div><div class="idx-item">L960 [function] initDb</div><div class="idx-item">L1393 [function] Step →</div><div class="idx-item">L1400 [function] Alert →</div><div class="idx-item">L1410 [function] Box →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L23</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">/**
+ * Manual do SK Code Editor
+ * Guia completo de uso: terminal, banco de dados, Neon DB, credenciais, comandos.
+ */
+
+import { useState, useCallback, useEffect } from &quot;react&quot;;
+import JSZip from &quot;jszip&quot;;
+import { saveAs } from &quot;file-saver&quot;;
+import { VirtualFileSystem } from &quot;../lib/virtual-fs&quot;;
+import { exportAsZip } from &quot;../lib/zip-service&quot;;
+
+type Section = {
+  id: string;
+  icon: string;
+  title: string;
+  content: React.ReactNode;
+};
+
+interface ManualProps {
+  vfs?: VirtualFileSystem;
+  projectName?: string;
+}
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>Manual</span>
+    <div>
+      <small>L24–L91</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">export default function Manual({ vfs, projectName }: ManualProps) {
+  const [active, setActive] = useState&lt;string&gt;(&quot;inicio&quot;);
+  const [copied, setCopied] = useState&lt;string&gt;(&quot;&quot;);
+  const [installTab, setInstallTab] = useState&lt;string&gt;(&quot;android-pwa&quot;);
+  const [mergeTab, setMergeTab] = useState&lt;string&gt;(&quot;importar&quot;);
+  const [twaUrl, setTwaUrl] = useState&lt;string&gt;(&quot;&quot;);
+  const [twaLoading, setTwaLoading] = useState(false);
+  const [twaError, setTwaError] = useState&lt;string&gt;(&quot;&quot;);
+  const [zipLoading, setZipLoading] = useState(false);
+  const [zipEmptyWarning, setZipEmptyWarning] = useState(false);
+  const [pwaCheckUrl, setPwaCheckUrl] = useState&lt;string&gt;(&quot;&quot;);
+  const [pwaCheckLoading, setPwaCheckLoading] = useState(false);
+  const [pwaCheckResult, setPwaCheckResult] = useState&lt;null | {
+    url: string; score: number; passed: number; total: number;
+    items: Array&lt;{ id: string; label: string; status: &quot;ok&quot; | &quot;fail&quot; | &quot;warn&quot;; detail: string; fix: string }&gt;;
+  }&gt;(null);
+  const [pwaCheckError, setPwaCheckError] = useState&lt;string&gt;(&quot;&quot;);
+
+  useEffect(() =&gt; {
+    if (!zipEmptyWarning || !vfs) return;
+    const unsubscribe = vfs.onChange(() =&gt; {
+      if (vfs.listFiles().length &gt; 0) setZipEmptyWarning(false);
+    });
+    return () =&gt; { unsubscribe(); };
+  }, [zipEmptyWarning, vfs]);
+
+  const downloadProjectZip = useCallback(async () =&gt; {
+    if (!vfs) return;
+    if (vfs.listFiles().length === 0) {
+      setZipEmptyWarning(true);
+      return;
+    }
+    setZipEmptyWarning(false);
+    setZipLoading(true);
+    try {
+      const files = vfs.toJSON();
+      await exportAsZip(files, projectName || &quot;projeto&quot;);
+    } finally {
+      setZipLoading(false);
+    }
+  }, [vfs, projectName]);
+
+  const downloadTwaPackage = useCallback(async () =&gt; {
+    setTwaLoading(true);
+    setTwaError(&quot;&quot;);
+    try {
+      const url = twaUrl.trim() || window.location.origin;
+      const res = await fetch(`/api/twa-files?url=${encodeURIComponent(url)}`);
+      if (!res.ok) throw new Error(&quot;Erro ao gerar pacote&quot;);
+      const data = await res.json() as { files: Record&lt;string, string&gt;; host: string };
+      const zip = new JSZip();
+      for (const [path, content] of Object.entries(data.files)) {
+        zip.file(path, content);
+      }
+      const blob = await zip.generateAsync({ type: &quot;blob&quot; });
+      saveAs(blob, `twa-${data.host}.zip`);
+    } catch (e) {
+      setTwaError(&quot;Não foi possível gerar o pacote. Verifique a URL e tente novamente.&quot;);
+    } finally {
+      setTwaLoading(false);
+    }
+  }, [twaUrl]);
+
+  const downloadPwaReport = useCallback(() =&gt; {
+    if (!pwaCheckResult) return;
+    const { url, score, passed, total, items } = pwaCheckResult;
+    const scoreColor = score &gt;= 80 ? &quot;#16a34a&quot; : score &gt;= 50 ? &quot;#ca8a04&quot; : &quot;#dc2626&quot;;
+    const scoreLabel = score &gt;= 80 ? &quot;Pronto para instalar&quot; : score &gt;= 50 ? &quot;Quase lá — corrija os itens em vermelho&quot; : &quot;Precisa de ajustes antes de instalar&quot;;</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>escape →</span>
+    <div>
+      <small>L92–L168</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">    const escape = (s: string) =&gt; s.replace(/[&amp;&lt;&gt;&quot;']/g, c =&gt; ({ &quot;&amp;&quot;: &quot;&amp;amp;&quot;, &quot;&lt;&quot;: &quot;&amp;lt;&quot;, &quot;&gt;&quot;: &quot;&amp;gt;&quot;, '&quot;': &quot;&amp;quot;&quot;, &quot;'&quot;: &quot;&amp;#39;&quot; }[c] as string));
+    const date = new Date().toLocaleString(&quot;pt-BR&quot;);
+    const itemsHtml = items.map(item =&gt; {
+      const icon = item.status === &quot;ok&quot; ? &quot;✅&quot; : item.status === &quot;warn&quot; ? &quot;⚠️&quot; : &quot;❌&quot;;
+      const color = item.status === &quot;ok&quot; ? &quot;#16a34a&quot; : item.status === &quot;warn&quot; ? &quot;#ca8a04&quot; : &quot;#dc2626&quot;;
+      const fixHtml = item.status !== &quot;ok&quot; &amp;&amp; item.fix
+        ? `&lt;div class=&quot;fix&quot;&gt;&lt;strong&gt;Como corrigir:&lt;/strong&gt; ${escape(item.fix)}&lt;/div&gt;` : &quot;&quot;;
+      return `&lt;div class=&quot;item&quot; style=&quot;border-left:4px solid ${color}&quot;&gt;
+        &lt;div class=&quot;item-title&quot;&gt;&lt;span&gt;${icon}&lt;/span&gt;&lt;strong&gt;${escape(item.label)}&lt;/strong&gt;&lt;/div&gt;
+        &lt;div class=&quot;item-detail&quot;&gt;${escape(item.detail)}&lt;/div&gt;
+        ${fixHtml}
+      &lt;/div&gt;`;
+    }).join(&quot;&quot;);
+    const html = `&lt;!doctype html&gt;&lt;html lang=&quot;pt-BR&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;/&gt;
+&lt;title&gt;Relatório PWA — ${escape(url)}&lt;/title&gt;
+&lt;style&gt;
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,sans-serif;color:#111;max-width:800px;margin:24px auto;padding:0 16px;line-height:1.5}
+  h1{margin:0 0 4px;font-size:22px}
+  .meta{color:#666;font-size:12px;margin-bottom:16px}
+  .url{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;word-break:break-all;background:#f3f4f6;padding:6px 10px;border-radius:6px;display:inline-block}
+  .score-card{display:flex;align-items:center;gap:20px;padding:16px;border:1px solid #e5e7eb;border-radius:10px;margin:16px 0}
+  .score{font-size:42px;font-weight:700;color:${scoreColor};line-height:1}
+  .score-sub{font-size:12px;color:#666}
+  .score-label{font-weight:600;color:${scoreColor}}
+  h2{font-size:16px;margin:24px 0 8px}
+  .item{padding:10px 12px;margin-bottom:10px;background:#fafafa;border-radius:6px}
+  .item-title{display:flex;gap:8px;align-items:center;font-size:14px}
+  .item-detail{font-size:13px;color:#444;margin-top:4px;margin-left:24px}
+  .fix{margin-top:6px;margin-left:24px;font-size:13px;background:#fff;border:1px dashed #d1d5db;border-radius:6px;padding:8px 10px}
+  .footer{margin-top:24px;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#888;text-align:center}
+  @media print{body{margin:0}.no-print{display:none}}
+  .no-print{position:fixed;top:12px;right:12px}
+  .no-print button{background:#16a34a;color:#fff;border:0;padding:10px 16px;border-radius:6px;font-weight:600;cursor:pointer}
+&lt;/style&gt;&lt;/head&gt;&lt;body&gt;
+&lt;div class=&quot;no-print&quot;&gt;&lt;button onclick=&quot;window.print()&quot;&gt;Imprimir / Salvar PDF&lt;/button&gt;&lt;/div&gt;
+&lt;h1&gt;Relatório do Verificador PWA&lt;/h1&gt;
+&lt;div class=&quot;meta&quot;&gt;Gerado em ${escape(date)}&lt;/div&gt;
+&lt;div class=&quot;url&quot;&gt;${escape(url)}&lt;/div&gt;
+&lt;div class=&quot;score-card&quot;&gt;
+  &lt;div&gt;&lt;div class=&quot;score&quot;&gt;${score}%&lt;/div&gt;&lt;div class=&quot;score-sub&quot;&gt;${passed}/${total} itens&lt;/div&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;div class=&quot;score-label&quot;&gt;${escape(scoreLabel)}&lt;/div&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2&gt;Checklist (${items.length} itens)&lt;/h2&gt;
+${itemsHtml}
+&lt;div class=&quot;footer&quot;&gt;Gerado pelo SK Code Editor — Verificador PWA&lt;/div&gt;
+&lt;script&gt;window.addEventListener(&quot;load&quot;,function(){setTimeout(function(){window.print()},300)});&lt;/script&gt;
+&lt;/body&gt;&lt;/html&gt;`;
+    const win = window.open(&quot;&quot;, &quot;_blank&quot;);
+    if (!win) {
+      const blob = new Blob([html], { type: &quot;text/html&quot; });
+      saveAs(blob, `relatorio-pwa-${new Date().toISOString().slice(0, 10)}.html`);
+      return;
+    }
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+  }, [pwaCheckResult]);
+
+  const runPwaCheck = useCallback(async () =&gt; {
+    const url = pwaCheckUrl.trim();
+    if (!url) { setPwaCheckError(&quot;Cole a URL do seu app publicado.&quot;); return; }
+    setPwaCheckLoading(true);
+    setPwaCheckError(&quot;&quot;);
+    setPwaCheckResult(null);
+    try {
+      const res = await fetch(`/api/pwa-check?url=${encodeURIComponent(url)}`);
+      const data = await res.json() as { error?: string } &amp; typeof pwaCheckResult;
+      if (!res.ok || data.error) throw new Error((data as { error?: string }).error || &quot;Erro ao verificar&quot;);
+      setPwaCheckResult(data as NonNullable&lt;typeof pwaCheckResult&gt;);
+    } catch (e: unknown) {
+      setPwaCheckError((e instanceof Error ? e.message : &quot;&quot;) || &quot;Não foi possível verificar. Confira se a URL está correta e o app está publicado.&quot;);
+    } finally {
+      setPwaCheckLoading(false);
+    }
+  }, [pwaCheckUrl]);
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>copy →</span>
+    <div>
+      <small>L169–L174</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">  const copy = (text: string, key: string) =&gt; {
+    navigator.clipboard.writeText(text).catch(() =&gt; {});
+    setCopied(key);
+    setTimeout(() =&gt; setCopied(&quot;&quot;), 1500);
+  };
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>Code →</span>
+    <div>
+      <small>L175–L198</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">  const Code = ({
+    children,
+    copyKey,
+  }: {
+    children: string;
+    copyKey?: string;
+  }) =&gt; (
+    &lt;div className=&quot;relative group my-2&quot;&gt;
+      &lt;pre
+        className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-3 text-sm text-[#a8d5a2] overflow-x-auto whitespace-pre-wrap break-all font-mono leading-relaxed&quot;
+      &gt;
+        {children}
+      &lt;/pre&gt;
+      {copyKey &amp;&amp; (
+        &lt;button
+          onClick={() =&gt; copy(children, copyKey)}
+          className=&quot;absolute top-2 right-2 text-xs px-2 py-0.5 rounded bg-[#2d4a1e] text-[#7ec87a] opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#3d5e2a]&quot;
+        &gt;
+          {copied === copyKey ? &quot;✓ Copiado&quot; : &quot;Copiar&quot;}
+        &lt;/button&gt;
+      )}
+    &lt;/div&gt;
+  );
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>H2 →</span>
+    <div>
+      <small>L199–L204</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">  const H2 = ({ children }: { children: React.ReactNode }) =&gt; (
+    &lt;h2 className=&quot;text-[#7ec87a] font-bold text-base mt-5 mb-2 flex items-center gap-2&quot;&gt;
+      {children}
+    &lt;/h2&gt;
+  );
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>H3 →</span>
+    <div>
+      <small>L205–L212</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  const H3 = ({ children }: { children: React.ReactNode }) =&gt; (
+    &lt;h3 className=&quot;text-[#5aab56] font-semibold text-sm mt-4 mb-1&quot;&gt;{children}&lt;/h3&gt;
+  );
+
+  const P = ({ children }: { children: React.ReactNode }) =&gt; (
+    &lt;p className=&quot;text-[#8cba89] text-sm leading-relaxed mb-2&quot;&gt;{children}&lt;/p&gt;
+  );
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>Li →</span>
+    <div>
+      <small>L213–L219</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">  const Li = ({ children }: { children: React.ReactNode }) =&gt; (
+    &lt;li className=&quot;text-[#8cba89] text-sm leading-relaxed list-none flex gap-2 mb-1&quot;&gt;
+      &lt;span className=&quot;text-[#5aab56] shrink-0&quot;&gt;›&lt;/span&gt;
+      &lt;span&gt;{children}&lt;/span&gt;
+    &lt;/li&gt;
+  );
+</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>Badge →</span>
+    <div>
+      <small>L220–L307</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">  const Badge = ({
+    color,
+    children,
+  }: {
+    color: &quot;green&quot; | &quot;blue&quot; | &quot;yellow&quot; | &quot;red&quot;;
+    children: React.ReactNode;
+  }) =&gt; {
+    const colors = {
+      green:  &quot;bg-[#1a3d14] text-[#7ec87a] border-[#3d6e2a]&quot;,
+      blue:   &quot;bg-[#0d1e3d] text-[#6ab4ff] border-[#1e4080]&quot;,
+      yellow: &quot;bg-[#2d2200] text-[#d4aa40] border-[#5a4500]&quot;,
+      red:    &quot;bg-[#2d0d0d] text-[#d47070] border-[#5a1e1e]&quot;,
+    };
+    return (
+      &lt;span
+        className={`inline-block text-xs px-2 py-0.5 rounded border font-mono ${colors[color]}`}
+      &gt;
+        {children}
+      &lt;/span&gt;
+    );
+  };
+
+  const sections: Section[] = [
+    {
+      id: &quot;inicio&quot;,
+      icon: &quot;🏠&quot;,
+      title: &quot;Início Rápido&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            Bem-vindo ao &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;SK Code Editor&lt;/strong&gt; — editor
+            profissional com terminal real, IA integrada (Jasmim), GitHub, banco de dados e
+            muito mais. Este manual é seu guia completo.
+          &lt;/P&gt;
+
+          &lt;H2&gt;⚡ O que você pode fazer agora&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Escrever código em qualquer linguagem com Monaco Editor (VS Code no browser)&lt;/Li&gt;
+            &lt;Li&gt;Executar comandos reais no terminal (npm install, python, git, etc.)&lt;/Li&gt;
+            &lt;Li&gt;Pedir ajuda para a Jasmim (IA) para criar, corrigir e melhorar código&lt;/Li&gt;
+            &lt;Li&gt;Conectar seu repositório GitHub e fazer push/pull direto no editor&lt;/Li&gt;
+            &lt;Li&gt;Configurar banco de dados PostgreSQL (Neon) gratuitamente&lt;/Li&gt;
+            &lt;Li&gt;Ver preview ao vivo do seu projeto HTML/React&lt;/Li&gt;
+            &lt;Li&gt;Importar/exportar projetos como ZIP ou TAR.GZ&lt;/Li&gt;
+            &lt;Li&gt;Instalar o app no celular como PWA (funciona offline)&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;🎯 Primeira vez? Faça isso&lt;/H2&gt;
+          &lt;ol className=&quot;space-y-2&quot;&gt;
+            {[
+              &quot;Toque no ícone 🤖 (Jasmim) na barra inferior&quot;,
+              &quot;Digite: \&quot;Crie um projeto Node.js Express com conexão Neon DB\&quot;&quot;,
+              &quot;A Jasmim cria tudo automaticamente — você só aplica os arquivos&quot;,
+              &quot;Rode npm install e npm start no terminal&quot;,
+              &quot;Veja o preview no ícone 👁️&quot;,
+            ].map((step, i) =&gt; (
+              &lt;li key={i} className=&quot;flex gap-3 text-sm text-[#8cba89]&quot;&gt;
+                &lt;span className=&quot;text-[#7ec87a] font-bold shrink-0&quot;&gt;{i + 1}.&lt;/span&gt;
+                &lt;span&gt;{step}&lt;/span&gt;
+              &lt;/li&gt;
+            ))}
+          &lt;/ol&gt;
+
+          &lt;H2&gt;📱 Instalar como App (PWA)&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Android/Chrome: Menu ⋮ → &quot;Adicionar à tela inicial&quot;&lt;/Li&gt;
+            &lt;Li&gt;iOS/Safari: Compartilhar → &quot;Adicionar à Tela de Início&quot;&lt;/Li&gt;
+            &lt;Li&gt;Desktop/Chrome: Ícone ⬇ na barra de endereço&lt;/Li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;instalar&quot;,
+      icon: &quot;📲&quot;,
+      title: &quot;Instalar como App&quot;,
+      content: (() =&gt; {
+        const installTabs = [
+          { id: &quot;verificador&quot;,  label: &quot;Verificador&quot;,  icon: &quot;🔍&quot; },
+          { id: &quot;android-pwa&quot;, label: &quot;Android PWA&quot;, icon: &quot;🤖&quot; },
+          { id: &quot;ios-pwa&quot;,     label: &quot;iOS PWA&quot;,     icon: &quot;🍎&quot; },
+          { id: &quot;pwabuilder&quot;,  label: &quot;APK Online&quot;,  icon: &quot;⚡&quot; },
+          { id: &quot;twa&quot;,        label: &quot;APK Projeto&quot;,  icon: &quot;📦&quot; },
+          { id: &quot;bubblewrap&quot;,  label: &quot;Avançado&quot;,    icon: &quot;🔧&quot; },
+          { id: &quot;universal&quot;,   label: &quot;Guia Universal&quot;, icon: &quot;🌐&quot; },
+        ];
+</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>Step →</span>
+    <div>
+      <small>L308–L314</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">        const Step = ({ n, children }: { n: number; children: React.ReactNode }) =&gt; (
+          &lt;li className=&quot;flex gap-3 mb-3&quot;&gt;
+            &lt;span className=&quot;bg-[#2d4a1e] text-[#7ec87a] font-bold rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5&quot;&gt;{n}&lt;/span&gt;
+            &lt;span className=&quot;text-[#8cba89] text-sm leading-relaxed&quot;&gt;{children}&lt;/span&gt;
+          &lt;/li&gt;
+        );
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>Alert →</span>
+    <div>
+      <small>L315–L959</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">        const Alert = ({ color, children }: { color: &quot;green&quot; | &quot;blue&quot; | &quot;yellow&quot;; children: React.ReactNode }) =&gt; {
+          const c = {
+            green:  &quot;bg-[#0d2210] border-[#2d5a1e] text-[#7ec87a]&quot;,
+            blue:   &quot;bg-[#0a1530] border-[#1e3d7a] text-[#6ab4ff]&quot;,
+            yellow: &quot;bg-[#1e1500] border-[#4a3800] text-[#d4aa40]&quot;,
+          }[color];
+          return &lt;div className={`border rounded-lg p-3 mb-3 text-sm ${c}`}&gt;{children}&lt;/div&gt;;
+        };
+
+        const tabContent: Record&lt;string, React.ReactNode&gt; = {
+          &quot;verificador&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;blue&quot;&gt;
+                🔍 &lt;strong&gt;Verificador PWA.&lt;/strong&gt; Cole a URL do seu app publicado e veja instantaneamente o que está faltando para instalar como app no celular ou gerar APK.
+              &lt;/Alert&gt;
+
+              &lt;div className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-4 mb-4&quot;&gt;
+                &lt;label className=&quot;block text-[#5aab56] text-xs mb-2 font-semibold&quot;&gt;URL do app publicado&lt;/label&gt;
+                &lt;div className=&quot;flex gap-2&quot;&gt;
+                  &lt;input
+                    type=&quot;url&quot;
+                    value={pwaCheckUrl}
+                    onChange={e =&gt; { setPwaCheckUrl(e.target.value); setPwaCheckError(&quot;&quot;); }}
+                    onKeyDown={e =&gt; { if (e.key === &quot;Enter&quot;) runPwaCheck(); }}
+                    placeholder=&quot;https://meu-app.replit.app&quot;
+                    className=&quot;flex-1 bg-[#0d0d0d] border border-[#3d6e2a] rounded px-3 py-2 text-sm text-[#a8d5a2] placeholder-[#3d6e2a] outline-none focus:border-[#5aab56]&quot;
+                  /&gt;
+                  &lt;button
+                    onClick={runPwaCheck}
+                    disabled={pwaCheckLoading}
+                    className=&quot;bg-[#2d4a1e] hover:bg-[#3d5e2a] disabled:opacity-50 text-[#7ec87a] font-semibold text-sm px-4 rounded transition-colors whitespace-nowrap&quot;
+                  &gt;
+                    {pwaCheckLoading ? &quot;⏳ Verificando...&quot; : &quot;🔍 Verificar&quot;}
+                  &lt;/button&gt;
+                &lt;/div&gt;
+                {pwaCheckError &amp;&amp; &lt;p className=&quot;text-[#d47070] text-xs mt-2&quot;&gt;{pwaCheckError}&lt;/p&gt;}
+              &lt;/div&gt;
+
+              {pwaCheckResult &amp;&amp; (() =&gt; {
+                const { score, passed, total, items } = pwaCheckResult;
+                const scoreColor = score &gt;= 80 ? &quot;#7ec87a&quot; : score &gt;= 50 ? &quot;#d4aa40&quot; : &quot;#d47070&quot;;
+                const scoreBg = score &gt;= 80 ? &quot;bg-[#0d2210] border-[#2d5a1e]&quot; : score &gt;= 50 ? &quot;bg-[#1e1500] border-[#4a3800]&quot; : &quot;bg-[#1a0000] border-[#5a1a1a]&quot;;
+                const scoreLabel = score &gt;= 80 ? &quot;Pronto para instalar! ✅&quot; : score &gt;= 50 ? &quot;Quase lá — corrija os itens em vermelho&quot; : &quot;Precisa de ajustes antes de instalar&quot;;
+
+                return (
+                  &lt;div&gt;
+                    &lt;div className={`border rounded-lg p-4 mb-4 flex items-center gap-4 ${scoreBg}`}&gt;
+                      &lt;div className=&quot;text-center shrink-0&quot;&gt;
+                        &lt;div className=&quot;text-3xl font-bold&quot; style={{ color: scoreColor }}&gt;{score}%&lt;/div&gt;
+                        &lt;div className=&quot;text-xs text-[#6b8f68] mt-0.5&quot;&gt;{passed}/{total} itens&lt;/div&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;flex-1&quot;&gt;
+                        &lt;div className=&quot;font-semibold text-sm&quot; style={{ color: scoreColor }}&gt;{scoreLabel}&lt;/div&gt;
+                        &lt;div className=&quot;text-xs text-[#6b8f68] mt-0.5 font-mono break-all&quot;&gt;{pwaCheckResult.url}&lt;/div&gt;
+                      &lt;/div&gt;
+                      &lt;button
+                        onClick={downloadPwaReport}
+                        className=&quot;shrink-0 bg-[#2d4a1e] hover:bg-[#3d5e2a] text-[#7ec87a] font-semibold text-xs px-3 py-2 rounded transition-colors whitespace-nowrap&quot;
+                        title=&quot;Abre uma janela pronta para imprimir ou salvar como PDF&quot;
+                      &gt;
+                        📄 Baixar relatório
+                      &lt;/button&gt;
+                    &lt;/div&gt;
+
+                    &lt;div className=&quot;space-y-2&quot;&gt;
+                      {items.map(item =&gt; {
+                        const isOk = item.status === &quot;ok&quot;;
+                        const isWarn = item.status === &quot;warn&quot;;
+                        const icon = isOk ? &quot;✅&quot; : isWarn ? &quot;⚠️&quot; : &quot;❌&quot;;
+                        const borderCls = isOk ? &quot;border-[#2d5a1e]&quot; : isWarn ? &quot;border-[#4a3800]&quot; : &quot;border-[#5a1a1a]&quot;;
+                        const bgCls = isOk ? &quot;bg-[#0a1a0a]&quot; : isWarn ? &quot;bg-[#151000]&quot; : &quot;bg-[#120000]&quot;;
+                        const labelCls = isOk ? &quot;text-[#7ec87a]&quot; : isWarn ? &quot;text-[#d4aa40]&quot; : &quot;text-[#d47070]&quot;;
+                        return (
+                          &lt;div key={item.id} className={`border rounded-lg p-3 ${bgCls} ${borderCls}`}&gt;
+                            &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                              &lt;span className=&quot;text-base shrink-0&quot;&gt;{icon}&lt;/span&gt;
+                              &lt;span className={`text-sm font-semibold ${labelCls}`}&gt;{item.label}&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;p className=&quot;text-[#6b8f68] text-xs mt-1 ml-6 leading-relaxed&quot;&gt;{item.detail}&lt;/p&gt;
+                            {!isOk &amp;&amp; item.fix &amp;&amp; (
+                              &lt;div className=&quot;mt-2 ml-6 bg-[#0d1309] border border-[#2d4a1e] rounded p-2&quot;&gt;
+                                &lt;span className=&quot;text-[#5aab56] text-xs font-semibold block mb-0.5&quot;&gt;💡 Como corrigir:&lt;/span&gt;
+                                &lt;span className=&quot;text-[#8cba89] text-xs leading-relaxed&quot;&gt;{item.fix}&lt;/span&gt;
+                              &lt;/div&gt;
+                            )}
+                          &lt;/div&gt;
+                        );
+                      })}
+                    &lt;/div&gt;
+
+                    {score &lt; 80 &amp;&amp; (() =&gt; {
+                      const priorityOrder = [
+                        &quot;https&quot;,
+                        &quot;manifest&quot;,
+                        &quot;service-worker&quot;,
+                        &quot;icon-192&quot;,
+                        &quot;icon-512&quot;,
+                        &quot;manifest-name&quot;,
+                        &quot;manifest-start-url&quot;,
+                        &quot;manifest-display&quot;,
+                      ];
+                      const tabFor: Record&lt;string, { tab: string; label: string }&gt; = {
+                        &quot;https&quot;:              { tab: &quot;universal&quot;,  label: &quot;Guia Universal&quot; },
+                        &quot;manifest&quot;:           { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                        &quot;manifest-name&quot;:      { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                        &quot;manifest-start-url&quot;: { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                        &quot;manifest-display&quot;:   { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                        &quot;service-worker&quot;:     { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                        &quot;icon-192&quot;:           { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                        &quot;icon-512&quot;:           { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; },
+                      };
+                      const failed = items
+                        .filter(i =&gt; i.status !== &quot;ok&quot;)
+                        .slice()
+                        .sort((a, b) =&gt; {
+                          const ai = priorityOrder.indexOf(a.id);
+                          const bi = priorityOrder.indexOf(b.id);
+                          return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+                        });
+                      const top = failed.slice(0, 3);
+                      if (top.length === 0) return null;
+                      return (
+                        &lt;div className=&quot;mt-4 border border-[#3d6e2a] rounded-lg p-4 bg-[#0d1a08]&quot;&gt;
+                          &lt;div className=&quot;flex items-center gap-2 mb-1&quot;&gt;
+                            &lt;span className=&quot;text-base&quot;&gt;🚀&lt;/span&gt;
+                            &lt;h3 className=&quot;text-[#7ec87a] font-semibold text-sm&quot;&gt;Por onde começar&lt;/h3&gt;
+                          &lt;/div&gt;
+                          &lt;p className=&quot;text-[#6b8f68] text-xs mb-3&quot;&gt;Corrija estes itens primeiro — são os de maior impacto para o seu app virar PWA:&lt;/p&gt;
+                          &lt;ol className=&quot;space-y-3&quot;&gt;
+                            {top.map((item, idx) =&gt; {
+                              const target = tabFor[item.id] || { tab: &quot;android-pwa&quot;, label: &quot;Android PWA&quot; };
+                              return (
+                                &lt;li key={item.id} className=&quot;flex gap-3 items-start&quot;&gt;
+                                  &lt;span className=&quot;bg-[#2d4a1e] text-[#7ec87a] font-bold rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5&quot;&gt;{idx + 1}&lt;/span&gt;
+                                  &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                                    &lt;div className=&quot;text-[#a8d5a2] text-sm font-semibold&quot;&gt;{item.label}&lt;/div&gt;
+                                    {item.fix &amp;&amp; (
+                                      &lt;div className=&quot;text-[#6b8f68] text-xs mt-0.5 leading-relaxed&quot;&gt;{item.fix}&lt;/div&gt;
+                                    )}
+                                    &lt;button
+                                      onClick={() =&gt; setInstallTab(target.tab)}
+                                      className=&quot;mt-2 inline-flex items-center gap-1 bg-[#2d4a1e] hover:bg-[#3d5e2a] text-[#7ec87a] text-xs font-semibold px-2.5 py-1 rounded transition-colors&quot;
+                                    &gt;
+                                      Ir para &quot;{target.label}&quot; →
+                                    &lt;/button&gt;
+                                  &lt;/div&gt;
+                                &lt;/li&gt;
+                              );
+                            })}
+                          &lt;/ol&gt;
+                        &lt;/div&gt;
+                      );
+                    })()}
+
+                    {score === 100 &amp;&amp; (
+                      &lt;Alert color=&quot;green&quot;&gt;
+                        🎉 &lt;strong&gt;Perfeito!&lt;/strong&gt; Seu app tem todos os requisitos PWA. Instale via Chrome (Android PWA) ou gere um APK pela aba &quot;APK Online&quot;.
+                      &lt;/Alert&gt;
+                    )}
+                  &lt;/div&gt;
+                );
+              })()}
+            &lt;/div&gt;
+          ),
+
+          &quot;android-pwa&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;green&quot;&gt;
+                ✅ &lt;strong&gt;Mais fácil e rápido.&lt;/strong&gt; Não precisa instalar nada. O app fica na tela inicial igual a um app nativo.
+              &lt;/Alert&gt;
+              &lt;H2&gt;📋 Pré-requisito&lt;/H2&gt;
+              &lt;P&gt;O app precisa estar &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;publicado&lt;/strong&gt; com uma URL pública (ex: seu-app.replit.app). Veja a aba &quot;Guia Universal&quot; para publicar.&lt;/P&gt;
+
+              &lt;H2&gt;📱 Passo a passo — Android com Chrome&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra o &lt;strong&gt;Google Chrome&lt;/strong&gt; no seu Android (não outro navegador)&lt;/Step&gt;
+                &lt;Step n={2}&gt;Acesse a URL do seu app publicado&lt;br/&gt;&lt;span className=&quot;text-[#5aab56] font-mono text-xs&quot;&gt;ex: https://meu-app.replit.app&lt;/span&gt;&lt;/Step&gt;
+                &lt;Step n={3}&gt;Aguarde o app carregar completamente&lt;/Step&gt;
+                &lt;Step n={4}&gt;Toque nos &lt;strong&gt;3 pontinhos (⋮)&lt;/strong&gt; no canto superior direito do Chrome&lt;/Step&gt;
+                &lt;Step n={5}&gt;Toque em &lt;strong&gt;&quot;Adicionar à tela inicial&quot;&lt;/strong&gt; ou &lt;strong&gt;&quot;Instalar app&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={6}&gt;Confirme tocando em &lt;strong&gt;&quot;Adicionar&quot;&lt;/strong&gt; ou &lt;strong&gt;&quot;Instalar&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={7}&gt;✅ O ícone aparece na tela inicial — abre sem barra do Chrome!&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;Alert color=&quot;blue&quot;&gt;
+                💡 Em alguns Androids aparece um banner automático na parte inferior da tela pedindo para instalar. Basta tocar nele!
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;🔍 Verificar se o Chrome mostra o botão de instalar&lt;/H2&gt;
+              &lt;P&gt;O app precisa ter manifest.json e service worker válidos. Se não aparecer o botão:&lt;/P&gt;
+              &lt;ul className=&quot;space-y-1&quot;&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Abra o Chrome DevTools (F12 no PC) → aba Application → Manifest&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Verifique se aparece &quot;Installable&quot;&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; O SK Code Editor já tem tudo configurado ✅&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;ios-pwa&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;yellow&quot;&gt;
+                ⚠️ &lt;strong&gt;Atenção:&lt;/strong&gt; No iPhone/iPad, a instalação PWA só funciona pelo &lt;strong&gt;Safari&lt;/strong&gt;. Chrome e outros navegadores no iOS não suportam esse recurso.
+              &lt;/Alert&gt;
+              &lt;H2&gt;📱 Passo a passo — iPhone e iPad&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra o &lt;strong&gt;Safari&lt;/strong&gt; (o navegador padrão da Apple, ícone bússola azul)&lt;/Step&gt;
+                &lt;Step n={2}&gt;Acesse a URL do seu app publicado&lt;br/&gt;&lt;span className=&quot;text-[#5aab56] font-mono text-xs&quot;&gt;ex: https://meu-app.replit.app&lt;/span&gt;&lt;/Step&gt;
+                &lt;Step n={3}&gt;Aguarde o app carregar completamente&lt;/Step&gt;
+                &lt;Step n={4}&gt;Toque no botão de &lt;strong&gt;Compartilhar&lt;/strong&gt; — o ícone de uma caixa com uma seta para cima, na barra inferior do Safari&lt;/Step&gt;
+                &lt;Step n={5}&gt;Role para baixo no menu que aparece&lt;/Step&gt;
+                &lt;Step n={6}&gt;Toque em &lt;strong&gt;&quot;Adicionar à Tela de Início&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={7}&gt;Edite o nome se quiser e toque em &lt;strong&gt;&quot;Adicionar&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={8}&gt;✅ O ícone aparece na tela inicial — abre em tela cheia!&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;⚙️ Limitações no iOS&lt;/H2&gt;
+              &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#d4aa40]&quot;&gt;›&lt;/span&gt; Notificações push não funcionam no iOS (limitação da Apple)&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#d4aa40]&quot;&gt;›&lt;/span&gt; Armazenamento offline tem limite de 50MB no Safari&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; A aparência e funcionamento são os mesmos do Android ✅&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;pwabuilder&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;green&quot;&gt;
+                ⚡ &lt;strong&gt;Gera APK real sem instalar nada.&lt;/strong&gt; Serviço gratuito do próprio Google. Funciona para qualquer app PWA.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📋 O que é APK?&lt;/H2&gt;
+              &lt;P&gt;APK (Android Package) é o arquivo de instalação de apps Android — igual aos apps da Play Store. Você distribui o arquivo .apk e qualquer pessoa instala direto no celular.&lt;/P&gt;
+
+              &lt;H2&gt;🚀 Passo a passo — PWABuilder.com&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;
+                  Acesse o site oficial:{&quot; &quot;}
+                  &lt;a href=&quot;https://pwabuilder.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-[#6ab4ff] underline&quot;&gt;pwabuilder.com&lt;/a&gt;
+                &lt;/Step&gt;
+                &lt;Step n={2}&gt;No campo do site, cole a URL do seu app publicado e clique em &lt;strong&gt;&quot;Start&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={3}&gt;Aguarde a análise (30-60 segundos). O site verifica manifest e service worker&lt;/Step&gt;
+                &lt;Step n={4}&gt;Role até a seção &lt;strong&gt;&quot;Android&quot;&lt;/strong&gt; e clique em &lt;strong&gt;&quot;Download&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={5}&gt;Escolha as opções (pode deixar o padrão) e clique em &lt;strong&gt;&quot;Download&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={6}&gt;Você recebe um arquivo &lt;strong&gt;.zip&lt;/strong&gt; — dentro tem um &lt;strong&gt;.apk&lt;/strong&gt; já assinado&lt;/Step&gt;
+                &lt;Step n={7}&gt;Copie o .apk para o celular Android e instale&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;📲 Como instalar o APK no celular&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Transfira o arquivo .apk para o celular (via Google Drive, email, cabo USB, WhatsApp)&lt;/Step&gt;
+                &lt;Step n={2}&gt;Abra o gerenciador de arquivos do celular e localize o .apk&lt;/Step&gt;
+                &lt;Step n={3}&gt;Toque no arquivo — o Android vai perguntar se quer instalar&lt;/Step&gt;
+                &lt;Step n={4}&gt;Se aparecer aviso de &quot;fonte desconhecida&quot;, toque em &lt;strong&gt;&quot;Configurações&quot;&lt;/strong&gt; e ative &lt;strong&gt;&quot;Instalar apps desconhecidos&quot;&lt;/strong&gt; para o gerenciador de arquivos&lt;/Step&gt;
+                &lt;Step n={5}&gt;Volte e toque em &lt;strong&gt;&quot;Instalar&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={6}&gt;✅ App instalado! Aparece na lista de apps do celular&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;Alert color=&quot;blue&quot;&gt;
+                💡 O APK gerado pelo PWABuilder já vem assinado com uma chave de teste. Para publicar na Play Store você precisa de uma chave própria — use a aba &quot;APK Projeto&quot; para isso.
+              &lt;/Alert&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;twa&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;blue&quot;&gt;
+                📦 &lt;strong&gt;Gera um projeto Android completo.&lt;/strong&gt; Você compila com Android Studio e tem controle total — ideal para publicar na Play Store com sua própria assinatura.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;⬇️ Gerar e baixar o projeto Android&lt;/H2&gt;
+              &lt;P&gt;Cole a URL do seu app publicado abaixo e clique em Baixar. Você receberá um .zip com o projeto Android completo pronto para compilar:&lt;/P&gt;
+
+              &lt;div className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-4 mb-4&quot;&gt;
+                &lt;label className=&quot;block text-[#5aab56] text-xs mb-2 font-semibold&quot;&gt;URL do app publicado&lt;/label&gt;
+                &lt;input
+                  type=&quot;url&quot;
+                  value={twaUrl}
+                  onChange={e =&gt; setTwaUrl(e.target.value)}
+                  placeholder=&quot;https://meu-app.replit.app&quot;
+                  className=&quot;w-full bg-[#0d0d0d] border border-[#3d6e2a] rounded px-3 py-2 text-sm text-[#a8d5a2] placeholder-[#3d6e2a] outline-none focus:border-[#5aab56] mb-3&quot;
+                /&gt;
+                {twaError &amp;&amp; &lt;p className=&quot;text-[#d47070] text-xs mb-2&quot;&gt;{twaError}&lt;/p&gt;}
+                &lt;button
+                  onClick={downloadTwaPackage}
+                  disabled={twaLoading}
+                  className=&quot;w-full bg-[#2d4a1e] hover:bg-[#3d5e2a] disabled:opacity-50 text-[#7ec87a] font-semibold text-sm py-2 rounded transition-colors&quot;
+                &gt;
+                  {twaLoading ? &quot;⏳ Gerando pacote...&quot; : &quot;📦 Baixar Projeto Android (.zip)&quot;}
+                &lt;/button&gt;
+              &lt;/div&gt;
+
+              &lt;H2&gt;🛠️ O que tem no ZIP baixado&lt;/H2&gt;
+              &lt;ul className=&quot;space-y-1 mb-4&quot;&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; &lt;code className=&quot;text-[#a8d5a2] font-mono&quot;&gt;AndroidManifest.xml&lt;/code&gt; — configuração do app com sua URL&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; &lt;code className=&quot;text-[#a8d5a2] font-mono&quot;&gt;app/build.gradle&lt;/code&gt; — dependências Android e configuração de build&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; &lt;code className=&quot;text-[#a8d5a2] font-mono&quot;&gt;strings.xml&lt;/code&gt; — nome do app e URL configurada&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; &lt;code className=&quot;text-[#a8d5a2] font-mono&quot;&gt;.well-known/assetlinks.json&lt;/code&gt; — template para verificação de domínio&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; &lt;code className=&quot;text-[#a8d5a2] font-mono&quot;&gt;README.md&lt;/code&gt; — instruções completas de compilação&lt;/li&gt;
+              &lt;/ul&gt;
+
+              &lt;H2&gt;🏗️ Compilar com Android Studio (recomendado)&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Baixe e instale o &lt;a href=&quot;https://developer.android.com/studio&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-[#6ab4ff] underline&quot;&gt;Android Studio&lt;/a&gt; no seu computador&lt;/Step&gt;
+                &lt;Step n={2}&gt;Extraia o .zip baixado em uma pasta&lt;/Step&gt;
+                &lt;Step n={3}&gt;Abra o Android Studio → &lt;strong&gt;File → Open&lt;/strong&gt; → selecione a pasta extraída&lt;/Step&gt;
+                &lt;Step n={4}&gt;Aguarde o Gradle sincronizar (primeira vez pode demorar 5-10 min)&lt;/Step&gt;
+                &lt;Step n={5}&gt;Vá em &lt;strong&gt;Build → Generate Signed Bundle / APK → APK&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={6}&gt;Clique em &lt;strong&gt;&quot;Create new keystore...&quot;&lt;/strong&gt; — preencha os dados e salve o arquivo .jks &lt;span className=&quot;text-[#d47070]&quot;&gt;(guarde esse arquivo! É sua assinatura)&lt;/span&gt;&lt;/Step&gt;
+                &lt;Step n={7}&gt;Escolha &lt;strong&gt;release&lt;/strong&gt; e clique em &lt;strong&gt;Finish&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={8}&gt;O APK fica em: &lt;code className=&quot;text-[#a8d5a2] font-mono text-xs&quot;&gt;app/release/app-release.apk&lt;/code&gt;&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;📲 Para publicar na Play Store&lt;/H2&gt;
+              &lt;ul className=&quot;space-y-1&quot;&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Crie conta em &lt;a href=&quot;https://play.google.com/console&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-[#6ab4ff] underline&quot;&gt;Google Play Console&lt;/a&gt; (taxa única de US$ 25)&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Faça upload do .apk ou .aab (Android App Bundle)&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Preencha as informações do app (nome, ícone, descrição, screenshots)&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Configure o assetlinks.json no seu servidor (instruções no README)&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;bubblewrap&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;yellow&quot;&gt;
+                🔧 &lt;strong&gt;Método avançado.&lt;/strong&gt; Requer Node.js, Java 17+ e Android SDK instalados no computador. Recomendado para quem quer automatizar o processo ou publicar na Play Store.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📋 Requisitos&lt;/H2&gt;
+              &lt;div className=&quot;grid grid-cols-1 gap-2 mb-4&quot;&gt;
+                {[
+                  [&quot;Node.js 18+&quot;, &quot;nodejs.org&quot;, &quot;https://nodejs.org&quot;],
+                  [&quot;Java JDK 17+&quot;, &quot;adoptium.net&quot;, &quot;https://adoptium.net&quot;],
+                  [&quot;Android Studio&quot;, &quot;developer.android.com/studio&quot;, &quot;https://developer.android.com/studio&quot;],
+                ].map(([name, link, url]) =&gt; (
+                  &lt;div key={name} className=&quot;flex items-center justify-between bg-[#0d1309] border border-[#2d4a1e] rounded p-3&quot;&gt;
+                    &lt;span className=&quot;text-[#8cba89] text-sm font-semibold&quot;&gt;{name}&lt;/span&gt;
+                    &lt;a href={url} target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-[#6ab4ff] text-xs underline&quot;&gt;{link}&lt;/a&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+
+              &lt;H2&gt;🚀 Passo a passo completo&lt;/H2&gt;
+
+              &lt;H3&gt;1. Instalar o Bubblewrap CLI&lt;/H3&gt;
+              &lt;Code copyKey=&quot;bw-install&quot;&gt;npm install -g @bubblewrap/cli&lt;/Code&gt;
+
+              &lt;H3&gt;2. Inicializar o projeto TWA&lt;/H3&gt;
+              &lt;Code copyKey=&quot;bw-init&quot;&gt;{`bubblewrap init --manifest https://SEU-APP.replit.app/manifest.json`}&lt;/Code&gt;
+              &lt;P&gt;O Bubblewrap vai fazer perguntas sobre o app (nome, ícone, cor). Responda e ele cria o projeto automaticamente.&lt;/P&gt;
+
+              &lt;H3&gt;3. Compilar o APK&lt;/H3&gt;
+              &lt;Code copyKey=&quot;bw-build&quot;&gt;bubblewrap build&lt;/Code&gt;
+              &lt;P&gt;Isso gera o arquivo &lt;code className=&quot;text-[#a8d5a2] font-mono&quot;&gt;app-release-signed.apk&lt;/code&gt; na pasta do projeto.&lt;/P&gt;
+
+              &lt;H3&gt;4. Instalar no celular via USB&lt;/H3&gt;
+              &lt;Code copyKey=&quot;bw-install-device&quot;&gt;adb install app-release-signed.apk&lt;/Code&gt;
+              &lt;P&gt;Ou copie o .apk manualmente para o celular e instale pelo gerenciador de arquivos.&lt;/P&gt;
+
+              &lt;H2&gt;🔁 Atualizar o app&lt;/H2&gt;
+              &lt;P&gt;Sempre que atualizar o código do seu app web e republicar, o APK já busca a versão mais nova automaticamente — sem precisar gerar um novo APK!&lt;/P&gt;
+
+              &lt;H2&gt;⚙️ Arquivo de configuração gerado&lt;/H2&gt;
+              &lt;Code copyKey=&quot;bw-config&quot;&gt;{`// twa-manifest.json (gerado pelo bubblewrap init)
+{
+  &quot;packageId&quot;: &quot;app.meuapp.replit&quot;,
+  &quot;host&quot;: &quot;meu-app.replit.app&quot;,
+  &quot;name&quot;: &quot;Meu App&quot;,
+  &quot;launcherName&quot;: &quot;MeuApp&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;themeColor&quot;: &quot;#1a237e&quot;,
+  &quot;backgroundColor&quot;: &quot;#0d1117&quot;,
+  &quot;startUrl&quot;: &quot;/&quot;,
+  &quot;iconUrl&quot;: &quot;https://meu-app.replit.app/icon-512.png&quot;,
+  &quot;maskableIconUrl&quot;: &quot;https://meu-app.replit.app/icon-512.png&quot;,
+  &quot;signingKey&quot;: {
+    &quot;path&quot;: &quot;./android.keystore&quot;,
+    &quot;alias&quot;: &quot;android&quot;
+  }
+}`}&lt;/Code&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;universal&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;green&quot;&gt;
+                🌐 &lt;strong&gt;Este guia se aplica a QUALQUER projeto Replit.&lt;/strong&gt; Siga os passos abaixo para transformar qualquer app web em app no celular.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📋 PASSO 1 — Escolha o plano Replit correto&lt;/H2&gt;
+              &lt;div className=&quot;grid grid-cols-1 gap-2 mb-4&quot;&gt;
+                {[
+                  { plano: &quot;Free (Gratuito)&quot;, ok: &quot;PWA via Chrome/Safari ✅&quot;, nok: &quot;URL aleatória no Replit&quot;, rec: &quot;Funciona para uso pessoal&quot; },
+                  { plano: &quot;Hacker / Pro&quot;, ok: &quot;Domínio .replit.app fixo ✅&quot;, nok: &quot;—&quot;, rec: &quot;Recomendado para apps sérios&quot; },
+                  { plano: &quot;Custom Domain&quot;, ok: &quot;Seu próprio domínio ✅&quot;, nok: &quot;Custo extra&quot;, rec: &quot;Para apps profissionais/Play Store&quot; },
+                ].map(({ plano, ok, nok, rec }) =&gt; (
+                  &lt;div key={plano} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-3&quot;&gt;
+                    &lt;div className=&quot;text-[#7ec87a] font-bold text-sm mb-1&quot;&gt;{plano}&lt;/div&gt;
+                    &lt;div className=&quot;text-[#8cba89] text-xs&quot;&gt;✅ {ok}&lt;/div&gt;
+                    {nok !== &quot;—&quot; &amp;&amp; &lt;div className=&quot;text-[#d4aa40] text-xs&quot;&gt;⚠️ {nok}&lt;/div&gt;}
+                    &lt;div className=&quot;text-[#5aab56] text-xs mt-1&quot;&gt;→ {rec}&lt;/div&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+
+              &lt;H2&gt;🚀 PASSO 2 — Publicar o app no Replit&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra seu projeto no &lt;a href=&quot;https://replit.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-[#6ab4ff] underline&quot;&gt;replit.com&lt;/a&gt;&lt;/Step&gt;
+                &lt;Step n={2}&gt;Certifique-se que o app está rodando (botão ▶ Run)&lt;/Step&gt;
+                &lt;Step n={3}&gt;Clique no botão &lt;strong&gt;&quot;Deploy&quot;&lt;/strong&gt; (avião de papel) no canto superior direito&lt;/Step&gt;
+                &lt;Step n={4}&gt;Escolha &lt;strong&gt;&quot;Reserved VM&quot;&lt;/strong&gt; ou &lt;strong&gt;&quot;Autoscale&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={5}&gt;Configure o domínio (ou use o .replit.app gerado automaticamente)&lt;/Step&gt;
+                &lt;Step n={6}&gt;Clique em &lt;strong&gt;&quot;Deploy&quot;&lt;/strong&gt; e aguarde&lt;/Step&gt;
+                &lt;Step n={7}&gt;Copie a URL gerada — ex: &lt;code className=&quot;text-[#a8d5a2] font-mono text-xs&quot;&gt;https://meu-app.replit.app&lt;/code&gt;&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;📱 PASSO 3 — Verificar se o app é PWA-pronto&lt;/H2&gt;
+              &lt;P&gt;Para funcionar como app, seu projeto precisa ter:&lt;/P&gt;
+              &lt;div className=&quot;space-y-2 mb-4&quot;&gt;
+                {[
+                  [&quot;manifest.json&quot;, &quot;Arquivo na pasta public/ com nome, ícones e cores&quot;, &quot;obrigatório&quot;],
+                  [&quot;Service Worker (sw.js)&quot;, &quot;Permite funcionamento offline e instalação&quot;, &quot;obrigatório&quot;],
+                  [&quot;Ícones 192px e 512px&quot;, &quot;Imagens PNG para o ícone do app&quot;, &quot;obrigatório&quot;],
+                  [&quot;HTTPS&quot;, &quot;O Replit Deploy já usa HTTPS automaticamente&quot;, &quot;automático&quot;],
+                ].map(([item, desc, req]) =&gt; (
+                  &lt;div key={item as string} className=&quot;flex items-start gap-3 bg-[#0d1309] border border-[#2d4a1e] rounded p-3&quot;&gt;
+                    &lt;span className={`text-xs px-1.5 py-0.5 rounded shrink-0 mt-0.5 ${req === &quot;automático&quot; ? &quot;bg-[#0d1e3d] text-[#6ab4ff]&quot; : &quot;bg-[#1a3d14] text-[#7ec87a]&quot;}`}&gt;{req}&lt;/span&gt;
+                    &lt;div&gt;
+                      &lt;div className=&quot;text-[#7ec87a] text-sm font-semibold&quot;&gt;{item}&lt;/div&gt;
+                      &lt;div className=&quot;text-[#6b8f68] text-xs&quot;&gt;{desc as string}&lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+
+              &lt;Alert color=&quot;blue&quot;&gt;
+                💡 O SK Code Editor já tem manifest.json, sw.js e ícones prontos. Para outros projetos seus no Replit, peça para a Jasmim: &quot;Adicione PWA neste projeto com manifest.json e service worker&quot;.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;🔄 PASSO 4 — Escolha o método de instalação&lt;/H2&gt;
+              &lt;div className=&quot;grid grid-cols-1 gap-2 mb-4&quot;&gt;
+                {[
+                  [&quot;📱 PWA (mais fácil)&quot;, &quot;Chrome → 3 pontinhos → Instalar&quot;, &quot;Qualquer projeto publicado&quot;, &quot;Instantâneo&quot;],
+                  [&quot;⚡ APK via PWABuilder&quot;, &quot;pwabuilder.com → cola URL → baixa APK&quot;, &quot;Projetos PWA-válidos&quot;, &quot;5 minutos&quot;],
+                  [&quot;📦 APK via TWA ZIP&quot;, &quot;Baixe o pacote aqui → compile com Android Studio&quot;, &quot;Qualquer projeto publicado&quot;, &quot;30 minutos (1ª vez)&quot;],
+                  [&quot;🔧 Bubblewrap CLI&quot;, &quot;npm install bubblewrap → gera APK via terminal&quot;, &quot;Desenvolvedores avançados&quot;, &quot;1-2 horas (1ª vez)&quot;],
+                ].map(([método, como, req, tempo]) =&gt; (
+                  &lt;div key={método as string} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-3&quot;&gt;
+                    &lt;div className=&quot;text-[#7ec87a] font-bold text-sm&quot;&gt;{método}&lt;/div&gt;
+                    &lt;div className=&quot;text-[#8cba89] text-xs mt-1&quot;&gt;{como as string}&lt;/div&gt;
+                    &lt;div className=&quot;flex gap-3 mt-2 text-xs&quot;&gt;
+                      &lt;span className=&quot;text-[#5aab56]&quot;&gt;✓ {req as string}&lt;/span&gt;
+                      &lt;span className=&quot;text-[#6b8f68]&quot;&gt;⏱ {tempo as string}&lt;/span&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+
+              &lt;H2&gt;♻️ Aplicar em todos os seus projetos&lt;/H2&gt;
+              &lt;P&gt;Para cada app que você tiver no Replit, repita estes passos:&lt;/P&gt;
+              &lt;ol className=&quot;mb-2&quot;&gt;
+                {[
+                  &quot;Publique o app (Deploy) → copie a URL&quot;,
+                  &quot;Teste se o manifest.json está acessível: URL/manifest.json&quot;,
+                  &quot;Abra no Chrome do celular → instale como PWA&quot;,
+                  &quot;Para APK: cole a URL aqui ou no PWABuilder.com e baixe o pacote&quot;,
+                ].map((t, i) =&gt; &lt;Step key={i} n={i + 1}&gt;{t}&lt;/Step&gt;)}
+              &lt;/ol&gt;
+            &lt;/div&gt;
+          ),
+        };
+
+        return (
+          &lt;div&gt;
+            &lt;div className=&quot;bg-[#0d2210] border border-[#2d5a1e] rounded-lg p-3 mb-4 flex items-center justify-between gap-3&quot;&gt;
+              &lt;div&gt;
+                &lt;p className=&quot;text-[#7ec87a] font-semibold text-sm&quot;&gt;⬇️ Baixar ZIP do Projeto&lt;/p&gt;
+                &lt;p className=&quot;text-[#5aab56] text-xs mt-0.5&quot;&gt;Exporta todos os arquivos do projeto aberto no editor&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;button
+                onClick={downloadProjectZip}
+                disabled={zipLoading}
+                className=&quot;shrink-0 bg-[#2d4a1e] hover:bg-[#3d5e2a] disabled:opacity-50 text-[#7ec87a] font-semibold text-xs px-4 py-2 rounded-lg transition-colors&quot;
+              &gt;
+                {zipLoading ? &quot;⏳ Gerando...&quot; : &quot;⬇️ Baixar ZIP do Projeto&quot;}
+              &lt;/button&gt;
+            &lt;/div&gt;
+            {zipEmptyWarning &amp;&amp; (
+              &lt;div className=&quot;bg-[#2d2200] border border-[#5a4500] text-[#d4aa40] rounded-lg p-3 mb-4 text-sm flex items-start gap-2&quot;&gt;
+                &lt;span className=&quot;shrink-0&quot;&gt;⚠️&lt;/span&gt;
+                &lt;div&gt;
+                  &lt;p className=&quot;font-semibold&quot;&gt;Nenhum arquivo no projeto&lt;/p&gt;
+                  &lt;p className=&quot;text-xs text-[#b89030] mt-0.5&quot;&gt;Adicione ou crie arquivos no editor antes de baixar o ZIP.&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+
+            &lt;div className=&quot;flex gap-1 mb-4 overflow-x-auto pb-1 flex-wrap&quot;&gt;
+              {installTabs.map(tab =&gt; (
+                &lt;button
+                  key={tab.id}
+                  onClick={() =&gt; setInstallTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                    installTab === tab.id
+                      ? &quot;bg-[#2d4a1e] text-[#7ec87a] border border-[#5aab56]&quot;
+                      : &quot;bg-[#0d0d0d] text-[#5a7a56] border border-[#2d4a1e] hover:text-[#7ec87a]&quot;
+                  }`}
+                &gt;
+                  {tab.icon} {tab.label}
+                &lt;/button&gt;
+              ))}
+            &lt;/div&gt;
+            {tabContent[installTab]}
+          &lt;/div&gt;
+        );
+      })(),
+    },
+
+    {
+      id: &quot;terminal&quot;,
+      icon: &quot;🖥️&quot;,
+      title: &quot;Terminal&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            O terminal do SK Code Editor é um bash &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;real&lt;/strong&gt; —
+            todos os comandos rodam no servidor e retornam saída verdadeira.
+          &lt;/P&gt;
+
+          &lt;H2&gt;📂 Diretório de trabalho&lt;/H2&gt;
+          &lt;Code copyKey=&quot;cwd&quot;&gt;/home/runner/sk-user-workspace/&lt;/Code&gt;
+          &lt;P&gt;Todo projeto fica dentro desta pasta. Use paths relativos normalmente.&lt;/P&gt;
+
+          &lt;H2&gt;🔧 Comandos mais usados&lt;/H2&gt;
+
+          &lt;H3&gt;Gerenciamento de pacotes Node.js&lt;/H3&gt;
+          &lt;Code copyKey=&quot;npm-install&quot;&gt;npm install express axios cors dotenv&lt;/Code&gt;
+          &lt;Code copyKey=&quot;npm-run&quot;&gt;npm run dev
+npm start
+npm run build&lt;/Code&gt;
+
+          &lt;H3&gt;Gerenciamento de pacotes Python&lt;/H3&gt;
+          &lt;Code copyKey=&quot;pip&quot;&gt;pip install flask requests pandas sqlalchemy&lt;/Code&gt;
+          &lt;Code copyKey=&quot;python-run&quot;&gt;python app.py
+python -m pytest
+python -m py_compile arquivo.py&lt;/Code&gt;
+
+          &lt;H3&gt;Navegação e arquivos&lt;/H3&gt;
+          &lt;Code copyKey=&quot;nav&quot;&gt;ls -la           # listar arquivos
+pwd              # diretório atual
+cd meu-projeto   # entrar na pasta
+mkdir nova-pasta # criar pasta
+cat package.json # ler arquivo&lt;/Code&gt;
+
+          &lt;H3&gt;Processos&lt;/H3&gt;
+          &lt;Code copyKey=&quot;proc&quot;&gt;ps aux | grep node    # ver processos Node rodando
+kill -9 PID          # matar processo pelo ID
+lsof -i :3000        # ver quem usa a porta 3000&lt;/Code&gt;
+
+          &lt;H3&gt;Git no terminal&lt;/H3&gt;
+          &lt;Code copyKey=&quot;git-terminal&quot;&gt;git status
+git add .
+git commit -m &quot;minha mensagem&quot;
+git push origin main&lt;/Code&gt;
+
+          &lt;H2&gt;⚙️ Variáveis de ambiente&lt;/H2&gt;
+          &lt;P&gt;Crie um arquivo &lt;Badge color=&quot;green&quot;&gt;.env&lt;/Badge&gt; na raiz do projeto:&lt;/P&gt;
+          &lt;Code copyKey=&quot;env-file&quot;&gt;DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+PORT=3000
+JWT_SECRET=minha-chave-secreta-longa-aqui
+NODE_ENV=development&lt;/Code&gt;
+          &lt;P&gt;
+            Instale o dotenv e use &lt;Badge color=&quot;green&quot;&gt;require('dotenv').config()&lt;/Badge&gt; no início do
+            seu script para carregar as variáveis.
+          &lt;/P&gt;
+
+          &lt;H2&gt;🚀 Rodar um servidor&lt;/H2&gt;
+          &lt;Code copyKey=&quot;server&quot;&gt;node index.js           # Node puro
+npm run dev             # com nodemon (auto-restart)
+npx ts-node src/main.ts # TypeScript direto
+uvicorn main:app --reload # FastAPI/Python&lt;/Code&gt;
+
+          &lt;H2&gt;💡 Dicas&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Use Ctrl+C para parar qualquer processo rodando&lt;/Li&gt;
+            &lt;Li&gt;Se travar, feche e reabra o terminal (ícone ✕ → ▶)&lt;/Li&gt;
+            &lt;Li&gt;O terminal salva histórico — use ↑ para repetir comandos&lt;/Li&gt;
+            &lt;Li&gt;Peça para a Jasmim rodar comandos: &quot;rode npm install e mostre o resultado&quot;&lt;/Li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;neon&quot;,
+      icon: &quot;🗄️&quot;,
+      title: &quot;Banco de Dados (Neon)&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Neon DB&lt;/strong&gt; é PostgreSQL serverless gratuito —
+            a melhor opção para projetos profissionais. Sem cartão de crédito.
+          &lt;/P&gt;
+
+          &lt;H2&gt;🚀 Setup em 5 minutos&lt;/H2&gt;
+          &lt;ol className=&quot;space-y-3 mb-4&quot;&gt;
+            {[
+              { step: &quot;Crie conta gratuita em&quot;, link: &quot;https://neon.tech&quot;, detail: &quot;plano Free, sem cartão&quot; },
+              { step: &quot;Clique em \&quot;New Project\&quot;&quot;, link: null, detail: &quot;dê um nome ao banco (ex: meu-app)&quot; },
+              { step: &quot;Copie a Connection String&quot;, link: null, detail: &quot;começa com postgresql://...&quot; },
+              { step: &quot;Cole no painel 🗄️ do editor&quot;, link: null, detail: &quot;ícone de banco na barra inferior&quot; },
+              { step: &quot;Pronto!&quot;, link: null, detail: &quot;a Jasmim já tem acesso ao seu banco&quot; },
+            ].map(({ step, link, detail }, i) =&gt; (
+              &lt;li key={i} className=&quot;flex gap-3&quot;&gt;
+                &lt;span className=&quot;text-[#7ec87a] font-bold shrink-0 w-5&quot;&gt;{i + 1}.&lt;/span&gt;
+                &lt;div&gt;
+                  &lt;span className=&quot;text-[#8cba89] text-sm&quot;&gt;{step} &lt;/span&gt;
+                  {link &amp;&amp; (
+                    &lt;span className=&quot;text-[#6ab4ff] text-sm&quot;&gt;{link}&lt;/span&gt;
+                  )}
+                  &lt;div className=&quot;text-[#5aab56] text-xs mt-0.5&quot;&gt;{detail}&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/li&gt;
+            ))}
+          &lt;/ol&gt;
+
+          &lt;H2&gt;🔑 Obter Neon API Key (para automação)&lt;/H2&gt;
+          &lt;P&gt;Com a API Key, a Jasmim pode criar o banco automaticamente para você:&lt;/P&gt;
+          &lt;ol className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Entre em https://console.neon.tech&lt;/Li&gt;
+            &lt;Li&gt;Vá em Settings → API Keys → Create API Key&lt;/Li&gt;
+            &lt;Li&gt;A chave começa com neon_api_...&lt;/Li&gt;
+            &lt;Li&gt;Envie a chave para a Jasmim: &quot;Crie um banco chamado meu-app&quot;&lt;/Li&gt;
+          &lt;/ol&gt;
+
+          &lt;H2&gt;📦 Instalar dependências&lt;/H2&gt;
+          &lt;Code copyKey=&quot;neon-install&quot;&gt;npm install @neondatabase/serverless dotenv&lt;/Code&gt;
+
+          &lt;H2&gt;🔌 Arquivo de conexão&lt;/H2&gt;
+          &lt;Code copyKey=&quot;neon-connect&quot;&gt;{`// db/neon.js
+const { neon } = require('@neondatabase/serverless');
+require('dotenv').config();
+
+const sql = neon(process.env.DATABASE_URL);
+</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>initDb</span>
+    <div>
+      <small>L960–L1392</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">async function initDb() {
+  await sql\`
+    CREATE TABLE IF NOT EXISTS usuarios (
+      id SERIAL PRIMARY KEY,
+      nome VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      criado_em TIMESTAMP DEFAULT NOW()
+    )
+  \`;
+  console.log('✅ Banco inicializado!');
+}
+
+module.exports = { sql, initDb };`}&lt;/Code&gt;
+
+          &lt;H2&gt;📄 Arquivo .env&lt;/H2&gt;
+          &lt;Code copyKey=&quot;neon-env&quot;&gt;{`DATABASE_URL=postgresql://usuario:senha@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+PORT=3000
+NODE_ENV=development`}&lt;/Code&gt;
+
+          &lt;H2&gt;⚡ Comandos SQL úteis&lt;/H2&gt;
+          &lt;H3&gt;Criar tabela&lt;/H3&gt;
+          &lt;Code copyKey=&quot;sql-create&quot;&gt;{`CREATE TABLE IF NOT EXISTS tarefas (
+  id SERIAL PRIMARY KEY,
+  titulo VARCHAR(255) NOT NULL,
+  concluida BOOLEAN DEFAULT false,
+  criado_em TIMESTAMP DEFAULT NOW()
+);`}&lt;/Code&gt;
+
+          &lt;H3&gt;Inserir dados&lt;/H3&gt;
+          &lt;Code copyKey=&quot;sql-insert&quot;&gt;{`INSERT INTO tarefas (titulo) 
+VALUES ('Primeira tarefa'), ('Segunda tarefa');`}&lt;/Code&gt;
+
+          &lt;H3&gt;Consultar&lt;/H3&gt;
+          &lt;Code copyKey=&quot;sql-select&quot;&gt;{`SELECT * FROM tarefas ORDER BY criado_em DESC LIMIT 10;`}&lt;/Code&gt;
+
+          &lt;H3&gt;Alterar tabela&lt;/H3&gt;
+          &lt;Code copyKey=&quot;sql-alter&quot;&gt;{`ALTER TABLE tarefas ADD COLUMN descricao TEXT;
+ALTER TABLE tarefas ADD COLUMN prioridade INTEGER DEFAULT 1;`}&lt;/Code&gt;
+
+          &lt;H2&gt;🔐 Com Prisma ORM (recomendado para projetos maiores)&lt;/H2&gt;
+          &lt;Code copyKey=&quot;prisma-install&quot;&gt;npm install prisma @prisma/client dotenv
+npx prisma init&lt;/Code&gt;
+          &lt;Code copyKey=&quot;prisma-schema&quot;&gt;{`// prisma/schema.prisma
+datasource db {
+  provider = &quot;postgresql&quot;
+  url      = env(&quot;DATABASE_URL&quot;)
+}
+
+generator client {
+  provider = &quot;prisma-client-js&quot;
+}
+
+model Tarefa {
+  id        Int      @id @default(autoincrement())
+  titulo    String
+  concluida Boolean  @default(false)
+  criadoEm DateTime @default(now())
+  @@map(&quot;tarefas&quot;)
+}`}&lt;/Code&gt;
+          &lt;Code copyKey=&quot;prisma-migrate&quot;&gt;npx prisma migrate dev --name init
+npx prisma studio   # abre interface visual do banco&lt;/Code&gt;
+
+          &lt;H2&gt;⚠️ Regras importantes&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;NUNCA commite o .env com dados reais no git&lt;/Li&gt;
+            &lt;Li&gt;SEMPRE crie .gitignore com .env listado&lt;/Li&gt;
+            &lt;Li&gt;SEMPRE crie .env.example com valores de exemplo&lt;/Li&gt;
+            &lt;Li&gt;Use sslmode=require para Neon (já vem na connection string)&lt;/Li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;jasmim&quot;,
+      icon: &quot;🤖&quot;,
+      title: &quot;Jasmim (IA)&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Jasmim&lt;/strong&gt; é sua assistente de IA — desenvolvedora
+            sênior com autonomia total para criar projetos completos, corrigir erros e configurar
+            banco de dados automaticamente.
+          &lt;/P&gt;
+
+          &lt;H2&gt;💬 Como conversar com a Jasmim&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Seja direto: &quot;Crie um CRUD de clientes com Node.js e Neon DB&quot;&lt;/Li&gt;
+            &lt;Li&gt;Ela gera arquivos completos — você aplica com 1 clique&lt;/Li&gt;
+            &lt;Li&gt;Ela vê o terminal automaticamente e já prepara a solução para erros&lt;/Li&gt;
+            &lt;Li&gt;Ela continua sem parar até a tarefa estar 100% concluída&lt;/Li&gt;
+            &lt;Li&gt;Peça revisões: &quot;Adicione autenticação JWT nesse projeto&quot;&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;🎯 O que a Jasmim faz sem precisar de permissão&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Criar projeto do zero (qualquer linguagem/framework)&lt;/Li&gt;
+            &lt;Li&gt;Instalar dependências (npm, pip, qualquer gerenciador)&lt;/Li&gt;
+            &lt;Li&gt;Criar e modificar qualquer arquivo&lt;/Li&gt;
+            &lt;Li&gt;Configurar banco de dados completo (schema, tabelas, migrations)&lt;/Li&gt;
+            &lt;Li&gt;Adicionar autenticação, rotas, APIs REST&lt;/Li&gt;
+            &lt;Li&gt;Corrigir erros de compilação automaticamente&lt;/Li&gt;
+            &lt;Li&gt;Fazer push para GitHub quando você pedir&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;📋 Exemplos de comandos eficientes&lt;/H2&gt;
+
+          &lt;H3&gt;Criar projeto completo&lt;/H3&gt;
+          &lt;Code copyKey=&quot;jasmim-1&quot;&gt;&quot;Crie um app de lista de tarefas com React, Node.js/Express, Neon DB PostgreSQL e autenticação JWT. Interface em português.&quot;&lt;/Code&gt;
+
+          &lt;H3&gt;Configurar banco automaticamente&lt;/H3&gt;
+          &lt;Code copyKey=&quot;jasmim-2&quot;&gt;&quot;Minha Neon API Key é neon_api_xxx. Crie um banco chamado meu-app e já configure tudo no projeto.&quot;&lt;/Code&gt;
+
+          &lt;H3&gt;Corrigir erro&lt;/H3&gt;
+          &lt;Code copyKey=&quot;jasmim-3&quot;&gt;&quot;Tem um erro no terminal acima, corrija.&quot;&lt;/Code&gt;
+
+          &lt;H3&gt;Adicionar funcionalidade&lt;/H3&gt;
+          &lt;Code copyKey=&quot;jasmim-4&quot;&gt;&quot;Adicione upload de arquivos PDF nesse projeto usando multer. Salve os arquivos na pasta uploads/.&quot;&lt;/Code&gt;
+
+          &lt;H3&gt;Refatorar&lt;/H3&gt;
+          &lt;Code copyKey=&quot;jasmim-5&quot;&gt;&quot;Reorganize a estrutura de pastas desse projeto seguindo as boas práticas do Express (routes/, controllers/, models/, middleware/).&quot;&lt;/Code&gt;
+
+          &lt;H2&gt;🔍 Escopo de arquivo&lt;/H2&gt;
+          &lt;P&gt;
+            No topo do chat, selecione quais arquivos a Jasmim pode ver.
+            Quanto mais arquivos você selecionar, melhor ela entende o contexto do projeto.
+          &lt;/P&gt;
+
+          &lt;H2&gt;📜 Histórico&lt;/H2&gt;
+          &lt;P&gt;
+            O histórico de conversa fica salvo automaticamente. Use o botão 🗑️ para limpar
+            e começar uma nova sessão quando mudar de projeto.
+          &lt;/P&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;github&quot;,
+      icon: &quot;🐙&quot;,
+      title: &quot;GitHub&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            Conecte seu repositório GitHub ao SK Code Editor para fazer push, pull e gerenciar
+            branches diretamente no editor.
+          &lt;/P&gt;
+
+          &lt;H2&gt;🔑 Criar Personal Access Token (PAT)&lt;/H2&gt;
+          &lt;ol className=&quot;space-y-2 mb-4&quot;&gt;
+            {[
+              { step: &quot;Acesse&quot;, link: &quot;github.com → Settings → Developer Settings&quot; },
+              { step: &quot;Vá em&quot;, link: &quot;Personal access tokens → Tokens (classic) → Generate new token&quot; },
+              { step: &quot;Permissões necessárias:&quot;, link: &quot;repo (todas), workflow (se usar Actions)&quot; },
+              { step: &quot;Copie o token&quot;, link: &quot;começa com ghp_...&quot; },
+              { step: &quot;Cole no painel 🐙 do editor&quot;, link: &quot;ícone GitHub na barra inferior&quot; },
+            ].map(({ step, link }, i) =&gt; (
+              &lt;li key={i} className=&quot;flex gap-3&quot;&gt;
+                &lt;span className=&quot;text-[#7ec87a] font-bold shrink-0&quot;&gt;{i + 1}.&lt;/span&gt;
+                &lt;div className=&quot;text-sm text-[#8cba89]&quot;&gt;
+                  &lt;strong&gt;{step}&lt;/strong&gt;{&quot; &quot;}
+                  &lt;span className=&quot;text-[#6ab4ff]&quot;&gt;{link}&lt;/span&gt;
+                &lt;/div&gt;
+              &lt;/li&gt;
+            ))}
+          &lt;/ol&gt;
+
+          &lt;H2&gt;📦 Operações disponíveis no painel&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Clonar repositório existente para o workspace&lt;/Li&gt;
+            &lt;Li&gt;Fazer commit e push de arquivos modificados&lt;/Li&gt;
+            &lt;Li&gt;Pull para atualizar o workspace com o remote&lt;/Li&gt;
+            &lt;Li&gt;Ver diff dos arquivos modificados&lt;/Li&gt;
+            &lt;Li&gt;Criar e trocar de branch&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;🖥️ Git no terminal&lt;/H2&gt;
+          &lt;Code copyKey=&quot;git-full&quot;&gt;{`# Configurar identidade (primeira vez)
+git config --global user.name &quot;Seu Nome&quot;
+git config --global user.email &quot;seu@email.com&quot;
+
+# Clonar repositório
+git clone https://github.com/usuario/repo.git
+
+# Fazer commit e push
+git add .
+git commit -m &quot;feat: adiciona funcionalidade X&quot;
+git push origin main
+
+# Criar e usar nova branch
+git checkout -b minha-feature
+git push -u origin minha-feature`}&lt;/Code&gt;
+
+          &lt;H2&gt;⚠️ Segurança&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;NUNCA commite arquivos .env com senhas&lt;/Li&gt;
+            &lt;Li&gt;Adicione .env ao .gitignore ANTES do primeiro commit&lt;/Li&gt;
+            &lt;Li&gt;Seu PAT fica criptografado no editor — nunca é exposto&lt;/Li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;preview&quot;,
+      icon: &quot;👁️&quot;,
+      title: &quot;Preview ao Vivo&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            O preview ao vivo renderiza HTML, CSS, JS e React diretamente no editor —
+            sem precisar abrir o navegador.
+          &lt;/P&gt;
+
+          &lt;H2&gt;🖥️ Como abrir o preview&lt;/H2&gt;
+          &lt;ol className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Toque no ícone 👁️ na barra inferior&lt;/Li&gt;
+            &lt;Li&gt;O preview abre mostrando o index.html do projeto atual&lt;/Li&gt;
+            &lt;Li&gt;Clique em &quot;Tela Cheia&quot; (ícone de expandir) para ver em tela grande&lt;/Li&gt;
+            &lt;Li&gt;Clique em &quot;Recarregar&quot; para atualizar após mudanças&lt;/Li&gt;
+          &lt;/ol&gt;
+
+          &lt;H2&gt;✅ Para o preview funcionar&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;O arquivo index.html precisa estar na raiz do projeto&lt;/Li&gt;
+            &lt;Li&gt;CSS e JS referenciados no HTML são carregados automaticamente&lt;/Li&gt;
+            &lt;Li&gt;Projetos React/Vite: rode npm run dev no terminal primeiro&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;🚀 Preview de um projeto Node.js/React&lt;/H2&gt;
+          &lt;Code copyKey=&quot;preview-node&quot;&gt;{`# 1. Instale as dependências
+npm install
+
+# 2. Rode o servidor de desenvolvimento
+npm run dev      # ou: npm start
+
+# 3. O preview vai aparecer na porta configurada`}&lt;/Code&gt;
+
+          &lt;H2&gt;📱 Preview responsivo&lt;/H2&gt;
+          &lt;P&gt;
+            Use o botão de dimensões no preview para simular telas de smartphone, tablet
+            e desktop sem precisar de DevTools.
+          &lt;/P&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;importexport&quot;,
+      icon: &quot;📦&quot;,
+      title: &quot;Importar / Exportar&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            O SK Code Editor permite importar e exportar projetos como ZIP ou TAR.GZ
+            para transferir entre dispositivos ou fazer backup.
+          &lt;/P&gt;
+
+          &lt;H2&gt;📥 Importar projeto&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Toque no ícone 📁 na barra inferior → &quot;Importar ZIP/TAR.GZ&quot;&lt;/Li&gt;
+            &lt;Li&gt;Selecione o arquivo .zip ou .tar.gz do seu projeto&lt;/Li&gt;
+            &lt;Li&gt;O editor extrai e carrega todos os arquivos automaticamente&lt;/Li&gt;
+            &lt;Li&gt;Projetos do VS Code, Replit, Glitch e outros são compatíveis&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;📤 Exportar projeto&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Toque no ícone 📁 → &quot;Exportar como ZIP&quot;&lt;/Li&gt;
+            &lt;Li&gt;Um arquivo .zip com todos os arquivos é baixado&lt;/Li&gt;
+            &lt;Li&gt;Use para backup ou para abrir em outro editor&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;📦 Backup no Google Drive&lt;/H2&gt;
+          &lt;P&gt;Com Google Drive conectado (ícone ☁️):&lt;/P&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Backup automático do projeto atual&lt;/Li&gt;
+            &lt;Li&gt;Restaurar versões anteriores&lt;/Li&gt;
+            &lt;Li&gt;Sincronizar entre dispositivos&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;💡 Dicas&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Antes de importar, o projeto atual fica salvo no histórico&lt;/Li&gt;
+            &lt;Li&gt;node_modules é ignorado na exportação (muito pesado)&lt;/Li&gt;
+            &lt;Li&gt;Arquivos .env são incluídos — cuidado ao compartilhar&lt;/Li&gt;
+            &lt;Li&gt;Para projetos grandes, prefira exportar TAR.GZ (menor)&lt;/Li&gt;
+          &lt;/ul&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;credenciais&quot;,
+      icon: &quot;🔑&quot;,
+      title: &quot;Credenciais e API Keys&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            O SK Code Editor usa credenciais para conectar serviços externos.
+            Todas são salvas localmente e nunca enviadas para servidores externos.
+          &lt;/P&gt;
+
+          &lt;H2&gt;🔑 Onde configurar cada credencial&lt;/H2&gt;
+
+          &lt;div className=&quot;space-y-3 mb-4&quot;&gt;
+            {[
+              { icon: &quot;🤖&quot;, name: &quot;API Key de IA (OpenAI, Gemini, Groq...)&quot;, where: &quot;Painel da Jasmim → ⚙️ Configurações&quot;, detail: &quot;sk- (OpenAI), AIza (Gemini), gsk_ (Groq), sk-ant (Anthropic), xai- (Grok), sk-or- (OpenRouter)&quot; },
+              { icon: &quot;🐙&quot;, name: &quot;GitHub Personal Access Token&quot;, where: &quot;Painel GitHub → Inserir credenciais&quot;, detail: &quot;ghp_... (Token clássico, permissões: repo, workflow)&quot; },
+              { icon: &quot;🗄️&quot;, name: &quot;Connection String do Banco&quot;, where: &quot;Painel Banco de Dados → Cole a URL&quot;, detail: &quot;postgresql://user:pass@host/db?sslmode=require&quot; },
+              { icon: &quot;☁️&quot;, name: &quot;Google Drive&quot;, where: &quot;Painel Backup → Conectar com Google&quot;, detail: &quot;Login OAuth — não requer chave manual&quot; },
+            ].map(({ icon, name, where, detail }) =&gt; (
+              &lt;div key={name} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-3&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2 mb-1&quot;&gt;
+                  &lt;span&gt;{icon}&lt;/span&gt;
+                  &lt;strong className=&quot;text-[#7ec87a] text-sm&quot;&gt;{name}&lt;/strong&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;text-[#5aab56] text-xs mb-1&quot;&gt;📍 {where}&lt;/div&gt;
+                &lt;div className=&quot;text-[#6b8f68] text-xs font-mono&quot;&gt;{detail}&lt;/div&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+
+          &lt;H2&gt;🔒 Segurança&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1&quot;&gt;
+            &lt;Li&gt;Credenciais ficam no localStorage do navegador — só você tem acesso&lt;/Li&gt;
+            &lt;Li&gt;API keys de IA são enviadas apenas ao backend deste editor (nunca expostas)&lt;/Li&gt;
+            &lt;Li&gt;Para trocar uma credencial, simplesmente cole a nova no mesmo campo&lt;/Li&gt;
+            &lt;Li&gt;Para revogar acesso, delete a key no serviço externo (GitHub, OpenAI, etc.)&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;⚡ Detecção automática de provedor de IA&lt;/H2&gt;
+          &lt;P&gt;A Jasmim detecta automaticamente qual provedor usar pela sua API key:&lt;/P&gt;
+          &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+            {[
+              [&quot;gsk_&quot;, &quot;Groq&quot;],
+              [&quot;sk-or-&quot;, &quot;OpenRouter&quot;],
+              [&quot;pplx-&quot;, &quot;Perplexity&quot;],
+              [&quot;AIza&quot;, &quot;Gemini&quot;],
+              [&quot;xai-&quot;, &quot;Grok (xAI)&quot;],
+              [&quot;sk-ant&quot;, &quot;Anthropic&quot;],
+              [&quot;neon_api_&quot;, &quot;Neon DB API&quot;],
+              [&quot;sk-&quot;, &quot;OpenAI&quot;],
+            ].map(([prefix, name]) =&gt; (
+              &lt;div key={prefix} className=&quot;flex items-center gap-2 bg-[#0d1309] border border-[#2d4a1e] rounded p-2&quot;&gt;
+                &lt;Badge color=&quot;green&quot;&gt;{prefix}&lt;/Badge&gt;
+                &lt;span className=&quot;text-[#8cba89] text-xs&quot;&gt;{name}&lt;/span&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;juridico&quot;,
+      icon: &quot;⚖️&quot;,
+      title: &quot;Assistente Jurídico&quot;,
+      content: (
+        &lt;div&gt;
+          &lt;P&gt;
+            O &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Assistente Jurídico&lt;/strong&gt; (Jamile) é
+            especializado em Direito brasileiro — gera peças processuais, analisa ementas e
+            responde perguntas jurídicas.
+          &lt;/P&gt;
+
+          &lt;H2&gt;📋 Abas disponíveis&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;&lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Processar&lt;/strong&gt; — gera petições, contratos, pareceres com base no prompt&lt;/Li&gt;
+            &lt;Li&gt;&lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Ementas&lt;/strong&gt; — biblioteca de ementas jurisprudenciais que alimentam o contexto da IA&lt;/Li&gt;
+            &lt;Li&gt;&lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Histórico&lt;/strong&gt; — últimas 15 gerações, com opção de restaurar e reeditar&lt;/Li&gt;
+            &lt;Li&gt;&lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Ações&lt;/strong&gt; — ações personalizadas que você define e reutiliza&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;⚡ Nível de Esforço (1–5)&lt;/H2&gt;
+          &lt;div className=&quot;grid grid-cols-5 gap-1 mb-3&quot;&gt;
+            {[
+              [&quot;1&quot;, &quot;Rápido&quot;, &quot;8k tokens&quot;],
+              [&quot;2&quot;, &quot;Básico&quot;, &quot;16k tokens&quot;],
+              [&quot;3&quot;, &quot;Normal&quot;, &quot;32k tokens&quot;],
+              [&quot;4&quot;, &quot;Detalhado&quot;, &quot;64k tokens&quot;],
+              [&quot;5&quot;, &quot;Exaustivo&quot;, &quot;131k tokens&quot;],
+            ].map(([n, label, tokens]) =&gt; (
+              &lt;div key={n} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded p-2 text-center&quot;&gt;
+                &lt;div className=&quot;text-[#7ec87a] font-bold text-sm&quot;&gt;{n}&lt;/div&gt;
+                &lt;div className=&quot;text-[#8cba89] text-xs&quot;&gt;{label}&lt;/div&gt;
+                &lt;div className=&quot;text-[#5aab56] text-xs&quot;&gt;{tokens}&lt;/div&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+
+          &lt;H2&gt;📝 Verbosidade&lt;/H2&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;&lt;strong&gt;Concisa&lt;/strong&gt; — peça objetiva, sem redundâncias, mais curta&lt;/Li&gt;
+            &lt;Li&gt;&lt;strong&gt;Completa&lt;/strong&gt; — peça completa com fundamentação aprofundada&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;📚 Ementas (biblioteca jurisprudencial)&lt;/H2&gt;
+          &lt;P&gt;
+            Na aba Ementas, você cadastra suas próprias ementas de jurisprudência.
+            Elas são inseridas automaticamente no contexto quando você gera uma peça,
+            enriquecendo a fundamentação jurídica da IA.
+          &lt;/P&gt;
+          &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+            &lt;Li&gt;Cole a ementa completa no campo de texto&lt;/Li&gt;
+            &lt;Li&gt;Dê um título para identificar facilmente&lt;/Li&gt;
+            &lt;Li&gt;Marque as ementas que quer usar antes de gerar a peça&lt;/Li&gt;
+            &lt;Li&gt;Você pode ter até 50 ementas na biblioteca&lt;/Li&gt;
+          &lt;/ul&gt;
+
+          &lt;H2&gt;🎯 Ações personalizadas&lt;/H2&gt;
+          &lt;P&gt;
+            Na aba Ações, crie prompts reutilizáveis para tipos de peça que você usa
+            frequentemente. Exemplos:
+          &lt;/P&gt;
+          &lt;Code copyKey=&quot;acao-exemplo&quot;&gt;&quot;Elabore uma petição inicial de ação de indenização por danos morais decorrentes de negativação indevida, fundamentada no CDC e CC. Inclua pedido de tutela de urgência para exclusão imediata do nome dos cadastros de restrição ao crédito.&quot;&lt;/Code&gt;
+        &lt;/div&gt;
+      ),
+    },
+
+    {
+      id: &quot;meus-projetos&quot;,
+      icon: &quot;🗂️&quot;,
+      title: &quot;Meus Projetos&quot;,
+      content: (() =&gt; {
+        const tabs = [
+          { id: &quot;importar&quot;,  label: &quot;Trazer do Replit&quot;, icon: &quot;⬇️&quot; },
+          { id: &quot;desktop&quot;,   label: &quot;App no PC&quot;,        icon: &quot;🖥️&quot; },
+          { id: &quot;privado&quot;,   label: &quot;Instalação Privada&quot;, icon: &quot;🔒&quot; },
+          { id: &quot;juntar&quot;,    label: &quot;Juntar Apps&quot;,      icon: &quot;🔗&quot; },
+          { id: &quot;orientar&quot;,  label: &quot;Me Oriento&quot;,       icon: &quot;🧭&quot; },
+        ];
+</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>Step →</span>
+    <div>
+      <small>L1393–L1399</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">        const Step = ({ n, children }: { n: number; children: React.ReactNode }) =&gt; (
+          &lt;li className=&quot;flex gap-3 mb-3&quot;&gt;
+            &lt;span className=&quot;bg-[#2d4a1e] text-[#7ec87a] font-bold rounded-full w-6 h-6 flex items-center justify-center text-xs shrink-0 mt-0.5&quot;&gt;{n}&lt;/span&gt;
+            &lt;span className=&quot;text-[#8cba89] text-sm leading-relaxed&quot;&gt;{children}&lt;/span&gt;
+          &lt;/li&gt;
+        );
+</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>Alert →</span>
+    <div>
+      <small>L1400–L1409</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">        const Alert = ({ color, children }: { color: &quot;green&quot; | &quot;blue&quot; | &quot;yellow&quot; | &quot;red&quot;; children: React.ReactNode }) =&gt; {
+          const c = {
+            green:  &quot;bg-[#0d2210] border-[#2d5a1e] text-[#7ec87a]&quot;,
+            blue:   &quot;bg-[#0a1530] border-[#1e3d7a] text-[#6ab4ff]&quot;,
+            yellow: &quot;bg-[#1e1500] border-[#4a3800] text-[#d4aa40]&quot;,
+            red:    &quot;bg-[#1e0a0a] border-[#5a1e1e] text-[#d47070]&quot;,
+          }[color];
+          return &lt;div className={`border rounded-lg p-3 mb-3 text-sm ${c}`}&gt;{children}&lt;/div&gt;;
+        };
+</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>Box →</span>
+    <div>
+      <small>L1410–L2051</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">        const Box = ({ icon, title, desc }: { icon: string; title: string; desc: string }) =&gt; (
+          &lt;div className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-3 mb-2&quot;&gt;
+            &lt;div className=&quot;flex items-center gap-2 mb-1&quot;&gt;
+              &lt;span&gt;{icon}&lt;/span&gt;
+              &lt;strong className=&quot;text-[#7ec87a] text-sm&quot;&gt;{title}&lt;/strong&gt;
+            &lt;/div&gt;
+            &lt;p className=&quot;text-[#8cba89] text-xs leading-relaxed&quot;&gt;{desc}&lt;/p&gt;
+          &lt;/div&gt;
+        );
+
+        const tabContent: Record&lt;string, React.ReactNode&gt; = {
+
+          &quot;importar&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;blue&quot;&gt;
+                ⬇️ &lt;strong&gt;Você não precisa recriar nada.&lt;/strong&gt; Seus projetos do Replit chegam aqui prontos — código, arquivos e tudo mais. Escolha o método abaixo.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📦 MÉTODO 1 — Via ZIP (mais fácil)&lt;/H2&gt;
+              &lt;P&gt;No Replit, qualquer projeto pode ser exportado como ZIP em segundos.&lt;/P&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra o projeto no &lt;a href=&quot;https://replit.com&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;text-[#6ab4ff] underline&quot;&gt;Replit&lt;/a&gt;&lt;/Step&gt;
+                &lt;Step n={2}&gt;Clique nos &lt;strong&gt;3 pontinhos (⋯)&lt;/strong&gt; no topo ou vá em &lt;strong&gt;Files → Download as zip&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={3}&gt;Salve o arquivo .zip no celular ou computador&lt;/Step&gt;
+                &lt;Step n={4}&gt;Aqui no SK Editor, toque no ícone &lt;strong&gt;📁&lt;/strong&gt; na barra inferior&lt;/Step&gt;
+                &lt;Step n={5}&gt;Toque em &lt;strong&gt;&quot;Importar ZIP&quot;&lt;/strong&gt; e selecione o arquivo&lt;/Step&gt;
+                &lt;Step n={6}&gt;✅ O projeto aparece com todos os arquivos prontos para editar&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;Alert color=&quot;green&quot;&gt;
+                💡 Funciona com qualquer projeto: Node.js, Python, React, HTML puro, qualquer linguagem.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;🐙 MÉTODO 2 — Via GitHub (recomendado para manter sincronizado)&lt;/H2&gt;
+              &lt;P&gt;Se o projeto estiver no GitHub, você clona direto pelo terminal.&lt;/P&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;No Replit, vá em &lt;strong&gt;Version Control&lt;/strong&gt; e conecte ao GitHub se ainda não fez&lt;/Step&gt;
+                &lt;Step n={2}&gt;Faça push do projeto para o GitHub (botão &lt;strong&gt;Push&lt;/strong&gt;)&lt;/Step&gt;
+                &lt;Step n={3}&gt;Aqui no SK Editor, abra o &lt;strong&gt;Terminal&lt;/strong&gt; (ícone 🖥️ na barra inferior)&lt;/Step&gt;
+                &lt;Step n={4}&gt;
+                  Digite o comando para clonar:&lt;br/&gt;
+                  &lt;span className=&quot;font-mono text-[#a8d5a2] text-xs bg-[#0d1309] px-2 py-1 rounded block mt-1&quot;&gt;git clone https://github.com/SEU_USUARIO/NOME_DO_REPO.git&lt;/span&gt;
+                &lt;/Step&gt;
+                &lt;Step n={5}&gt;O projeto é baixado completo na pasta do workspace&lt;/Step&gt;
+                &lt;Step n={6}&gt;No painel de arquivos (📁), navegue até a pasta criada e abra os arquivos&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;🔑 Para repositórios privados&lt;/H2&gt;
+              &lt;P&gt;Repositórios privados do GitHub precisam do seu Personal Access Token:&lt;/P&gt;
+              &lt;Code copyKey=&quot;clone-privado&quot;&gt;git clone https://SEU_TOKEN@github.com/SEU_USUARIO/REPO_PRIVADO.git&lt;/Code&gt;
+              &lt;P&gt;Veja a seção &lt;strong&gt;GitHub&lt;/strong&gt; deste manual para criar seu token (PAT).&lt;/P&gt;
+
+              &lt;H2&gt;📋 Para projetos sem GitHub&lt;/H2&gt;
+              &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Use o Método 1 (ZIP) — funciona sempre, sem precisar de conta GitHub&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Ou copie e cole os arquivos um por um usando a Jasmim: &quot;Crie um arquivo chamado X com este conteúdo: [cola o código]&quot;&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;desktop&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;green&quot;&gt;
+                🖥️ &lt;strong&gt;Instalar no PC é a opção mais simples e totalmente privada.&lt;/strong&gt; Sem loja, sem conta, sem instalador. Funciona no Windows, Mac e Linux.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;🪟 Windows — Chrome ou Edge&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra o &lt;strong&gt;Google Chrome&lt;/strong&gt; ou &lt;strong&gt;Microsoft Edge&lt;/strong&gt; no computador&lt;/Step&gt;
+                &lt;Step n={2}&gt;Acesse a URL do app publicado: &lt;span className=&quot;font-mono text-[#a8d5a2] text-xs&quot;&gt;https://seu-app.replit.app&lt;/span&gt;&lt;/Step&gt;
+                &lt;Step n={3}&gt;Aguarde carregar completamente&lt;/Step&gt;
+                &lt;Step n={4}&gt;
+                  No Chrome: Clique no ícone &lt;strong&gt;⊕&lt;/strong&gt; na barra de endereços (lado direito)&lt;br/&gt;
+                  No Edge: Clique nos &lt;strong&gt;...&lt;/strong&gt; → &lt;strong&gt;&quot;Aplicativos&quot;&lt;/strong&gt; → &lt;strong&gt;&quot;Instalar este site como um aplicativo&quot;&lt;/strong&gt;
+                &lt;/Step&gt;
+                &lt;Step n={5}&gt;Confirme clicando em &lt;strong&gt;&quot;Instalar&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={6}&gt;✅ O app abre numa janela própria — sem abas, sem barra do navegador. Aparece no menu Iniciar!&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;🍎 Mac — Chrome ou Safari&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra &lt;strong&gt;Google Chrome&lt;/strong&gt; no Mac&lt;/Step&gt;
+                &lt;Step n={2}&gt;Acesse a URL do app&lt;/Step&gt;
+                &lt;Step n={3}&gt;Clique nos &lt;strong&gt;⋮&lt;/strong&gt; → &lt;strong&gt;&quot;Salvar e compartilhar&quot;&lt;/strong&gt; → &lt;strong&gt;&quot;Criar atalho...&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={4}&gt;Marque &lt;strong&gt;&quot;Abrir como janela&quot;&lt;/strong&gt; e clique em &lt;strong&gt;Criar&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={5}&gt;✅ App aparece no Launchpad e no Dock&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;🐧 Linux — Chrome ou Chromium&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Abra o Chrome/Chromium&lt;/Step&gt;
+                &lt;Step n={2}&gt;Acesse a URL do app&lt;/Step&gt;
+                &lt;Step n={3}&gt;Clique no ícone &lt;strong&gt;⊕&lt;/strong&gt; na barra de endereços ou nos &lt;strong&gt;⋮&lt;/strong&gt; → &lt;strong&gt;&quot;Instalar SK Code Editor...&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={4}&gt;✅ App aparece no menu de aplicativos do sistema&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;⚙️ O que você ganha com a instalação no PC&lt;/H2&gt;
+              &lt;div className=&quot;grid grid-cols-1 gap-2 mb-4&quot;&gt;
+                {[
+                  [&quot;🪟 Janela própria&quot;, &quot;Abre sem abas do navegador — parece um app de verdade&quot;],
+                  [&quot;📌 Ícone no menu&quot;, &quot;Aparece no menu Iniciar (Windows) ou Launchpad (Mac)&quot;],
+                  [&quot;🔕 Sem distração&quot;, &quot;Sem as ferramentas do navegador, só o app&quot;],
+                  [&quot;🔒 Totalmente privado&quot;, &quot;Só você vê — nada vai para nenhuma loja&quot;],
+                  [&quot;♻️ Atualização automática&quot;, &quot;Quando o app no Replit é atualizado, a instalação já pega a versão nova&quot;],
+                ].map(([título, desc]) =&gt; (
+                  &lt;div key={título as string} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded p-3&quot;&gt;
+                    &lt;div className=&quot;text-[#7ec87a] text-sm font-semibold&quot;&gt;{título}&lt;/div&gt;
+                    &lt;div className=&quot;text-[#6b8f68] text-xs mt-0.5&quot;&gt;{desc as string}&lt;/div&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+
+              &lt;H2&gt;🗑️ Como desinstalar&lt;/H2&gt;
+              &lt;ul className=&quot;space-y-1&quot;&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Windows: Configurações → Aplicativos → encontre o app → Desinstalar&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Mac: Arraste do Launchpad para a lixeira&lt;/li&gt;
+                &lt;li className=&quot;flex gap-2 text-sm text-[#8cba89]&quot;&gt;&lt;span className=&quot;text-[#5aab56]&quot;&gt;›&lt;/span&gt; Ou no Chrome/Edge: acesse a URL → ícone ⊕ → &quot;Desinstalar&quot;&lt;/li&gt;
+              &lt;/ul&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;privado&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;yellow&quot;&gt;
+                🔒 &lt;strong&gt;Instalação privada = só você usa, sem passar por loja nenhuma.&lt;/strong&gt; Seus dados ficam só no seu dispositivo. Ninguém mais acessa.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📱 Android — APK Privado (sideload)&lt;/H2&gt;
+              &lt;P&gt;Instalar APK diretamente no celular sem passar pela Play Store:&lt;/P&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Gere o APK usando a aba &lt;strong&gt;&quot;Instalar como App → APK Projeto&quot;&lt;/strong&gt; ou o PWABuilder.com&lt;/Step&gt;
+                &lt;Step n={2}&gt;Transfira o .apk para o celular: via &lt;strong&gt;Google Drive, WhatsApp para si mesmo, cabo USB ou email&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={3}&gt;No Android vá em &lt;strong&gt;Configurações → Privacidade&lt;/strong&gt; (ou Segurança) → ative &lt;strong&gt;&quot;Instalar apps desconhecidos&quot;&lt;/strong&gt; para o gerenciador de arquivos&lt;/Step&gt;
+                &lt;Step n={4}&gt;Abra o gerenciador de arquivos, localize o .apk e toque nele&lt;/Step&gt;
+                &lt;Step n={5}&gt;Toque em &lt;strong&gt;&quot;Instalar&quot;&lt;/strong&gt;&lt;/Step&gt;
+                &lt;Step n={6}&gt;✅ App instalado! Não aparece na Play Store para mais ninguém — é só seu&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;Alert color=&quot;green&quot;&gt;
+                💡 Você pode compartilhar o .apk com pessoas de confiança via WhatsApp ou Google Drive — elas instalam da mesma forma. Sem publicar em loja nenhuma.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;🍎 iPhone/iPad — Opções privadas&lt;/H2&gt;
+              &lt;Alert color=&quot;red&quot;&gt;
+                ⚠️ A Apple não permite instalar apps fora da App Store sem um processo especial. As opções disponíveis são:
+              &lt;/Alert&gt;
+
+              &lt;Box
+                icon=&quot;✅&quot;
+                title=&quot;Opção 1: PWA via Safari (mais fácil)&quot;
+                desc=&quot;Acesse a URL no Safari → botão Compartilhar → 'Adicionar à Tela de Início'. Fica no celular como app, privado, sem loja. Limitação: precisa de internet para abrir.&quot;
+              /&gt;
+              &lt;Box
+                icon=&quot;🔧&quot;
+                title=&quot;Opção 2: TestFlight (distribuição privada oficial da Apple)&quot;
+                desc=&quot;Você sobe o app no TestFlight (plataforma de testes da Apple) e envia o link só para as pessoas que quiser. Requer conta de desenvolvedor Apple (US$ 99/ano).&quot;
+              /&gt;
+              &lt;Box
+                icon=&quot;🛠️&quot;
+                title=&quot;Opção 3: AltStore (sideload sem jailbreak)&quot;
+                desc=&quot;O AltStore (altstore.io) permite instalar .ipa no iPhone sem jailbreak. Requer um PC/Mac conectado via cabo para renovar a assinatura a cada 7 dias (conta gratuita) ou 1 ano (conta paga AltStore+).&quot;
+              /&gt;
+
+              &lt;H2&gt;🖥️ Computador — 100% privado&lt;/H2&gt;
+              &lt;P&gt;A instalação via Chrome/Edge no PC (veja aba &quot;App no PC&quot;) é totalmente privada por natureza — nunca vai para nenhuma loja, não aparece em lugar nenhum, só no seu computador. É a opção mais simples para uso pessoal no PC.&lt;/P&gt;
+
+              &lt;H2&gt;📋 Resumo: qual usar para uso privado?&lt;/H2&gt;
+              &lt;div className=&quot;space-y-2&quot;&gt;
+                {[
+                  { disp: &quot;Computador (Windows/Mac/Linux)&quot;, rec: &quot;Chrome → instalar como app&quot;, nota: &quot;✅ Mais fácil, 100% privado&quot; },
+                  { disp: &quot;Android&quot;, rec: &quot;APK via sideload&quot;, nota: &quot;✅ Privado, sem Play Store&quot; },
+                  { disp: &quot;iPhone/iPad&quot;, rec: &quot;PWA via Safari&quot;, nota: &quot;✅ Simples, sem conta Apple&quot; },
+                ].map(({ disp, rec, nota }) =&gt; (
+                  &lt;div key={disp} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded p-3&quot;&gt;
+                    &lt;div className=&quot;text-[#7ec87a] font-semibold text-sm&quot;&gt;{disp}&lt;/div&gt;
+                    &lt;div className=&quot;text-[#8cba89] text-xs mt-0.5&quot;&gt;→ {rec}&lt;/div&gt;
+                    &lt;div className=&quot;text-[#5aab56] text-xs mt-0.5&quot;&gt;{nota}&lt;/div&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;juntar&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;blue&quot;&gt;
+                🔗 &lt;strong&gt;A ideia é simples:&lt;/strong&gt; você traz cada app para cá, identifica o que funciona bem em cada um, e a Jasmim une tudo num único projeto — sem reescrever o que já funciona.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📋 Passo a passo para juntar vários apps&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;
+                  &lt;strong&gt;Liste seus apps e o que cada um faz bem&lt;/strong&gt;&lt;br/&gt;
+                  &lt;span className=&quot;text-[#5aab56] text-xs&quot;&gt;Ex: &quot;App 1 → login funciona. App 2 → relatórios funcionam. App 3 → chat funciona.&quot;&lt;/span&gt;
+                &lt;/Step&gt;
+                &lt;Step n={2}&gt;
+                  &lt;strong&gt;Importe todos para cá (um por vez)&lt;/strong&gt;&lt;br/&gt;
+                  Use a aba &quot;Trazer do Replit&quot; — ZIP ou GitHub. Anote o nome das pastas.
+                &lt;/Step&gt;
+                &lt;Step n={3}&gt;
+                  &lt;strong&gt;Abra a Jasmim (ícone 🤖)&lt;/strong&gt;&lt;br/&gt;
+                  Diga exatamente quais partes funcionam e quais não. Seja específico.
+                &lt;/Step&gt;
+                &lt;Step n={4}&gt;
+                  &lt;strong&gt;Diga para a Jasmim o que quer:&lt;/strong&gt;&lt;br/&gt;
+                  &lt;span className=&quot;text-[#5aab56] text-xs&quot;&gt;&quot;Tenho 3 projetos aqui. O login está em app1/, os relatórios em app2/ e o chat em app3/. Quero um único projeto que use o login do app1, os relatórios do app2 e o chat do app3. Não reescreva — aproveite o código que já funciona.&quot;&lt;/span&gt;
+                &lt;/Step&gt;
+                &lt;Step n={5}&gt;
+                  &lt;strong&gt;A Jasmim vai unir os arquivos&lt;/strong&gt;&lt;br/&gt;
+                  Ela vai analisar os três projetos e criar um novo com as partes funcionando juntas.
+                &lt;/Step&gt;
+                &lt;Step n={6}&gt;
+                  &lt;strong&gt;Teste no terminal&lt;/strong&gt;&lt;br/&gt;
+                  Rode o projeto novo: &lt;span className=&quot;font-mono text-[#a8d5a2] text-xs&quot;&gt;npm install &amp;&amp; npm start&lt;/span&gt;
+                &lt;/Step&gt;
+                &lt;Step n={7}&gt;
+                  &lt;strong&gt;Para qualquer erro, chame a Jasmim:&lt;/strong&gt;&lt;br/&gt;
+                  &lt;span className=&quot;text-[#5aab56] text-xs&quot;&gt;&quot;Tem um erro no terminal, corrija sem reescrever o que já estava funcionando.&quot;&lt;/span&gt;
+                &lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;💬 Exemplos de como pedir para a Jasmim&lt;/H2&gt;
+
+              &lt;H3&gt;Juntar dois apps&lt;/H3&gt;
+              &lt;Code copyKey=&quot;jasmim-juntar-2&quot;&gt;&quot;Tenho dois projetos: app-login/ (o login funciona bem) e app-dashboard/ (os gráficos funcionam bem). Una os dois num projeto só chamado meu-app/. Reutilize o código que já existe, não reescreva do zero.&quot;&lt;/Code&gt;
+
+              &lt;H3&gt;Juntar 3 ou mais&lt;/H3&gt;
+              &lt;Code copyKey=&quot;jasmim-juntar-3&quot;&gt;&quot;Tenho 3 apps aqui. Do app1/ aproveite: o sistema de autenticação (arquivo auth.js). Do app2/ aproveite: as rotas de relatório (routes/reports.js). Do app3/ aproveite: o componente de chat (components/Chat.jsx). Crie um único projeto novo unindo essas partes.&quot;&lt;/Code&gt;
+
+              &lt;H3&gt;Quando só parte funciona&lt;/H3&gt;
+              &lt;Code copyKey=&quot;jasmim-parte&quot;&gt;&quot;No app1/, o módulo de login funciona (auth/), mas o de pagamento não. No app2/, o pagamento funciona (payment/), mas o login não. Une o login do app1/ com o pagamento do app2/ num projeto novo.&quot;&lt;/Code&gt;
+
+              &lt;H2&gt;⚠️ Regra importante&lt;/H2&gt;
+              &lt;Alert color=&quot;yellow&quot;&gt;
+                ✋ Sempre diga explicitamente para a Jasmim: &lt;strong&gt;&quot;não reescreva o que já funciona, aproveite o código existente&quot;&lt;/strong&gt;. Sem isso, ela pode criar uma versão nova do zero. Com essa instrução, ela vai copiar e adaptar o que já está pronto.
+              &lt;/Alert&gt;
+            &lt;/div&gt;
+          ),
+
+          &quot;orientar&quot;: (
+            &lt;div&gt;
+              &lt;Alert color=&quot;green&quot;&gt;
+                🧭 &lt;strong&gt;Você tem 10+ apps e cada um funciona só em parte.&lt;/strong&gt; Aqui está o roteiro completo para se organizar e sair disso.
+              &lt;/Alert&gt;
+
+              &lt;H2&gt;📊 ETAPA 1 — Mapear o que você tem&lt;/H2&gt;
+              &lt;P&gt;Antes de qualquer coisa, faça uma lista rápida. Para cada app seu no Replit:&lt;/P&gt;
+              &lt;div className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-4 mb-4&quot;&gt;
+                &lt;p className=&quot;text-[#5aab56] text-xs font-semibold mb-2&quot;&gt;MODELO DE MAPEAMENTO&lt;/p&gt;
+                &lt;Code copyKey=&quot;mapeamento&quot;&gt;{`App 1 — Nome: ___________
+✅ O que funciona bem: ___________
+❌ O que não funciona: ___________
+🔗 Link no Replit: ___________
+
+App 2 — Nome: ___________
+✅ O que funciona bem: ___________
+❌ O que não funciona: ___________
+🔗 Link no Replit: ___________
+
+(repita para cada app)`}&lt;/Code&gt;
+              &lt;/div&gt;
+
+              &lt;H2&gt;🎯 ETAPA 2 — Definir o app final que você quer&lt;/H2&gt;
+              &lt;P&gt;Responda: &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;Qual seria o app perfeito se tudo funcionasse?&lt;/strong&gt;&lt;/P&gt;
+              &lt;P&gt;Liste as funcionalidades que você quer no produto final, independente de qual app elas estão hoje. Exemplo:&lt;/P&gt;
+              &lt;Code copyKey=&quot;app-final&quot;&gt;{`App Final &quot;Meu Sistema&quot;:
+- Login de usuário ✅ (já existe no App 1)
+- Painel de controle ✅ (já existe no App 3)  
+- Relatórios em PDF ✅ (já existe no App 5)
+- Chat com IA ✅ (já existe no App 7)
+- Cadastro de clientes ❌ (não existe em nenhum, precisa criar)
+- Notificações ❌ (não existe em nenhum, precisa criar)`}&lt;/Code&gt;
+
+              &lt;H2&gt;📥 ETAPA 3 — Trazer os apps para cá&lt;/H2&gt;
+              &lt;P&gt;Importe os apps que têm as partes que funcionam (veja a aba &quot;Trazer do Replit&quot;). Você não precisa trazer todos — só os que têm algo útil.&lt;/P&gt;
+
+              &lt;H2&gt;🤖 ETAPA 4 — Pedir para a Jasmim montar&lt;/H2&gt;
+              &lt;P&gt;Cole o mapeamento que você fez na Jasmim e use este prompt:&lt;/P&gt;
+              &lt;Code copyKey=&quot;prompt-organizar&quot;&gt;&quot;Vou te passar um mapeamento dos meus apps. Quero que você:
+1. Identifique as partes que já funcionam em cada um
+2. Crie um único projeto novo aproveitando essas partes
+3. Não reescreva o que já está pronto
+4. Me diga o que ainda precisa ser criado do zero
+
+Aqui está o mapeamento:
+[COLE SEU MAPEAMENTO AQUI]
+
+O app final deve ter: [LISTE AS FUNCIONALIDADES QUE VOCÊ QUER]&quot;&lt;/Code&gt;
+
+              &lt;H2&gt;📱 ETAPA 5 — Transformar em app no celular/PC&lt;/H2&gt;
+              &lt;ol className=&quot;mb-4&quot;&gt;
+                &lt;Step n={1}&gt;Com o projeto único funcionando, publique no Replit (botão Deploy)&lt;/Step&gt;
+                &lt;Step n={2}&gt;Copie a URL gerada (.replit.app)&lt;/Step&gt;
+                &lt;Step n={3}&gt;Escolha o método de instalação (PWA, APK ou PC — veja seção &quot;Instalar como App&quot;)&lt;/Step&gt;
+                &lt;Step n={4}&gt;✅ Um app completo, funcionando, privado e no seu dispositivo&lt;/Step&gt;
+              &lt;/ol&gt;
+
+              &lt;H2&gt;🔁 E para os próximos apps?&lt;/H2&gt;
+              &lt;P&gt;Repita o mesmo processo para qualquer projeto futuro:&lt;/P&gt;
+              &lt;div className=&quot;flex flex-col gap-2&quot;&gt;
+                {[
+                  [&quot;1️⃣&quot;, &quot;Cria/importa o projeto aqui&quot;],
+                  [&quot;2️⃣&quot;, &quot;Desenvolve com a Jasmim até funcionar&quot;],
+                  [&quot;3️⃣&quot;, &quot;Publica no Replit (Deploy)&quot;],
+                  [&quot;4️⃣&quot;, &quot;Instala no celular como PWA ou APK&quot;],
+                  [&quot;5️⃣&quot;, &quot;Usa com privacidade, sem depender do Replit para abrir&quot;],
+                ].map(([n, t]) =&gt; (
+                  &lt;div key={n as string} className=&quot;flex items-center gap-3 bg-[#0d1309] border border-[#2d4a1e] rounded p-3&quot;&gt;
+                    &lt;span className=&quot;text-xl shrink-0&quot;&gt;{n}&lt;/span&gt;
+                    &lt;span className=&quot;text-[#8cba89] text-sm&quot;&gt;{t as string}&lt;/span&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+
+              &lt;Alert color=&quot;blue&quot;&gt;
+                💡 &lt;strong&gt;Dica chave:&lt;/strong&gt; quando o app estiver instalado (como PWA ou APK), ele &lt;strong&gt;não depende do Replit para abrir&lt;/strong&gt; — ele vai direto para o servidor onde está publicado. O Replit é só onde você cria e edita. O app publicado fica independente.
+              &lt;/Alert&gt;
+            &lt;/div&gt;
+          ),
+        };
+
+        return (
+          &lt;div&gt;
+            &lt;div className=&quot;flex gap-1 mb-4 overflow-x-auto pb-1 flex-wrap&quot;&gt;
+              {tabs.map(tab =&gt; (
+                &lt;button
+                  key={tab.id}
+                  onClick={() =&gt; setMergeTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                    mergeTab === tab.id
+                      ? &quot;bg-[#2d4a1e] text-[#7ec87a] border border-[#5aab56]&quot;
+                      : &quot;bg-[#0d0d0d] text-[#5a7a56] border border-[#2d4a1e] hover:text-[#7ec87a]&quot;
+                  }`}
+                &gt;
+                  {tab.icon} {tab.label}
+                &lt;/button&gt;
+              ))}
+            &lt;/div&gt;
+            {tabContent[mergeTab]}
+          &lt;/div&gt;
+        );
+      })(),
+    },
+  {
+    id: &quot;sk-funcoes&quot;,
+    icon: &quot;⚡&quot;,
+    title: &quot;SK Editor — Funções&quot;,
+    content: (
+      &lt;div&gt;
+        &lt;P&gt;
+          Esta seção descreve as &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;funções reais&lt;/strong&gt; implementadas
+          no SK Editor — tudo o que está disponível para você usar agora.
+        &lt;/P&gt;
+
+        &lt;H2&gt;📝 Editor de Código&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Monaco Editor&lt;/strong&gt; — mesmo engine do VS Code, com syntax highlight para 25+ linguagens&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Sistema de arquivos virtual (VFS)&lt;/strong&gt; — cria, edita e salva arquivos no navegador sem servidor&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Abas múltiplas&lt;/strong&gt; — navegue entre arquivos abertos sem perder edições&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Árvore de arquivos&lt;/strong&gt; — crie pastas, renomeie, mova e delete via painel lateral&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Persistência automática&lt;/strong&gt; — tudo salvo no IndexedDB do navegador, sobrevive a recargas&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Histórico de desfazer&lt;/strong&gt; — Ctrl+Z funciona normalmente no editor&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🤖 Assistente IA (Jasmim)&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Escopo de contexto&lt;/strong&gt; — envie o projeto inteiro, apenas a pasta ativa, só o arquivo, ou nenhum&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Múltiplos provedores&lt;/strong&gt; — OpenAI, Gemini, Groq, Anthropic, OpenRouter, Perplexity, Grok (xAI)&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Detecção automática de provider&lt;/strong&gt; — identifica qual IA usar pelo prefixo da API key&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Aplicar código&lt;/strong&gt; — botão para aplicar diretamente o código gerado no arquivo ativo&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Criar arquivo&lt;/strong&gt; — a IA pode criar novos arquivos no VFS pelo chat&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Histórico de conversa&lt;/strong&gt; — contexto mantido durante a sessão&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🖥️ Terminal Integrado&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;node arquivo.js&lt;/strong&gt; — executa JavaScript real com async/await&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;fetch(url)&lt;/strong&gt; — acesso à internet para APIs com CORS&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;require('fs')&lt;/strong&gt; — lê e escreve arquivos do VFS&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;npm install pacote&lt;/strong&gt; — atualiza package.json do projeto&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;ls, cat, mkdir, touch, rm, cp, mv&lt;/strong&gt; — operações de arquivo&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;git status, git log&lt;/strong&gt; — informações do repositório&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;👁️ Preview em Tempo Real&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;HTML/CSS/JS&lt;/strong&gt; — renderiza diretamente no iframe sem build&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;React&lt;/strong&gt; — transpila com Babel in-browser, resultado ao vivo&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Dimensões responsivas&lt;/strong&gt; — simule Mobile (375px), Tablet (768px) e Desktop&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Autorefresh&lt;/strong&gt; — atualiza automaticamente ao salvar&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Abrir em nova aba&lt;/strong&gt; — visualize em tela cheia&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🧩 Playground HTML&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Editor + iframe ao vivo&lt;/strong&gt; — cole HTML/CSS/JS e veja renderizado instantaneamente&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Ctrl+Enter&lt;/strong&gt; — atalho para executar&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Importar arquivo&lt;/strong&gt; — abra qualquer .html do seu dispositivo&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Baixar .html&lt;/strong&gt; — salve o resultado no computador&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Abrir em nova aba&lt;/strong&gt; — visualize em tela cheia&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Scripts habilitados&lt;/strong&gt; — JavaScript, alerts, fetch, localStorage tudo funciona&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Atalho de acesso&lt;/strong&gt; — botão &quot;Playground HTML&quot; no painel Build &amp; Deploy&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;📦 Build &amp; Deploy&lt;/H2&gt;
+        &lt;div className=&quot;space-y-2 mb-4&quot;&gt;
+          {[
+            { icon: &quot;🧹&quot;, name: &quot;Versão Limpa&quot;,      desc: &quot;ZIP com o projeto limpo, sem configs de Replit. Pronto para qualquer host.&quot; },
+            { icon: &quot;🟢&quot;, name: &quot;Netlify&quot;,           desc: &quot;ZIP com netlify.toml configurado. Arraste a pasta dist/ e está no ar.&quot; },
+            { icon: &quot;▲&quot;, name: &quot;Vercel&quot;,            desc: &quot;ZIP com vercel.json e suporte a rotas SPA.&quot; },
+            { icon: &quot;📄&quot;, name: &quot;GitHub Pages&quot;,      desc: &quot;ZIP com workflow GitHub Actions para deploy automático.&quot; },
+            { icon: &quot;📲&quot;, name: &quot;PWA&quot;,               desc: &quot;ZIP com index.html completo, manifest.json e Service Worker com cache offline.&quot; },
+            { icon: &quot;📱&quot;, name: &quot;Capacitor (APK)&quot;,   desc: &quot;ZIP com capacitor.config.ts para gerar APK Android via Android Studio.&quot; },
+            { icon: &quot;🚀&quot;, name: &quot;EAS (APK na nuvem)&quot;, desc: &quot;ZIP com app.json e eas.json para build APK via expo.dev sem Android Studio.&quot; },
+            { icon: &quot;🖥️&quot;, name: &quot;Electron (Desktop)&quot;, desc: &quot;ZIP com main.cjs e electron-builder.yml para gerar .exe, .dmg e .AppImage.&quot; },
+          ].map(({ icon, name, desc }) =&gt; (
+            &lt;div key={name} className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-lg p-3&quot;&gt;
+              &lt;div className=&quot;flex items-center gap-2 mb-1&quot;&gt;
+                &lt;span&gt;{icon}&lt;/span&gt;
+                &lt;strong className=&quot;text-[#7ec87a] text-sm&quot;&gt;{name}&lt;/strong&gt;
+              &lt;/div&gt;
+              &lt;p className=&quot;text-[#6b8f68] text-xs leading-relaxed&quot;&gt;{desc}&lt;/p&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+
+        &lt;H2&gt;📋 Gerador de PLANO.md&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Análise automática do VFS&lt;/strong&gt; — detecta stack (React, Vite, TypeScript, Tailwind, Express, Prisma...)&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Árvore ASCII de arquivos&lt;/strong&gt; — estrutura visual de pastas e arquivos&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Rotas de API detectadas&lt;/strong&gt; — extrai endpoints GET/POST/PUT/DELETE automaticamente&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Variáveis de ambiente&lt;/strong&gt; — lista todas as process.env.* usadas&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Dependências completas&lt;/strong&gt; — lista packages de produção e desenvolvimento&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Guia para recriar do zero&lt;/strong&gt; — passo a passo: criar projeto, instalar deps, configurar .env, rodar&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Contexto para IA&lt;/strong&gt; — bloco pronto para colar em qualquer IA e continuar o projeto&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Checklist de recriação&lt;/strong&gt; — lista de verificação para deploy completo&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🔍 Scanner de Arquivos&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Análise de VFS&lt;/strong&gt; — detecta tecnologias, mapeia componentes e estrutura do projeto&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Importar APK/ZIP&lt;/strong&gt; — extrai e analisa o conteúdo de pacotes Android ou zips&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Análise de URL&lt;/strong&gt; — faz scraping de sites para extrair código e estrutura&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Análise via IA&lt;/strong&gt; — envia o projeto para a IA gerar um relatório detalhado&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🐙 GitHub&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Clonar repositório&lt;/strong&gt; — clone qualquer repo público ou privado (com token)&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Criar repositório&lt;/strong&gt; — cria um novo repo no GitHub direto do editor&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Commit e Push&lt;/strong&gt; — commite e envie arquivos do VFS para o GitHub&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Pull&lt;/strong&gt; — sincronize mudanças do repositório remoto para o VFS&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;☁️ Backup Google Drive&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Backup automático&lt;/strong&gt; — salva o projeto atual no Drive&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Restaurar versões&lt;/strong&gt; — recupere versões anteriores do projeto&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Sincronizar&lt;/strong&gt; — mantenha o projeto sincronizado entre dispositivos&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;📁 Importar / Exportar&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Importar ZIP ou TAR.GZ&lt;/strong&gt; — extrai e carrega qualquer projeto de código&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Exportar ZIP&lt;/strong&gt; — baixa o projeto VFS completo como .zip&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Compatível com&lt;/strong&gt; VS Code, Replit, Glitch, GitHub, CodeSandbox&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🖥️ App Desktop (Electron)&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;Windows&lt;/strong&gt; — MaikonJuridicoPro-windows.zip disponível para download direto&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Linux&lt;/strong&gt; — MaikonJuridicoPro-linux.AppImage disponível para download direto&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Servidor embutido&lt;/strong&gt; — roda offline sem navegador, a 100% localmente&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;Sem instalação&lt;/strong&gt; — extraia o ZIP e execute o .exe (Windows) ou .AppImage (Linux)&lt;/Li&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    ),
+  },
+  {
+    id: &quot;banco-dados&quot;,
+    icon: &quot;🗄️&quot;,
+    title: &quot;Banco de Dados&quot;,
+    content: (
+      &lt;div&gt;
+        &lt;P&gt;
+          O SK Code Editor tem um painel completo de banco de dados integrado. Suporta{&quot; &quot;}
+          &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;PostgreSQL/Neon&lt;/strong&gt; na nuvem,{&quot; &quot;}
+          &lt;strong className=&quot;text-[#7ec87a]&quot;&gt;SQLite local&lt;/strong&gt; no navegador e guias para MySQL e Supabase.
+          Toque no ícone &lt;strong&gt;🗄️&lt;/strong&gt; na barra inferior para abrir.
+        &lt;/P&gt;
+
+        &lt;H2&gt;🐘 PostgreSQL / Neon (Recomendado)&lt;/H2&gt;
+        &lt;P&gt;O &lt;strong&gt;Neon&lt;/strong&gt; é a opção mais fácil: PostgreSQL serverless gratuito, sem cartão de crédito.&lt;/P&gt;
+
+        &lt;div className=&quot;bg-blue-950/20 border border-blue-700/30 rounded-xl p-3 mb-3&quot;&gt;
+          &lt;p className=&quot;text-[11px] font-bold text-blue-300 mb-2&quot;&gt;📖 Como criar seu banco gratuito no Neon:&lt;/p&gt;
+          &lt;ol className=&quot;space-y-1.5&quot;&gt;
+            {[
+              [&quot;Acesse&quot;, &quot;neon.tech&quot;, &quot;https://neon.tech&quot;, &quot; → clique em Sign Up (grátis, sem cartão de crédito)&quot;],
+              [&quot;Crie um projeto&quot;, null, null, &quot; — dê um nome (ex: \&quot;juridico\&quot;) e escolha a região mais próxima&quot;],
+              [&quot;No painel do projeto, vá em&quot;, &quot;Connection Details&quot;, null, &quot;&quot;],
+              [&quot;Copie a&quot;, &quot;Connection string&quot;, null, &quot; — começa com postgresql://&quot;],
+              [&quot;No editor, toque em 🗄️ → cole a URL → clique Testar&quot;, null, null, &quot;&quot;],
+            ].map(([before, link, href, after], i) =&gt; (
+              &lt;li key={i} className=&quot;flex gap-2 text-[11px] text-gray-300 items-start&quot;&gt;
+                &lt;span className=&quot;w-5 h-5 bg-blue-700/40 text-blue-300 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5&quot;&gt;{i + 1}&lt;/span&gt;
+                &lt;span&gt;
+                  {before}
+                  {link &amp;&amp; href &amp;&amp; &lt;a href={href} target=&quot;_blank&quot; rel=&quot;noreferrer&quot; className=&quot;text-blue-400 underline mx-1&quot;&gt;{link}&lt;/a&gt;}
+                  {link &amp;&amp; !href &amp;&amp; &lt;span className=&quot;text-yellow-300 font-mono mx-1&quot;&gt;{link}&lt;/span&gt;}
+                  {after}
+                &lt;/span&gt;
+              &lt;/li&gt;
+            ))}
+          &lt;/ol&gt;
+        &lt;/div&gt;
+
+        &lt;H2&gt;🔗 Formato da String de Conexão&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong className=&quot;font-mono text-[#7ec87a]&quot;&gt;postgresql://usuario:senha@host/banco?sslmode=require&lt;/strong&gt; — Neon&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong className=&quot;font-mono text-[#7ec87a]&quot;&gt;postgresql://postgres:senha@host:5432/banco&lt;/strong&gt; — PostgreSQL padrão&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong className=&quot;font-mono text-[#7ec87a]&quot;&gt;mysql://usuario:senha@host:3306/banco&lt;/strong&gt; — MySQL&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong className=&quot;font-mono text-[#7ec87a]&quot;&gt;./banco.db&lt;/strong&gt; — SQLite local (use aba SQLite no painel)&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;▶ Executar SQL no Painel&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;Abra 🗄️ → cole sua connection string → clique &lt;strong&gt;Testar&lt;/strong&gt;&lt;/Li&gt;
+          &lt;Li&gt;Use os &lt;strong&gt;Comandos Rápidos&lt;/strong&gt; para ver tabelas, colunas e contagens&lt;/Li&gt;
+          &lt;Li&gt;Digite qualquer SQL no campo e pressione &lt;strong&gt;▶ Executar&lt;/strong&gt; ou &lt;strong&gt;Ctrl+Enter&lt;/strong&gt;&lt;/Li&gt;
+          &lt;Li&gt;Os resultados aparecem em tabela com todas as linhas e colunas&lt;/Li&gt;
+          &lt;Li&gt;Clique em &lt;strong&gt;📐 Schema&lt;/strong&gt; para ver todas as tabelas com colunas clicáveis&lt;/Li&gt;
+          &lt;Li&gt;Clique em &lt;strong&gt;💾 Backup&lt;/strong&gt; para exportar como .sql ou .csv&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;⚖️ Tabelas Jurídicas Prontas&lt;/H2&gt;
+        &lt;P&gt;O painel inclui botões para criar todas as tabelas jurídicas de uma vez:&lt;/P&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;👤 Clientes + Usuários&lt;/strong&gt; — dados pessoais, OAB, perfis de acesso&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;📁 Processos&lt;/strong&gt; — número CNJ, área do direito, vara, comarca, fase, polo ativo/passivo&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;📅 Audiências + Prazos&lt;/strong&gt; — data/hora, local, juiz, pauta, status&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;📄 Documentos + Movimentações&lt;/strong&gt; — arquivos, histórico de andamentos&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;🗃️ SQLite Local (sem internet)&lt;/H2&gt;
+        &lt;P&gt;Funciona 100% no navegador, sem conta, sem servidor, sem internet:&lt;/P&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;Abra 🗄️ → aba &lt;strong&gt;SQLite Local&lt;/strong&gt; → clique &lt;strong&gt;+ Criar Banco Novo&lt;/strong&gt;&lt;/Li&gt;
+          &lt;Li&gt;Execute qualquer SQL: CREATE TABLE, INSERT, SELECT, UPDATE, DELETE&lt;/Li&gt;
+          &lt;Li&gt;Carregue um arquivo .db existente com &lt;strong&gt;📂 Carregar .db&lt;/strong&gt;&lt;/Li&gt;
+          &lt;Li&gt;Exporte como &lt;strong&gt;.db&lt;/strong&gt; (binário) ou &lt;strong&gt;.sql&lt;/strong&gt; (dump com INSERTs)&lt;/Li&gt;
+          &lt;Li&gt;Os dados ficam na memória — &lt;strong&gt;exporte antes de fechar a aba&lt;/strong&gt;&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;📖 Guias por Provedor&lt;/H2&gt;
+        &lt;P&gt;A aba &lt;strong&gt;Guias&lt;/strong&gt; no painel 🗄️ tem passo a passo para cada provedor:&lt;/P&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;🐘 Neon&lt;/strong&gt; — PostgreSQL serverless gratuito (recomendado)&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;🚂 Railway&lt;/strong&gt; — PostgreSQL pago simples via GitHub&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;⚡ Supabase&lt;/strong&gt; — BaaS com PostgreSQL, Auth e Storage inclusos&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;🗃️ SQLite&lt;/strong&gt; — banco local sem servidor (ótimo para desenvolvimento)&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;🐬 MySQL / PlanetScale&lt;/strong&gt; — MySQL na nuvem&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;🖥️ PostgreSQL Local&lt;/strong&gt; — instalação no seu PC&lt;/Li&gt;
+        &lt;/ul&gt;
+        &lt;P&gt;Cada guia inclui: passo a passo, string de conexão, código Node.js de exemplo e variáveis de ambiente.&lt;/P&gt;
+
+        &lt;H2&gt;💾 Backup e Exportação&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;Na aba &lt;strong&gt;💾 Backup&lt;/strong&gt;: exporte todas as tabelas como arquivo .sql&lt;/Li&gt;
+          &lt;Li&gt;Exporte qualquer tabela individual como &lt;strong&gt;.csv&lt;/strong&gt; para Excel&lt;/Li&gt;
+          &lt;Li&gt;Use o dump .sql para restaurar em qualquer outro banco PostgreSQL&lt;/Li&gt;
+          &lt;Li&gt;Faça backup regularmente antes de mudanças grandes no schema&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;⚙️ Credenciais Salvas&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;Na aba &lt;strong&gt;⚙️ Credenciais&lt;/strong&gt;: salve várias conexões com nomes amigáveis&lt;/Li&gt;
+          &lt;Li&gt;Adicione: Neon Jurídico, Railway Dev, Supabase Prod, etc.&lt;/Li&gt;
+          &lt;Li&gt;Alterne entre conexões com um clique — útil para ambientes de dev/prod&lt;/Li&gt;
+          &lt;Li&gt;As credenciais ficam salvas no navegador (localStorage), nunca em servidor externo&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;💡 Dicas de Uso&lt;/H2&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;Peça para a &lt;strong&gt;IA 🤖&lt;/strong&gt; criar o SQL: &quot;Crie as tabelas para um escritório de advocacia&quot;&lt;/Li&gt;
+          &lt;Li&gt;Use o botão &lt;strong&gt;🤖 IA&lt;/strong&gt; no painel para pedir ajuda com queries complexas&lt;/Li&gt;
+          &lt;Li&gt;Sempre teste a conexão antes de executar queries de modificação&lt;/Li&gt;
+          &lt;Li&gt;Use &lt;strong&gt;BEGIN / ROLLBACK&lt;/strong&gt; para testar operações destrutivas com segurança&lt;/Li&gt;
+          &lt;Li&gt;Para dados sensíveis (CPF, senhas): nunca salve em texto puro — use bcrypt e hashing&lt;/Li&gt;
+        &lt;/ul&gt;
+
+        &lt;H2&gt;📦 Usando no Código do Projeto&lt;/H2&gt;
+        &lt;P&gt;Instale e use o banco no seu projeto com a IA gerando o código completo:&lt;/P&gt;
+        &lt;ul className=&quot;space-y-1 mb-3&quot;&gt;
+          &lt;Li&gt;&lt;strong&gt;npm install @neondatabase/serverless&lt;/strong&gt; — Neon no browser/Node&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;npm install pg&lt;/strong&gt; — PostgreSQL tradicional no Node.js&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;npm install better-sqlite3&lt;/strong&gt; — SQLite no Node.js (síncrono, rápido)&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;npm install prisma @prisma/client&lt;/strong&gt; — ORM com migrações automáticas&lt;/Li&gt;
+          &lt;Li&gt;&lt;strong&gt;npm install drizzle-orm drizzle-kit&lt;/strong&gt; — ORM TypeScript moderno&lt;/Li&gt;
+        &lt;/ul&gt;
+        &lt;P&gt;Diga para a IA: &quot;Crie um arquivo db.js com conexão ao banco e funções para CRUD de processos.&quot; Ela gera o código completo pronto para copiar.&lt;/P&gt;
+      &lt;/div&gt;
+    ),
+  },
+  ];
+
+  const activeSection = sections.find((s) =&gt; s.id === active) || sections[0];
+
+  return (
+    &lt;div className=&quot;flex h-full bg-[#0d0d0d] text-white overflow-hidden&quot;&gt;
+      {/* Sidebar de navegação */}
+      &lt;div className=&quot;w-36 shrink-0 border-r border-[#2d4a1e] flex flex-col py-2 overflow-y-auto&quot;&gt;
+        {sections.map((s) =&gt; (
+          &lt;button
+            key={s.id}
+            onClick={() =&gt; setActive(s.id)}
+            className={`flex flex-col items-center gap-1 py-2.5 px-1 text-xs transition-colors ${
+              active === s.id
+                ? &quot;bg-[#141414] text-[#7ec87a] border-r-2 border-[#5aab56]&quot;
+                : &quot;text-[#5a7a56] hover:text-[#7ec87a] hover:bg-[#1a2412]&quot;
+            }`}
+          &gt;
+            &lt;span className=&quot;text-lg&quot;&gt;{s.icon}&lt;/span&gt;
+            &lt;span className=&quot;text-center leading-tight&quot;&gt;{s.title}&lt;/span&gt;
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* Conteúdo */}
+      &lt;div className=&quot;flex-1 overflow-y-auto p-4&quot;&gt;
+        &lt;div className=&quot;max-w-2xl mx-auto&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-2 mb-4 pb-3 border-b border-[#2d4a1e]&quot;&gt;
+            &lt;span className=&quot;text-2xl&quot;&gt;{activeSection.icon}&lt;/span&gt;
+            &lt;h1 className=&quot;text-[#7ec87a] font-bold text-lg&quot;&gt;{activeSection.title}&lt;/h1&gt;
+          &lt;/div&gt;
+          {activeSection.content}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
