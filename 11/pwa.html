@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#667eea">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PWA Manager">
+  <title>📱 Gerenciador de PWA</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cor-primaria: #667eea;
+      --cor-secundaria: #764ba2;
+      --cor-sucesso: #51cf66;
+      --cor-alerta: #ffd43b;
+      --cor-perigo: #ff6b6b;
+      --cor-bg: #f8f9fa;
+      --cor-card: #ffffff;
+      --cor-texto: #333333;
+      --cor-texto-claro: #666666;
+      --cor-borda: #dddddd;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--cor-bg);
+      color: var(--cor-texto);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body.dark-mode {
+      --cor-bg: #1a1a1a;
+      --cor-card: #2d2d2d;
+      --cor-texto: #e0e0e0;
+      --cor-texto-claro: #b0b0b0;
+      --cor-borda: #444444;
+    }
+
+    .container {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      margin: 0;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .header p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--cor-texto);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--cor-primaria);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--cor-texto);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--cor-borda);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      background: var(--cor-card);
+      color: var(--cor-texto);
+      transition: all 0.3s;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--cor-primaria);
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-adicionar {
+      background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+      color: white;
+    }
+
+    .btn-adicionar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-limpar {
+      background: #f0f0f0;
+      color: var(--cor-texto);
+    }
+
+    body.dark-mode .btn-limpar {
+      background: #444;
+      color: #e0e0e0;
+    }
+
+    .btn-limpar:hover {
+      background: #e0e0e0;
+    }
+
+    body.dark-mode .btn-limpar:hover {
+      background: #555;
+    }
+
+    .grid-pwa {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .pwa-card {
+      background: var(--cor-card);
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pwa-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+      border-color: var(--cor-primaria);
+    }
+
+    .pwa-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .pwa-nome {
+      font-weight: bold;
+      color: var(--cor-texto);
+      margin-bottom: 5px;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .pwa-link {
+      font-size: 11px;
+      color: var(--cor-texto-claro);
+      margin-bottom: 10px;
+      word-break: break-all;
+      max-height: 40px;
+      overflow: hidden;
+    }
+
+    .pwa-acoes {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .btn-pwa {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .btn-abrir {
+      background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+      color: white;
+    }
+
+    .btn-abrir:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-deletar {
+      background: var(--cor-perigo);
+      color: white;
+    }
+
+    .btn-deletar:hover {
+      background: #fa5252;
+      transform: scale(1.05);
+    }
+
+    .btn-editar {
+      background: var(--cor-alerta);
+      color: #333;
+    }
+
+    .btn-editar:hover {
+      background: #fcc419;
+      transform: scale(1.05);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.ativo {
+      display: flex;
+    }
+
+    .modal-conteudo {
+      background: var(--cor-card);
+      border-radius: 15px;
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-titulo {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: var(--cor-texto);
+    }
+
+    .modal-fechar {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--cor-texto-claro);
+      transition: all 0.2s;
+    }
+
+    .modal-fechar:hover {
+      color: var(--cor-texto);
+    }
+
+    .aviso {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      border-left: 4px solid;
+    }
+
+    .aviso.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left-color: #2196f3;
+    }
+
+    .aviso.sucesso {
+      background: #d4edda;
+      color: #155724;
+      border-left-color: var(--cor-sucesso);
+    }
+
+    .aviso.alerta {
+      background: #fff3cd;
+      color: #856404;
+      border-left-color: var(--cor-alerta);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: var(--cor-card);
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid var(--cor-primaria);
+    }
+
+    .stat-numero {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--cor-primaria);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--cor-texto-claro);
+      margin-top: 5px;
+    }
+
+    .footer {
+      background: var(--cor-card);
+      padding: 20px;
+      text-align: center;
+      color: var(--cor-texto-claro);
+      font-size: 12px;
+      border-top: 1px solid var(--cor-borda);
+      margin-top: 30px;
+    }
+
+    .vazio {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--cor-texto-claro);
+    }
+
+    .vazio-icone {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .grid-pwa {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+
+      .pwa-icon {
+        font-size: 32px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        min-width: auto;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        padding: 15px;
+      }
+
+      .header h1 {
+        font-size: 18px;
+      }
+
+      .content {
+        padding: 10px;
+      }
+
+      .grid-pwa {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+      }
+
+      .pwa-card {
+        padding: 10px;
+      }
+
+      .pwa-icon {
+        font-size: 28px;
+      }
+
+      .pwa-nome {
+        font-size: 12px;
+      }
+
+      .pwa-link {
+        font-size: 10px;
+      }
+
+      .modal-conteudo {
+        padding: 20px;
+      }
+    }
+
+    /* ANIMAÇÕES */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .pwa-card {
+      animation: slideIn 0.3s ease;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--cor-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--cor-primaria);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cor-secundaria);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <h1>
+        <span>📱</span>
+        <span>Gerenciador de PWA</span>
+      </h1>
+      <p>Organize e acesse seus Progressive Web Apps</p>
+      <div class="header-controls">
+        <button class="btn-header" onclick="abrirModalAdicionar()">➕ Novo PWA</button>
+        <button class="btn-header" onclick="alternarModoEscuro()">🌙 Modo Escuro</button>
+        <button class="btn-header" onclick="exportarDados()">📥 Exportar</button>
+        <button class="btn-header" onclick="importarDados()">📤 Importar</button>
+      </div>
+    </div>
+
+    <!-- CONTEÚDO -->
+    <div class="content">
+      <!-- ESTATÍSTICAS -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-numero" id="totalPWA">0</div>
+          <div class="stat-label">PWAs Salvos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-numero" id="totalAcessos">0</div>
+          <div class="stat-label">Acessos Totais</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-numero" id="ultimoAcesso">-</div>
+          <div class="stat-label">Último Acesso</div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO DE PWAs -->
+      <div class="section">
+        <div class="section-title">📲 Seus PWAs</div>
+        <div id="gridPWA" class="grid-pwa">
+          <div class="vazio">
+            <div class="vazio-icone">📭</div>
+            <p>Nenhum PWA salvo ainda</p>
+            <p style="font-size: 12px; margin-top: 10px;">Clique em "➕ Novo PWA" para começar!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer">
+      <p>💡 Dica: Clique em um PWA para abrir. Use os botões para editar ou deletar.</p>
+      <p style="margin-top: 10px;">Todos os dados são salvos localmente no seu dispositivo.</p>
+    </div>
+  </div>
+
+  <!-- MODAL ADICIONAR/EDITAR -->
+  <div class="modal" id="modalPWA">
+    <div class="modal-conteudo">
+      <button class="modal-fechar" onclick="fecharModal()">×</button>
+      <div class="modal-titulo" id="modalTitulo">➕ Novo PWA</div>
+
+      <div class="form-group">
+        <label for="inputNome">Nome do PWA</label>
+        <input type="text" id="inputNome" placeholder="Ex: ChatGPT, Gemini, Claude...">
+      </div>
+
+      <div class="form-group">
+        <label for="inputLink">Link/URL</label>
+        <input type="url" id="inputLink" placeholder="Ex: https://chat.openai.com">
+      </div>
+
+      <div class="form-group">
+        <label for="inputIcone">Ícone (Emoji)</label>
+        <input type="text" id="inputIcone" placeholder="Ex: 🤖" maxlength="2">
+      </div>
+
+      <div class="form-group">
+        <label for="inputDescricao">Descrição (opcional)</label>
+        <textarea id="inputDescricao" placeholder="Descrição curta..." rows="3"></textarea>
+      </div>
+
+      <div class="button-group">
+        <button class="btn-adicionar" onclick="salvarPWA()">💾 Salvar</button>
+        <button class="btn-limpar" onclick="fecharModal()">❌ Cancelar</button>
+      </div>
+
+      <div id="avisoModal"></div>
+    </div>
+  </div>
+
+  <!-- INPUT HIDDEN PARA IMPORTAR -->
+  <input type="file" id="inputImportar" style="display: none;" accept=".json" onchange="processarImportacao()">
+
+  <script>
+    // ============================================
+        // DADOS E CONFIGURAÇÕES
+        // ============================================
+
+        let dados = {
+            pwas: [],
+            totalAcessos: 0,
+            ultimoAcesso: null
+        };
+
+        let editandoIndex = -1;
+
+        // ============================================
+        // INICIALIZAR
+        // ============================================
+
+        window.addEventListener('DOMContentLoaded', () => {
+            carregarDados();
+            renderizarPWAs();
+            atualizarEstatisticas();
+            carregarModoEscuro();
+        });
+
+        // ============================================
+        // SALVAR DADOS NO NAVEGADOR
+        // ============================================
+
+        function salvarDados() {
+            localStorage.setItem('pwa-manager-dados', JSON.stringify(dados));
+        }
+
+        function carregarDados() {
+            const dadosSalvos = localStorage.getItem('pwa-manager-dados');
+            if (dadosSalvos) {
+                dados = JSON.parse(dadosSalvos);
+            }
+        }
+
+        // ============================================
+        // ABRIR MODAL ADICIONAR
+        // ============================================
+
+        function abrirModalAdicionar() {
+            editandoIndex = -1;
+            document.getElementById('modalTitulo').textContent = '➕ Novo PWA';
+            document.getElementById('inputNome').value = '';
+            document.getElementById('inputLink').value = '';
+            document.getElementById('inputIcone').value = '';
+            document.getElementById('inputDescricao').value = '';
+            document.getElementById('avisoModal').innerHTML = '';
+            document.getElementById('modalPWA').classList.add('ativo');
+        }
+
+        // ============================================
+        // ABRIR MODAL EDITAR
+        // ============================================
+
+        function abrirModalEditar(index) {
+            editandoIndex = index;
+            const pwa = dados.pwas[index];
+            document.getElementById('modalTitulo').textContent = '✏️ Editar PWA';
+            document.getElementById('inputNome').value = pwa.nome;
+            document.getElementById('inputLink').value = pwa.link;
+            document.getElementById('inputIcone').value = pwa.icone;
+            document.getElementById('inputDescricao').value = pwa.descricao || '';
+            document.getElementById('avisoModal').innerHTML = '';
+            document.getElementById('modalPWA').classList.add('ativo');
+        }
+
+        // ============================================
+        // FECHAR MODAL
+        // ============================================
+
+        function fecharModal() {
+            document.getElementById('modalPWA').classList.remove('ativo');
+            editandoIndex = -1;
+        }
+
+        // ============================================
+        // SALVAR PWA
+        // ============================================
+
+        function salvarPWA() {
+            const nome = document.getElementById('inputNome').value.trim();
+            const link = document.getElementById('inputLink').value.trim();
+            const icone = document.getElementById('inputIcone').value.trim();
+            const descricao = document.getElementById('inputDescricao').value.trim();
+
+            // VALIDAR
+            if (!nome) {
+                mostrarAvisoModal('❌ Digite o nome do PWA!', 'alerta');
+                return;
+            }
+
+            if (!link) {
+                mostrarAvisoModal('❌ Digite o link do PWA!', 'alerta');
+                return;
+            }
+
+            if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                mostrarAvisoModal('❌ Link deve começar com http:// ou https://', 'alerta');
+                return;
+            }
+
+            // ADICIONAR OU EDITAR
+            if (editandoIndex === -1) {
+                dados.pwas.push({
+                    nome: nome,
+                    link: link,
+                    icone: icone || '🔗',
+                    descricao: descricao,
+                    dataCriacao: new Date().toLocaleString('pt-BR'),
+                    acessos: 0
+                });
+                mostrarAvisoModal('✅ PWA adicionado com sucesso!', 'sucesso');
+            } else {
+                dados.pwas[editandoIndex] = {
+                    ...dados.pwas[editandoIndex],
+                    nome: nome,
+                    link: link,
+                    icone: icone || '🔗',
+                    descricao: descricao
+                };
+                mostrarAvisoModal('✅ PWA atualizado com sucesso!', 'sucesso');
+            }
+
+            salvarDados();
+            renderizarPWAs();
+            atualizarEstatisticas();
+
+            setTimeout(() => {
+                fecharModal();
+            }, 1000);
+        }
+
+        // ============================================
+        // ABRIR PWA
+        // ============================================
+
+        function abrirPWA(index) {
+            const pwa = dados.pwas[index];
+            pwa.acessos = (pwa.acessos || 0) + 1;
+            dados.totalAcessos++;
+            dados.ultimoAcesso = new Date().toLocaleString('pt-BR');
+            salvarDados();
+            atualizarEstatisticas();
+            window.open(pwa.link, '_blank');
+        }
+
+        // ============================================
+        // DELETAR PWA
+        // ============================================
+
+        function deletarPWA(index) {
+            if (confirm('Tem certeza que quer deletar este PWA?')) {
+                dados.pwas.splice(index, 1);
+                salvarDados();
+                renderizarPWAs();
+                atualizarEstatisticas();
+            }
+        }
+
+        // ============================================
+        // RENDERIZAR PWAs
+        // ============================================
+
+        function renderizarPWAs() {
+            const grid = document.getElementById('gridPWA');
+
+            if (dados.pwas.length === 0) {
+                grid.innerHTML = `
+                    <div class="vazio" style="grid-column: 1 / -1;">
+                        <div class="vazio-icone">📭</div>
+                        <p>Nenhum PWA salvo ainda</p>
+                        <p style="font-size: 12px; margin-top: 10px;">Clique em "➕ Novo PWA" para começar!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = dados.pwas.map((pwa, index) => `
+                <div class="pwa-card">
+                    <div class="pwa-icon">${pwa.icone}</div>
+                    <div class="pwa-nome">${pwa.nome}</div>
+                    <div class="pwa-link">${pwa.link}</div>
+                    <div style="font-size: 11px; color: var(--cor-texto-claro); margin-bottom: 8px;">
+                        Acessos: ${pwa.acessos || 0}
+                    </div>
+                    <div class="pwa-acoes">
+                        <button class="btn-pwa btn-abrir" onclick="abrirPWA(${index})">Abrir</button>
+                        <button class="btn-pwa btn-editar" onclick="abrirModalEditar(${index})">Editar</button>
+                        <button class="btn-pwa btn-deletar" onclick="deletarPWA(${index})">Deletar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // ATUALIZAR ESTATÍSTICAS
+        // ============================================
+
+        function atualizarEstatisticas() {
+            document.getElementById('totalPWA').textContent = dados.pwas.length;
+            document.getElementById('totalAcessos').textContent = dados.totalAcessos;
+            document.getElementById('ultimoAcesso').textContent = dados.ultimoAcesso ? 
+                new Date(dados.ultimoAcesso).toLocaleDateString('pt-BR') : '-';
+        }
+
+        // ============================================
+        // MODO ESCURO
+        // ============================================
+
+        function alternarModoEscuro() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('pwa-manager-dark-mode', 
+                document.body.classList.contains('dark-mode'));
+        }
+
+        function carregarModoEscuro() {
+            if (localStorage.getItem('pwa-manager-dark-mode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        // ============================================
+        // EXPORTAR DADOS
+        // ============================================
+
+        function exportarDados() {
+            const dataExportacao = {
+                dataExportacao: new Date().toLocaleString('pt-BR'),
+                pwas: dados.pwas,
+                totalAcessos: dados.totalAcessos
+            };
+
+            const blob = new Blob([JSON.stringify(dataExportacao, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `pwa-manager-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================
+        // IMPORTAR DADOS
+        // ============================================
+
+        function importarDados() {
+            document.getElementById('inputImportar').click();
+        }
+
+        function processarImportacao() {
+            const file = document.getElementById('inputImportar').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const dadosImportados = JSON.parse(e.target.result);
+                    if (dadosImportados.pwas && Array.isArray(dadosImportados.pwas)) {
+                        dados.pwas = dadosImportados.pwas;
+                        dados.totalAcessos = dadosImportados.totalAcessos || 0;
+                        salvarDados();
+                        renderizarPWAs();
+                        atualizarEstatisticas();
+                        alert('✅ Dados importados com sucesso!');
+                    } else {
+                        alert('❌ Formato de arquivo inválido!');
+                    }
+                } catch (erro) {
+                    alert('❌ Erro ao importar arquivo: ' + erro.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ============================================
+        // MOSTRAR AVISO NO MODAL
+        // ============================================
+
+        function mostrarAvisoModal(mensagem, tipo) {
+            const avisoDiv = document.getElementById('avisoModal');
+            avisoDiv.innerHTML = `<div class="aviso ${tipo}">${mensagem}</div>`;
+        }
+
+        // ============================================
+        // FECHAR MODAL AO CLICAR FORA
+        // ============================================
+
+        document.getElementById('modalPWA').addEventListener('click', (e) => {
+            if (e.target.id === 'modalPWA') {
+                fecharModal();
+            }
+        });
+
+        // ============================================
+        // TECLA ESC PARA FECHAR MODAL
+        // ============================================
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                fecharModal();
+            }
+        });
+  </script>
+</body>
+
+</html>
