@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: pwa.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 pwa.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:07:32 • 12 elementos • 25 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import React, { useState, useCallback } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import {</div><div class="idx-item">L13 [import] import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;</div><div class="idx-item">L14 [import] import { Feather } from &quot;@expo/vector-icons&quot;;</div><div class="idx-item">L15 [import] import * as Haptics from &quot;expo-haptics&quot;;</div><div class="idx-item">L16 [import] import { useColors } from &quot;@/hooks/useColors&quot;;</div><div class="idx-item">L18 [const] TAB_BAR_HEIGHT</div><div class="idx-item">L20 [interface] CheckItem</div><div class="idx-item">L28 [const] TOOLS</div><div class="idx-item">L69 [component] PwaScreen</div><div class="idx-item">L106 [function] update →</div><div class="idx-item">L271 [function] statusIcon →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L24</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import React, { useState, useCallback } from &quot;react&quot;;
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Linking,
+  Platform,
+} from &quot;react-native&quot;;
+import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;
+import { Feather } from &quot;@expo/vector-icons&quot;;
+import * as Haptics from &quot;expo-haptics&quot;;
+import { useColors } from &quot;@/hooks/useColors&quot;;
+
+const TAB_BAR_HEIGHT = Platform.OS === &quot;web&quot; ? 84 : 80;
+
+interface CheckItem {
+  id: string;
+  label: string;
+  description: string;
+  status: &quot;pass&quot; | &quot;fail&quot; | &quot;warn&quot; | &quot;skip&quot; | &quot;pending&quot;;</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>uid</span>
+    <div>
+      <small>L25–L25</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">  detail?: string;</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>statusColor</span>
+    <div>
+      <small>L26–L29</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">}
+
+const TOOLS = [
+  {</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>statusLabel</span>
+    <div>
+      <small>L30–L66</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">    name: &quot;Bubblewrap (Google)&quot;,
+    url: &quot;https://github.com/GoogleChromeLabs/bubblewrap&quot;,
+    desc: &quot;Ferramenta oficial para converter PWA em APK/AAB com TWA (Trusted Web Activity). Gratuito, open-source.&quot;,
+    icon: &quot;package&quot; as const,
+  },
+  {
+    name: &quot;PWA Builder (Microsoft)&quot;,
+    url: &quot;https://www.pwabuilder.com&quot;,
+    desc: &quot;Cole a URL do seu site, valida a PWA e gera APK, AAB, MSIX e IPA. Mais fácil que Bubblewrap.&quot;,
+    icon: &quot;globe&quot; as const,
+  },
+  {
+    name: &quot;PWA2APK&quot;,
+    url: &quot;https://pwa2apk.com&quot;,
+    desc: &quot;Converte PWA em APK simples. Ideal para testes rápidos.&quot;,
+    icon: &quot;smartphone&quot; as const,
+  },
+  {
+    name: &quot;GoNative.io&quot;,
+    url: &quot;https://gonative.io&quot;,
+    desc: &quot;Converte qualquer site em app nativo Android/iOS com funcionalidades extras (push, câmera, GPS).&quot;,
+    icon: &quot;arrow-right-circle&quot; as const,
+  },
+];
+
+const REQUIRED_CHECKS: Omit&lt;CheckItem, &quot;status&quot; | &quot;detail&quot;&gt;[] = [
+  { id: &quot;https&quot;, label: &quot;HTTPS&quot;, description: &quot;O site deve servir via HTTPS (obrigatório para PWA).&quot; },
+  { id: &quot;manifest&quot;, label: &quot;Web App Manifest&quot;, description: &quot;Deve existir um arquivo manifest.json ou manifest.webmanifest linkado no HTML.&quot; },
+  { id: &quot;sw&quot;, label: &quot;Service Worker&quot;, description: &quot;Deve registrar um service worker para cache offline.&quot; },
+  { id: &quot;icons&quot;, label: &quot;Ícones 192x192 e 512x512&quot;, description: &quot;O manifest deve ter ícones PNG de pelo menos 192px e 512px.&quot; },
+  { id: &quot;name&quot;, label: &quot;name e short_name&quot;, description: &quot;O manifest deve ter 'name' e 'short_name' definidos.&quot; },
+  { id: &quot;start_url&quot;, label: &quot;start_url&quot;, description: &quot;O manifest deve ter 'start_url' definido.&quot; },
+  { id: &quot;display&quot;, label: &quot;display: standalone/fullscreen&quot;, description: &quot;O manifest deve ter display='standalone' ou 'fullscreen' para instalar como app.&quot; },
+  { id: &quot;maskable&quot;, label: &quot;Ícone maskable&quot;, description: &quot;Recomendado: ícone com purpose='maskable' para ícone adaptativo no Android.&quot; },
+  { id: &quot;theme_color&quot;, label: &quot;theme_color&quot;, description: &quot;Define a cor da barra de status no Android.&quot; },
+  { id: &quot;background_color&quot;, label: &quot;background_color&quot;, description: &quot;Cor de fundo da tela de splash.&quot; },
+  { id: &quot;description&quot;, label: &quot;description&quot;, description: &quot;Descrição do app no manifest.&quot; },</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>ManualModal</span>
+    <div>
+      <small>L67–L108</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">];
+
+export default function PwaScreen() {
+  const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const [url, setUrl] = useState(&quot;&quot;);
+  const [loading, setLoading] = useState(false);
+  const [checks, setChecks] = useState&lt;CheckItem[]&gt;([]);
+  const [score, setScore] = useState&lt;number | null&gt;(null);
+  const [error, setError] = useState&lt;string | null&gt;(null);
+  const [summary, setSummary] = useState&lt;string | null&gt;(null);
+
+  const validatePWA = useCallback(async () =&gt; {
+    const trimmed = url.trim();
+    if (!trimmed) return;
+
+    const rawUrl = trimmed.startsWith(&quot;http&quot;) ? trimmed : `https://${trimmed}`;
+
+    setLoading(true);
+    setError(null);
+    setChecks([]);
+    setScore(null);
+    setSummary(null);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    const results: CheckItem[] = REQUIRED_CHECKS.map((c) =&gt; ({
+      ...c,
+      status: &quot;pending&quot;,
+    }));
+    setChecks([...results]);
+
+    try {
+      // 1. Busca o HTML
+      const htmlRes = await fetch(rawUrl, {
+        headers: { &quot;User-Agent&quot;: &quot;Mozilla/5.0 DevMobile-PWA-Checker/1.0&quot; },
+      });
+      const htmlText = await htmlRes.text();
+      const finalUrl = htmlRes.url || rawUrl;
+
+      const update = (id: string, status: CheckItem[&quot;status&quot;], detail?: string) =&gt; {
+        results.forEach((r) =&gt; { if (r.id === id) { r.status = status; if (detail) r.detail = detail; } });
+        setChecks([...results]);</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>CreateTableModal</span>
+    <div>
+      <small>L109–L118</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">      };
+
+      // HTTPS
+      if (finalUrl.startsWith(&quot;https://&quot;) || rawUrl.startsWith(&quot;https://&quot;)) {
+        update(&quot;https&quot;, &quot;pass&quot;, `URL: ${finalUrl}`);
+      } else {
+        update(&quot;https&quot;, &quot;fail&quot;, &quot;Serve via HTTP — troque para HTTPS antes de publicar.&quot;);
+      }
+
+      // Manifest link no HTML</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>addCol</span>
+    <div>
+      <small>L119–L119</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">      const manifestMatch = htmlText.match(/&lt;link[^&gt;]+rel=[&quot;'][^&quot;']*manifest[^&quot;']*[&quot;'][^&gt;]*&gt;/i);</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>removeCol</span>
+    <div>
+      <small>L120–L120</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">      let manifestUrl: string | null = null;</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>setColName</span>
+    <div>
+      <small>L121–L121</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">      let manifest: Record&lt;string, unknown&gt; | null = null;</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>setColType</span>
+    <div>
+      <small>L122–L125</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">
+      if (manifestMatch) {
+        const hrefMatch = manifestMatch[0].match(/href=[&quot;']([^&quot;']+)[&quot;']/i);
+        if (hrefMatch) {</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>run</span>
+    <div>
+      <small>L126–L204</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">          try {
+            const base = new URL(finalUrl);
+            manifestUrl = new URL(hrefMatch[1], base).href;
+            const mRes = await fetch(manifestUrl);
+            if (mRes.ok) {
+              manifest = await mRes.json();
+              update(&quot;manifest&quot;, &quot;pass&quot;, `Encontrado: ${manifestUrl}`);
+            } else {
+              update(&quot;manifest&quot;, &quot;fail&quot;, `manifest linkado mas retornou HTTP ${mRes.status}`);
+            }
+          } catch {
+            update(&quot;manifest&quot;, &quot;fail&quot;, &quot;Erro ao buscar o manifest.json&quot;);
+          }
+        }
+      } else {
+        // Tenta /manifest.json diretamente
+        try {
+          const base = new URL(finalUrl);
+          const guess = new URL(&quot;/manifest.json&quot;, base).href;
+          const mRes = await fetch(guess);
+          if (mRes.ok) {
+            manifest = await mRes.json();
+            manifestUrl = guess;
+            update(&quot;manifest&quot;, &quot;warn&quot;, `Manifest não linkado no HTML mas encontrado em ${guess}`);
+          } else {
+            update(&quot;manifest&quot;, &quot;fail&quot;, &quot;Nenhum &lt;link rel=manifest&gt; no HTML e /manifest.json não encontrado.&quot;);
+          }
+        } catch {
+          update(&quot;manifest&quot;, &quot;fail&quot;, &quot;Nenhum &lt;link rel=manifest&gt; no HTML.&quot;);
+        }
+      }
+
+      // Service Worker
+      const swMatch = htmlText.match(/serviceWorker|registerServiceWorker|navigator\.serviceWorker/i);
+      if (swMatch) {
+        update(&quot;sw&quot;, &quot;pass&quot;, &quot;Registro de service worker detectado no HTML.&quot;);
+      } else {
+        // Tenta /sw.js ou /service-worker.js
+        try {
+          const base = new URL(finalUrl);
+          const swUrls = [&quot;/sw.js&quot;, &quot;/service-worker.js&quot;, &quot;/serviceworker.js&quot;, &quot;/sw-prod.js&quot;];
+          let found = false;
+          for (const p of swUrls) {
+            const r = await fetch(new URL(p, base).href, { method: &quot;HEAD&quot; });
+            if (r.ok) { update(&quot;sw&quot;, &quot;warn&quot;, `Service worker não registrado no HTML, mas arquivo ${p} existe.`); found = true; break; }
+          }
+          if (!found) update(&quot;sw&quot;, &quot;fail&quot;, &quot;Service worker não encontrado. Crie e registre um para cache offline.&quot;);
+        } catch {
+          update(&quot;sw&quot;, &quot;fail&quot;, &quot;Não foi possível verificar service worker.&quot;);
+        }
+      }
+
+      if (manifest) {
+        const m = manifest as Record&lt;string, unknown&gt;;
+
+        // Icons
+        const icons = Array.isArray(m.icons) ? m.icons as Array&lt;Record&lt;string, unknown&gt;&gt; : [];
+        const has192 = icons.some((ic) =&gt; String(ic.sizes || &quot;&quot;).includes(&quot;192&quot;));
+        const has512 = icons.some((ic) =&gt; String(ic.sizes || &quot;&quot;).includes(&quot;512&quot;));
+        if (has192 &amp;&amp; has512) {
+          update(&quot;icons&quot;, &quot;pass&quot;, `${icons.length} ícone(s) definido(s) incluindo 192x192 e 512x512.`);
+        } else if (has192 || has512) {
+          update(&quot;icons&quot;, &quot;warn&quot;, `Tem ${icons.length} ícone(s) mas faltam tamanhos: ${!has192 ? &quot;192x192 &quot; : &quot;&quot;}${!has512 ? &quot;512x512&quot; : &quot;&quot;}`);
+        } else {
+          update(&quot;icons&quot;, &quot;fail&quot;, &quot;Nenhum ícone 192x192 ou 512x512 no manifest.&quot;);
+        }
+
+        // name e short_name
+        if (m.name &amp;&amp; m.short_name) {
+          update(&quot;name&quot;, &quot;pass&quot;, `name: &quot;${m.name}&quot;, short_name: &quot;${m.short_name}&quot;`);
+        } else if (m.name) {
+          update(&quot;name&quot;, &quot;warn&quot;, `name: &quot;${m.name}&quot; — falta short_name (máx 12 chars recomendado).`);
+        } else {
+          update(&quot;name&quot;, &quot;fail&quot;, &quot;Faltam 'name' e 'short_name' no manifest.&quot;);
+        }
+
+        // start_url
+        if (m.start_url) {
+          update(&quot;start_url&quot;, &quot;pass&quot;, `start_url: &quot;${m.start_url}&quot;`);</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>KeysScreen</span>
+    <div>
+      <small>L205–L266</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">        } else {
+          update(&quot;start_url&quot;, &quot;fail&quot;, &quot;Falta 'start_url' no manifest. Use '/' se for a raiz.&quot;);
+        }
+
+        // display
+        const display = String(m.display || &quot;&quot;);
+        if (display === &quot;standalone&quot; || display === &quot;fullscreen&quot; || display === &quot;minimal-ui&quot;) {
+          update(&quot;display&quot;, &quot;pass&quot;, `display: &quot;${display}&quot; ✓`);
+        } else if (!display) {
+          update(&quot;display&quot;, &quot;fail&quot;, &quot;Falta 'display' no manifest. Use \&quot;standalone\&quot; para instalar como app.&quot;);
+        } else {
+          update(&quot;display&quot;, &quot;warn&quot;, `display: &quot;${display}&quot; — use &quot;standalone&quot; ou &quot;fullscreen&quot; para melhor experiência.`);
+        }
+
+        // maskable
+        const hasMaskable = icons.some((ic) =&gt; String(ic.purpose || &quot;&quot;).includes(&quot;maskable&quot;));
+        update(&quot;maskable&quot;, hasMaskable ? &quot;pass&quot; : &quot;warn&quot;,
+          hasMaskable ? &quot;Ícone maskable presente ✓&quot; : 'Sem ícone maskable. Adicione purpose: &quot;maskable&quot; para ícone adaptativo no Android.');
+
+        // theme_color
+        update(&quot;theme_color&quot;, m.theme_color ? &quot;pass&quot; : &quot;warn&quot;,
+          m.theme_color ? `theme_color: &quot;${m.theme_color}&quot;` : &quot;Sem theme_color. Recomendado para barra de status do Android.&quot;);
+
+        // background_color
+        update(&quot;background_color&quot;, m.background_color ? &quot;pass&quot; : &quot;warn&quot;,
+          m.background_color ? `background_color: &quot;${m.background_color}&quot;` : &quot;Sem background_color. Recomendado para tela de splash.&quot;);
+
+        // description
+        update(&quot;description&quot;, m.description ? &quot;pass&quot; : &quot;warn&quot;,
+          m.description ? `description: &quot;${m.description}&quot;` : &quot;Sem description no manifest.&quot;);
+      } else {
+        [&quot;icons&quot;, &quot;name&quot;, &quot;start_url&quot;, &quot;display&quot;, &quot;maskable&quot;, &quot;theme_color&quot;, &quot;background_color&quot;, &quot;description&quot;].forEach((id) =&gt;
+          update(id, &quot;skip&quot;, &quot;Manifest não disponível para verificar.&quot;)
+        );
+      }
+
+      // Calcula score
+      const pass = results.filter((r) =&gt; r.status === &quot;pass&quot;).length;
+      const fail = results.filter((r) =&gt; r.status === &quot;fail&quot;).length;
+      const total = results.filter((r) =&gt; r.status !== &quot;skip&quot;).length;
+      const sc = Math.round((pass / total) * 100);
+      setScore(sc);
+
+      const failItems = results.filter((r) =&gt; r.status === &quot;fail&quot;).map((r) =&gt; r.label);
+      if (sc === 100) {
+        setSummary(&quot;✅ PWA perfeita! Pronta para converter em APK com PWABuilder ou Bubblewrap.&quot;);
+      } else if (sc &gt;= 75) {
+        setSummary(`⚠️ Quase lá! Corrija: ${failItems.join(&quot;, &quot;)} e tente converter.`);
+      } else if (fail &gt; 0) {
+        setSummary(`❌ Faltam itens obrigatórios: ${failItems.join(&quot;, &quot;)}. Corrija antes de converter.`);
+      } else {
+        setSummary(&quot;🔶 Alguns itens recomendados estão faltando. O APK pode funcionar, mas com limitações.&quot;);
+      }
+    } catch (e) {
+      setError(
+        `Não foi possível acessar &quot;${rawUrl}&quot;.\n\n` +
+        `• Verifique se a URL está correta\n` +
+        `• O site pode bloquear requisições de outras origens (CORS)\n` +
+        `• Tente acessar pelo PWABuilder: pwabuilder.com\n\n` +
+        `Erro: ${e instanceof Error ? e.message : String(e)}`
+      );
+    } finally {</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>pickManual</span>
+    <div>
+      <small>L267–L271</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">      setLoading(false);
+    }
+  }, [url]);
+
+  const statusIcon = (s: CheckItem[&quot;status&quot;]) =&gt; {</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>addKey</span>
+    <div>
+      <small>L272–L283</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">    if (s === &quot;pass&quot;) return { icon: &quot;check-circle&quot; as const, color: &quot;#22c55e&quot; };
+    if (s === &quot;fail&quot;) return { icon: &quot;x-circle&quot; as const, color: &quot;#ef4444&quot; };
+    if (s === &quot;warn&quot;) return { icon: &quot;alert-circle&quot; as const, color: &quot;#f59e0b&quot; };
+    if (s === &quot;skip&quot;) return { icon: &quot;minus-circle&quot; as const, color: &quot;#6b7280&quot; };
+    return { icon: &quot;loader&quot; as const, color: colors.mutedForeground };
+  };
+
+  const scoreColor = score === null ? colors.foreground : score &gt;= 80 ? &quot;#22c55e&quot; : score &gt;= 50 ? &quot;#f59e0b&quot; : &quot;#ef4444&quot;;
+
+  return (
+    &lt;View style={[styles.root, { backgroundColor: colors.background }]}&gt;
+      &lt;View style={[styles.header, { paddingTop: insets.top + 12, backgroundColor: colors.card, borderBottomColor: colors.border }]}&gt;</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>testKey</span>
+    <div>
+      <small>L284–L286</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">        &lt;Text style={[styles.headerTitle, { color: colors.foreground }]}&gt;PWA → APK&lt;/Text&gt;
+        &lt;Text style={[styles.headerSub, { color: colors.mutedForeground }]}&gt;Valide seu site antes de converter&lt;/Text&gt;
+      &lt;/View&gt;</pre>
+</div>
+<div class="block" id="b15">
+  <div class="block-h">
+    <span>base →</span>
+    <div>
+      <small>L287–L297</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre15').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre15">
+      &lt;ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={[styles.content, { paddingBottom: TAB_BAR_HEIGHT + insets.bottom + 24 }]}
+        keyboardShouldPersistTaps=&quot;handled&quot;
+      &gt;
+        {/* URL input */}
+        &lt;View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;Text style={[styles.sectionTitle, { color: colors.foreground }]}&gt;URL do seu site&lt;/Text&gt;
+          &lt;View style={[styles.inputRow, { borderColor: colors.border, backgroundColor: colors.background }]}&gt;
+            &lt;Feather name=&quot;globe&quot; size={16} color={colors.mutedForeground} style={{ marginRight: 8 }} /&gt;</pre>
+</div>
+<div class="block" id="b16">
+  <div class="block-h">
+    <span>testAll</span>
+    <div>
+      <small>L298–L300</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre16').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre16">            &lt;TextInput
+              style={[styles.input, { color: colors.foreground }]}
+              placeholder=&quot;meusite.com ou https://meusite.com&quot;</pre>
+</div>
+<div class="block" id="b17">
+  <div class="block-h">
+    <span>testNeon</span>
+    <div>
+      <small>L301–L311</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre17').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre17">              placeholderTextColor={colors.mutedForeground}
+              value={url}
+              onChangeText={setUrl}
+              autoCapitalize=&quot;none&quot;
+              autoCorrect={false}
+              keyboardType=&quot;url&quot;
+              returnKeyType=&quot;go&quot;
+              onSubmitEditing={validatePWA}
+            /&gt;
+            {url.length &gt; 0 &amp;&amp; (
+              &lt;TouchableOpacity onPress={() =&gt; setUrl(&quot;&quot;)}&gt;</pre>
+</div>
+<div class="block" id="b18">
+  <div class="block-h">
+    <span>runSql</span>
+    <div>
+      <small>L312–L321</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre18').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre18">                &lt;Feather name=&quot;x&quot; size={16} color={colors.mutedForeground} /&gt;
+              &lt;/TouchableOpacity&gt;
+            )}
+          &lt;/View&gt;
+          &lt;TouchableOpacity
+            style={[styles.btn, { backgroundColor: colors.primary }, loading &amp;&amp; { opacity: 0.6 }]}
+            onPress={validatePWA}
+            disabled={loading || !url.trim()}
+          &gt;
+            {loading ? (</pre>
+</div>
+<div class="block" id="b19">
+  <div class="block-h">
+    <span>runAiDb</span>
+    <div>
+      <small>L322–L328</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre19').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre19">              &lt;ActivityIndicator size=&quot;small&quot; color=&quot;#fff&quot; /&gt;
+            ) : (
+              &lt;Feather name=&quot;zap&quot; size={16} color=&quot;#fff&quot; /&gt;
+            )}
+            &lt;Text style={styles.btnText}&gt;{loading ? &quot;Validando...&quot; : &quot;Validar PWA&quot;}&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+        &lt;/View&gt;</pre>
+</div>
+<div class="block" id="b20">
+  <div class="block-h">
+    <span>base →</span>
+    <div>
+      <small>L329–L362</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre20').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre20">
+        {/* Erro de acesso */}
+        {error &amp;&amp; (
+          &lt;View style={[styles.card, { backgroundColor: &quot;#ef444420&quot;, borderColor: &quot;#ef4444&quot; }]}&gt;
+            &lt;Text style={[styles.sectionTitle, { color: &quot;#ef4444&quot; }]}&gt;Erro ao acessar o site&lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#ef4444&quot;, fontSize: 13, lineHeight: 20 }}&gt;{error}&lt;/Text&gt;
+          &lt;/View&gt;
+        )}
+
+        {/* Score */}
+        {score !== null &amp;&amp; (
+          &lt;View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border, alignItems: &quot;center&quot; }]}&gt;
+            &lt;Text style={[styles.sectionTitle, { color: colors.foreground }]}&gt;Pontuação PWA&lt;/Text&gt;
+            &lt;Text style={[styles.score, { color: scoreColor }]}&gt;{score}%&lt;/Text&gt;
+            {summary &amp;&amp; &lt;Text style={[styles.summaryText, { color: colors.foreground }]}&gt;{summary}&lt;/Text&gt;}
+          &lt;/View&gt;
+        )}
+
+        {/* Checklist */}
+        {checks.length &gt; 0 &amp;&amp; (
+          &lt;View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+            &lt;Text style={[styles.sectionTitle, { color: colors.foreground }]}&gt;Checklist PWA&lt;/Text&gt;
+            {checks.map((item) =&gt; {
+              const { icon, color } = statusIcon(item.status);
+              return (
+                &lt;View key={item.id} style={[styles.checkRow, { borderBottomColor: colors.border }]}&gt;
+                  &lt;Feather name={icon} size={18} color={color} style={{ marginTop: 2 }} /&gt;
+                  &lt;View style={{ flex: 1, marginLeft: 10 }}&gt;
+                    &lt;Text style={[styles.checkLabel, { color: colors.foreground }]}&gt;{item.label}&lt;/Text&gt;
+                    &lt;Text style={[styles.checkDesc, { color: colors.mutedForeground }]}&gt;{item.description}&lt;/Text&gt;
+                    {item.detail &amp;&amp; (
+                      &lt;Text style={[styles.checkDetail, { color: item.status === &quot;fail&quot; ? &quot;#ef4444&quot; : item.status === &quot;pass&quot; ? &quot;#22c55e&quot; : &quot;#f59e0b&quot; }]}&gt;
+                        {item.detail}
+                      &lt;/Text&gt;</pre>
+</div>
+<div class="block" id="b21">
+  <div class="block-h">
+    <span>loadTableDetails</span>
+    <div>
+      <small>L363–L379</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre21').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre21">                    )}
+                  &lt;/View&gt;
+                &lt;/View&gt;
+              );
+            })}
+          &lt;/View&gt;
+        )}
+
+        {/* Ferramentas de conversão */}
+        &lt;View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;Text style={[styles.sectionTitle, { color: colors.foreground }]}&gt;Ferramentas para converter em APK&lt;/Text&gt;
+          &lt;Text style={[styles.toolsIntro, { color: colors.mutedForeground }]}&gt;
+            Depois de validar a PWA, use uma dessas ferramentas para gerar o APK/AAB:
+          &lt;/Text&gt;
+          {TOOLS.map((tool) =&gt; (
+            &lt;TouchableOpacity
+              key={tool.name}</pre>
+</div>
+<div class="block" id="b22">
+  <div class="block-h">
+    <span>push →</span>
+    <div>
+      <small>L380–L383</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre22').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre22">              style={[styles.toolRow, { borderColor: colors.border, backgroundColor: colors.background }]}
+              onPress={() =&gt; {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                Linking.openURL(tool.url);</pre>
+</div>
+<div class="block" id="b23">
+  <div class="block-h">
+    <span>update →</span>
+    <div>
+      <small>L384–L432</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre23').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre23">              }}
+            &gt;
+              &lt;View style={[styles.toolIcon, { backgroundColor: colors.primary + &quot;20&quot; }]}&gt;
+                &lt;Feather name={tool.icon} size={20} color={colors.primary} /&gt;
+              &lt;/View&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;Text style={[styles.toolName, { color: colors.foreground }]}&gt;{tool.name}&lt;/Text&gt;
+                &lt;Text style={[styles.toolDesc, { color: colors.mutedForeground }]}&gt;{tool.desc}&lt;/Text&gt;
+                &lt;Text style={[styles.toolUrl, { color: colors.primary }]}&gt;{tool.url}&lt;/Text&gt;
+              &lt;/View&gt;
+              &lt;Feather name=&quot;external-link&quot; size={14} color={colors.mutedForeground} /&gt;
+            &lt;/TouchableOpacity&gt;
+          ))}
+        &lt;/View&gt;
+
+        {/* ── TWA: PWA → APK em 3 passos ── */}
+        &lt;View style={{ borderRadius: 12, borderWidth: 1, borderColor: &quot;#22c55e40&quot;, backgroundColor: &quot;#052e16&quot;, padding: 16, gap: 12 }}&gt;
+          &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8 }}&gt;
+            &lt;View style={{ width: 34, height: 34, borderRadius: 10, backgroundColor: &quot;#22c55e&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot; }}&gt;
+              &lt;Text style={{ fontSize: 18 }}&gt;🚀&lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;View style={{ flex: 1 }}&gt;
+              &lt;Text style={{ color: &quot;#f0fdf4&quot;, fontSize: 15, fontWeight: &quot;800&quot; }}&gt;PWA → TWA → APK&lt;/Text&gt;
+              &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 11 }}&gt;Trusted Web Activity — método mais rápido&lt;/Text&gt;
+            &lt;/View&gt;
+          &lt;/View&gt;
+
+          {/* Botão principal PWABuilder */}
+          &lt;TouchableOpacity
+            onPress={() =&gt; { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); Linking.openURL(&quot;https://www.pwabuilder.com&quot;); }}
+            style={{ backgroundColor: &quot;#22c55e&quot;, borderRadius: 10, paddingVertical: 12, alignItems: &quot;center&quot;, flexDirection: &quot;row&quot;, justifyContent: &quot;center&quot;, gap: 8 }}
+          &gt;
+            &lt;Text style={{ fontSize: 16 }}&gt;🏗️&lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;800&quot;, fontSize: 15 }}&gt;Abrir PWABuilder&lt;/Text&gt;
+            &lt;Feather name=&quot;external-link&quot; size={14} color=&quot;#ffffff99&quot; /&gt;
+          &lt;/TouchableOpacity&gt;
+
+          &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 12, textAlign: &quot;center&quot; }}&gt;
+            Cole a URL do seu site → clica &quot;Package for Stores&quot; → Android → baixa o APK/AAB pronto
+          &lt;/Text&gt;
+
+          {/* Passos rápidos */}
+          {[
+            { n: &quot;1&quot;, t: &quot;Valide a PWA acima&quot;, d: &quot;Score mínimo 80 para PWABuilder aceitar a URL.&quot; },
+            { n: &quot;2&quot;, t: &quot;PWABuilder → Package for Stores → Android&quot;, d: &quot;Clique no botão acima, cole a URL, gera AAB ou APK assinado gratuitamente.&quot; },
+            { n: &quot;3&quot;, t: &quot;Instale o APK no Android&quot;, d: &quot;Baixe o .apk, ative 'Fontes desconhecidas' em Configurações → Segurança, abra o arquivo.&quot; },
+            { n: &quot;4&quot;, t: &quot;Publique na Play Store (opcional)&quot;, d: &quot;Use o .aab gerado para envio na Google Play Console.&quot; },
+          ].map((step) =&gt; (
+            &lt;View key={step.n} style={{ flexDirection: &quot;row&quot;, gap: 10, alignItems: &quot;flex-start&quot; }}&gt;</pre>
+</div>
+<div class="block" id="b24">
+  <div class="block-h">
+    <span>base →</span>
+    <div>
+      <small>L433–L625</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre24').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre24">              &lt;View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: &quot;#22c55e&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot; }}&gt;
+                &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;800&quot;, fontSize: 12 }}&gt;{step.n}&lt;/Text&gt;
+              &lt;/View&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;Text style={{ color: &quot;#f0fdf4&quot;, fontSize: 13, fontWeight: &quot;700&quot; }}&gt;{step.t}&lt;/Text&gt;
+                &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 11, lineHeight: 16, marginTop: 2 }}&gt;{step.d}&lt;/Text&gt;
+              &lt;/View&gt;
+            &lt;/View&gt;
+          ))}
+
+          {/* Instalar APK direto no Android */}
+          &lt;View style={{ borderTopWidth: 1, borderTopColor: &quot;#22c55e30&quot;, paddingTop: 10, gap: 6 }}&gt;
+            &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 12, fontWeight: &quot;700&quot; }}&gt;📲 Instalar APK direto no Android&lt;/Text&gt;
+            {[
+              { label: &quot;Ativar 'Fontes desconhecidas'&quot;, url: &quot;https://support.google.com/android/answer/9217471&quot;, icon: &quot;unlock&quot; as const },
+              { label: &quot;APKMirror — instalar via browser&quot;, url: &quot;https://www.apkmirror.com&quot;, icon: &quot;download&quot; as const },
+              { label: &quot;SAI (Split APKs Installer)&quot;, url: &quot;https://github.com/Aefyr/SAI&quot;, icon: &quot;package&quot; as const },
+            ].map((item) =&gt; (
+              &lt;TouchableOpacity
+                key={item.label}
+                onPress={() =&gt; { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); Linking.openURL(item.url); }}
+                style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, padding: 8, borderRadius: 8, backgroundColor: &quot;#0f3d1f&quot;, borderWidth: 1, borderColor: &quot;#22c55e25&quot; }}
+              &gt;
+                &lt;Feather name={item.icon} size={13} color=&quot;#22c55e&quot; /&gt;
+                &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 12, flex: 1 }}&gt;{item.label}&lt;/Text&gt;
+                &lt;Feather name=&quot;external-link&quot; size={11} color=&quot;#22c55e55&quot; /&gt;
+              &lt;/TouchableOpacity&gt;
+            ))}
+          &lt;/View&gt;
+        &lt;/View&gt;
+
+        {/* Como funciona */}
+        &lt;View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;Text style={[styles.sectionTitle, { color: colors.foreground }]}&gt;Como funciona a conversão&lt;/Text&gt;
+          {[
+            { n: &quot;1&quot;, t: &quot;Crie seu site como PWA&quot;, d: &quot;Deve ter HTTPS, manifest.json, service worker e ícones.&quot; },
+            { n: &quot;2&quot;, t: &quot;Valide aqui&quot;, d: &quot;Use o validador acima para checar o que está faltando.&quot; },
+            { n: &quot;3&quot;, t: &quot;Use PWABuilder ou Bubblewrap&quot;, d: &quot;Cole a URL e gere o APK/AAB com um clique.&quot; },
+            { n: &quot;4&quot;, t: &quot;Assine e publique&quot;, d: &quot;Faça upload do AAB na Google Play Store ou distribua o APK direto.&quot; },
+          ].map((step) =&gt; (
+            &lt;View key={step.n} style={styles.stepRow}&gt;
+              &lt;View style={[styles.stepNum, { backgroundColor: colors.primary }]}&gt;
+                &lt;Text style={styles.stepNumText}&gt;{step.n}&lt;/Text&gt;
+              &lt;/View&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;Text style={[styles.stepTitle, { color: colors.foreground }]}&gt;{step.t}&lt;/Text&gt;
+                &lt;Text style={[styles.stepDesc, { color: colors.mutedForeground }]}&gt;{step.d}&lt;/Text&gt;
+              &lt;/View&gt;
+            &lt;/View&gt;
+          ))}
+        &lt;/View&gt;
+
+        {/* APK Nativo via WebView — opção extra */}
+        &lt;View style={[styles.card, { backgroundColor: &quot;#0f172a&quot;, borderColor: &quot;#6366f144&quot; }]}&gt;
+          &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8, marginBottom: 4 }}&gt;
+            &lt;View style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: &quot;#6366f1&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot; }}&gt;
+              &lt;Text style={{ fontSize: 16 }}&gt;📦&lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;Text style={[styles.sectionTitle, { color: &quot;#e2e8f0&quot; }]}&gt;APK Nativo via WebView (sem loja)&lt;/Text&gt;
+          &lt;/View&gt;
+          &lt;Text style={{ color: &quot;#94a3b8&quot;, fontSize: 13, lineHeight: 19, marginBottom: 10 }}&gt;
+            Cria um app Android real que carrega seu site em WebView nativo. Ideal para hospedar um site/PWA existente como app instalável sem precisar da Google Play.
+          &lt;/Text&gt;
+          {[
+            { icon: &quot;⚖️&quot;, title: &quot;Template Assistente Jurídico&quot;, desc: &quot;WebView wrapper com URL configurável, botão voltar Android, tela de erro e FAB de configurações. EAS já configurado para maikons-individual-orga2.&quot;, badge: &quot;EAS PRONTO&quot;, action: () =&gt; Linking.openURL(&quot;devmobile://projetos&quot;) },
+            { icon: &quot;🌐&quot;, title: &quot;Template WebView Genérico&quot;, desc: &quot;Qualquer URL vira APK. Substitua a URL no App.tsx e compile via EAS.&quot;, badge: &quot;EXPO&quot;, action: () =&gt; Linking.openURL(&quot;https://snack.expo.dev&quot;) },
+            { icon: &quot;🔧&quot;, title: &quot;Compilar com EAS via terminal&quot;, desc: &quot;No terminal do app: EAS_NO_VCS=1 eas build --platform android --profile preview&quot;, badge: &quot;TERMINAL&quot;, action: null },
+          ].map((item) =&gt; (
+            &lt;TouchableOpacity
+              key={item.title}
+              onPress={() =&gt; item.action ? (Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light), item.action()) : null}
+              activeOpacity={item.action ? 0.7 : 1}
+              style={{ flexDirection: &quot;row&quot;, alignItems: &quot;flex-start&quot;, gap: 10, padding: 12, borderRadius: 10, backgroundColor: &quot;#1e293b&quot;, marginBottom: 6, borderWidth: 1, borderColor: &quot;#334155&quot; }}
+            &gt;
+              &lt;Text style={{ fontSize: 22, lineHeight: 28 }}&gt;{item.icon}&lt;/Text&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginBottom: 2 }}&gt;
+                  &lt;Text style={{ color: &quot;#f1f5f9&quot;, fontSize: 13, fontWeight: &quot;700&quot; }}&gt;{item.title}&lt;/Text&gt;
+                  &lt;View style={{ backgroundColor: &quot;#6366f1&quot;, borderRadius: 4, paddingHorizontal: 5, paddingVertical: 1 }}&gt;
+                    &lt;Text style={{ color: &quot;#fff&quot;, fontSize: 9, fontWeight: &quot;800&quot; }}&gt;{item.badge}&lt;/Text&gt;
+                  &lt;/View&gt;
+                &lt;/View&gt;
+                &lt;Text style={{ color: &quot;#94a3b8&quot;, fontSize: 11, lineHeight: 16 }}&gt;{item.desc}&lt;/Text&gt;
+              &lt;/View&gt;
+              {item.action &amp;&amp; &lt;Feather name=&quot;chevron-right&quot; size={16} color=&quot;#64748b&quot; /&gt;}
+            &lt;/TouchableOpacity&gt;
+          ))}
+        &lt;/View&gt;
+
+        {/* Capacidades do arquivo */}
+        &lt;View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;Text style={[styles.sectionTitle, { color: colors.foreground }]}&gt;📊 Capacidades do DevMobile&lt;/Text&gt;
+          {[
+            { label: &quot;Arquivos por projeto&quot;, value: &quot;50.000+ arquivos&quot;, icon: &quot;file&quot;, color: &quot;#10b981&quot; },
+            { label: &quot;Formatos de importação&quot;, value: &quot;ZIP, TAR, TAZ, TGZ, Git Clone&quot;, icon: &quot;download&quot;, color: &quot;#3b82f6&quot; },
+            { label: &quot;Formatos de exportação&quot;, value: &quot;ZIP, compartilhamento direto&quot;, icon: &quot;upload&quot;, color: &quot;#f59e0b&quot; },
+            { label: &quot;Compilação APK&quot;, value: &quot;EAS Build (Expo) + PWA→APK&quot;, icon: &quot;cpu&quot;, color: &quot;#8b5cf6&quot; },
+            { label: &quot;Terminal&quot;, value: &quot;Linux real via servidor, Termux local&quot;, icon: &quot;terminal&quot;, color: &quot;#ef4444&quot; },
+            { label: &quot;IA integrada&quot;, value: &quot;Gemini, GPT, Claude, DeepSeek&quot;, icon: &quot;zap&quot;, color: &quot;#6366f1&quot; },
+          ].map((cap) =&gt; (
+            &lt;View key={cap.label} style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 10, paddingVertical: 6 }}&gt;
+              &lt;View style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: cap.color + &quot;22&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot; }}&gt;
+                &lt;Feather name={cap.icon as never} size={15} color={cap.color} /&gt;
+              &lt;/View&gt;
+              &lt;View style={{ flex: 1 }}&gt;
+                &lt;Text style={{ color: colors.mutedForeground, fontSize: 10, fontWeight: &quot;600&quot;, textTransform: &quot;uppercase&quot;, letterSpacing: 0.5 }}&gt;{cap.label}&lt;/Text&gt;
+                &lt;Text style={{ color: colors.foreground, fontSize: 13, fontWeight: &quot;600&quot; }}&gt;{cap.value}&lt;/Text&gt;
+              &lt;/View&gt;
+            &lt;/View&gt;
+          ))}
+        &lt;/View&gt;
+      &lt;/ScrollView&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1 },
+  header: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  headerTitle: { fontSize: 22, fontWeight: &quot;700&quot; },
+  headerSub: { fontSize: 13, marginTop: 2 },
+  content: { padding: 16, gap: 14 },
+  card: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 16,
+    gap: 12,
+  },
+  sectionTitle: { fontSize: 15, fontWeight: &quot;700&quot; },
+  inputRow: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;center&quot;,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  input: { flex: 1, fontSize: 14 },
+  btn: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;center&quot;,
+    justifyContent: &quot;center&quot;,
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  btnText: { color: &quot;#fff&quot;, fontWeight: &quot;700&quot;, fontSize: 15 },
+  score: { fontSize: 64, fontWeight: &quot;900&quot;, lineHeight: 72 },
+  summaryText: { fontSize: 14, textAlign: &quot;center&quot;, lineHeight: 20 },
+  checkRow: {
+    flexDirection: &quot;row&quot;,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  checkLabel: { fontSize: 14, fontWeight: &quot;600&quot; },
+  checkDesc: { fontSize: 12, marginTop: 2, lineHeight: 18 },
+  checkDetail: { fontSize: 12, marginTop: 4, fontWeight: &quot;500&quot; },
+  toolsIntro: { fontSize: 13, lineHeight: 18 },
+  toolRow: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;flex-start&quot;,
+    gap: 12,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  toolIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    alignItems: &quot;center&quot;,
+    justifyContent: &quot;center&quot;,
+  },
+  toolName: { fontSize: 14, fontWeight: &quot;700&quot; },
+  toolDesc: { fontSize: 12, lineHeight: 18, marginTop: 2 },
+  toolUrl: { fontSize: 11, marginTop: 4 },
+  stepRow: { flexDirection: &quot;row&quot;, gap: 12, alignItems: &quot;flex-start&quot; },
+  stepNum: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: &quot;center&quot;,
+    justifyContent: &quot;center&quot;,
+  },
+  stepNumText: { color: &quot;#fff&quot;, fontWeight: &quot;800&quot;, fontSize: 14 },
+  stepTitle: { fontSize: 14, fontWeight: &quot;600&quot; },
+  stepDesc: { fontSize: 12, lineHeight: 18, marginTop: 2 },
+});
+</pre>
+</div>
+</body>
+</html>
