@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>CodeLens - Playground</title>
+    <link rel="stylesheet" href="css/playground-v2.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" defer></script>
+</head>
+<body>
+
+<div class="playground">
+    <!-- HEADER -->
+    <header class="pg-header">
+        <div class="pg-header-left">
+            <span class="pg-logo">⚡</span>
+            <input type="text" id="pgTitle" class="pg-title-input" placeholder="Nome do snippet...">
+        </div>
+        <div class="pg-header-right">
+            <button class="pg-btn-icon" id="pgBtnImport" title="Importar HTML">📥</button>
+            <button class="pg-btn-icon" id="pgBtnCopy" title="Copiar código">📋</button>
+            <button class="pg-btn-icon" id="pgBtnDownload" title="Baixar">⬇️</button>
+            <button class="pg-btn-icon" id="pgBtnOpen" title="Abrir salvo">📂</button>
+            <button class="pg-btn-icon" id="pgBtnClear" title="Limpar">🗑️</button>
+            <button class="pg-btn-icon" id="pgBtnSave" title="Salvar">💾</button>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <div class="pg-main">
+        <!-- EDITOR -->
+        <div class="pg-editor" id="pgEditor">
+            <!-- TABS -->
+            <div class="pg-tabs">
+                <button class="pg-tab active" data-tab="html">📝 HTML</button>
+                <button class="pg-tab" data-tab="css">🎨 CSS</button>
+                <button class="pg-tab" data-tab="js">⚙️ JS</button>
+                <div class="pg-tab-spacer"></div>
+                <button class="pg-btn-run" id="pgBtnRun">▶️ Executar</button>
+            </div>
+
+            <!-- CODE -->
+            <div class="pg-code-area">
+                <div class="pg-line-numbers" id="pgLineNumbers"></div>
+                <textarea 
+                    id="pgCode" 
+                    class="pg-textarea" 
+                    spellcheck="false"
+                    placeholder="Cole seu código aqui..."
+                ></textarea>
+            </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="pg-preview" id="pgPreview">
+            <div class="pg-preview-header">
+                <span>👁️ Preview</span>
+                <button class="pg-btn-icon-small" id="pgBtnFullscreen" title="Tela cheia">⛶</button>
+                <button class="pg-btn-icon-small" id="pgBtnClosePreview" title="Fechar">✕</button>
+            </div>
+            <iframe 
+                id="pgFrame" 
+                class="pg-iframe"
+                sandbox="allow-scripts allow-modals allow-forms allow-popups"
+                title="Preview"
+            ></iframe>
+        </div>
+    </div>
+
+    <!-- MOBILE TOGGLE -->
+    <div class="pg-mobile-toggle">
+        <button class="pg-toggle-btn active" data-view="editor">📝</button>
+        <button class="pg-toggle-btn" data-view="preview">👁️</button>
+    </div>
+</div>
+
+<!-- MODAL: Abrir Snippets -->
+<div class="pg-modal hidden" id="pgModalOpen">
+    <div class="pg-modal-overlay" onclick="closeSnippetsModal()"></div>
+    <div class="pg-modal-content">
+        <div class="pg-modal-header">
+            <h3>Meus Snippets</h3>
+            <button class="pg-modal-close" onclick="closeSnippetsModal()">✕</button>
+        </div>
+        <input type="text" id="pgSearch" class="pg-search" placeholder="Buscar...">
+        <div class="pg-snippets-list" id="pgSnippetsList"></div>
+    </div>
+</div>
+
+<!-- MODAL: Preview Fullscreen -->
+<div class="pg-modal hidden" id="pgModalFullscreen">
+    <div class="pg-modal-overlay" onclick="closeFullscreen()"></div>
+    <div class="pg-modal-fullscreen">
+        <button class="pg-modal-close" onclick="closeFullscreen()">✕</button>
+        <iframe 
+            id="pgFrameFullscreen" 
+            class="pg-iframe-fullscreen"
+            sandbox="allow-scripts allow-modals allow-forms allow-popups"
+            title="Preview Fullscreen"
+        ></iframe>
+    </div>
+</div>
+
+<!-- INPUT: Import -->
+<input type="file" id="pgFileInput" class="hidden" accept=".html,.htm,.txt">
+
+<!-- TOAST -->
+<div id="pgToast" class="pg-toast hidden"></div>
+
+<!-- SCRIPTS -->
+<script src="js/modules/LocalStorage.js"></script>
+<script src="js/modules/Logger.js"></script>
+<script src="js/services/PlaygroundService.js"></script>
+<script src="js/playground-v2.js"></script>
+
+</body>
+</html>
