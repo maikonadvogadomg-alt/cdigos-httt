@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comparador Jurídico Profissional v2.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: system-ui, sans-serif;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    input,
+    select,
+    textarea {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #e6edf3;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-family: monospace;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn-blue {
+      background: #1f6feb;
+      color: #fff;
+    }
+
+    .btn-green {
+      background: #238636;
+      color: #fff;
+    }
+
+    .btn-red {
+      background: #da3633;
+      color: #fff;
+    }
+
+    .btn-yellow {
+      background: #d29922;
+      color: #000;
+    }
+
+    .btn-gray {
+      background: #21262d;
+      color: #e6edf3;
+      border: 1px solid #30363d;
+    }
+
+    .drop {
+      border: 2px dashed #30363d;
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .drop:hover {
+      border-color: #58a6ff;
+      background: #0d1f40;
+    }
+
+    .added {
+      background: #0d2e16;
+      color: #3fb950;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      padding: 4px 8px;
+      margin: 2px 0;
+    }
+
+    .removed {
+      background: #3d1f1f;
+      color: #f85149;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      padding: 4px 8px;
+      margin: 2px 0;
+    }
+
+    .same {
+      background: #161b22;
+      color: #8b949e;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      padding: 4px 8px;
+      margin: 2px 0;
+    }
+
+    .file-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-bottom: 1px solid #21262d;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    .file-row:hover {
+      background: #1c2128;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .new {
+      background: #0d2e16;
+      color: #3fb950;
+    }
+
+    .del {
+      background: #3d1f1f;
+      color: #f85149;
+    }
+
+    .mod {
+      background: #2d1f00;
+      color: #d29922;
+    }
+
+    .same-b {
+      background: #1c2128;
+      color: #8b949e;
+    }
+
+    .tab-btn {
+      padding: 8px 12px;
+      border: none;
+      background: #21262d;
+      color: #8b949e;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-right: 4px;
+      font-size: 12px;
+    }
+
+    .tab-btn.active {
+      background: #1f6feb;
+      color: #fff;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .alert-critical {
+      background: #3d1f1f;
+      border-left: 4px solid #f85149;
+      color: #f85149;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 4px;
+    }
+
+    .alert-warn {
+      background: #2d1f00;
+      border-left: 4px solid #d29922;
+      color: #d29922;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 4px;
+    }
+
+    .alert-info {
+      background: #0d1f40;
+      border-left: 4px solid #58a6ff;
+      color: #58a6ff;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 4px;
+    }
+
+    .side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .comparison-box {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .suggestion-box {
+      background: #0d2e16;
+      border-left: 3px solid #3fb950;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .bug-item {
+      background: #3d1f1f;
+      border-left: 3px solid #f85149;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .dependency-item {
+      background: #1c2128;
+      border-left: 3px solid #58a6ff;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: monospace;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+      border-radius: 2px;
+    }
+
+    .auto-save-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 8px 12px;
+      background: #238636;
+      color: #fff;
+      border-radius: 4px;
+      font-size: 11px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 999;
+    }
+
+    .auto-save-indicator.show {
+      opacity: 1;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: #1c2128;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #58a6ff;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+
+<body class="p-4 min-h-screen">
+  <div style="max-width:1400px;margin:0 auto;">
+
+    <!-- HEADER -->
+    <div style="text-align:center;padding:16px 0 20px;border-bottom:1px solid #30363d;margin-bottom:20px;">
+      <div style="font-size:32px;margin-bottom:6px;">⚖️</div>
+      <h1 style="font-size:28px;font-weight:700;color:#58a6ff;">Comparador Jurídico Profissional v2.0</h1>
+      <p style="color:#8b949e;font-size:13px;margin-top:4px;">Análise completa com IA, dependências, bugs e sugestões
+      </p>
+      <div class="auto-save-indicator" id="auto-save-indicator">💾 Auto-salvando...</div>
+    </div>
+
+    <!-- TABS -->
+    <div
+      style="display:flex;gap:8px;margin-bottom:16px;border-bottom:1px solid #30363d;padding-bottom:12px;overflow-x:auto;">
+      <button class="tab-btn active" onclick="switchTab('compare')">📊 Comparar</button>
+      <button class="tab-btn" onclick="switchTab('analysis')">🔍 Análise</button>
+      <button class="tab-btn" onclick="switchTab('sidebyside')">↔️ Lado a Lado</button>
+      <button class="tab-btn" onclick="switchTab('report')">📄 Relatório</button>
+      <button class="tab-btn" onclick="switchTab('versions')">📦 Versões</button>
+      <button class="tab-btn" onclick="switchTab('settings')">⚙️ Config</button>
+    </div>
+
+    <!-- TAB: COMPARAR -->
+    <div id="tab-compare" class="tab-content">
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div style="font-size:12px;color:#8b949e;margin-bottom:8px;">📦 Projeto A (Antigo)</div>
+          <div class="drop" id="drop-a" onclick="document.getElementById('file-a').click()">
+            <div id="label-a" style="color:#8b949e;font-size:13px;">Clique ou arraste o ZIP</div>
+          </div>
+          <input type="file" id="file-a" accept=".zip" style="display:none" onchange="loadZip('a',this)">
+        </div>
+        <div class="card">
+          <div style="font-size:12px;color:#8b949e;margin-bottom:8px;">📦 Projeto B (Novo)</div>
+          <div class="drop" id="drop-b" onclick="document.getElementById('file-b').click()">
+            <div id="label-b" style="color:#8b949e;font-size:13px;">Clique ou arraste o ZIP</div>
+          </div>
+          <input type="file" id="file-b" accept=".zip" style="display:none" onchange="loadZip('b',this)">
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">Nome Projeto A</label>
+          <input type="text" id="name-a" placeholder="Ex: v1.0.0" style="width:100%;box-sizing:border-box;">
+        </div>
+        <div class="card">
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">Nome Projeto B</label>
+          <input type="text" id="name-b" placeholder="Ex: v1.1.0" style="width:100%;box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:12px;color:#8b949e;">Filtro:</span>
+        <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+    <input type="checkbox" id="show-mod" checked style="accent-color:#d29922;"> <span style="color:#d29922;">Modificados</span>
+  </label>
+        <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+    <input type="checkbox" id="show-new" checked style="accent-color:#3fb950;"> <span style="color:#3fb950;">Novos</span>
+  </label>
+        <label style="font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer;">
+    <input type="checkbox" id="show-del" checked style="accent-color:#f85149;"> <span style="color:#f85149;">Removidos</span>
+  </label>
+        <input type="text" id="filter-text" placeholder="🔍 buscar arquivo..." style="flex:1;min-width:140px;font-size:12px;height:28px;">
+        <button onclick="compareZips()" class="btn btn-blue" style="font-size:12px;">⚡ Comparar</button>
+      </div>
+
+      <!-- Resumo Estatístico -->
+      <div id="summary" style="display:none;">
+        <div class="grid-3" style="margin-bottom:16px;">
+          <div class="stat-card">
+            <div class="stat-number" id="s-total">0</div>
+            <div class="stat-label">Total de Arquivos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="s-mod" style="color:#d29922;">0</div>
+            <div class="stat-label">Modificados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="s-new" style="color:#3fb950;">0</div>
+            <div class="stat-label">Novos</div>
+          </div>
+        </div>
+        <div class="grid-3" style="margin-bottom:16px;">
+          <div class="stat-card">
+            <div class="stat-number" id="s-del" style="color:#f85149;">0</div>
+            <div class="stat-label">Removidos</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="s-bugs" style="color:#f85149;">0</div>
+            <div class="stat-label">Bugs Detectados</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="s-deps" style="color:#58a6ff;">0</div>
+            <div class="stat-label">Dependências</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button onclick="switchTab('analysis')" class="btn btn-blue" style="font-size:12px;">🔍 Ver Análise</button>
+          <button onclick="switchTab('sidebyside')" class="btn btn-blue" style="font-size:12px;">↔️ Lado a Lado</button>
+          <button onclick="generateReport()" class="btn btn-green" style="font-size:12px;">📄 Relatório</button>
+          <button onclick="exportComparison('json')" class="btn btn-gray" style="font-size:12px;">💾 JSON</button>
+          <button onclick="exportComparison('csv')" class="btn btn-gray" style="font-size:12px;">📊 CSV</button>
+          <button onclick="exportComparison('pdf')" class="btn btn-gray" style="font-size:12px;">📕 PDF</button>
+          <button onclick="saveToVersions()" class="btn btn-blue" style="font-size:12px;">📌 Salvar</button>
+        </div>
+      </div>
+
+      <!-- Lista de arquivos -->
+      <div id="file-list" class="card" style="display:none;">
+        <div id="files-container"></div>
+      </div>
+
+      <!-- Diff viewer -->
+      <div id="diff-panel" style="display:none;" class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div id="diff-title" style="font-size:13px;font-weight:700;font-family:monospace;color:#58a6ff;"></div>
+          <button onclick="document.getElementById('diff-panel').style.display='none'" class="btn btn-gray" style="font-size:11px;padding:4px 8px;">✕</button>
+        </div>
+        <div id="diff-content" style="max-height:500px;overflow-y:auto;border-radius:6px;border:1px solid #30363d;">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: ANÁLISE -->
+    <div id="tab-analysis" class="tab-content" style="display:none;">
+
+      <div class="card">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:16px;">🔍 Análise Detalhada</h2>
+
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <button onclick="analyzeProject('a')" class="btn btn-blue">Analisar Projeto A</button>
+          <button onclick="analyzeProject('b')" class="btn btn-blue">Analisar Projeto B</button>
+          <button onclick="analyzeComparison()" class="btn btn-green">Comparar Análises</button>
+        </div>
+
+        <!-- Bugs -->
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:14px;font-weight:700;color:#f85149;margin-bottom:10px;">🐛 Bugs Detectados</h3>
+          <div id="bugs-list" style="color:#8b949e;font-size:12px;">Nenhuma análise realizada</div>
+        </div>
+
+        <!-- Dependências -->
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:14px;font-weight:700;color:#58a6ff;margin-bottom:10px;">📦 Dependências npm</h3>
+          <div id="deps-list" style="color:#8b949e;font-size:12px;">Nenhuma análise realizada</div>
+        </div>
+
+        <!-- Endpoints -->
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:14px;font-weight:700;color:#3fb950;margin-bottom:10px;">🔌 Endpoints Detectados</h3>
+          <div id="endpoints-list" style="color:#8b949e;font-size:12px;">Nenhuma análise realizada</div>
+        </div>
+
+        <!-- Alertas -->
+        <div style="margin-bottom:20px;">
+          <h3 style="font-size:14px;font-weight:700;color:#d29922;margin-bottom:10px;">⚠️ Alertas & Sugestões</h3>
+          <div id="alerts-list" style="color:#8b949e;font-size:12px;">Nenhuma análise realizada</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB: LADO A LADO -->
+    <div id="tab-sidebyside" class="tab-content" style="display:none;">
+
+      <div class="card">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:16px;">↔️ Comparação Lado a Lado</h2>
+
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">Selecione arquivo para comparar:</label>
+          <select id="file-selector" onchange="showSideBySide()" style="width:100%;box-sizing:border-box;height:32px;">
+      <option value="">-- Selecione um arquivo --</option>
+    </select>
+        </div>
+
+        <div class="side-by-side">
+          <div>
+            <div style="font-size:12px;color:#8b949e;margin-bottom:8px;font-weight:700;" id="side-a-title">Projeto A
+            </div>
+            <div class="comparison-box" id="side-a-content"></div>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#8b949e;margin-bottom:8px;font-weight:700;" id="side-b-title">Projeto B
+            </div>
+            <div class="comparison-box" id="side-b-content"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: RELATÓRIO -->
+    <div id="tab-report" class="tab-content" style="display:none;">
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="font-size:16px;font-weight:700;">📄 Relatório Completo</h2>
+          <div style="display:flex;gap:8px;">
+            <button onclick="copyReportToClipboard()" class="btn btn-blue" style="font-size:12px;">📋 Copiar</button>
+            <button onclick="downloadReportTxt()" class="btn btn-green" style="font-size:12px;">💾 TXT</button>
+          </div>
+        </div>
+        <div id="report-content" style="color:#8b949e;text-align:center;padding:40px;font-size:13px;">Nenhuma comparação
+          realizada ainda</div>
+      </div>
+
+    </div>
+
+    <!-- TAB: VERSÕES -->
+    <div id="tab-versions" class="tab-content" style="display:none;">
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <h2 style="font-size:16px;font-weight:700;">📦 Comparações Salvas</h2>
+          <button onclick="clearAllVersions()" class="btn btn-red" style="font-size:12px;">🗑️ Limpar Tudo</button>
+        </div>
+        <div id="versions-list" style="color:#8b949e;text-align:center;padding:20px;font-size:12px;">Nenhuma comparação
+          salva</div>
+      </div>
+
+    </div>
+
+    <!-- TAB: CONFIGURAÇÕES -->
+    <div id="tab-settings" class="tab-content" style="display:none;">
+
+      <div class="card">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:16px;">⚙️ Configurações</h2>
+
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">
+      <input type="checkbox" id="auto-save-enabled" checked style="accent-color:#58a6ff;"> Auto-salvar comparações
+    </label>
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">
+      <input type="checkbox" id="detect-replit" checked style="accent-color:#58a6ff;"> Detectar vínculos Replit
+    </label>
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">
+      <input type="checkbox" id="scan-hidden" checked style="accent-color:#58a6ff;"> Escanear pastas ocultas
+    </label>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="font-size:12px;color:#8b949e;display:block;margin-bottom:6px;">Extensões a Ignorar (separadas por vírgula)</label>
+          <textarea id="ignore-extensions" style="width:100%;height:80px;box-sizing:border-box;">node_modules,dist,build,.git,.next,__pycache__,.venv</textarea>
+        </div>
+
+        <button onclick="saveSettings()" class="btn btn-green">💾 Salvar</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL: NOMEAÇÃO -->
+  <div id="modal-name" class="modal">
+    <div class="modal-content">
+      <h2 style="font-size:16px;font-weight:700;margin-bottom:16px;">💾 Salvar Comparação</h2>
+      <input type="text" id="comparison-name" placeholder="Ex: Comparação v1.0 vs v1.1" style="width:100%;box-sizing:border-box;margin-bottom:16px;">
+      <textarea id="comparison-notes" placeholder="Notas sobre esta comparação..." style="width:100%;height:100px;box-sizing:border-box;margin-bottom:16px;"></textarea>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button onclick="closeModal('modal-name')" class="btn btn-gray">Cancelar</button>
+        <button onclick="confirmSaveVersion()" class="btn btn-green">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+  <script>
+    // ============ ESTADO GLOBAL ============
+let zipA = null, zipB = null;
+let filesA = {}, filesB = {};
+let results = [];
+let currentComparison = null;
+let autoSaveTimer = null;
+let versions = [];
+let analysisA = {}, analysisB = {};
+
+// ============ INICIALIZAÇÃO ============
+function init() {
+  loadSettings();
+  loadVersions();
+  setupDragDrop();
+  setupAutoSave();
+  setupEventListeners();
+}
+
+function setupEventListeners() {
+  ['show-mod','show-new','show-del'].forEach(id => {
+    document.getElementById(id).onchange = renderList;
+  });
+  document.getElementById('filter-text').oninput = renderList;
+}
+
+function setupAutoSave() {
+  if (autoSaveTimer) clearInterval(autoSaveTimer);
+  autoSaveTimer = setInterval(() => {
+    if (currentComparison && document.getElementById('auto-save-enabled').checked) {
+      saveCurrentState();
+    }
+  }, 30000);
+}
+
+// ============ DRAG & DROP ============
+function setupDragDrop() {
+  ['a','b'].forEach(side => {
+    const drop = document.getElementById(`drop-${side}`);
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = '#58a6ff'; });
+    drop.addEventListener('dragleave', () => { drop.style.borderColor = '#30363d'; });
+    drop.addEventListener('drop', e => {
+      e.preventDefault(); drop.style.borderColor = '#30363d';
+      if (e.dataTransfer.files[0]) loadZipFile(side, e.dataTransfer.files[0]);
+    });
+  });
+}
+
+// ============ CARREGAR ZIP ============
+async function loadZip(side, input) {
+  if (input.files[0]) loadZipFile(side, input.files[0]);
+}
+
+async function loadZipFile(side, file) {
+  const label = document.getElementById(`label-${side}`);
+  const drop = document.getElementById(`drop-${side}`);
+  label.textContent = '⏳ Lendo...';
+  try {
+    const zip = await JSZip.loadAsync(file);
+    const files = {};
+    const ignoreExts = document.getElementById('ignore-extensions').value.split(',').map(s => s.trim());
+    
+    for (const [name, entry] of Object.entries(zip.files)) {
+      if (entry.dir) continue;
+      
+      const skip = ignoreExts.some(s => name.includes(s));
+      if (skip) continue;
+      
+      const ext = name.split('.').pop()?.toLowerCase();
+      const textExts = ['ts','tsx','js','jsx','json','md','css','html','txt','env','yml','yaml','toml','sh','bat','py','cjs','mjs','svg','lock','gradle','xml','properties'];
+      if (!textExts.includes(ext)) continue;
+      
+      try {
+        files[normalPath(name)] = await entry.async('text');
+      } catch {}
+    }
+    
+    if (side === 'a') { filesA = files; }
+    else { filesB = files; }
+    
+    const count = Object.keys(files).length;
+    label.textContent = `✅ ${file.name} (${count} arquivos)`;
+    drop.style.borderColor = '#3fb950';
+    label.style.color = '#3fb950';
+  } catch(e) {
+    label.textContent = '❌ Erro: ' + e.message;
+    label.style.color = '#f85149';
+  }
+}
+
+function normalPath(p) {
+  const parts = p.split('/');
+  return parts.length > 1 ? parts.slice(1).join('/') : p;
+}
+
+// ============ COMPARAÇÃO ============
+function compareZips() {
+  if (!Object.keys(filesA).length || !Object.keys(filesB).length) {
+    alert('Carregue os dois ZIPs primeiro!'); return;
+  }
+  
+  const allKeys = new Set([...Object.keys(filesA), ...Object.keys(filesB)]);
+  results = [];
+  let mod=0, newf=0, del=0;
+
+  for (const key of allKeys) {
+    const a = filesA[key];
+    const b = filesB[key];
+    let status;
+    
+    if (a === undefined) { status = 'new'; newf++; }
+    else if (b === undefined) { status = 'del'; del++; }
+    else if (a === b) { status = 'same'; }
+    else { status = 'mod'; mod++; }
+    
+    results.push({ key, status, a, b });
+  }
+
+  results.sort((x, y) => {
+    const order = {mod:0, new:1, del:2, same:3};
+    return (order[x.status] - order[y.status]) || x.key.localeCompare(y.key);
+  });
+
+  currentComparison = {
+    nameA: document.getElementById('name-a').value || 'Projeto A',
+    nameB: document.getElementById('name-b').value || 'Projeto B',
+    timestamp: new Date().toISOString(),
+    stats: { total: allKeys.size, mod, new: newf, del, same: allKeys.size - mod - newf - del },
+    results: results
+  };
+
+  document.getElementById('s-total').textContent = allKeys.size;
+  document.getElementById('s-mod').textContent = mod;
+  document.getElementById('s-new').textContent = newf;
+  document.getElementById('s-del').textContent = del;
+  document.getElementById('summary').style.display = 'block';
+
+  analyzeComparison();
+  populateFileSelector();
+  renderList();
+}
+
+function renderList() {
+  const showMod = document.getElementById('show-mod').checked;
+  const showNew = document.getElementById('show-new').checked;
+  const showDel = document.getElementById('show-del').checked;
+  const filterText = document.getElementById('filter-text').value.toLowerCase();
+
+  const filtered = results.filter(r => {
+    if (!showMod && r.status === 'mod') return false;
+    if (!showNew && r.status === 'new') return false;
+    if (!showDel && r.status === 'del') return false;
+    if (filterText && !r.key.toLowerCase().includes(filterText)) return false;
+    return true;
+  });
+
+  const badges = { 
+    mod:'<span class="badge mod">MODIFICADO</span>', 
+    new:'<span class="badge new">NOVO</span>', 
+    del:'<span class="badge del">REMOVIDO</span>', 
+    same:'<span class="badge same-b">IGUAL</span>' 
+  };
+
+  const container = document.getElementById('files-container');
+  container.innerHTML = filtered.map((r, i) => `
+    <div class="file-row" onclick="showDiff(${results.indexOf(r)})">
+      <span>${r.key}</span>
+      ${badges[r.status]}
+    </div>
+  `).join('') || '<div style="padding:20px;text-align:center;color:#8b949e;font-size:13px;">Nenhum arquivo com esses filtros</div>';
+
+  document.getElementById('file-list').style.display = 'block';
+}
+
+function showDiff(i) {
+  const r = results[i];
+  document.getElementById('diff-title').textContent = r.key;
+  document.getElementById('diff-panel').style.display = 'block';
+
+  const content = document.getElementById('diff-content');
+
+  if (r.status === 'new') {
+    content.innerHTML = `<div class="added" style="padding:10px;">+++ ARQUIVO NOVO +++\n\n${esc(r.b)}</div>`;
+  } else if (r.status === 'del') {
+    content.innerHTML = `<div class="removed" style="padding:10px;">--- ARQUIVO REMOVIDO ---\n\n${esc(r.a)}</div>`;
+  } else if (r.status === 'same') {
+    content.innerHTML = `<div class="same" style="padding:10px;">= Arquivos idênticos =\n\n${esc(r.a.substring(0, 500))}...</div>`;
+  } else {
+    const linesA = (r.a || '').split('\n').slice(0, 50);
+    const linesB = (r.b || '').split('\n').slice(0, 50);
+    content.innerHTML = diffLines(linesA, linesB);
+  }
+
+  document.getElementById('diff-panel').scrollIntoView({ behavior: 'smooth' });
+}
+
+function diffLines(a, b) {
+  const maxA = a.length, maxB = b.length;
+  let html = '';
+  let i = 0, j = 0;
+
+  while (i < maxA || j < maxB) {
+    if (i >= maxA) {
+      html += `<div class="added">+ ${esc(b[j])}</div>`;
+      j++;
+    } else if (j >= maxB) {
+      html += `<div class="removed">- ${esc(a[i])}</div>`;
+      i++;
+    } else if (a[i] === b[j]) {
+      html += `<div class="same">  ${esc(a[i])}</div>`;
+      i++; j++;
+    } else {
+      let foundB = -1, foundA = -1;
+      for (let k = 1; k <= 3; k++) {
+        if (j+k < maxB && a[i] === b[j+k]) { foundB = k; break; }
+        if (i+k < maxA && b[j] === a[i+k]) { foundA = k; break; }
+      }
+      if (foundB !== -1 && (foundA === -1 || foundB <= foundA)) {
+        for (let k = 0; k < foundB; k++) {
+          html += `<div class="added">+ ${esc(b[j+k])}</div>`;
+        }
+        j += foundB;
+      } else if (foundA !== -1) {
+        for (let k = 0; k < foundA; k++) {
+          html += `<div class="removed">- ${esc(a[i+k])}</div>`;
+        }
+        i += foundA;
+      } else {
+        html += `<div class="removed">- ${esc(a[i])}</div>`;
+        html += `<div class="added">+ ${esc(b[j])}</div>`;
+        i++; j++;
+      }
+    }
+  }
+  return html || '<div class="same" style="padding:10px;">Sem diferenças visíveis</div>';
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ============ ANÁLISE DE PROJETO ============
+function analyzeProject(side) {
+  const files = side === 'a' ? filesA : filesB;
+  const analysis = {
+    bugs: [],
+    dependencies: [],
+    endpoints: [],
+    alerts: [],
+    hasReplit: false,
+    hiddenFiles: []
+  };
+
+  if (document.getElementById('detect-replit').checked) {
+    if (files['.replit'] || files['.replit.nix'] || Object.keys(files).some(k => k.includes('.replit'))) {
+      analysis.hasReplit = true;
+      analysis.alerts.push({type: 'critical', msg: '⚠️ Vínculo Replit detectado - Remova dependências Replit'});
+    }
+  }
+
+  if (document.getElementById('scan-hidden').checked) {
+    Object.keys(files).forEach(f => {
+      if (f.startsWith('.') && !f.includes('node_modules')) {
+        analysis.hiddenFiles.push(f);
+      }
+    });
+  }
+
+  if (files['package.json']) {
+    try {
+      const pkg = JSON.parse(files['package.json']);
+      const deps = {...(pkg.dependencies || {}), ...(pkg.devDependencies || {})};
+      
+      Object.entries(deps).forEach(([name, version]) => {
+        analysis.dependencies.push({name, version});
+        
+        if (name === 'lodash' && version.includes('3.')) {
+          analysis.alerts.push({type: 'warn', msg: '⚠️ Lodash v3 possui vulnerabilidades conhecidas'});
+        }
+        if (name === 'express' && version.includes('2.')) {
+          analysis.alerts.push({type: 'critical', msg: '🔴 Express v2 é obsoleto'});
+        }
+      });
+    } catch (e) {}
+  }
+
+  Object.entries(files).forEach(([name, content]) => {
+    if (name.endsWith('.js') || name.endsWith('.ts') || name.endsWith('.jsx') || name.endsWith('.tsx')) {
+      if (content.includes('console.log') && !content.includes('// console.log')) {
+        analysis.bugs.push({file: name, msg: '🐛 console.log encontrado - Remover em produção'});
+      }
+      
+      if (content.includes('debugger;')) {
+        analysis.bugs.push({file: name, msg: '🐛 debugger; encontrado - Remover'});
+      }
+      
+      if (content.includes('TODO') || content.includes('FIXME')) {
+        analysis.bugs.push({file: name, msg: '📝 TODO/FIXME encontrado'});
+      }
+      
+      if (content.match(/^\s*var\s+\w+\s*=/m)) {
+        analysis.alerts.push({type: 'warn', msg: `⚠️ ${name}: Usar const/let em vez de var`});
+      }
+    }
+  });
+
+  Object.entries(files).forEach(([name, content]) => {
+    if ((name.includes('route') || name.includes('api') || name.includes('server')) && 
+        (name.endsWith('.js') || name.endsWith('.ts'))) {
+      
+      const routeMatches = content.match(/(app\.(get|post|put|delete|patch))\(['"`]([^'"`]+)/g);
+      if (routeMatches) {
+        routeMatches.forEach(match => {
+          const method = match.match(/\.(get|post|put|delete|patch)/)[1].toUpperCase();
+          const path = match.match(/['"`]([^'"`]+)/)[1];
+          analysis.endpoints.push({method, path, file: name});
+        });
+      }
+    }
+  });
+
+  if (side === 'a') analysisA = analysis;
+  else analysisB = analysis;
+
+  return analysis;
+}
+
+function analyzeComparison() {
+  const aAnalysis = analyzeProject('a');
+  const bAnalysis = analyzeProject('b');
+
+  let bugsCount = aAnalysis.bugs.length + bAnalysis.bugs.length;
+  let depsCount = Math.max(aAnalysis.dependencies.length, bAnalysis.dependencies.length);
+
+  document.getElementById('s-bugs').textContent = bugsCount;
+  document.getElementById('s-deps').textContent = depsCount;
+
+  renderAnalysis();
+}
+
+function renderAnalysis() {
+  let bugsHtml = '';
+  if (analysisA.bugs.length === 0 && analysisB.bugs.length === 0) {
+    bugsHtml = '<div style="color:#3fb950;">✅ Nenhum bug detectado</div>';
+  } else {
+    if (analysisA.bugs.length > 0) {
+      bugsHtml += `<div style="color:#d29922;font-weight:700;margin-bottom:8px;">Projeto A:</div>`;
+      analysisA.bugs.forEach(b => {
+        bugsHtml += `<div class="bug-item">${b.msg} (${b.file})</div>`;
+      });
+    }
+    if (analysisB.bugs.length > 0) {
+      bugsHtml += `<div style="color:#d29922;font-weight:700;margin-bottom:8px;margin-top:12px;">Projeto B:</div>`;
+      analysisB.bugs.forEach(b => {
+        bugsHtml += `<div class="bug-item">${b.msg} (${b.file})</div>`;
+      });
+    }
+  }
+  document.getElementById('bugs-list').innerHTML = bugsHtml;
+
+  let depsHtml = '';
+  if (analysisA.dependencies.length === 0 && analysisB.dependencies.length === 0) {
+    depsHtml = '<div style="color:#8b949e;">Nenhuma dependência npm detectada</div>';
+  } else {
+    if (analysisA.dependencies.length > 0) {
+      depsHtml += `<div style="color:#58a6ff;font-weight:700;margin-bottom:8px;">Projeto A (${analysisA.dependencies.length}):</div>`;
+      analysisA.dependencies.slice(0, 5).forEach(d => {
+        depsHtml += `<div class="dependency-item">${d.name}@${d.version}</div>`;
+      });
+      if (analysisA.dependencies.length > 5) {
+        depsHtml += `<div style="color:#8b949e;font-size:11px;margin-top:4px;">... e ${analysisA.dependencies.length - 5} mais</div>`;
+      }
+    }
+    if (analysisB.dependencies.length > 0) {
+      depsHtml += `<div style="color:#58a6ff;font-weight:700;margin-bottom:8px;margin-top:12px;">Projeto B (${analysisB.dependencies.length}):</div>`;
+      analysisB.dependencies.slice(0, 5).forEach(d => {
+        depsHtml += `<div class="dependency-item">${d.name}@${d.version}</div>`;
+      });
+      if (analysisB.dependencies.length > 5) {
+        depsHtml += `<div style="color:#8b949e;font-size:11px;margin-top:4px;">... e ${analysisB.dependencies.length - 5} mais</div>`;
+      }
+    }
+  }
+  document.getElementById('deps-list').innerHTML = depsHtml;
+
+  let endpointsHtml = '';
+  const allEndpoints = [...analysisA.endpoints, ...analysisB.endpoints];
+  if (allEndpoints.length === 0) {
+    endpointsHtml = '<div style="color:#8b949e;">Nenhum endpoint detectado</div>';
+  } else {
+    allEndpoints.slice(0, 10).forEach(e => {
+      endpointsHtml += `<div class="dependency-item" style="border-left-color:#3fb950;">${e.method} ${e.path} (${e.file})</div>`;
+    });
+  }
+  document.getElementById('endpoints-list').innerHTML = endpointsHtml;
+
+  let alertsHtml = '';
+  const allAlerts = [...analysisA.alerts, ...analysisB.alerts];
+  if (allAlerts.length === 0) {
+    alertsHtml = '<div style="color:#3fb950;">✅ Nenhum alerta</div>';
+  } else {
+    allAlerts.forEach(a => {
+      const className = a.type === 'critical' ? 'alert-critical' : a.type === 'warn' ? 'alert-warn' : 'alert-info';
+      alertsHtml += `<div class="${className}">${a.msg}</div>`;
+    });
+  }
+  document.getElementById('alerts-list').innerHTML = alertsHtml;
+}
+
+// ============ LADO A LADO ============
+function populateFileSelector() {
+  const selector = document.getElementById('file-selector');
+  const modified = results.filter(r => r.status === 'mod');
+  
+  selector.innerHTML = '<option value="">-- Selecione um arquivo --</option>' +
+    modified.map((r, i) => `<option value="${i}">${r.key}</option>`).join('');
+}
+
+function showSideBySide() {
+  const selector = document.getElementById('file-selector');
+  const idx = parseInt(selector.value);
+  
+  if (isNaN(idx)) return;
+  
+  const r = results.filter(r => r.status === 'mod')[idx];
+  if (!r) return;
+
+  const nameA = document.getElementById('name-a').value || 'Projeto A';
+  const nameB = document.getElementById('name-b').value || 'Projeto B';
+
+  document.getElementById('side-a-title').textContent = `${nameA} - ${r.key}`;
+  document.getElementById('side-b-title').textContent = `${nameB} - ${r.key}`;
+
+  document.getElementById('side-a-content').innerHTML = `<pre style="font-size:11px;margin:0;">${esc(r.a)}</pre>`;
+  document.getElementById('side-b-content').innerHTML = `<pre style="font-size:11px;margin:0;">${esc(r.b)}</pre>`;
+}
+
+// ============ TABS ============
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+// ============ SALVAMENTO ============
+function saveCurrentState() {
+  const indicator = document.getElementById('auto-save-indicator');
+  indicator.classList.add('show');
+  setTimeout(() => indicator.classList.remove('show'), 2000);
+  
+  const state = {
+    comparison: currentComparison,
+    timestamp: new Date().toISOString()
+  };
+  localStorage.setItem('lastComparison', JSON.stringify(state));
+}
+
+function saveToVersions() {
+  if (!currentComparison) {
+    alert('Faça uma comparação primeiro!');
+    return;
+  }
+  document.getElementById('modal-name').classList.add('show');
+}
+
+function confirmSaveVersion() {
+  const name = document.getElementById('comparison-name').value || `Comparação ${new Date().toLocaleDateString()}`;
+  const notes = document.getElementById('comparison-notes').value;
+  
+  const version = {
+    id: Date.now(),
+    name: name,
+    notes: notes,
+    timestamp: new Date().toISOString(),
+    data: currentComparison,
+    analysisA: analysisA,
+    analysisB: analysisB
+  };
+  
+  versions.push(version);
+  localStorage.setItem('versions', JSON.stringify(versions));
+  
+  closeModal('modal-name');
+  document.getElementById('comparison-name').value = '';
+  document.getElementById('comparison-notes').value = '';
+  
+  renderVersionsList();
+  alert('✅ Comparação salva com sucesso!');
+}
+
+function renderVersionsList() {
+  const container = document.getElementById('versions-list');
+  
+  if (versions.length === 0) {
+    container.innerHTML = '<div style="padding:20px;text-align:center;color:#8b949e;">Nenhuma comparação salva</div>';
+    return;
+  }
+  
+  container.innerHTML = versions.map((v, i) => `
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+        <div>
+          <div style="font-weight:700;color:#58a6ff;font-size:14px;">${esc(v.name)}</div>
+          <div style="font-size:11px;color:#8b949e;margin-top:4px;">
+            ${new Date(v.timestamp).toLocaleString('pt-BR')}
+          </div>
+        </div>
+        <div style="display:flex;gap:4px;">
+          <button onclick="loadVersion(${i})" class="btn btn-blue" style="font-size:11px;padding:4px 8px;">📂</button>
+          <button onclick="deleteVersion(${i})" class="btn btn-red" style="font-size:11px;padding:4px 8px;">🗑️</button>
+        </div>
+      </div>
+      ${v.notes ? `<div style="font-size:12px;color:#8b949e;padding:8px;background:#0d1117;border-radius:4px;margin-bottom:8px;">${esc(v.notes)}</div>` : ''}
+      <div style="font-size:11px;color:#8b949e;">
+        📊 ${v.data.stats.total} arq | ✏️ ${v.data.stats.mod} mod | ➕ ${v.data.stats.new} novo | ➖ ${v.data.stats.del} rem
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadVersion(i) {
+  const v = versions[i];
+  currentComparison = v.data;
+  results = v.data.results;
+  analysisA = v.analysisA || {};
+  analysisB = v.analysisB || {};
+  
+  document.getElementById('name-a').value = v.data.nameA;
+  document.getElementById('name-b').value = v.data.nameB;
+  document.getElementById('s-total').textContent = v.data.stats.total;
+  document.getElementById('s-mod').textContent = v.data.stats.mod;
+  document.getElementById('s-new').textContent = v.data.stats.new;
+  document.getElementById('s-del').textContent = v.data.stats.del;
+  document.getElementById('s-bugs').textContent = (analysisA.bugs?.length || 0) + (analysisB.bugs?.length || 0);
+  document.getElementById('s-deps').textContent = Math.max(analysisA.dependencies?.length || 0, analysisB.dependencies?.length || 0);
+  document.getElementById('summary').style.display = 'block';
+  
+  renderList();
+  renderAnalysis();
+  populateFileSelector();
+  switchTab('compare');
+  alert('✅ Comparação carregada!');
+}
+
+function deleteVersion(i) {
+  if (confirm('Tem certeza que deseja deletar?')) {
+    versions.splice(i, 1);
+    localStorage.setItem('versions', JSON.stringify(versions));
+    renderVersionsList();
+  }
+}
+
+function clearAllVersions() {
+  if (confirm('Deletar TODAS as comparações salvas?')) {
+    versions = [];
+    localStorage.setItem('versions', JSON.stringify(versions));
+    renderVersionsList();
+  }
+}
+
+function loadVersions() {
+  const saved = localStorage.getItem('versions');
+  versions = saved ? JSON.parse(saved) : [];
+  renderVersionsList();
+}
+
+// ============ RELATÓRIO ============
+function generateReport() {
+  if (!currentComparison) {
+    alert('Faça uma comparação primeiro!');
+    return;
+  }
+  
+  const stats = currentComparison.stats;
+  const date = new Date(currentComparison.timestamp).toLocaleString('pt-BR');
+  const nameA = document.getElementById('name-a').value || 'Projeto A';
+  const nameB = document.getElementById('name-b').value || 'Projeto B';
+  
+  let html = `
+    <div style="font-family:monospace;white-space:pre-wrap;word-break:break-word;line-height:1.6;font-size:12px;">
+╔════════════════════════════════════════════════════════════════╗
+║           RELATÓRIO COMPLETO DE COMPARAÇÃO v2.0               ║
+╚════════════════════════════════════════════════════════════════╝
+
+📅 Data: ${date}
+📦 Projeto A (Antigo): ${nameA}
+📦 Projeto B (Novo): ${nameB}
+
+╔════════════════════════════════════════════════════════════════╗
+║                    RESUMO ESTATÍSTICO                          ║
+╚════════════════════════════════════════════════════════════════╝
+
+Total de Arquivos:  ${stats.total}
+✏️  Modificados:     ${stats.mod}
+➕ Novos:           ${stats.new}
+➖ Removidos:       ${stats.del}
+= Iguais:          ${stats.same}
+
+Taxa de Mudança: ${((stats.mod + stats.new + stats.del) / stats.total * 100).toFixed(1)}%
+
+╔════════════════════════════════════════════════════════════════╗
+║                   ANÁLISE DE BUGS                              ║
+╚════════════════════════════════════════════════════════════════╝
+
+Projeto A - Bugs Detectados: ${analysisA.bugs?.length || 0}
+${analysisA.bugs?.length > 0 ? analysisA.bugs.map(b => `  🐛 ${b.file}: ${b.msg}`).join('\n') : '  ✅ Nenhum bug detectado'}
+
+Projeto B - Bugs Detectados: ${analysisB.bugs?.length || 0}
+${analysisB.bugs?.length > 0 ? analysisB.bugs.map(b => `  🐛 ${b.file}: ${b.msg}`).join('\n') : '  ✅ Nenhum bug detectado'}
+
+╔════════════════════════════════════════════════════════════════╗
+║                   DEPENDÊNCIAS NPM                             ║
+╚════════════════════════════════════════════════════════════════╝
+
+Projeto A - ${analysisA.dependencies?.length || 0} dependências:
+${analysisA.dependencies?.slice(0, 10).map(d => `  📦 ${d.name}@${d.version}`).join('\n') || '  Nenhuma'}
+
+Projeto B - ${analysisB.dependencies?.length || 0} dependências:
+${analysisB.dependencies?.slice(0, 10).map(d => `  📦 ${d.name}@${d.version}`).join('\n') || '  Nenhuma'}
+
+╔════════════════════════════════════════════════════════════════╗
+║                   ENDPOINTS DETECTADOS                         ║
+╚════════════════════════════════════════════════════════════════╝
+
+${analysisA.endpoints?.length > 0 ? 'Projeto A:\n' + analysisA.endpoints.slice(0, 5).map(e => `  ${e.method} ${e.path}`).join('\n') : 'Projeto A: Nenhum endpoint detectado'}
+
+${analysisB.endpoints?.length > 0 ? '\nProjeto B:\n' + analysisB.endpoints.slice(0, 5).map(e => `  ${e.method} ${e.path}`).join('\n') : '\nProjeto B: Nenhum endpoint detectado'}
+
+╔════════════════════════════════════════════════════════════════╗
+║                   ALERTAS & SUGESTÕES                          ║
+╚════════════════════════════════════════════════════════════════╝
+
+${[...analysisA.alerts, ...analysisB.alerts].length > 0 ? 
+  [...analysisA.alerts, ...analysisB.alerts].map(a => `  [${a.type.toUpperCase()}] ${a.msg}`).join('\n') : 
+  '  ✅ Nenhum alerta'}
+
+${analysisA.hasReplit || analysisB.hasReplit ? '\n⚠️  AVISO CRÍTICO: Vínculo Replit detectado!\n   Remova todas as dependências e configurações do Replit' : ''}
+
+╔════════════════════════════════════════════════════════════════╗
+║                   ARQUIVOS MODIFICADOS                         ║
+╚════════════════════════════════════════════════════════════════╝
+  `;
+  
+  const modified = results.filter(r => r.status === 'mod');
+  if (modified.length === 0) {
+    html += 'Nenhum arquivo modificado\n';
+  } else {
+    modified.forEach(r => {
+      const sizeA = r.a?.length || 0;
+      const sizeB = r.b?.length || 0;
+      const diff = sizeB - sizeA;
+      html += `\n✏️  ${r.key}\n    Tamanho: ${sizeA} → ${sizeB} bytes (${diff > 0 ? '+' : ''}${diff})\n`;
+    });
+  }
+  
+  html += `
+╔════════════════════════════════════════════════════════════════╗
+║                        ARQUIVOS NOVOS                          ║
+╚════════════════════════════════════════════════════════════════╝
+  `;
+  
+  const newFiles = results.filter(r => r.status === 'new');
+  if (newFiles.length === 0) {
+    html += 'Nenhum arquivo novo\n';
+  } else {
+    newFiles.forEach(r => {
+      html += `\n➕ ${r.key} (${r.b?.length || 0} bytes)\n`;
+    });
+  }
+  
+  html += `
+╔════════════════════════════════════════════════════════════════╗
+║                      ARQUIVOS REMOVIDOS                        ║
+╚════════════════════════════════════════════════════════════════╝
+  `;
+  
+  const deleted = results.filter(r => r.status === 'del');
+  if (deleted.length === 0) {
+    html += 'Nenhum arquivo removido\n';
+  } else {
+    deleted.forEach(r => {
+      html += `\n➖ ${r.key} (${r.a?.length || 0} bytes)\n`;
+    });
+  }
+  
+  html += `
+╔════════════════════════════════════════════════════════════════╗
+║                      SUGESTÕES DE IA                           ║
+╚════════════════════════════════════════════════════════════════╝
+
+1️⃣  SEGURANÇA:
+   ${analysisA.hasReplit || analysisB.hasReplit ? '   ⚠️  CRÍTICO: Remova vínculos Replit\n   → Migre para ambiente independente\n   → Remova .replit, .replit.nix' : '   ✅ Nenhum vínculo Replit detectado'}
+
+2️⃣  QUALIDADE:
+   ${analysisA.bugs?.length > 0 || analysisB.bugs?.length > 0 ? '   ⚠️  Corrija bugs antes de produção:\n' + [...analysisA.bugs, ...analysisB.bugs].slice(0, 3).map(b => `      • ${b.msg}`).join('\n') : '   ✅ Nenhum bug crítico detectado'}
+
+3️⃣  DEPENDÊNCIAS:
+   ${Math.abs((analysisA.dependencies?.length || 0) - (analysisB.dependencies?.length || 0)) > 5 ? '   ⚠️  Mudança significativa em dependências\n   → Revise package.json\n   → Atualize lockfile' : '   ✅ Dependências estáveis'}
+
+4️⃣  ENDPOINTS:
+   ${analysisA.endpoints?.length > 0 || analysisB.endpoints?.length > 0 ? '   ℹ️  Endpoints detectados - Verifique segurança' : '   ℹ️  Nenhum endpoint REST detectado'}
+
+5️⃣  PASTAS OCULTAS:
+   ${[...analysisA.hiddenFiles, ...analysisB.hiddenFiles].length > 0 ? '   ℹ️  Arquivos ocultos encontrados:\n' + [...new Set([...analysisA.hiddenFiles, ...analysisB.hiddenFiles])].slice(0, 5).map(f => `      • ${f}`).join('\n') : '   ✅ Nenhuma pasta oculta suspeita'}
+
+╔════════════════════════════════════════════════════════════════╗
+║                    RECOMENDAÇÕES FINAIS                        ║
+╚════════════════════════════════════════════════════════════════╝
+
+📋 CHECKLIST PRÉ-PRODUÇÃO:
+
+${analysisA.bugs?.length > 0 || analysisB.bugs?.length > 0 ? '  ☐ Remover console.log e debugger' : '  ☑ Sem console.log/debugger'}
+${analysisA.hasReplit || analysisB.hasReplit ? '  ☐ Remover dependências Replit' : '  ☑ Sem dependências Replit'}
+${[...analysisA.alerts, ...analysisB.alerts].some(a => a.type === 'critical') ? '  ☐ Resolver alertas críticos' : '  
+
+☑ Sem alertas críticos'}
+${analysisA.dependencies?.length > 0 ? ' ☐ Atualizar dependências seguras' : ' ☑ Sem dependências npm'}
+${modified.length > 0 ? ' ☐ Testar arquivos modificados' : ' ☑ Sem modificações'}
+
+╔════════════════════════════════════════════════════════════════╗
+║ FIM DO RELATÓRIO ║
+║ Gerado em: ${date} ║
+╚════════════════════════════════════════════════════════════════╝
+</div>
+`;
+
+document.getElementById('report-content').innerHTML = html;
+switchTab('report');
+}
+
+// ============ EXPORTAÇÃO ============
+function exportComparison(format) {
+if (!currentComparison) {
+alert('Faça uma comparação primeiro!');
+return;
+}
+
+if (format === 'json') {
+exportJSON();
+} else if (format === 'csv') {
+exportCSV();
+} else if (format === 'pdf') {
+exportPDF();
+}
+}
+
+function exportJSON() {
+const data = {
+metadata: {
+timestamp: currentComparison.timestamp,
+projectA: document.getElementById('name-a').value,
+projectB: document.getElementById('name-b').value
+},
+statistics: currentComparison.stats,
+analysis: {
+projectA: analysisA,
+projectB: analysisB
+},
+files: results.map(r => ({
+path: r.key,
+status: r.status,
+sizeA: r.a?.length || 0,
+sizeB: r.b?.length || 0
+}))
+};
+
+const json = JSON.stringify(data, null, 2);
+const blob = new Blob([json], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `comparacao_${Date.now()}.json`;
+a.click();
+URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+let csv = 'Arquivo,Status,Tamanho_A,Tamanho_B,Diferença\n';
+
+results.forEach(r => {
+const sizeA = r.a?.length || 0;
+const sizeB = r.b?.length || 0;
+const diff = sizeB - sizeA;
+csv += `"${r.key}","${r.status}",${sizeA},${sizeB},${diff}\n`;
+});
+
+const blob = new Blob([csv], { type: 'text/csv' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `comparacao_${Date.now()}.csv`;
+a.click();
+URL.revokeObjectURL(url);
+}
+
+function exportPDF() {
+const element = document.getElementById('report-content');
+const opt = {
+margin: 10,
+filename: `comparacao_${Date.now()}.pdf`,
+image: { type: 'jpeg', quality: 0.98 },
+html2canvas: { scale: 2 },
+jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+};
+html2pdf().set(opt).from(element).save();
+}
+
+function copyReportToClipboard() {
+const content = document.getElementById('report-content').innerText;
+navigator.clipboard.writeText(content).then(() => {
+alert('✅ Relatório copiado para clipboard!');
+});
+}
+
+function downloadReportTxt() {
+const content = document.getElementById('report-content').innerText;
+const blob = new Blob([content], { type: 'text/plain' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `relatorio_${Date.now()}.txt`;
+a.click();
+URL.revokeObjectURL(url);
+}
+
+// ============ CONFIGURAÇÕES ============
+function saveSettings() {
+const settings = {
+autoSave: document.getElementById('auto-save-enabled').checked,
+detectReplit: document.getElementById('detect-replit').checked,
+scanHidden: document.getElementById('scan-hidden').checked,
+ignoreExtensions: document.getElementById('ignore-extensions').value
+};
+
+localStorage.setItem('settings', JSON.stringify(settings));
+setupAutoSave();
+alert('✅ Configurações salvas!');
+}
+
+function loadSettings() {
+const saved = localStorage.getItem('settings');
+if (saved) {
+const settings = JSON.parse(saved);
+document.getElementById('auto-save-enabled').checked = settings.autoSave ?? true;
+document.getElementById('detect-replit').checked = settings.detectReplit ?? true;
+document.getElementById('scan-hidden').checked = settings.scanHidden ?? true;
+document.getElementById('ignore-extensions').value = settings.ignoreExtensions ||
+'node_modules,dist,build,.git,.next,__pycache__,.venv';
+}
+}
+
+// ============ UTILITÁRIOS ============
+function closeModal(id) {
+document.getElementById(id).classList.remove('show');
+}
+
+document.addEventListener('keydown', e => {
+if (e.key === 'Escape') {
+document.getElementById('modal-name').classList.remove('show');
+}
+});
+
+// Inicializar ao carregar
+window.addEventListener('load', init);
+</script>
+
+</body>
+
+</html>
