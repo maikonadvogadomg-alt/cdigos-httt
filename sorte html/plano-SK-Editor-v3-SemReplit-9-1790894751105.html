@@ -1,0 +1,2133 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>plano-SK-Editor-v3-SemReplit-9-1790894751105.md</title><style>
+    body{font-family:Georgia,Cambria,'Times New Roman',serif;max-width:860px;margin:30px auto;padding:0 24px;color:#222;line-height:1.7;background:#fafafa}
+    h1,h2,h3,h4{color:#2d4a1e;margin-top:28px;margin-bottom:12px}
+    h1{border-bottom:2px solid #5aab56;padding-bottom:8px}
+    h2{border-bottom:1px solid #ccc;padding-bottom:6px}
+    a{color:#0066cc}
+    code{background:#eee;padding:2px 5px;border-radius:3px;font-family:Consolas,monospace;font-size:90%}
+    pre{background:#0d1309;color:#a8d5a2;padding:14px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5}
+    pre code{background:transparent;color:inherit;padding:0}
+    blockquote{border-left:4px solid #5aab56;padding:6px 14px;margin:14px 0;background:#f0f7ed;color:#444}
+    table{border-collapse:collapse;margin:14px 0;width:100%}
+    th,td{border:1px solid #ccc;padding:8px 12px;text-align:left}
+    th{background:#e8f5e9}
+    .copy-btn{font-size:11px;padding:4px 10px;border:1px solid #5aab56;background:#fff;color:#2d4a1e;border-radius:5px;cursor:pointer;margin-left:8px}
+    .copy-btn:hover{background:#5aab56;color:#fff}
+    .code-wrap{position:relative;margin:14px 0}
+    .code-wrap .copy-btn{position:absolute;top:8px;right:8px}
+    @media print{.copy-btn{display:none}body{background:#fff}}
+  </style></head><body><h1 style="border:none">plano-SK-Editor-v3-SemReplit-9-1790894751105.md</h1><div class="md" id="md"><h1 id="plano-do-projeto-sk-editor-v3-semreplit-9zip" data-heading="1" data-raw="📋 Plano do Projeto: SK-Editor-v3-SemReplit-9.zip">📋 Plano do Projeto: SK-Editor-v3-SemReplit-9.zip<button class="copy-btn" data-section="plano-do-projeto-sk-editor-v3-semreplit-9zip">📋 Seção</button></h1><blockquote>
+<p>Gerado automaticamente em 01/10/2026, 19:45:28</p>
+</blockquote>
+<hr>
+<h2 id="indice" data-heading="2" data-raw="📑 Índice">📑 Índice<button class="copy-btn" data-section="indice">📋 Seção</button></h2><ul>
+<li><a href="#estrutura">🌳 Estrutura de Arquivos</a></li>
+<li><a href="#dependencias">📦 Dependências</a></li>
+<li><a href="#funcoes">⚡ Funções</a></li>
+<li><a href="#apis">🌐 Rotas de API</a></li>
+<li><a href="#tipos">📘 Tipos/Interfaces</a></li>
+<li><a href="#rotas">🛣️ Rotas/Páginas</a></li>
+<li><a href="#componentes">🧩 Componentes React</a></li>
+<li><a href="#hooks">🪝 Hooks Customizados</a></li>
+</ul>
+<hr>
+<h2 id="estatisticas" data-heading="2" data-raw="📊 Estatísticas">📊 Estatísticas<button class="copy-btn" data-section="estatisticas">📋 Seção</button></h2><table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Arquivos</strong></td>
+<td>112</td>
+</tr>
+<tr>
+<td><strong>Linhas de código</strong></td>
+<td>36.371</td>
+</tr>
+<tr>
+<td><strong>Funções</strong></td>
+<td>602</td>
+</tr>
+<tr>
+<td><strong>Rotas de API</strong></td>
+<td>57</td>
+</tr>
+<tr>
+<td><strong>Componentes</strong></td>
+<td>131</td>
+</tr>
+<tr>
+<td><strong>Tipos/Interfaces</strong></td>
+<td>161</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="estrutura-de-arquivos-estrutura" data-heading="2" data-raw="🌳 Estrutura de Arquivos {#estrutura}">🌳 Estrutura de Arquivos {#estrutura}<button class="copy-btn" data-section="estrutura-de-arquivos-estrutura">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="SK-Editor-v3-SemReplit-9.zip/
+├── COMO-RODAR.md
+├── MUDANCAS.md
+├── README-SK-EDITOR-V3.md
+├── _arquivo
+│   ├── nao-usados
+│   │   ├── QuickPrompt.tsx
+│   │   ├── RealTerminal.tsx
+│   │   ├── SKTerminal.tsx
+│   │   ├── StreamTerminal.tsx
+│   │   ├── Terminal.tsx
+│   │   ├── VoiceMode.tsx
+│   │   ├── XTermConnector.tsx
+│   │   └── store.ts
+│   └── replit
+│       └── replit.md
+├── index.html
+├── package.json
+├── public
+│   └── coi-sw.js
+├── src
+│   ├── App.tsx
+│   ├── components
+│   │   ├── AIChat.tsx
+│   │   ├── AssistenteJuridico.tsx
+│   │   ├── BuildPanel.tsx
+│   │   ├── CampoLivre.tsx
+│   │   ├── CodeEditor.tsx
+│   │   ├── CombinarApps.tsx
+│   │   ├── DatabasePanel.tsx
+│   │   ├── DeployPanel.tsx
+│   │   ├── DriveBackupPanel.tsx
+│   │   ├── EditorLayout.tsx
+│   │   ├── ElectronTerminal.tsx
+│   │   ├── FileScanner.tsx
+│   │   ├── FileTree.tsx
+│   │   ├── GitHubPanel.tsx
+│   │   ├── HTMLPlayground.tsx
+│   │   ├── Manual.tsx
+│   │   ├── PackageSearch.tsx
+│   │   ├── Preview.tsx
+│   │   ├── SiteExtractor.tsx
+│   │   ├── SystemStatusPanel.tsx
+│   │   ├── TemplateSelector.tsx
+│   │   ├── TerminalArea.tsx
+│   │   ├── VoiceCard.tsx
+│   │   ├── WebContainerTerminal.tsx
+│   │   └── ui
+│   │       ├── accordion.tsx
+│   │       ├── alert-dialog.tsx
+│   │       ├── alert.tsx
+│   │       ├── aspect-ratio.tsx
+│   │       ├── avatar.tsx
+│   │       ├── badge.tsx
+│   │       ├── breadcrumb.tsx
+│   │       ├── button-group.tsx
+│   │       ├── button.tsx
+│   │       ├── calendar.tsx
+│   │       ├── card.tsx
+│   │       ├── carousel.tsx
+│   │       ├── chart.tsx
+│   │       ├── checkbox.tsx
+│   │       ├── collapsible.tsx
+│   │       ├── command.tsx
+│   │       ├── context-menu.tsx
+│   │       ├── dialog.tsx
+│   │       ├── drawer.tsx
+│   │       ├── dropdown-menu.tsx
+│   │       ├── empty.tsx
+│   │       ├── field.tsx
+│   │       ├── form.tsx
+│   │       ├── hover-card.tsx
+│   │       ├── input-group.tsx
+│   │       ├── input-otp.tsx
+│   │       ├── input.tsx
+│   │       ├── item.tsx
+│   │       ├── kbd.tsx
+│   │       ├── label.tsx
+│   │       ├── menubar.tsx
+│   │       ├── navigation-menu.tsx
+│   │       ├── pagination.tsx
+│   │       ├── popover.tsx
+│   │       ├── progress.tsx
+│   │       ├── radio-group.tsx
+│   │       ├── resizable.tsx
+│   │       ├── scroll-area.tsx
+│   │       ├── select.tsx
+│   │       ├── separator.tsx
+│   │       ├── sheet.tsx
+│   │       ├── sidebar.tsx
+│   │       ├── skeleton.tsx
+│   │       ├── slider.tsx
+│   │       ├── sonner.tsx
+│   │       ├── spinner.tsx
+│   │       ├── switch.tsx
+│   │       ├── table.tsx
+│   │       ├── tabs.tsx
+│   │       ├── textarea.tsx
+│   │       ├── toast.tsx
+│   │       ├── toaster.tsx
+│   │       ├── toggle-group.tsx
+│   │       ├── toggle.tsx
+│   │       └── tooltip.tsx
+│   ├── hooks
+│   │   ├── use-mobile.tsx
+│   │   └── use-toast.ts
+│   ├── index.css
+│   ├── lib
+│   │   ├── ai-fetch.ts
+│   │   ├── ai-service.ts
+│   │   ├── github-service.ts
+│   │   ├── idb-storage.ts
+│   │   ├── local-server.ts
+│   │   ├── projects.ts
+│   │   ├── templates.ts
+│   │   ├── tts-service.ts
+│   │   ├── utils.ts
+│   │   ├── virtual-fs.ts
+│   │   └── zip-service.ts
+│   └── main.tsx
+├── tsconfig.json
+└── vite.config.ts">📋 Copiar</button><pre><code class="language-texto">SK-Editor-v3-SemReplit-9.zip/
+├── COMO-RODAR.md
+├── MUDANCAS.md
+├── README-SK-EDITOR-V3.md
+├── _arquivo
+│   ├── nao-usados
+│   │   ├── QuickPrompt.tsx
+│   │   ├── RealTerminal.tsx
+│   │   ├── SKTerminal.tsx
+│   │   ├── StreamTerminal.tsx
+│   │   ├── Terminal.tsx
+│   │   ├── VoiceMode.tsx
+│   │   ├── XTermConnector.tsx
+│   │   └── store.ts
+│   └── replit
+│       └── replit.md
+├── index.html
+├── package.json
+├── public
+│   └── coi-sw.js
+├── src
+│   ├── App.tsx
+│   ├── components
+│   │   ├── AIChat.tsx
+│   │   ├── AssistenteJuridico.tsx
+│   │   ├── BuildPanel.tsx
+│   │   ├── CampoLivre.tsx
+│   │   ├── CodeEditor.tsx
+│   │   ├── CombinarApps.tsx
+│   │   ├── DatabasePanel.tsx
+│   │   ├── DeployPanel.tsx
+│   │   ├── DriveBackupPanel.tsx
+│   │   ├── EditorLayout.tsx
+│   │   ├── ElectronTerminal.tsx
+│   │   ├── FileScanner.tsx
+│   │   ├── FileTree.tsx
+│   │   ├── GitHubPanel.tsx
+│   │   ├── HTMLPlayground.tsx
+│   │   ├── Manual.tsx
+│   │   ├── PackageSearch.tsx
+│   │   ├── Preview.tsx
+│   │   ├── SiteExtractor.tsx
+│   │   ├── SystemStatusPanel.tsx
+│   │   ├── TemplateSelector.tsx
+│   │   ├── TerminalArea.tsx
+│   │   ├── VoiceCard.tsx
+│   │   ├── WebContainerTerminal.tsx
+│   │   └── ui
+│   │       ├── accordion.tsx
+│   │       ├── alert-dialog.tsx
+│   │       ├── alert.tsx
+│   │       ├── aspect-ratio.tsx
+│   │       ├── avatar.tsx
+│   │       ├── badge.tsx
+│   │       ├── breadcrumb.tsx
+│   │       ├── button-group.tsx
+│   │       ├── button.tsx
+│   │       ├── calendar.tsx
+│   │       ├── card.tsx
+│   │       ├── carousel.tsx
+│   │       ├── chart.tsx
+│   │       ├── checkbox.tsx
+│   │       ├── collapsible.tsx
+│   │       ├── command.tsx
+│   │       ├── context-menu.tsx
+│   │       ├── dialog.tsx
+│   │       ├── drawer.tsx
+│   │       ├── dropdown-menu.tsx
+│   │       ├── empty.tsx
+│   │       ├── field.tsx
+│   │       ├── form.tsx
+│   │       ├── hover-card.tsx
+│   │       ├── input-group.tsx
+│   │       ├── input-otp.tsx
+│   │       ├── input.tsx
+│   │       ├── item.tsx
+│   │       ├── kbd.tsx
+│   │       ├── label.tsx
+│   │       ├── menubar.tsx
+│   │       ├── navigation-menu.tsx
+│   │       ├── pagination.tsx
+│   │       ├── popover.tsx
+│   │       ├── progress.tsx
+│   │       ├── radio-group.tsx
+│   │       ├── resizable.tsx
+│   │       ├── scroll-area.tsx
+│   │       ├── select.tsx
+│   │       ├── separator.tsx
+│   │       ├── sheet.tsx
+│   │       ├── sidebar.tsx
+│   │       ├── skeleton.tsx
+│   │       ├── slider.tsx
+│   │       ├── sonner.tsx
+│   │       ├── spinner.tsx
+│   │       ├── switch.tsx
+│   │       ├── table.tsx
+│   │       ├── tabs.tsx
+│   │       ├── textarea.tsx
+│   │       ├── toast.tsx
+│   │       ├── toaster.tsx
+│   │       ├── toggle-group.tsx
+│   │       ├── toggle.tsx
+│   │       └── tooltip.tsx
+│   ├── hooks
+│   │   ├── use-mobile.tsx
+│   │   └── use-toast.ts
+│   ├── index.css
+│   ├── lib
+│   │   ├── ai-fetch.ts
+│   │   ├── ai-service.ts
+│   │   ├── github-service.ts
+│   │   ├── idb-storage.ts
+│   │   ├── local-server.ts
+│   │   ├── projects.ts
+│   │   ├── templates.ts
+│   │   ├── tts-service.ts
+│   │   ├── utils.ts
+│   │   ├── virtual-fs.ts
+│   │   └── zip-service.ts
+│   └── main.tsx
+├── tsconfig.json
+└── vite.config.ts</code></pre></div><hr>
+<h2 id="dependencias-dependencias" data-heading="2" data-raw="📦 Dependências {#dependencias}">📦 Dependências {#dependencias}<button class="copy-btn" data-section="dependencias-dependencias">📋 Seção</button></h2><p>Total: <strong>78</strong> pacotes</p>
+<table>
+<thead>
+<tr>
+<th>Pacote</th>
+<th>Versão</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@isomorphic-git/lightning-fs</code></td>
+<td>^4.6.2</td>
+</tr>
+<tr>
+<td><code>@monaco-editor/react</code></td>
+<td>^4.7.0</td>
+</tr>
+<tr>
+<td><code>@neondatabase/serverless</code></td>
+<td>^1.1.0</td>
+</tr>
+<tr>
+<td><code>@webcontainer/api</code></td>
+<td>^1.6.4</td>
+</tr>
+<tr>
+<td><code>@xterm/addon-fit</code></td>
+<td>^0.11.0</td>
+</tr>
+<tr>
+<td><code>@xterm/addon-web-links</code></td>
+<td>^0.12.0</td>
+</tr>
+<tr>
+<td><code>@xterm/xterm</code></td>
+<td>^6.0.0</td>
+</tr>
+<tr>
+<td><code>express</code></td>
+<td>^5.2.1</td>
+</tr>
+<tr>
+<td><code>file-saver</code></td>
+<td>^2.0.5</td>
+</tr>
+<tr>
+<td><code>highlight.js</code></td>
+<td>^11.11.1</td>
+</tr>
+<tr>
+<td><code>jszip</code></td>
+<td>^3.10.1</td>
+</tr>
+<tr>
+<td><code>react-markdown</code></td>
+<td>^10.1.0</td>
+</tr>
+<tr>
+<td><code>rehype-highlight</code></td>
+<td>^7.0.2</td>
+</tr>
+<tr>
+<td><code>remark-gfm</code></td>
+<td>^4.0.1</td>
+</tr>
+<tr>
+<td><code>sql.js</code></td>
+<td>^1.14.1</td>
+</tr>
+<tr>
+<td><code>@hookform/resolvers</code></td>
+<td>^3.10.0</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-accordion</code></td>
+<td>^1.2.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-alert-dialog</code></td>
+<td>^1.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-aspect-ratio</code></td>
+<td>^1.1.3</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-avatar</code></td>
+<td>^1.1.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-checkbox</code></td>
+<td>^1.1.5</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-collapsible</code></td>
+<td>^1.1.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-context-menu</code></td>
+<td>^2.2.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-dialog</code></td>
+<td>^1.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-dropdown-menu</code></td>
+<td>^2.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-hover-card</code></td>
+<td>^1.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-label</code></td>
+<td>^2.1.3</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-menubar</code></td>
+<td>^1.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-navigation-menu</code></td>
+<td>^1.2.6</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-popover</code></td>
+<td>^1.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-progress</code></td>
+<td>^1.1.3</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-radio-group</code></td>
+<td>^1.2.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-scroll-area</code></td>
+<td>^1.2.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-select</code></td>
+<td>^2.1.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-separator</code></td>
+<td>^1.1.3</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-slider</code></td>
+<td>^1.2.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-slot</code></td>
+<td>^1.2.0</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-switch</code></td>
+<td>^1.1.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-tabs</code></td>
+<td>^1.1.4</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-toast</code></td>
+<td>^1.2.7</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-toggle</code></td>
+<td>^1.1.3</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-toggle-group</code></td>
+<td>^1.1.3</td>
+</tr>
+<tr>
+<td><code>@radix-ui/react-tooltip</code></td>
+<td>^1.2.0</td>
+</tr>
+<tr>
+<td><code>@tailwindcss/typography</code></td>
+<td>^0.5.15</td>
+</tr>
+<tr>
+<td><code>@tailwindcss/vite</code></td>
+<td>^4.0.0</td>
+</tr>
+<tr>
+<td><code>@tanstack/react-query</code></td>
+<td>^5.60.5</td>
+</tr>
+<tr>
+<td><code>@types/file-saver</code></td>
+<td>^2.0.7</td>
+</tr>
+<tr>
+<td><code>@types/node</code></td>
+<td>^22.9.0</td>
+</tr>
+<tr>
+<td><code>@types/react</code></td>
+<td>^18.3.12</td>
+</tr>
+<tr>
+<td><code>@types/react-dom</code></td>
+<td>^18.3.1</td>
+</tr>
+</tbody></table>
+<p>... e mais 28 pacotes</p>
+<hr>
+<h2 id="funcoes-funcoes" data-heading="2" data-raw="⚡ Funções {#funcoes}">⚡ Funções {#funcoes}<button class="copy-btn" data-section="funcoes-funcoes">📋 Seção</button></h2><p>Total: <strong>602</strong> funções encontradas</p>
+<h3 id="srccomponentsvoicecardtsx" data-heading="3" data-raw="📄 src/components/VoiceCard.tsx">📄 <code>src/components/VoiceCard.tsx</code><button class="copy-btn" data-section="srccomponentsvoicecardtsx">📋 Seção</button></h3><ul>
+<li><strong>loadConfig()</strong> (linha 45)</li>
+<li><strong>saveConfig()</strong> (linha 58)</li>
+<li><strong>API_BASE()</strong> (linha 62)</li>
+<li><strong>base()</strong> (linha 63)</li>
+<li><strong>speakText()</strong> (linha 67)</li>
+<li><strong>VoiceCard()</strong> (linha 81)</li>
+<li><strong>setP()</strong> (linha 98)</li>
+<li><strong>SR()</strong> (linha 148)</li>
+<li><strong>update()</strong> (linha 234)</li>
+</ul>
+<h3 id="srccomponentsassistentejuridicotsx" data-heading="3" data-raw="📄 src/components/AssistenteJuridico.tsx">📄 <code>src/components/AssistenteJuridico.tsx</code><button class="copy-btn" data-section="srccomponentsassistentejuridicotsx">📋 Seção</button></h3><ul>
+<li><strong>detectProviderName()</strong> (linha 74)</li>
+<li><strong>k()</strong> (linha 75)</li>
+<li><strong>resolveAIEndpoint()</strong> (linha 93)</li>
+<li><strong>buildLegalPrompt()</strong> (linha 103)</li>
+<li><strong>callAIStreaming()</strong> (linha 118)</li>
+<li><strong>LegalText()</strong> (linha 197)</li>
+<li><strong>isQuote()</strong> (linha 208)</li>
+<li><strong>renderLines()</strong> (linha 209)</li>
+<li><strong>saveLS()</strong> (linha 223)</li>
+<li><strong>AssistenteJuridico()</strong> (linha 232)</li>
+<li><strong>loadVoices()</strong> (linha 328)</li>
+<li><strong>applyTTSConfig()</strong> (linha 337)</li>
+<li><strong>saveCurrentKey()</strong> (linha 358)</li>
+<li><strong>loadKey()</strong> (linha 366)</li>
+<li><strong>testarChave()</strong> (linha 371)</li>
+<li><strong>stop()</strong> (linha 500)</li>
+<li><strong>onFileSelected()</strong> (linha 506)</li>
+<li><strong>onAudioSelected()</strong> (linha 519)</li>
+<li><strong>downloadTxt()</strong> (linha 541)</li>
+<li><strong>downloadRtf()</strong> (linha 547)</li>
+<li><strong>copyResult()</strong> (linha 563)</li>
+<li><strong>SR()</strong> (linha 571)</li>
+<li><strong>scheduleStop()</strong> (linha 575)</li>
+<li><strong>openNewEmenta()</strong> (linha 596)</li>
+<li><strong>openEditEmenta()</strong> (linha 599)</li>
+<li><strong>saveEmenta()</strong> (linha 602)</li>
+<li><strong>deleteEmenta()</strong> (linha 611)</li>
+<li><strong>toggleEmenta()</strong> (linha 615)</li>
+<li><strong>openNewCustom()</strong> (linha 627)</li>
+<li><strong>openEditCustom()</strong> (linha 628)</li>
+<li><strong>saveCustom()</strong> (linha 629)</li>
+</ul>
+<h3 id="srccomponentsuibreadcrumbtsx" data-heading="3" data-raw="📄 src/components/ui/breadcrumb.tsx">📄 <code>src/components/ui/breadcrumb.tsx</code><button class="copy-btn" data-section="srccomponentsuibreadcrumbtsx">📋 Seção</button></h3><ul>
+<li><strong>BreadcrumbSeparator()</strong> (linha 75)</li>
+<li><strong>BreadcrumbEllipsis()</strong> (linha 91)</li>
+</ul>
+<h3 id="srccomponentsuispinnertsx" data-heading="3" data-raw="📄 src/components/ui/spinner.tsx">📄 <code>src/components/ui/spinner.tsx</code><button class="copy-btn" data-section="srccomponentsuispinnertsx">📋 Seção</button></h3><ul>
+<li><strong>Spinner()</strong> (linha 5)</li>
+</ul>
+<h3 id="srccomponentsuisidebartsx" data-heading="3" data-raw="📄 src/components/ui/sidebar.tsx">📄 <code>src/components/ui/sidebar.tsx</code><button class="copy-btn" data-section="srccomponentsuisidebartsx">📋 Seção</button></h3><ul>
+<li><strong>useSidebar()</strong> (linha 47)</li>
+<li><strong>SidebarProvider()</strong> (linha 56)</li>
+<li><strong>handleKeyDown()</strong> (linha 98)</li>
+<li><strong>Sidebar()</strong> (linha 154)</li>
+<li><strong>SidebarTrigger()</strong> (linha 256)</li>
+<li><strong>SidebarRail()</strong> (linha 282)</li>
+<li><strong>SidebarInset()</strong> (linha 308)</li>
+<li><strong>SidebarInput()</strong> (linha 322)</li>
+<li><strong>SidebarHeader()</strong> (linha 336)</li>
+<li><strong>SidebarFooter()</strong> (linha 347)</li>
+<li><strong>SidebarSeparator()</strong> (linha 358)</li>
+<li><strong>SidebarContent()</strong> (linha 372)</li>
+<li><strong>SidebarGroup()</strong> (linha 386)</li>
+<li><strong>SidebarGroupLabel()</strong> (linha 397)</li>
+<li><strong>SidebarGroupAction()</strong> (linha 418)</li>
+<li><strong>SidebarGroupContent()</strong> (linha 441)</li>
+<li><strong>SidebarMenu()</strong> (linha 455)</li>
+<li><strong>SidebarMenuItem()</strong> (linha 466)</li>
+<li><strong>SidebarMenuButton()</strong> (linha 499)</li>
+<li><strong>button()</strong> (linha 515)</li>
+<li><strong>SidebarMenuAction()</strong> (linha 549)</li>
+<li><strong>SidebarMenuBadge()</strong> (linha 581)</li>
+<li><strong>SidebarMenuSkeleton()</strong> (linha 603)</li>
+<li><strong>SidebarMenuSub()</strong> (linha 641)</li>
+<li><strong>SidebarMenuSubItem()</strong> (linha 656)</li>
+<li><strong>SidebarMenuSubButton()</strong> (linha 670)</li>
+</ul>
+<h3 id="srccomponentsuipaginationtsx" data-heading="3" data-raw="📄 src/components/ui/pagination.tsx">📄 <code>src/components/ui/pagination.tsx</code><button class="copy-btn" data-section="srccomponentsuipaginationtsx">📋 Seção</button></h3><ul>
+<li><strong>Pagination()</strong> (linha 7)</li>
+<li><strong>PaginationLink()</strong> (linha 42)</li>
+<li><strong>PaginationPrevious()</strong> (linha 62)</li>
+<li><strong>PaginationNext()</strong> (linha 78)</li>
+<li><strong>PaginationEllipsis()</strong> (linha 94)</li>
+</ul>
+<h3 id="srccomponentsuicarouseltsx" data-heading="3" data-raw="📄 src/components/ui/carousel.tsx">📄 <code>src/components/ui/carousel.tsx</code><button class="copy-btn" data-section="srccomponentsuicarouseltsx">📋 Seção</button></h3><ul>
+<li><strong>useCarousel()</strong> (linha 33)</li>
+</ul>
+<h3 id="srccomponentsuidrawertsx" data-heading="3" data-raw="📄 src/components/ui/drawer.tsx">📄 <code>src/components/ui/drawer.tsx</code><button class="copy-btn" data-section="srccomponentsuidrawertsx">📋 Seção</button></h3><ul>
+<li><strong>Drawer()</strong> (linha 6)</li>
+<li><strong>DrawerHeader()</strong> (linha 56)</li>
+<li><strong>DrawerFooter()</strong> (linha 67)</li>
+</ul>
+<h3 id="srccomponentsuibutton-grouptsx" data-heading="3" data-raw="📄 src/components/ui/button-group.tsx">📄 <code>src/components/ui/button-group.tsx</code><button class="copy-btn" data-section="srccomponentsuibutton-grouptsx">📋 Seção</button></h3><ul>
+<li><strong>ButtonGroup()</strong> (linha 24)</li>
+<li><strong>ButtonGroupText()</strong> (linha 40)</li>
+<li><strong>ButtonGroupSeparator()</strong> (linha 60)</li>
+</ul>
+<h3 id="srccomponentsuidropdown-menutsx" data-heading="3" data-raw="📄 src/components/ui/dropdown-menu.tsx">📄 <code>src/components/ui/dropdown-menu.tsx</code><button class="copy-btn" data-section="srccomponentsuidropdown-menutsx">📋 Seção</button></h3><ul>
+<li><strong>DropdownMenuShortcut()</strong> (linha 172)</li>
+</ul>
+<h3 id="srccomponentsuikbdtsx" data-heading="3" data-raw="📄 src/components/ui/kbd.tsx">📄 <code>src/components/ui/kbd.tsx</code><button class="copy-btn" data-section="srccomponentsuikbdtsx">📋 Seção</button></h3><ul>
+<li><strong>Kbd()</strong> (linha 3)</li>
+<li><strong>KbdGroup()</strong> (linha 18)</li>
+</ul>
+<h3 id="srccomponentsuiinput-grouptsx" data-heading="3" data-raw="📄 src/components/ui/input-group.tsx">📄 <code>src/components/ui/input-group.tsx</code><button class="copy-btn" data-section="srccomponentsuiinput-grouptsx">📋 Seção</button></h3><ul>
+<li><strong>InputGroup()</strong> (linha 9)</li>
+<li><strong>InputGroupAddon()</strong> (linha 58)</li>
+<li><strong>InputGroupButton()</strong> (linha 98)</li>
+<li><strong>InputGroupText()</strong> (linha 117)</li>
+<li><strong>InputGroupInput()</strong> (linha 129)</li>
+<li><strong>InputGroupTextarea()</strong> (linha 145)</li>
+</ul>
+<h3 id="srccomponentsuiformtsx" data-heading="3" data-raw="📄 src/components/ui/form.tsx">📄 <code>src/components/ui/form.tsx</code><button class="copy-btn" data-section="srccomponentsuiformtsx">📋 Seção</button></h3><ul>
+<li><strong>useFormField()</strong> (linha 40)</li>
+</ul>
+<h3 id="srccomponentsuidialogtsx" data-heading="3" data-raw="📄 src/components/ui/dialog.tsx">📄 <code>src/components/ui/dialog.tsx</code><button class="copy-btn" data-section="srccomponentsuidialogtsx">📋 Seção</button></h3><ul>
+<li><strong>DialogHeader()</strong> (linha 54)</li>
+<li><strong>DialogFooter()</strong> (linha 68)</li>
+</ul>
+<h3 id="srccomponentsuibadgetsx" data-heading="3" data-raw="📄 src/components/ui/badge.tsx">📄 <code>src/components/ui/badge.tsx</code><button class="copy-btn" data-section="srccomponentsuibadgetsx">📋 Seção</button></h3><ul>
+<li><strong>Badge()</strong> (linha 37)</li>
+</ul>
+<h3 id="srccomponentsuitoastertsx" data-heading="3" data-raw="📄 src/components/ui/toaster.tsx">📄 <code>src/components/ui/toaster.tsx</code><button class="copy-btn" data-section="srccomponentsuitoastertsx">📋 Seção</button></h3><ul>
+<li><strong>Toaster()</strong> (linha 11)</li>
+</ul>
+<h3 id="srccomponentsuiemptytsx" data-heading="3" data-raw="📄 src/components/ui/empty.tsx">📄 <code>src/components/ui/empty.tsx</code><button class="copy-btn" data-section="srccomponentsuiemptytsx">📋 Seção</button></h3><ul>
+<li><strong>Empty()</strong> (linha 5)</li>
+<li><strong>EmptyHeader()</strong> (linha 18)</li>
+<li><strong>EmptyMedia()</strong> (linha 46)</li>
+<li><strong>EmptyTitle()</strong> (linha 61)</li>
+<li><strong>EmptyDescription()</strong> (linha 71)</li>
+<li><strong>EmptyContent()</strong> (linha 84)</li>
+</ul>
+<h3 id="srccomponentsuicharttsx" data-heading="3" data-raw="📄 src/components/ui/chart.tsx">📄 <code>src/components/ui/chart.tsx</code><button class="copy-btn" data-section="srccomponentsuicharttsx">📋 Seção</button></h3><ul>
+<li><strong>useChart()</strong> (linha 25)</li>
+<li><strong>ChartStyle()</strong> (linha 68)</li>
+<li><strong>getPayloadConfigFromPayload()</strong> (linha 322)</li>
+</ul>
+<h3 id="srccomponentsuialert-dialogtsx" data-heading="3" data-raw="📄 src/components/ui/alert-dialog.tsx">📄 <code>src/components/ui/alert-dialog.tsx</code><button class="copy-btn" data-section="srccomponentsuialert-dialogtsx">📋 Seção</button></h3><ul>
+<li><strong>AlertDialogHeader()</strong> (linha 46)</li>
+<li><strong>AlertDialogFooter()</strong> (linha 60)</li>
+</ul>
+<h3 id="srccomponentsuicommandtsx" data-heading="3" data-raw="📄 src/components/ui/command.tsx">📄 <code>src/components/ui/command.tsx</code><button class="copy-btn" data-section="srccomponentsuicommandtsx">📋 Seção</button></h3><ul>
+<li><strong>CommandDialog()</strong> (linha 26)</li>
+<li><strong>CommandShortcut()</strong> (linha 127)</li>
+</ul>
+<h3 id="srccomponentsuicalendartsx" data-heading="3" data-raw="📄 src/components/ui/calendar.tsx">📄 <code>src/components/ui/calendar.tsx</code><button class="copy-btn" data-section="srccomponentsuicalendartsx">📋 Seção</button></h3><ul>
+<li><strong>Calendar()</strong> (linha 14)</li>
+<li><strong>CalendarDayButton()</strong> (linha 175)</li>
+</ul>
+<h3 id="srccomponentsuisheettsx" data-heading="3" data-raw="📄 src/components/ui/sheet.tsx">📄 <code>src/components/ui/sheet.tsx</code><button class="copy-btn" data-section="srccomponentsuisheettsx">📋 Seção</button></h3><ul>
+<li><strong>SheetHeader()</strong> (linha 77)</li>
+<li><strong>SheetFooter()</strong> (linha 91)</li>
+</ul>
+<h3 id="srccomponentsuisonnertsx" data-heading="3" data-raw="📄 src/components/ui/sonner.tsx">📄 <code>src/components/ui/sonner.tsx</code><button class="copy-btn" data-section="srccomponentsuisonnertsx">📋 Seção</button></h3><ul>
+<li><strong>Toaster()</strong> (linha 8)</li>
+</ul>
+<h3 id="srccomponentsuimenubartsx" data-heading="3" data-raw="📄 src/components/ui/menubar.tsx">📄 <code>src/components/ui/menubar.tsx</code><button class="copy-btn" data-section="srccomponentsuimenubartsx">📋 Seção</button></h3><ul>
+<li><strong>MenubarMenu()</strong> (linha 7)</li>
+<li><strong>MenubarGroup()</strong> (linha 13)</li>
+<li><strong>MenubarPortal()</strong> (linha 19)</li>
+<li><strong>MenubarRadioGroup()</strong> (linha 25)</li>
+<li><strong>MenubarSub()</strong> (linha 31)</li>
+<li><strong>MenubarShortcut()</strong> (linha 221)</li>
+</ul>
+<h3 id="srccomponentsuiresizabletsx" data-heading="3" data-raw="📄 src/components/ui/resizable.tsx">📄 <code>src/components/ui/resizable.tsx</code><button class="copy-btn" data-section="srccomponentsuiresizabletsx">📋 Seção</button></h3><ul>
+<li><strong>ResizablePanelGroup()</strong> (linha 8)</li>
+<li><strong>ResizableHandle()</strong> (linha 23)</li>
+</ul>
+<h3 id="srccomponentsuiitemtsx" data-heading="3" data-raw="📄 src/components/ui/item.tsx">📄 <code>src/components/ui/item.tsx</code><button class="copy-btn" data-section="srccomponentsuiitemtsx">📋 Seção</button></h3><ul>
+<li><strong>ItemGroup()</strong> (linha 8)</li>
+<li><strong>ItemSeparator()</strong> (linha 19)</li>
+<li><strong>Item()</strong> (linha 54)</li>
+<li><strong>ItemMedia()</strong> (linha 91)</li>
+<li><strong>ItemContent()</strong> (linha 106)</li>
+<li><strong>ItemTitle()</strong> (linha 119)</li>
+<li><strong>ItemDescription()</strong> (linha 132)</li>
+<li><strong>ItemActions()</strong> (linha 146)</li>
+<li><strong>ItemHeader()</strong> (linha 156)</li>
+<li><strong>ItemFooter()</strong> (linha 169)</li>
+</ul>
+<h3 id="srccomponentsuifieldtsx" data-heading="3" data-raw="📄 src/components/ui/field.tsx">📄 <code>src/components/ui/field.tsx</code><button class="copy-btn" data-section="srccomponentsuifieldtsx">📋 Seção</button></h3><ul>
+<li><strong>FieldSet()</strong> (linha 10)</li>
+<li><strong>FieldLegend()</strong> (linha 24)</li>
+<li><strong>FieldGroup()</strong> (linha 44)</li>
+<li><strong>Field()</strong> (linha 81)</li>
+<li><strong>FieldContent()</strong> (linha 97)</li>
+<li><strong>FieldLabel()</strong> (linha 110)</li>
+<li><strong>FieldTitle()</strong> (linha 128)</li>
+<li><strong>FieldDescription()</strong> (linha 141)</li>
+<li><strong>FieldSeparator()</strong> (linha 156)</li>
+<li><strong>FieldError()</strong> (linha 186)</li>
+</ul>
+<h3 id="srccomponentsuicontext-menutsx" data-heading="3" data-raw="📄 src/components/ui/context-menu.tsx">📄 <code>src/components/ui/context-menu.tsx</code><button class="copy-btn" data-section="srccomponentsuicontext-menutsx">📋 Seção</button></h3><ul>
+<li><strong>ContextMenuShortcut()</strong> (linha 166)</li>
+</ul>
+<h3 id="srccomponentsuiskeletontsx" data-heading="3" data-raw="📄 src/components/ui/skeleton.tsx">📄 <code>src/components/ui/skeleton.tsx</code><button class="copy-btn" data-section="srccomponentsuiskeletontsx">📋 Seção</button></h3><ul>
+<li><strong>Skeleton()</strong> (linha 3)</li>
+</ul>
+<h3 id="srccomponentspackagesearchtsx" data-heading="3" data-raw="📄 src/components/PackageSearch.tsx">📄 <code>src/components/PackageSearch.tsx</code><button class="copy-btn" data-section="srccomponentspackagesearchtsx">📋 Seção</button></h3><ul>
+<li><strong>PackageSearch()</strong> (linha 68)</li>
+<li><strong>handleQueryChange()</strong> (linha 126)</li>
+<li><strong>toggleOutput()</strong> (linha 218)</li>
+</ul>
+<h3 id="srccomponentsfilescannertsx" data-heading="3" data-raw="📄 src/components/FileScanner.tsx">📄 <code>src/components/FileScanner.tsx</code><button class="copy-btn" data-section="srccomponentsfilescannertsx">📋 Seção</button></h3><ul>
+<li><strong>Highlight()</strong> (linha 26)</li>
+<li><strong>FileScanner()</strong> (linha 33)</li>
+<li><strong>copy()</strong> (linha 58)</li>
+<li><strong>lines()</strong> (linha 66)</li>
+<li><strong>handleApk()</strong> (linha 74)</li>
+<li><strong>readEntry()</strong> (linha 87)</li>
+<li><strong>doWebFetch()</strong> (linha 99)</li>
+<li><strong>doAI()</strong> (linha 118)</li>
+</ul>
+<h3 id="srccomponentspreviewtsx" data-heading="3" data-raw="📄 src/components/Preview.tsx">📄 <code>src/components/Preview.tsx</code><button class="copy-btn" data-section="srccomponentspreviewtsx">📋 Seção</button></h3><ul>
+<li><strong>markdownToHtml()</strong> (linha 17)</li>
+<li><strong>jsonToHtml()</strong> (linha 62)</li>
+<li><strong>buildHtml()</strong> (linha 80)</li>
+<li><strong>buildCssPreview()</strong> (linha 101)</li>
+<li><strong>buildJsRunner()</strong> (linha 120)</li>
+<li><strong>fmt()</strong> (linha 140)</li>
+<li><strong>addLine()</strong> (linha 151)</li>
+<li><strong>Preview()</strong> (linha 170)</li>
+<li><strong>htmlFile()</strong> (linha 205)</li>
+</ul>
+<h3 id="srccomponentseditorlayouttsx" data-heading="3" data-raw="📄 src/components/EditorLayout.tsx">📄 <code>src/components/EditorLayout.tsx</code><button class="copy-btn" data-section="srccomponentseditorlayouttsx">📋 Seção</button></h3><ul>
+<li><strong>NameInputModal()</strong> (linha 31)</li>
+<li><strong>submit()</strong> (linha 52)</li>
+<li><strong>buildAsciiTree()</strong> (linha 143)</li>
+<li><strong>sortKeys()</strong> (linha 152)</li>
+<li><strong>render()</strong> (linha 163)</li>
+<li><strong>generateDocs()</strong> (linha 180)</li>
+<li><strong>readSafe()</strong> (linha 183)</li>
+<li><strong>explainFile()</strong> (linha 286)</li>
+<li><strong>explainFolder()</strong> (linha 413)</li>
+<li><strong>generateSystemInfo()</strong> (linha 623)</li>
+<li><strong>EditorLayout()</strong> (linha 725)</li>
+<li><strong>tryPersist()</strong> (linha 1386)</li>
+<li><strong>electronFS()</strong> (linha 1445)</li>
+<li><strong>tb()</strong> (linha 1959)</li>
+<li><strong>val()</strong> (linha 2021)</li>
+</ul>
+<h3 id="srccomponentstemplateselectortsx" data-heading="3" data-raw="📄 src/components/TemplateSelector.tsx">📄 <code>src/components/TemplateSelector.tsx</code><button class="copy-btn" data-section="srccomponentstemplateselectortsx">📋 Seção</button></h3><ul>
+<li><strong>projectColor()</strong> (linha 27)</li>
+<li><strong>ProjectIcon()</strong> (linha 45)</li>
+<li><strong>ProjectRow()</strong> (linha 56)</li>
+<li><strong>TemplateSelector()</strong> (linha 173)</li>
+</ul>
+<h3 id="srccomponentsmanualtsx" data-heading="3" data-raw="📄 src/components/Manual.tsx">📄 <code>src/components/Manual.tsx</code><button class="copy-btn" data-section="srccomponentsmanualtsx">📋 Seção</button></h3><ul>
+<li><strong>Manual()</strong> (linha 24)</li>
+<li><strong>escape()</strong> (linha 92)</li>
+<li><strong>copy()</strong> (linha 169)</li>
+<li><strong>Code()</strong> (linha 175)</li>
+<li><strong>H2()</strong> (linha 199)</li>
+<li><strong>H3()</strong> (linha 205)</li>
+<li><strong>P()</strong> (linha 209)</li>
+<li><strong>Li()</strong> (linha 213)</li>
+<li><strong>Badge()</strong> (linha 220)</li>
+<li><strong>Step()</strong> (linha 308)</li>
+<li><strong>Alert()</strong> (linha 315)</li>
+<li><strong>initDb()</strong> (linha 960)</li>
+<li><strong>Step()</strong> (linha 1393)</li>
+<li><strong>Alert()</strong> (linha 1400)</li>
+<li><strong>Box()</strong> (linha 1410)</li>
+</ul>
+<h3 id="srccomponentsdatabasepaneltsx" data-heading="3" data-raw="📄 src/components/DatabasePanel.tsx">📄 <code>src/components/DatabasePanel.tsx</code><button class="copy-btn" data-section="srccomponentsdatabasepaneltsx">📋 Seção</button></h3><ul>
+<li><strong>loadSavedConnections()</strong> (linha 46)</li>
+<li><strong>saveSavedConnections()</strong> (linha 49)</li>
+<li><strong>neonErrorMsg()</strong> (linha 53)</li>
+<li><strong>runNeonQuery()</strong> (linha 65)</li>
+<li><strong>CodeBlock()</strong> (linha 80)</li>
+<li><strong>QueryResultTable()</strong> (linha 93)</li>
+<li><strong>NeonTab()</strong> (linha 132)</li>
+<li><strong>SQLiteTab()</strong> (linha 474)</li>
+<li><strong>GuiasTab()</strong> (linha 659)</li>
+<li><strong>testar()</strong> (linha 737)</li>
+<li><strong>CredenciaisTab()</strong> (linha 851)</li>
+<li><strong>DatabasePanel()</strong> (linha 936)</li>
+</ul>
+<h3 id="srccomponentsgithubpaneltsx" data-heading="3" data-raw="📄 src/components/GitHubPanel.tsx">📄 <code>src/components/GitHubPanel.tsx</code><button class="copy-btn" data-section="srccomponentsgithubpaneltsx">📋 Seção</button></h3><ul>
+<li><strong>SetupScreen()</strong> (linha 27)</li>
+<li><strong>handleConnect()</strong> (linha 32)</li>
+<li><strong>MainPanel()</strong> (linha 136)</li>
+<li><strong>handlePushNew()</strong> (linha 193)</li>
+<li><strong>handlePushExisting()</strong> (linha 214)</li>
+<li><strong>handleClone()</strong> (linha 235)</li>
+<li><strong>handlePagesDeploy()</strong> (linha 249)</li>
+<li><strong>log()</strong> (linha 256)</li>
+<li><strong>OpenInVSCode()</strong> (linha 363)</li>
+<li><strong>PublicCloneScreen()</strong> (linha 845)</li>
+<li><strong>parseRepo()</strong> (linha 850)</li>
+<li><strong>handleClone()</strong> (linha 859)</li>
+<li><strong>GitHubPanel()</strong> (linha 915)</li>
+<li><strong>handleDisconnect()</strong> (linha 922)</li>
+</ul>
+<h3 id="srccomponentsdrivebackuppaneltsx" data-heading="3" data-raw="📄 src/components/DriveBackupPanel.tsx">📄 <code>src/components/DriveBackupPanel.tsx</code><button class="copy-btn" data-section="srccomponentsdrivebackuppaneltsx">📋 Seção</button></h3><ul>
+<li><strong>API_BASE()</strong> (linha 19)</li>
+<li><strong>base()</strong> (linha 20)</li>
+<li><strong>DriveBackupPanel()</strong> (linha 24)</li>
+<li><strong>handleBackup()</strong> (linha 49)</li>
+<li><strong>handleDelete()</strong> (linha 78)</li>
+</ul>
+<h3 id="srccomponentscampolivretsx" data-heading="3" data-raw="📄 src/components/CampoLivre.tsx">📄 <code>src/components/CampoLivre.tsx</code><button class="copy-btn" data-section="srccomponentscampolivretsx">📋 Seção</button></h3><ul>
+<li><strong>detectProvider()</strong> (linha 20)</li>
+<li><strong>k()</strong> (linha 21)</li>
+<li><strong>CodeBlock()</strong> (linha 42)</li>
+<li><strong>RenderContent()</strong> (linha 58)</li>
+<li><strong>CampoLivre()</strong> (linha 88)</li>
+<li><strong>loadVoices()</strong> (linha 121)</li>
+<li><strong>applyTTSConfig()</strong> (linha 130)</li>
+<li><strong>applyKey()</strong> (linha 166)</li>
+<li><strong>saveCurrentKey()</strong> (linha 172)</li>
+<li><strong>loadKey()</strong> (linha 181)</li>
+<li><strong>removeKey()</strong> (linha 182)</li>
+<li><strong>SR()</strong> (linha 187)</li>
+<li><strong>scheduleAutoSend()</strong> (linha 197)</li>
+<li><strong>userMsg()</strong> (linha 227)</li>
+<li><strong>afterSpeak()</strong> (linha 256)</li>
+<li><strong>targetUrl()</strong> (linha 289)</li>
+<li><strong>stop()</strong> (linha 393)</li>
+<li><strong>clearHistory()</strong> (linha 401)</li>
+<li><strong>exportConversation()</strong> (linha 403)</li>
+<li><strong>handleImport()</strong> (linha 411)</li>
+<li><strong>SR()</strong> (linha 426)</li>
+<li><strong>scheduleAutoSend()</strong> (linha 440)</li>
+</ul>
+<h3 id="srccomponentselectronterminaltsx" data-heading="3" data-raw="📄 src/components/ElectronTerminal.tsx">📄 <code>src/components/ElectronTerminal.tsx</code><button class="copy-btn" data-section="srccomponentselectronterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>detectProvider()</strong> (linha 41)</li>
+<li><strong>ElectronTerminal()</strong> (linha 50)</li>
+<li><strong>onKey()</strong> (linha 205)</li>
+</ul>
+<h3 id="srccomponentsbuildpaneltsx" data-heading="3" data-raw="📄 src/components/BuildPanel.tsx">📄 <code>src/components/BuildPanel.tsx</code><button class="copy-btn" data-section="srccomponentsbuildpaneltsx">📋 Seção</button></h3><ul>
+<li><strong>CodeBlock()</strong> (linha 33)</li>
+<li><strong>doCopy()</strong> (linha 35)</li>
+<li><strong>cleanDeps()</strong> (linha 84)</li>
+<li><strong>parseVfsPkg()</strong> (linha 92)</li>
+<li><strong>makeCleanPkg()</strong> (linha 96)</li>
+<li><strong>cleanName()</strong> (linha 97)</li>
+<li><strong>getAllVfsFiles()</strong> (linha 110)</li>
+<li><strong>generatePlatformZip()</strong> (linha 119)</li>
+<li><strong>name()</strong> (linha 127)</li>
+<li><strong>createWindow()</strong> (linha 216)</li>
+<li><strong>BuildPanel()</strong> (linha 455)</li>
+<li><strong>toggle()</strong> (linha 466)</li>
+<li><strong>readSafe()</strong> (linha 524)</li>
+<li><strong>sortK()</strong> (linha 590)</li>
+<li><strong>renderT()</strong> (linha 597)</li>
+</ul>
+<h3 id="srccomponentscombinarappstsx" data-heading="3" data-raw="📄 src/components/CombinarApps.tsx">📄 <code>src/components/CombinarApps.tsx</code><button class="copy-btn" data-section="srccomponentscombinarappstsx">📋 Seção</button></h3><ul>
+<li><strong>uid()</strong> (linha 27)</li>
+<li><strong>emptyApp()</strong> (linha 31)</li>
+<li><strong>isValidApp()</strong> (linha 35)</li>
+<li><strong>loadPersistedState()</strong> (linha 47)</li>
+<li><strong>CombinarApps()</strong> (linha 70)</li>
+<li><strong>v()</strong> (linha 314)</li>
+</ul>
+<h3 id="srccomponentsfiletreetsx" data-heading="3" data-raw="📄 src/components/FileTree.tsx">📄 <code>src/components/FileTree.tsx</code><button class="copy-btn" data-section="srccomponentsfiletreetsx">📋 Seção</button></h3><ul>
+<li><strong>getFileColor()</strong> (linha 39)</li>
+<li><strong>NodeContextSheet()</strong> (linha 65)</li>
+<li><strong>TreeNode()</strong> (linha 142)</li>
+<li><strong>FileTree()</strong> (linha 291)</li>
+</ul>
+<h3 id="srccomponentshtmlplaygroundtsx" data-heading="3" data-raw="📄 src/components/HTMLPlayground.tsx">📄 <code>src/components/HTMLPlayground.tsx</code><button class="copy-btn" data-section="srccomponentshtmlplaygroundtsx">📋 Seção</button></h3><ul>
+<li><strong>HTMLPlayground()</strong> (linha 74)</li>
+</ul>
+<h3 id="srccomponentssystemstatuspaneltsx" data-heading="3" data-raw="📄 src/components/SystemStatusPanel.tsx">📄 <code>src/components/SystemStatusPanel.tsx</code><button class="copy-btn" data-section="srccomponentssystemstatuspaneltsx">📋 Seção</button></h3><ul>
+<li><strong>StatusBadge()</strong> (linha 23)</li>
+<li><strong>SystemStatusPanel()</strong> (linha 46)</li>
+<li><strong>coi()</strong> (linha 95)</li>
+<li><strong>usedMB()</strong> (linha 207)</li>
+<li><strong>quotaMB()</strong> (linha 208)</li>
+</ul>
+<h3 id="srccomponentsterminalareatsx" data-heading="3" data-raw="📄 src/components/TerminalArea.tsx">📄 <code>src/components/TerminalArea.tsx</code><button class="copy-btn" data-section="srccomponentsterminalareatsx">📋 Seção</button></h3><ul>
+<li><strong>TerminalArea()</strong> (linha 37)</li>
+<li><strong>probe()</strong> (linha 56)</li>
+<li><strong>choose()</strong> (linha 69)</li>
+<li><strong>cmdFor()</strong> (linha 89)</li>
+<li><strong>ModeButton()</strong> (linha 159)</li>
+<li><strong>HelpCard()</strong> (linha 174)</li>
+</ul>
+<h3 id="srccomponentsaichattsx" data-heading="3" data-raw="📄 src/components/AIChat.tsx">📄 <code>src/components/AIChat.tsx</code><button class="copy-btn" data-section="srccomponentsaichattsx">📋 Seção</button></h3><ul>
+<li><strong>CopyBtn()</strong> (linha 51)</li>
+<li><strong>MdCodeBlock()</strong> (linha 69)</li>
+<li><strong>makeMdComponents()</strong> (linha 118)</li>
+<li><strong>langMatch()</strong> (linha 125)</li>
+<li><strong>extractText()</strong> (linha 148)</li>
+<li><strong>VoicePicker()</strong> (linha 182)</li>
+<li><strong>load()</strong> (linha 186)</li>
+<li><strong>EmptyChatState()</strong> (linha 267)</li>
+<li><strong>handleSendIdea()</strong> (linha 287)</li>
+<li><strong>MessageBubble()</strong> (linha 392)</li>
+<li><strong>AIChat()</strong> (linha 510)</li>
+<li><strong>API_BASE_VOICE()</strong> (linha 560)</li>
+<li><strong>base()</strong> (linha 561)</li>
+<li><strong>initDb()</strong> (linha 970)</li>
+<li><strong>checkpoint()</strong> (linha 1171)</li>
+<li><strong>voiceCfg()</strong> (linha 1855)</li>
+<li><strong>browserVoice()</strong> (linha 1869)</li>
+<li><strong>handleTestSlot()</strong> (linha 1931)</li>
+<li><strong>updateSlot()</strong> (linha 1938)</li>
+<li><strong>detectProvider()</strong> (linha 1956)</li>
+<li><strong>handleQuickSave()</strong> (linha 1977)</li>
+</ul>
+<h3 id="srccomponentsdeploypaneltsx" data-heading="3" data-raw="📄 src/components/DeployPanel.tsx">📄 <code>src/components/DeployPanel.tsx</code><button class="copy-btn" data-section="srccomponentsdeploypaneltsx">📋 Seção</button></h3><ul>
+<li><strong>copyText()</strong> (linha 17)</li>
+<li><strong>CodeBlock()</strong> (linha 21)</li>
+<li><strong>uint32LE()</strong> (linha 190)</li>
+<li><strong>uint16LE()</strong> (linha 193)</li>
+<li><strong>crc32()</strong> (linha 197)</li>
+<li><strong>buildZip()</strong> (linha 209)</li>
+<li><strong>buildZipBlob()</strong> (linha 278)</li>
+<li><strong>DeployPanel()</strong> (linha 303)</li>
+<li><strong>electronFS()</strong> (linha 320)</li>
+<li><strong>addLog()</strong> (linha 324)</li>
+<li><strong>downloadBlob()</strong> (linha 378)</li>
+<li><strong>toggle()</strong> (linha 467)</li>
+<li><strong>Section()</strong> (linha 468)</li>
+<li><strong>Step()</strong> (linha 479)</li>
+<li><strong>Tip()</strong> (linha 485)</li>
+<li><strong>Warn()</strong> (linha 491)</li>
+<li><strong>Link()</strong> (linha 497)</li>
+<li><strong>verificarAssinatura()</strong> (linha 646)</li>
+</ul>
+<h3 id="srccomponentssiteextractortsx" data-heading="3" data-raw="📄 src/components/SiteExtractor.tsx">📄 <code>src/components/SiteExtractor.tsx</code><button class="copy-btn" data-section="srccomponentssiteextractortsx">📋 Seção</button></h3><ul>
+<li><strong>fetchWithProxy()</strong> (linha 36)</li>
+<li><strong>extractLinks()</strong> (linha 54)</li>
+<li><strong>extractAssets()</strong> (linha 72)</li>
+<li><strong>resolve()</strong> (linha 74)</li>
+<li><strong>urlToPath()</strong> (linha 92)</li>
+<li><strong>SiteExtractor()</strong> (linha 106)</li>
+<li><strong>fetchPage()</strong> (linha 136)</li>
+<li><strong>copyFile()</strong> (linha 209)</li>
+<li><strong>analyzeFile()</strong> (linha 215)</li>
+</ul>
+<h3 id="srccomponentswebcontainerterminaltsx" data-heading="3" data-raw="📄 src/components/WebContainerTerminal.tsx">📄 <code>src/components/WebContainerTerminal.tsx</code><button class="copy-btn" data-section="srccomponentswebcontainerterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>getOrBootWebContainer()</strong> (linha 20)</li>
+<li><strong>vfsToTree()</strong> (linha 33)</li>
+<li><strong>WebContainerTerminal()</strong> (linha 54)</li>
+<li><strong>onResize()</strong> (linha 172)</li>
+</ul>
+<h3 id="srchooksuse-toastts" data-heading="3" data-raw="📄 src/hooks/use-toast.ts">📄 <code>src/hooks/use-toast.ts</code><button class="copy-btn" data-section="srchooksuse-toastts">📋 Seção</button></h3><ul>
+<li><strong>genId()</strong> (linha 27)</li>
+<li><strong>addToRemoveQueue()</strong> (linha 58)</li>
+<li><strong>reducer()</strong> (linha 74)</li>
+<li><strong>dispatch()</strong> (linha 133)</li>
+<li><strong>toast()</strong> (linha 142)</li>
+<li><strong>update()</strong> (linha 145)</li>
+<li><strong>dismiss()</strong> (linha 150)</li>
+<li><strong>useToast()</strong> (linha 171)</li>
+</ul>
+<h3 id="srchooksuse-mobiletsx" data-heading="3" data-raw="📄 src/hooks/use-mobile.tsx">📄 <code>src/hooks/use-mobile.tsx</code><button class="copy-btn" data-section="srchooksuse-mobiletsx">📋 Seção</button></h3><ul>
+<li><strong>useIsMobile()</strong> (linha 5)</li>
+<li><strong>onChange()</strong> (linha 10)</li>
+</ul>
+<h3 id="srcapptsx" data-heading="3" data-raw="📄 src/App.tsx">📄 <code>src/App.tsx</code><button class="copy-btn" data-section="srcapptsx">📋 Seção</button></h3><ul>
+<li><strong>App()</strong> (linha 17)</li>
+<li><strong>save()</strong> (linha 75)</li>
+<li><strong>toggleBtn()</strong> (linha 157)</li>
+</ul>
+<h3 id="srclibtemplatests" data-heading="3" data-raw="📄 src/lib/templates.ts">📄 <code>src/lib/templates.ts</code><button class="copy-btn" data-section="srclibtemplatests">📋 Seção</button></h3><ul>
+<li><strong>App()</strong> (linha 96)</li>
+<li><strong>findUser()</strong> (linha 248)</li>
+<li><strong>addUser()</strong> (linha 252)</li>
+<li><strong>updateStatus()</strong> (linha 560)</li>
+<li><strong>updateCount()</strong> (linha 581)</li>
+<li><strong>resize()</strong> (linha 780)</li>
+<li><strong>drawConnections()</strong> (linha 849)</li>
+<li><strong>alpha()</strong> (linha 857)</li>
+<li><strong>spawnAtCursor()</strong> (linha 871)</li>
+<li><strong>burst()</strong> (linha 888)</li>
+<li><strong>angle()</strong> (linha 890)</li>
+<li><strong>changeMode()</strong> (linha 897)</li>
+<li><strong>clear()</strong> (linha 904)</li>
+<li><strong>animate()</strong> (linha 906)</li>
+<li><strong>updateMouse()</strong> (linha 948)</li>
+<li><strong>sendForm()</strong> (linha 1234)</li>
+<li><strong>start()</strong> (linha 1470)</li>
+<li><strong>autenticar()</strong> (linha 1573)</li>
+<li><strong>initDb()</strong> (linha 1599)</li>
+<li><strong>boot()</strong> (linha 2021)</li>
+<li><strong>renderProvBar()</strong> (linha 2030)</li>
+<li><strong>selectProv()</strong> (linha 2046)</li>
+<li><strong>getModelos()</strong> (linha 2060)</li>
+<li><strong>setPrompt()</strong> (linha 2074)</li>
+<li><strong>send()</strong> (linha 2082)</li>
+<li><strong>abortStream()</strong> (linha 2177)</li>
+<li><strong>addMsg()</strong> (linha 2182)</li>
+<li><strong>formatMd()</strong> (linha 2198)</li>
+<li><strong>renderCfgFields()</strong> (linha 2209)</li>
+<li><strong>saveCfgAndClose()</strong> (linha 2221)</li>
+<li><strong>toggleCfg()</strong> (linha 2234)</li>
+<li><strong>detectProvider()</strong> (linha 2809)</li>
+<li><strong>boot()</strong> (linha 2834)</li>
+<li><strong>toggleCfg()</strong> (linha 2855)</li>
+<li><strong>toggleKeys()</strong> (linha 2865)</li>
+<li><strong>onKeyInput()</strong> (linha 2875)</li>
+<li><strong>updateProvBadge()</strong> (linha 2899)</li>
+<li><strong>updateCfgStatus()</strong> (linha 2913)</li>
+<li><strong>toggleShowKey()</strong> (linha 2925)</li>
+<li><strong>saveKey()</strong> (linha 2930)</li>
+<li><strong>renderSavedKeys()</strong> (linha 2945)</li>
+<li><strong>loadKey()</strong> (linha 2968)</li>
+<li><strong>deleteKey()</strong> (linha 2985)</li>
+<li><strong>handleKey()</strong> (linha 2994)</li>
+<li><strong>adjustHeight()</strong> (linha 2998)</li>
+<li><strong>setPrompt()</strong> (linha 3003)</li>
+<li><strong>send()</strong> (linha 3010)</li>
+<li><strong>text()</strong> (linha 3012)</li>
+<li><strong>url()</strong> (linha 3035)</li>
+<li><strong>abortStream()</strong> (linha 3125)</li>
+<li><strong>appendMsg()</strong> (linha 3130)</li>
+<li><strong>renderMarkdown()</strong> (linha 3171)</li>
+<li><strong>addCopyListeners()</strong> (linha 3199)</li>
+<li><strong>copyText()</strong> (linha 3207)</li>
+<li><strong>scrollBottom()</strong> (linha 3214)</li>
+<li><strong>exportConv()</strong> (linha 3222)</li>
+<li><strong>importFile()</strong> (linha 3233)</li>
+<li><strong>toggleVoice()</strong> (linha 3251)</li>
+<li><strong>schedSend()</strong> (linha 3263)</li>
+<li><strong>stopVoice()</strong> (linha 3295)</li>
+<li><strong>toggleTTS()</strong> (linha 3306)</li>
+<li><strong>speakText()</strong> (linha 3313)</li>
+<li><strong>clearChat()</strong> (linha 3325)</li>
+<li><strong>esc()</strong> (linha 3349)</li>
+<li><strong>escAttr()</strong> (linha 3356)</li>
+<li><strong>getCSSVar()</strong> (linha 3357)</li>
+<li><strong>getSessao()</strong> (linha 3461)</li>
+<li><strong>auth()</strong> (linha 3867)</li>
+<li><strong>offset()</strong> (linha 3925)</li>
+<li><strong>offset()</strong> (linha 3971)</li>
+<li><strong>criarTabelas()</strong> (linha 4121)</li>
+<li><strong>listar()</strong> (linha 4466)</li>
+<li><strong>abrirModal()</strong> (linha 4488)</li>
+<li><strong>fecharModal()</strong> (linha 4498)</li>
+<li><strong>editar()</strong> (linha 4499)</li>
+<li><strong>salvar()</strong> (linha 4500)</li>
+<li><strong>excluir()</strong> (linha 4505)</li>
+</ul>
+<h3 id="srclibutilsts" data-heading="3" data-raw="📄 src/lib/utils.ts">📄 <code>src/lib/utils.ts</code><button class="copy-btn" data-section="srclibutilsts">📋 Seção</button></h3><ul>
+<li><strong>cn()</strong> (linha 4)</li>
+</ul>
+<h3 id="srclibidb-storagets" data-heading="3" data-raw="📄 src/lib/idb-storage.ts">📄 <code>src/lib/idb-storage.ts</code><button class="copy-btn" data-section="srclibidb-storagets">📋 Seção</button></h3><ul>
+<li><strong>openDB()</strong> (linha 7)</li>
+<li><strong>db()</strong> (linha 12)</li>
+<li><strong>idbSet()</strong> (linha 35)</li>
+<li><strong>idbDel()</strong> (linha 49)</li>
+<li><strong>idbKeys()</strong> (linha 61)</li>
+</ul>
+<h3 id="srclibprojectsts" data-heading="3" data-raw="📄 src/lib/projects.ts">📄 <code>src/lib/projects.ts</code><button class="copy-btn" data-section="srclibprojectsts">📋 Seção</button></h3><ul>
+<li><strong>calcSize()</strong> (linha 24)</li>
+<li><strong>saveProjectFiles()</strong> (linha 29)</li>
+<li><strong>loadProjectFiles()</strong> (linha 48)</li>
+<li><strong>loadProjectFilesAsync()</strong> (linha 56)</li>
+<li><strong>saveProjectFilesAsync()</strong> (linha 65)</li>
+<li><strong>loadIndex()</strong> (linha 71)</li>
+<li><strong>saveIndex()</strong> (linha 83)</li>
+<li><strong>loadProjects()</strong> (linha 96)</li>
+<li><strong>migrateProjectsToIDB()</strong> (linha 115)</li>
+<li><strong>reloadProjectsFromIDB()</strong> (linha 133)</li>
+<li><strong>saveProjects()</strong> (linha 146)</li>
+<li><strong>getCurrentProjectId()</strong> (linha 157)</li>
+<li><strong>setCurrentProjectId()</strong> (linha 160)</li>
+<li><strong>createProject()</strong> (linha 165)</li>
+<li><strong>upsertProject()</strong> (linha 172)</li>
+<li><strong>duplicateProject()</strong> (linha 178)</li>
+<li><strong>formatDate()</strong> (linha 182)</li>
+<li><strong>getProjectStats()</strong> (linha 186)</li>
+</ul>
+<h3 id="srclibai-fetchts" data-heading="3" data-raw="📄 src/lib/ai-fetch.ts">📄 <code>src/lib/ai-fetch.ts</code><button class="copy-btn" data-section="srclibai-fetchts">📋 Seção</button></h3><ul>
+<li><strong>adjustBodyForError()</strong> (linha 32)</li>
+<li><strong>t()</strong> (linha 33)</li>
+<li><strong>n()</strong> (linha 42)</li>
+<li><strong>aiFetch()</strong> (linha 67)</li>
+<li><strong>listModels()</strong> (linha 84)</li>
+<li><strong>key()</strong> (linha 85)</li>
+</ul>
+<h3 id="srclibai-servicets" data-heading="3" data-raw="📄 src/lib/ai-service.ts">📄 <code>src/lib/ai-service.ts</code><button class="copy-btn" data-section="srclibai-servicets">📋 Seção</button></h3><ul>
+<li><strong>fetchWithTimeout()</strong> (linha 56)</li>
+<li><strong>loadAISlots()</strong> (linha 70)</li>
+<li><strong>saveAISlots()</strong> (linha 85)</li>
+<li><strong>getActiveSlot()</strong> (linha 89)</li>
+<li><strong>detectProviderFromKey()</strong> (linha 93)</li>
+<li><strong>sendAIMessage()</strong> (linha 116)</li>
+<li><strong>callOpenAICompatible()</strong> (linha 133)</li>
+<li><strong>callAnthropic()</strong> (linha 171)</li>
+<li><strong>callGemini()</strong> (linha 206)</li>
+<li><strong>sendBuiltinAI()</strong> (linha 253)</li>
+<li><strong>slotCanStream()</strong> (linha 285)</li>
+<li><strong>getStreamUrl()</strong> (linha 292)</li>
+<li><strong>base()</strong> (linha 299)</li>
+<li><strong>getStreamHeaders()</strong> (linha 304)</li>
+<li><strong>getStreamBody()</strong> (linha 314)</li>
+<li><strong>testBuiltinAI()</strong> (linha 332)</li>
+<li><strong>testAISlot()</strong> (linha 344)</li>
+<li><strong>parseAIResponse()</strong> (linha 366)</li>
+</ul>
+<h3 id="srclibzip-servicets" data-heading="3" data-raw="📄 src/lib/zip-service.ts">📄 <code>src/lib/zip-service.ts</code><button class="copy-btn" data-section="srclibzip-servicets">📋 Seção</button></h3><ul>
+<li><strong>exportAsZip()</strong> (linha 5)</li>
+<li><strong>generateZipBase64()</strong> (linha 18)</li>
+<li><strong>shouldSkip()</strong> (linha 61)</li>
+<li><strong>importFromZip()</strong> (linha 78)</li>
+<li><strong>importFromTar()</strong> (linha 116)</li>
+<li><strong>decompressGzip()</strong> (linha 131)</li>
+<li><strong>parseTar()</strong> (linha 140)</li>
+<li><strong>readStr()</strong> (linha 146)</li>
+<li><strong>parseOctal()</strong> (linha 149)</li>
+<li><strong>stripTopLevelFolder()</strong> (linha 194)</li>
+</ul>
+<h3 id="srcliblocal-serverts" data-heading="3" data-raw="📄 src/lib/local-server.ts">📄 <code>src/lib/local-server.ts</code><button class="copy-btn" data-section="srcliblocal-serverts">📋 Seção</button></h3><ul>
+<li><strong>checkLocalServer()</strong> (linha 20)</li>
+<li><strong>browserTerminalSupported()</strong> (linha 38)</li>
+<li><strong>isElectronApp()</strong> (linha 42)</li>
+<li><strong>setCurrentProjectKey()</strong> (linha 47)</li>
+<li><strong>getCurrentProjectKey()</strong> (linha 50)</li>
+<li><strong>syncProjectToDisk()</strong> (linha 55)</li>
+<li><strong>pullProjectFromDisk()</strong> (linha 71)</li>
+</ul>
+<h3 id="srclibtts-servicets" data-heading="3" data-raw="📄 src/lib/tts-service.ts">📄 <code>src/lib/tts-service.ts</code><button class="copy-btn" data-section="srclibtts-servicets">📋 Seção</button></h3><ul>
+<li><strong>loadTTSConfig()</strong> (linha 32)</li>
+<li><strong>saveTTSConfig()</strong> (linha 40)</li>
+<li><strong>getAvailableVoices()</strong> (linha 44)</li>
+<li><strong>selectBestVoice()</strong> (linha 55)</li>
+<li><strong>cleanForSpeech()</strong> (linha 77)</li>
+<li><strong>startKeepalive()</strong> (linha 156)</li>
+<li><strong>stopKeepalive()</strong> (linha 166)</li>
+<li><strong>splitIntoChunks()</strong> (linha 173)</li>
+<li><strong>speakChunk()</strong> (linha 208)</li>
+<li><strong>doSpeak()</strong> (linha 244)</li>
+<li><strong>speak()</strong> (linha 264)</li>
+<li><strong>stopSpeaking()</strong> (linha 282)</li>
+<li><strong>startSpeechRecognition()</strong> (linha 289)</li>
+<li><strong>SpeechRecognition()</strong> (linha 294)</li>
+</ul>
+<h3 id="srclibgithub-servicets" data-heading="3" data-raw="📄 src/lib/github-service.ts">📄 <code>src/lib/github-service.ts</code><button class="copy-btn" data-section="srclibgithub-servicets">📋 Seção</button></h3><ul>
+<li><strong>loadGitHubCredentials()</strong> (linha 6)</li>
+<li><strong>saveGitHubCredentials()</strong> (linha 14)</li>
+<li><strong>listRepos()</strong> (linha 18)</li>
+<li><strong>getRepoContents()</strong> (linha 29)</li>
+<li><strong>getFileContent()</strong> (linha 45)</li>
+<li><strong>cloneRepo()</strong> (linha 62)</li>
+<li><strong>fetchDir()</strong> (linha 69)</li>
+<li><strong>createOrUpdateFile()</strong> (linha 89)</li>
+<li><strong>pushAllFiles()</strong> (linha 122)</li>
+<li><strong>createRepo()</strong> (linha 171)</li>
+<li><strong>enableGitHubPages()</strong> (linha 198)</li>
+<li><strong>makeRepoPublic()</strong> (linha 222)</li>
+</ul>
+<h3 id="srclibvirtual-fsts" data-heading="3" data-raw="📄 src/lib/virtual-fs.ts">📄 <code>src/lib/virtual-fs.ts</code><button class="copy-btn" data-section="srclibvirtual-fsts">📋 Seção</button></h3><ul>
+<li><strong>isDirectory()</strong> (linha 17)</li>
+<li><strong>getLanguageFromPath()</strong> (linha 21)</li>
+</ul>
+<h3 id="arquivonao-usadosxtermconnectortsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/XTermConnector.tsx">📄 <code>_arquivo/nao-usados/XTermConnector.tsx</code><button class="copy-btn" data-section="arquivonao-usadosxtermconnectortsx">📋 Seção</button></h3><ul>
+<li><strong>statusColor()</strong> (linha 19)</li>
+<li><strong>statusLabel()</strong> (linha 26)</li>
+<li><strong>XTermConnector()</strong> (linha 34)</li>
+<li><strong>connect()</strong> (linha 125)</li>
+<li><strong>handleReconnect()</strong> (linha 239)</li>
+</ul>
+<h3 id="arquivonao-usadosskterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/SKTerminal.tsx">📄 <code>_arquivo/nao-usados/SKTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosskterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>mkid()</strong> (linha 21)</li>
+<li><strong>sline()</strong> (linha 22)</li>
+<li><strong>mline()</strong> (linha 25)</li>
+<li><strong>proxyFetch()</strong> (linha 38)</li>
+<li><strong>SKTerminal()</strong> (linha 57)</li>
+<li><strong>api()</strong> (linha 94)</li>
+<li><strong>runCommand()</strong> (linha 159)</li>
+<li><strong>onKey()</strong> (linha 246)</li>
+</ul>
+<h3 id="arquivonao-usadosrealterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/RealTerminal.tsx">📄 <code>_arquivo/nao-usados/RealTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosrealterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>detectMissingPkg()</strong> (linha 47)</li>
+<li><strong>RealTerminal()</strong> (linha 72)</li>
+<li><strong>scheduleOutputFlush()</strong> (linha 124)</li>
+<li><strong>connect()</strong> (linha 212)</li>
+<li><strong>context()</strong> (linha 297)</li>
+<li><strong>sendCmd()</strong> (linha 375)</li>
+<li><strong>handleReconnect()</strong> (linha 402)</li>
+<li><strong>handlePkgQueryChange()</strong> (linha 444)</li>
+<li><strong>handlePkgModeChange()</strong> (linha 450)</li>
+<li><strong>installPkg()</strong> (linha 459)</li>
+<li><strong>explainErrorPt()</strong> (linha 468)</li>
+</ul>
+<h3 id="arquivonao-usadosvoicemodetsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/VoiceMode.tsx">📄 <code>_arquivo/nao-usados/VoiceMode.tsx</code><button class="copy-btn" data-section="arquivonao-usadosvoicemodetsx">📋 Seção</button></h3><ul>
+<li><strong>VoiceMode()</strong> (linha 13)</li>
+<li><strong>setPhaseSync()</strong> (linha 30)</li>
+<li><strong>stopAudio()</strong> (linha 54)</li>
+<li><strong>speakNeural()</strong> (linha 66)</li>
+<li><strong>SR()</strong> (linha 89)</li>
+<li><strong>heard()</strong> (linha 108)</li>
+<li><strong>afterSpeak()</strong> (linha 132)</li>
+</ul>
+<h3 id="arquivonao-usadosstorets" data-heading="3" data-raw="📄 _arquivo/nao-usados/store.ts">📄 <code>_arquivo/nao-usados/store.ts</code><button class="copy-btn" data-section="arquivonao-usadosstorets">📋 Seção</button></h3><ul>
+<li><strong>loadEditorState()</strong> (linha 12)</li>
+<li><strong>saveEditorState()</strong> (linha 20)</li>
+<li><strong>loadProjectFiles()</strong> (linha 24)</li>
+<li><strong>saveProjectFiles()</strong> (linha 32)</li>
+<li><strong>useVFS()</strong> (linha 37)</li>
+</ul>
+<h3 id="arquivonao-usadosterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/Terminal.tsx">📄 <code>_arquivo/nao-usados/Terminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>simulateInstallDelay()</strong> (linha 293)</li>
+<li><strong>Terminal()</strong> (linha 298)</li>
+<li><strong>pattern()</strong> (linha 540)</li>
+<li><strong>addLog()</strong> (linha 633)</li>
+<li><strong>browserFetch()</strong> (linha 648)</li>
+<li><strong>makeServerObj()</strong> (linha 656)</li>
+<li><strong>fakeRequire()</strong> (linha 671)</li>
+<li><strong>createTables()</strong> (linha 972)</li>
+<li><strong>testConnection()</strong> (linha 1045)</li>
+<li><strong>setupDatabase()</strong> (linha 1058)</li>
+<li><strong>query()</strong> (linha 1085)</li>
+<li><strong>getClient()</strong> (linha 1093)</li>
+<li><strong>signUp()</strong> (linha 1153)</li>
+<li><strong>signIn()</strong> (linha 1159)</li>
+<li><strong>signOut()</strong> (linha 1165)</li>
+<li><strong>getUser()</strong> (linha 1169)</li>
+<li><strong>getAll()</strong> (linha 1175)</li>
+<li><strong>getById()</strong> (linha 1181)</li>
+<li><strong>insert()</strong> (linha 1187)</li>
+<li><strong>update()</strong> (linha 1193)</li>
+<li><strong>remove()</strong> (linha 1199)</li>
+<li><strong>uploadFile()</strong> (linha 1205)</li>
+<li><strong>subscribeToTable()</strong> (linha 1212)</li>
+<li><strong>downloadVideo()</strong> (linha 1297)</li>
+<li><strong>getInfo()</strong> (linha 1325)</li>
+<li><strong>handleKeyDown()</strong> (linha 1437)</li>
+</ul>
+<h3 id="arquivonao-usadosstreamterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/StreamTerminal.tsx">📄 <code>_arquivo/nao-usados/StreamTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosstreamterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>detectMissing()</strong> (linha 38)</li>
+<li><strong>useVoice()</strong> (linha 51)</li>
+<li><strong>SR()</strong> (linha 55)</li>
+<li><strong>fmtDur()</strong> (linha 81)</li>
+<li><strong>getBase()</strong> (linha 87)</li>
+<li><strong>StreamTerminal()</strong> (linha 92)</li>
+<li><strong>updateEntry()</strong> (linha 167)</li>
+<li><strong>allText()</strong> (linha 216)</li>
+<li><strong>handleKeyDown()</strong> (linha 275)</li>
+<li><strong>copyOutput()</strong> (linha 299)</li>
+<li><strong>onPkgQuery()</strong> (linha 325)</li>
+<li><strong>installPkg()</strong> (linha 331)</li>
+</ul>
+<h3 id="arquivonao-usadosquickprompttsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/QuickPrompt.tsx">📄 <code>_arquivo/nao-usados/QuickPrompt.tsx</code><button class="copy-btn" data-section="arquivonao-usadosquickprompttsx">📋 Seção</button></h3><ul>
+<li><strong>QuickPrompt()</strong> (linha 31)</li>
+<li><strong>msg()</strong> (linha 79)</li>
+<li><strong>handleKeyDown()</strong> (linha 146)</li>
+</ul>
+<hr>
+<h2 id="rotas-de-api-apis" data-heading="2" data-raw="🌐 Rotas de API {#apis}">🌐 Rotas de API {#apis}<button class="copy-btn" data-section="rotas-de-api-apis">📋 Seção</button></h2><p>Total: <strong>57</strong> chamadas de API encontradas</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Arquivo</th>
+<th>Linha</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>${API_BASE}/voice/speak</code></td>
+<td>src/components/VoiceCard.tsx</td>
+<td>68</td>
+</tr>
+<tr>
+<td><code>/api/ai/chat</code></td>
+<td>src/components/AssistenteJuridico.tsx</td>
+<td>131</td>
+</tr>
+<tr>
+<td><code>https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(q)}&amp;size=20</code></td>
+<td>src/components/PackageSearch.tsx</td>
+<td>87</td>
+</tr>
+<tr>
+<td><code>https://registry.npmjs.org/${encodeURIComponent(name)}/latest</code></td>
+<td>src/components/PackageSearch.tsx</td>
+<td>115</td>
+</tr>
+<tr>
+<td><code>/api/workspace/install</code></td>
+<td>src/components/PackageSearch.tsx</td>
+<td>154</td>
+</tr>
+<tr>
+<td><code>${url}/chat/completions</code></td>
+<td>src/components/FileScanner.tsx</td>
+<td>126</td>
+</tr>
+<tr>
+<td><code>https://api.exemplo.com</code></td>
+<td>src/components/EditorLayout.tsx</td>
+<td>638</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/users/nome</code></td>
+<td>src/components/EditorLayout.tsx</td>
+<td>648</td>
+</tr>
+<tr>
+<td><code>/api/workspace/write</code></td>
+<td>src/components/EditorLayout.tsx</td>
+<td>1053</td>
+</tr>
+<tr>
+<td><code>/api/workspace/sync</code></td>
+<td>src/components/EditorLayout.tsx</td>
+<td>1076</td>
+</tr>
+<tr>
+<td><code>/api/db/query</code></td>
+<td>src/components/EditorLayout.tsx</td>
+<td>1468</td>
+</tr>
+<tr>
+<td><code>/api/twa-files?url=${encodeURIComponent(url)}</code></td>
+<td>src/components/Manual.tsx</td>
+<td>71</td>
+</tr>
+<tr>
+<td><code>/api/pwa-check?url=${encodeURIComponent(url)}</code></td>
+<td>src/components/Manual.tsx</td>
+<td>158</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/user</code></td>
+<td>src/components/GitHubPanel.tsx</td>
+<td>37</td>
+</tr>
+<tr>
+<td><code>/api/pages/deploy</code></td>
+<td>src/components/GitHubPanel.tsx</td>
+<td>260</td>
+</tr>
+<tr>
+<td><code>${API_BASE}/drive/list</code></td>
+<td>src/components/DriveBackupPanel.tsx</td>
+<td>36</td>
+</tr>
+<tr>
+<td><code>${API_BASE}/drive/upload</code></td>
+<td>src/components/DriveBackupPanel.tsx</td>
+<td>59</td>
+</tr>
+<tr>
+<td><code>${API_BASE}/drive/delete/${fileId}</code></td>
+<td>src/components/DriveBackupPanel.tsx</td>
+<td>82</td>
+</tr>
+<tr>
+<td><code>/api/ai/chat</code></td>
+<td>src/components/CampoLivre.tsx</td>
+<td>268</td>
+</tr>
+<tr>
+<td><code>/api/ai/forward</code></td>
+<td>src/components/CampoLivre.tsx</td>
+<td>311</td>
+</tr>
+<tr>
+<td><code>/api/exec-stream</code></td>
+<td>src/components/ElectronTerminal.tsx</td>
+<td>112</td>
+</tr>
+<tr>
+<td><code>/api/exec-stop</code></td>
+<td>src/components/ElectronTerminal.tsx</td>
+<td>189</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}/git/trees/HEAD?recursive=1</code></td>
+<td>src/components/CombinarApps.tsx</td>
+<td>174</td>
+</tr>
+<tr>
+<td><code>/api/healthz</code></td>
+<td>src/components/SystemStatusPanel.tsx</td>
+<td>72</td>
+</tr>
+<tr>
+<td><code>/api/ai/chat</code></td>
+<td>src/components/SystemStatusPanel.tsx</td>
+<td>176</td>
+</tr>
+<tr>
+<td><code>${API_BASE_VOICE}/voice/speak</code></td>
+<td>src/components/AIChat.tsx</td>
+<td>1864</td>
+</tr>
+<tr>
+<td><code>/api/search?q=${encodeURIComponent(q)}</code></td>
+<td>src/components/AIChat.tsx</td>
+<td>1905</td>
+</tr>
+<tr>
+<td><code>http://localhost:3001/api/dados</code></td>
+<td>src/components/DeployPanel.tsx</td>
+<td>563</td>
+</tr>
+<tr>
+<td><code>/api/criar-checkout</code></td>
+<td>src/components/DeployPanel.tsx</td>
+<td>642</td>
+</tr>
+<tr>
+<td><code>/api/provedores</code></td>
+<td>src/lib/templates.ts</td>
+<td>2022</td>
+</tr>
+<tr>
+<td><code>/api/chat</code></td>
+<td>src/lib/templates.ts</td>
+<td>2106</td>
+</tr>
+<tr>
+<td><code>/api/registros?busca=</code></td>
+<td>src/lib/templates.ts</td>
+<td>4469</td>
+</tr>
+<tr>
+<td><code>/api/registros/</code></td>
+<td>src/lib/templates.ts</td>
+<td>4499</td>
+</tr>
+<tr>
+<td><code>/api/registros</code></td>
+<td>src/lib/templates.ts</td>
+<td>4502</td>
+</tr>
+<tr>
+<td><code>/api/registros/</code></td>
+<td>src/lib/templates.ts</td>
+<td>4507</td>
+</tr>
+<tr>
+<td><code>https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&amp;key=${encodeURIComponent(key)}</code></td>
+<td>src/lib/ai-fetch.ts</td>
+<td>90</td>
+</tr>
+<tr>
+<td><code>https://api.anthropic.com/v1/models?limit=100</code></td>
+<td>src/lib/ai-fetch.ts</td>
+<td>97</td>
+</tr>
+<tr>
+<td><code>${base}/models</code></td>
+<td>src/lib/ai-fetch.ts</td>
+<td>106</td>
+</tr>
+<tr>
+<td><code>/api/health</code></td>
+<td>src/lib/local-server.ts</td>
+<td>26</td>
+</tr>
+<tr>
+<td><code>/api/workspace/sync</code></td>
+<td>src/lib/local-server.ts</td>
+<td>60</td>
+</tr>
+<tr>
+<td><code>/api/workspace/pull?projectKey=${encodeURIComponent(projectKey)}&amp;since=${Math.floor(since)}</code></td>
+<td>src/lib/local-server.ts</td>
+<td>72</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/user/repos?sort=updated&amp;per_page=30</code></td>
+<td>src/lib/github-service.ts</td>
+<td>19</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}/contents/${path}</code></td>
+<td>src/lib/github-service.ts</td>
+<td>37</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}/contents/${path}</code></td>
+<td>src/lib/github-service.ts</td>
+<td>53</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}/contents/${path}</code></td>
+<td>src/lib/github-service.ts</td>
+<td>104</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}/contents/${path}</code></td>
+<td>src/lib/github-service.ts</td>
+<td>146</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/user/repos</code></td>
+<td>src/lib/github-service.ts</td>
+<td>177</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}/pages</code></td>
+<td>src/lib/github-service.ts</td>
+<td>205</td>
+</tr>
+<tr>
+<td><code>https://api.github.com/repos/${owner}/${repo}</code></td>
+<td>src/lib/github-service.ts</td>
+<td>227</td>
+</tr>
+<tr>
+<td><code>/api/config</code></td>
+<td>_arquivo/nao-usados/RealTerminal.tsx</td>
+<td>202</td>
+</tr>
+<tr>
+<td><code>https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(query)}&amp;size=8</code></td>
+<td>_arquivo/nao-usados/RealTerminal.tsx</td>
+<td>413</td>
+</tr>
+<tr>
+<td><code>https://pypi.org/pypi/${encodeURIComponent(n)}/json</code></td>
+<td>_arquivo/nao-usados/RealTerminal.tsx</td>
+<td>426</td>
+</tr>
+<tr>
+<td><code>/api/voice/speak</code></td>
+<td>_arquivo/nao-usados/VoiceMode.tsx</td>
+<td>68</td>
+</tr>
+<tr>
+<td><code>${getBase()}/api/projects/default/exec-stream</code></td>
+<td>_arquivo/nao-usados/StreamTerminal.tsx</td>
+<td>172</td>
+</tr>
+<tr>
+<td><code>${getBase()}/api/projects/default/exec-stdin</code></td>
+<td>_arquivo/nao-usados/StreamTerminal.tsx</td>
+<td>259</td>
+</tr>
+<tr>
+<td><code>https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(q)}&amp;size=8</code></td>
+<td>_arquivo/nao-usados/StreamTerminal.tsx</td>
+<td>313</td>
+</tr>
+<tr>
+<td><code>https://pypi.org/pypi/${encodeURIComponent(q)}/json</code></td>
+<td>_arquivo/nao-usados/StreamTerminal.tsx</td>
+<td>317</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="tiposinterfaces-typescript-tipos" data-heading="2" data-raw="📘 Tipos/Interfaces TypeScript {#tipos}">📘 Tipos/Interfaces TypeScript {#tipos}<button class="copy-btn" data-section="tiposinterfaces-typescript-tipos">📋 Seção</button></h2><p>Total: <strong>161</strong> tipos/interfaces</p>
+<h3 id="srccomponentsvoicecardtsx" data-heading="3" data-raw="📄 src/components/VoiceCard.tsx">📄 <code>src/components/VoiceCard.tsx</code><button class="copy-btn" data-section="srccomponentsvoicecardtsx">📋 Seção</button></h3><ul>
+<li><strong>VoiceCardProps</strong> (linha 5)</li>
+<li><strong>Phase</strong> (linha 10)</li>
+<li><strong>VoiceConfig</strong> (linha 38)</li>
+</ul>
+<h3 id="srccomponentsassistentejuridicotsx" data-heading="3" data-raw="📄 src/components/AssistenteJuridico.tsx">📄 <code>src/components/AssistenteJuridico.tsx</code><button class="copy-btn" data-section="srccomponentsassistentejuridicotsx">📋 Seção</button></h3><ul>
+<li><strong>TTSConfig</strong> (linha 11)</li>
+<li><strong>Ementa</strong> (linha 14)</li>
+<li><strong>HistoryEntry</strong> (linha 22)</li>
+<li><strong>CustomAction</strong> (linha 30)</li>
+<li><strong>SavedKey</strong> (linha 37)</li>
+<li><strong>ChatMsg</strong> (linha 38)</li>
+<li><strong>Tab</strong> (linha 228)</li>
+<li><strong>Props</strong> (linha 230)</li>
+</ul>
+<h3 id="srccomponentsuibuttontsx" data-heading="3" data-raw="📄 src/components/ui/button.tsx">📄 <code>src/components/ui/button.tsx</code><button class="copy-btn" data-section="srccomponentsuibuttontsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 3)</li>
+<li><strong>ButtonProps</strong> (linha 45)</li>
+</ul>
+<h3 id="srccomponentsuisidebartsx" data-heading="3" data-raw="📄 src/components/ui/sidebar.tsx">📄 <code>src/components/ui/sidebar.tsx</code><button class="copy-btn" data-section="srccomponentsuisidebartsx">📋 Seção</button></h3><ul>
+<li><strong>SidebarContextProps</strong> (linha 35)</li>
+</ul>
+<h3 id="srccomponentsuipaginationtsx" data-heading="3" data-raw="📄 src/components/ui/pagination.tsx">📄 <code>src/components/ui/pagination.tsx</code><button class="copy-btn" data-section="srccomponentsuipaginationtsx">📋 Seção</button></h3><ul>
+<li><strong>PaginationLinkProps</strong> (linha 37)</li>
+</ul>
+<h3 id="srccomponentsuicarouseltsx" data-heading="3" data-raw="📄 src/components/ui/carousel.tsx">📄 <code>src/components/ui/carousel.tsx</code><button class="copy-btn" data-section="srccomponentsuicarouseltsx">📋 Seção</button></h3><ul>
+<li><strong>UseEmblaCarouselType</strong> (linha 3)</li>
+<li><strong>CarouselApi</strong> (linha 10)</li>
+<li><strong>UseCarouselParameters</strong> (linha 11)</li>
+<li><strong>CarouselOptions</strong> (linha 12)</li>
+<li><strong>CarouselPlugin</strong> (linha 13)</li>
+<li><strong>CarouselProps</strong> (linha 15)</li>
+<li><strong>CarouselContextProps</strong> (linha 22)</li>
+<li><strong>CarouselApi</strong> (linha 254)</li>
+</ul>
+<h3 id="srccomponentsuibutton-grouptsx" data-heading="3" data-raw="📄 src/components/ui/button-group.tsx">📄 <code>src/components/ui/button-group.tsx</code><button class="copy-btn" data-section="srccomponentsuibutton-grouptsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 2)</li>
+</ul>
+<h3 id="srccomponentsuitoasttsx" data-heading="3" data-raw="📄 src/components/ui/toast.tsx">📄 <code>src/components/ui/toast.tsx</code><button class="copy-btn" data-section="srccomponentsuitoasttsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 3)</li>
+<li><strong>ToastProps</strong> (linha 113)</li>
+<li><strong>ToastActionElement</strong> (linha 115)</li>
+<li><strong>ToastProps</strong> (linha 118)</li>
+<li><strong>ToastActionElement</strong> (linha 119)</li>
+</ul>
+<h3 id="srccomponentsuitoggletsx" data-heading="3" data-raw="📄 src/components/ui/toggle.tsx">📄 <code>src/components/ui/toggle.tsx</code><button class="copy-btn" data-section="srccomponentsuitoggletsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 3)</li>
+</ul>
+<h3 id="srccomponentsuiinput-grouptsx" data-heading="3" data-raw="📄 src/components/ui/input-group.tsx">📄 <code>src/components/ui/input-group.tsx</code><button class="copy-btn" data-section="srccomponentsuiinput-grouptsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 2)</li>
+</ul>
+<h3 id="srccomponentsuiformtsx" data-heading="3" data-raw="📄 src/components/ui/form.tsx">📄 <code>src/components/ui/form.tsx</code><button class="copy-btn" data-section="srccomponentsuiformtsx">📋 Seção</button></h3><ul>
+<li><strong>ControllerProps</strong> (linha 8)</li>
+<li><strong>FieldPath</strong> (linha 9)</li>
+<li><strong>FieldValues</strong> (linha 10)</li>
+<li><strong>FormFieldContextValue</strong> (linha 18)</li>
+<li><strong>FormItemContextValue</strong> (linha 67)</li>
+</ul>
+<h3 id="srccomponentsuitoggle-grouptsx" data-heading="3" data-raw="📄 src/components/ui/toggle-group.tsx">📄 <code>src/components/ui/toggle-group.tsx</code><button class="copy-btn" data-section="srccomponentsuitoggle-grouptsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 5)</li>
+</ul>
+<h3 id="srccomponentsuibadgetsx" data-heading="3" data-raw="📄 src/components/ui/badge.tsx">📄 <code>src/components/ui/badge.tsx</code><button class="copy-btn" data-section="srccomponentsuibadgetsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 2)</li>
+<li><strong>BadgeProps</strong> (linha 33)</li>
+</ul>
+<h3 id="srccomponentsuiemptytsx" data-heading="3" data-raw="📄 src/components/ui/empty.tsx">📄 <code>src/components/ui/empty.tsx</code><button class="copy-btn" data-section="srccomponentsuiemptytsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 1)</li>
+</ul>
+<h3 id="srccomponentsuilabeltsx" data-heading="3" data-raw="📄 src/components/ui/label.tsx">📄 <code>src/components/ui/label.tsx</code><button class="copy-btn" data-section="srccomponentsuilabeltsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 5)</li>
+</ul>
+<h3 id="srccomponentsuicharttsx" data-heading="3" data-raw="📄 src/components/ui/chart.tsx">📄 <code>src/components/ui/chart.tsx</code><button class="copy-btn" data-section="srccomponentsuicharttsx">📋 Seção</button></h3><ul>
+<li><strong>ChartConfig</strong> (linha 9)</li>
+<li><strong>ChartContextProps</strong> (linha 19)</li>
+</ul>
+<h3 id="srccomponentsuicommandtsx" data-heading="3" data-raw="📄 src/components/ui/command.tsx">📄 <code>src/components/ui/command.tsx</code><button class="copy-btn" data-section="srccomponentsuicommandtsx">📋 Seção</button></h3><ul>
+<li><strong>DialogProps</strong> (linha 4)</li>
+</ul>
+<h3 id="srccomponentsuialerttsx" data-heading="3" data-raw="📄 src/components/ui/alert.tsx">📄 <code>src/components/ui/alert.tsx</code><button class="copy-btn" data-section="srccomponentsuialerttsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 2)</li>
+</ul>
+<h3 id="srccomponentsuisheettsx" data-heading="3" data-raw="📄 src/components/ui/sheet.tsx">📄 <code>src/components/ui/sheet.tsx</code><button class="copy-btn" data-section="srccomponentsuisheettsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 5)</li>
+<li><strong>SheetContentProps</strong> (linha 52)</li>
+</ul>
+<h3 id="srccomponentsuisonnertsx" data-heading="3" data-raw="📄 src/components/ui/sonner.tsx">📄 <code>src/components/ui/sonner.tsx</code><button class="copy-btn" data-section="srccomponentsuisonnertsx">📋 Seção</button></h3><ul>
+<li><strong>ToasterProps</strong> (linha 6)</li>
+</ul>
+<h3 id="srccomponentsuiitemtsx" data-heading="3" data-raw="📄 src/components/ui/item.tsx">📄 <code>src/components/ui/item.tsx</code><button class="copy-btn" data-section="srccomponentsuiitemtsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 3)</li>
+</ul>
+<h3 id="srccomponentsuifieldtsx" data-heading="3" data-raw="📄 src/components/ui/field.tsx">📄 <code>src/components/ui/field.tsx</code><button class="copy-btn" data-section="srccomponentsuifieldtsx">📋 Seção</button></h3><ul>
+<li><strong>VariantProps</strong> (linha 4)</li>
+</ul>
+<h3 id="srccomponentspackagesearchtsx" data-heading="3" data-raw="📄 src/components/PackageSearch.tsx">📄 <code>src/components/PackageSearch.tsx</code><button class="copy-btn" data-section="srccomponentspackagesearchtsx">📋 Seção</button></h3><ul>
+<li><strong>NpmPackage</strong> (linha 9)</li>
+<li><strong>InstallState</strong> (linha 18)</li>
+<li><strong>PackageSearchProps</strong> (linha 25)</li>
+<li><strong>hints</strong> (linha 57)</li>
+<li><strong>hints</strong> (linha 63)</li>
+</ul>
+<h3 id="srccomponentsfilescannertsx" data-heading="3" data-raw="📄 src/components/FileScanner.tsx">📄 <code>src/components/FileScanner.tsx</code><button class="copy-btn" data-section="srccomponentsfilescannertsx">📋 Seção</button></h3><ul>
+<li><strong>FileScannerProps</strong> (linha 9)</li>
+<li><strong>SearchResult</strong> (linha 18)</li>
+<li><strong>ApkEntry</strong> (linha 19)</li>
+</ul>
+<h3 id="srccomponentspreviewtsx" data-heading="3" data-raw="📄 src/components/Preview.tsx">📄 <code>src/components/Preview.tsx</code><button class="copy-btn" data-section="srccomponentspreviewtsx">📋 Seção</button></h3><ul>
+<li><strong>PreviewProps</strong> (linha 5)</li>
+<li><strong>ViewportSize</strong> (linha 14)</li>
+<li><strong>RenderMode</strong> (linha 186)</li>
+</ul>
+<h3 id="srccomponentseditorlayouttsx" data-heading="3" data-raw="📄 src/components/EditorLayout.tsx">📄 <code>src/components/EditorLayout.tsx</code><button class="copy-btn" data-section="srccomponentseditorlayouttsx">📋 Seção</button></h3><ul>
+<li><strong>Checkpoint</strong> (linha 15)</li>
+<li><strong>Task</strong> (linha 23)</li>
+<li><strong>EditorLayoutProps</strong> (linha 124)</li>
+<li><strong>TNode</strong> (linha 144)</li>
+<li><strong>de</strong> (linha 374)</li>
+<li><strong>do</strong> (linha 377)</li>
+<li><strong>visual</strong> (linha 1225)</li>
+<li><strong>visual</strong> (linha 1294)</li>
+</ul>
+<h3 id="srccomponentstemplateselectortsx" data-heading="3" data-raw="📄 src/components/TemplateSelector.tsx">📄 <code>src/components/TemplateSelector.tsx</code><button class="copy-btn" data-section="srccomponentstemplateselectortsx">📋 Seção</button></h3><ul>
+<li><strong>TemplateSelectorProps</strong> (linha 15)</li>
+</ul>
+<h3 id="srccomponentscodeeditortsx" data-heading="3" data-raw="📄 src/components/CodeEditor.tsx">📄 <code>src/components/CodeEditor.tsx</code><button class="copy-btn" data-section="srccomponentscodeeditortsx">📋 Seção</button></h3><ul>
+<li><strong>CodeEditorHandle</strong> (linha 5)</li>
+<li><strong>CodeEditorProps</strong> (linha 14)</li>
+</ul>
+<h3 id="srccomponentsmanualtsx" data-heading="3" data-raw="📄 src/components/Manual.tsx">📄 <code>src/components/Manual.tsx</code><button class="copy-btn" data-section="srccomponentsmanualtsx">📋 Seção</button></h3><ul>
+<li><strong>Section</strong> (linha 12)</li>
+<li><strong>ManualProps</strong> (linha 19)</li>
+<li><strong>html</strong> (linha 105)</li>
+<li><strong>visual</strong> (linha 1020)</li>
+</ul>
+<h3 id="srccomponentsdatabasepaneltsx" data-heading="3" data-raw="📄 src/components/DatabasePanel.tsx">📄 <code>src/components/DatabasePanel.tsx</code><button class="copy-btn" data-section="srccomponentsdatabasepaneltsx">📋 Seção</button></h3><ul>
+<li><strong>QueryResult</strong> (linha 14)</li>
+<li><strong>SchemaTable</strong> (linha 23)</li>
+<li><strong>SavedConnection</strong> (linha 29)</li>
+<li><strong>DatabasePanelProps</strong> (linha 37)</li>
+<li><strong>FROM</strong> (linha 263)</li>
+<li><strong>FROM</strong> (linha 267)</li>
+</ul>
+<h3 id="srccomponentsgithubpaneltsx" data-heading="3" data-raw="📄 src/components/GitHubPanel.tsx">📄 <code>src/components/GitHubPanel.tsx</code><button class="copy-btn" data-section="srccomponentsgithubpaneltsx">📋 Seção</button></h3><ul>
+<li><strong>GitHubPanelProps</strong> (linha 19)</li>
+</ul>
+<h3 id="srccomponentsdrivebackuppaneltsx" data-heading="3" data-raw="📄 src/components/DriveBackupPanel.tsx">📄 <code>src/components/DriveBackupPanel.tsx</code><button class="copy-btn" data-section="srccomponentsdrivebackuppaneltsx">📋 Seção</button></h3><ul>
+<li><strong>DriveFile</strong> (linha 5)</li>
+<li><strong>DriveBackupPanelProps</strong> (linha 13)</li>
+</ul>
+<h3 id="srccomponentscampolivretsx" data-heading="3" data-raw="📄 src/components/CampoLivre.tsx">📄 <code>src/components/CampoLivre.tsx</code><button class="copy-btn" data-section="srccomponentscampolivretsx">📋 Seção</button></h3><ul>
+<li><strong>TTSConfig</strong> (linha 8)</li>
+<li><strong>SavedKey</strong> (linha 28)</li>
+<li><strong>Message</strong> (linha 37)</li>
+<li><strong>CampoLivreProps</strong> (linha 84)</li>
+</ul>
+<h3 id="srccomponentselectronterminaltsx" data-heading="3" data-raw="📄 src/components/ElectronTerminal.tsx">📄 <code>src/components/ElectronTerminal.tsx</code><button class="copy-btn" data-section="srccomponentselectronterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>TermLine</strong> (linha 10)</li>
+<li><strong>Props</strong> (linha 16)</li>
+</ul>
+<h3 id="srccomponentsbuildpaneltsx" data-heading="3" data-raw="📄 src/components/BuildPanel.tsx">📄 <code>src/components/BuildPanel.tsx</code><button class="copy-btn" data-section="srccomponentsbuildpaneltsx">📋 Seção</button></h3><ul>
+<li><strong>BuildPanelProps</strong> (linha 12)</li>
+<li><strong>BuildTarget</strong> (linha 19)</li>
+<li><strong>TNode</strong> (linha 584)</li>
+<li><strong>visual</strong> (linha 770)</li>
+</ul>
+<h3 id="srccomponentscombinarappstsx" data-heading="3" data-raw="📄 src/components/CombinarApps.tsx">📄 <code>src/components/CombinarApps.tsx</code><button class="copy-btn" data-section="srccomponentscombinarappstsx">📋 Seção</button></h3><ul>
+<li><strong>AppEntry</strong> (linha 4)</li>
+<li><strong>CombinarAppsProps</strong> (linha 14)</li>
+<li><strong>PersistedState</strong> (linha 21)</li>
+</ul>
+<h3 id="srccomponentsfiletreetsx" data-heading="3" data-raw="📄 src/components/FileTree.tsx">📄 <code>src/components/FileTree.tsx</code><button class="copy-btn" data-section="srccomponentsfiletreetsx">📋 Seção</button></h3><ul>
+<li><strong>ExtraItem</strong> (linha 13)</li>
+<li><strong>FileTreeProps</strong> (linha 20)</li>
+<li><strong>BottomSheet</strong> (linha 58)</li>
+</ul>
+<h3 id="srccomponentshtmlplaygroundtsx" data-heading="3" data-raw="📄 src/components/HTMLPlayground.tsx">📄 <code>src/components/HTMLPlayground.tsx</code><button class="copy-btn" data-section="srccomponentshtmlplaygroundtsx">📋 Seção</button></h3><ul>
+<li><strong>HTMLPlaygroundProps</strong> (linha 69)</li>
+</ul>
+<h3 id="srccomponentssystemstatuspaneltsx" data-heading="3" data-raw="📄 src/components/SystemStatusPanel.tsx">📄 <code>src/components/SystemStatusPanel.tsx</code><button class="copy-btn" data-section="srccomponentssystemstatuspaneltsx">📋 Seção</button></h3><ul>
+<li><strong>Status</strong> (linha 5)</li>
+<li><strong>CheckItem</strong> (linha 7)</li>
+<li><strong>Props</strong> (linha 15)</li>
+</ul>
+<h3 id="srccomponentsterminalareatsx" data-heading="3" data-raw="📄 src/components/TerminalArea.tsx">📄 <code>src/components/TerminalArea.tsx</code><button class="copy-btn" data-section="srccomponentsterminalareatsx">📋 Seção</button></h3><ul>
+<li><strong>Mode</strong> (linha 25)</li>
+<li><strong>Props</strong> (linha 27)</li>
+</ul>
+<h3 id="srccomponentsaichattsx" data-heading="3" data-raw="📄 src/components/AIChat.tsx">📄 <code>src/components/AIChat.tsx</code><button class="copy-btn" data-section="srccomponentsaichattsx">📋 Seção</button></h3><ul>
+<li><strong>Components</strong> (linha 3)</li>
+<li><strong>AIScope</strong> (linha 25)</li>
+<li><strong>AIChatProps</strong> (linha 27)</li>
+<li><strong>DisplayMessage</strong> (linha 45)</li>
+</ul>
+<h3 id="srccomponentsdeploypaneltsx" data-heading="3" data-raw="📄 src/components/DeployPanel.tsx">📄 <code>src/components/DeployPanel.tsx</code><button class="copy-btn" data-section="srccomponentsdeploypaneltsx">📋 Seção</button></h3><ul>
+<li><strong>DeployPanelProps</strong> (linha 9)</li>
+<li><strong>Platform</strong> (linha 41)</li>
+<li><strong>PlatformConfig</strong> (linha 43)</li>
+</ul>
+<h3 id="srccomponentssiteextractortsx" data-heading="3" data-raw="📄 src/components/SiteExtractor.tsx">📄 <code>src/components/SiteExtractor.tsx</code><button class="copy-btn" data-section="srccomponentssiteextractortsx">📋 Seção</button></h3><ul>
+<li><strong>ExtractedFile</strong> (linha 8)</li>
+<li><strong>SiteExtractorProps</strong> (linha 15)</li>
+<li><strong>ScanMode</strong> (linha 21)</li>
+<li><strong>ProxyOption</strong> (linha 22)</li>
+</ul>
+<h3 id="srccomponentswebcontainerterminaltsx" data-heading="3" data-raw="📄 src/components/WebContainerTerminal.tsx">📄 <code>src/components/WebContainerTerminal.tsx</code><button class="copy-btn" data-section="srccomponentswebcontainerterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>Props</strong> (linha 10)</li>
+</ul>
+<h3 id="srchooksuse-toastts" data-heading="3" data-raw="📄 src/hooks/use-toast.ts">📄 <code>src/hooks/use-toast.ts</code><button class="copy-btn" data-section="srchooksuse-toastts">📋 Seção</button></h3><ul>
+<li><strong>ToasterToast</strong> (linha 11)</li>
+<li><strong>ActionType</strong> (linha 32)</li>
+<li><strong>Action</strong> (linha 34)</li>
+<li><strong>State</strong> (linha 52)</li>
+<li><strong>Toast</strong> (linha 140)</li>
+</ul>
+<h3 id="srclibtemplatests" data-heading="3" data-raw="📄 src/lib/templates.ts">📄 <code>src/lib/templates.ts</code><button class="copy-btn" data-section="srclibtemplatests">📋 Seção</button></h3><ul>
+<li><strong>Template</strong> (linha 1)</li>
+<li><strong>User</strong> (linha 237)</li>
+<li><strong>unificada</strong> (linha 2245)</li>
+<li><strong>para</strong> (linha 2276)</li>
+</ul>
+<h3 id="srclibutilsts" data-heading="3" data-raw="📄 src/lib/utils.ts">📄 <code>src/lib/utils.ts</code><button class="copy-btn" data-section="srclibutilsts">📋 Seção</button></h3><ul>
+<li><strong>ClassValue</strong> (linha 1)</li>
+</ul>
+<h3 id="srclibprojectsts" data-heading="3" data-raw="📄 src/lib/projects.ts">📄 <code>src/lib/projects.ts</code><button class="copy-btn" data-section="srclibprojectsts">📋 Seção</button></h3><ul>
+<li><strong>Project</strong> (linha 3)</li>
+<li><strong>ProjectMeta</strong> (linha 11)</li>
+</ul>
+<h3 id="srclibai-fetchts" data-heading="3" data-raw="📄 src/lib/ai-fetch.ts">📄 <code>src/lib/ai-fetch.ts</code><button class="copy-btn" data-section="srclibai-fetchts">📋 Seção</button></h3><ul>
+<li><strong>ProviderKind</strong> (linha 13)</li>
+</ul>
+<h3 id="srclibai-servicets" data-heading="3" data-raw="📄 src/lib/ai-service.ts">📄 <code>src/lib/ai-service.ts</code><button class="copy-btn" data-section="srclibai-servicets">📋 Seção</button></h3><ul>
+<li><strong>AIMessage</strong> (linha 3)</li>
+<li><strong>AIConfig</strong> (linha 8)</li>
+<li><strong>AIKeySlot</strong> (linha 14)</li>
+<li><strong>ParsedBlock</strong> (linha 358)</li>
+</ul>
+<h3 id="srclibtts-servicets" data-heading="3" data-raw="📄 src/lib/tts-service.ts">📄 <code>src/lib/tts-service.ts</code><button class="copy-btn" data-section="srclibtts-servicets">📋 Seção</button></h3><ul>
+<li><strong>TTSConfig</strong> (linha 1)</li>
+</ul>
+<h3 id="srclibgithub-servicets" data-heading="3" data-raw="📄 src/lib/github-service.ts">📄 <code>src/lib/github-service.ts</code><button class="copy-btn" data-section="srclibgithub-servicets">📋 Seção</button></h3><ul>
+<li><strong>GitHubCredentials</strong> (linha 1)</li>
+</ul>
+<h3 id="srclibvirtual-fsts" data-heading="3" data-raw="📄 src/lib/virtual-fs.ts">📄 <code>src/lib/virtual-fs.ts</code><button class="copy-btn" data-section="srclibvirtual-fsts">📋 Seção</button></h3><ul>
+<li><strong>VFSFile</strong> (linha 1)</li>
+<li><strong>VFSDirectory</strong> (linha 8)</li>
+<li><strong>VFSNode</strong> (linha 15)</li>
+</ul>
+<h3 id="arquivonao-usadosxtermconnectortsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/XTermConnector.tsx">📄 <code>_arquivo/nao-usados/XTermConnector.tsx</code><button class="copy-btn" data-section="arquivonao-usadosxtermconnectortsx">📋 Seção</button></h3><ul>
+<li><strong>Status</strong> (linha 12)</li>
+<li><strong>Props</strong> (linha 14)</li>
+</ul>
+<h3 id="arquivonao-usadosskterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/SKTerminal.tsx">📄 <code>_arquivo/nao-usados/SKTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosskterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>Color</strong> (linha 16)</li>
+<li><strong>Part</strong> (linha 17)</li>
+<li><strong>Line</strong> (linha 18)</li>
+<li><strong>Props</strong> (linha 51)</li>
+</ul>
+<h3 id="arquivonao-usadosrealterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/RealTerminal.tsx">📄 <code>_arquivo/nao-usados/RealTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosrealterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>Status</strong> (linha 7)</li>
+<li><strong>PkgResult</strong> (linha 9)</li>
+<li><strong>Props</strong> (linha 15)</li>
+</ul>
+<h3 id="arquivonao-usadosvoicemodetsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/VoiceMode.tsx">📄 <code>_arquivo/nao-usados/VoiceMode.tsx</code><button class="copy-btn" data-section="arquivonao-usadosvoicemodetsx">📋 Seção</button></h3><ul>
+<li><strong>VoiceModeProps</strong> (linha 5)</li>
+<li><strong>Phase</strong> (linha 11)</li>
+</ul>
+<h3 id="arquivonao-usadosstorets" data-heading="3" data-raw="📄 _arquivo/nao-usados/store.ts">📄 <code>_arquivo/nao-usados/store.ts</code><button class="copy-btn" data-section="arquivonao-usadosstorets">📋 Seção</button></h3><ul>
+<li><strong>EditorState</strong> (linha 6)</li>
+</ul>
+<h3 id="arquivonao-usadosterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/Terminal.tsx">📄 <code>_arquivo/nao-usados/Terminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>TerminalProps</strong> (linha 5)</li>
+<li><strong>TerminalLine</strong> (linha 15)</li>
+<li><strong>hints</strong> (linha 282)</li>
+</ul>
+<h3 id="arquivonao-usadosstreamterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/StreamTerminal.tsx">📄 <code>_arquivo/nao-usados/StreamTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosstreamterminaltsx">📋 Seção</button></h3><ul>
+<li><strong>OutputChunk</strong> (linha 5)</li>
+<li><strong>Entry</strong> (linha 10)</li>
+<li><strong>Props</strong> (linha 20)</li>
+</ul>
+<h3 id="arquivonao-usadosquickprompttsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/QuickPrompt.tsx">📄 <code>_arquivo/nao-usados/QuickPrompt.tsx</code><button class="copy-btn" data-section="arquivonao-usadosquickprompttsx">📋 Seção</button></h3><ul>
+<li><strong>QuickPromptProps</strong> (linha 7)</li>
+<li><strong>QuickResult</strong> (linha 14)</li>
+</ul>
+<hr>
+<h2 id="rotaspaginas-rotas" data-heading="2" data-raw="🛣️ Rotas/Páginas {#rotas}">🛣️ Rotas/Páginas {#rotas}<button class="copy-btn" data-section="rotaspaginas-rotas">📋 Seção</button></h2><p>Total: <strong>5</strong> rotas</p>
+<table>
+<thead>
+<tr>
+<th>Rota</th>
+<th>Arquivo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/</code></td>
+<td>src/components/FileTree.tsx</td>
+</tr>
+<tr>
+<td>`)) {</td>
+<td></td>
+</tr>
+</tbody></table>
+<div class="code-wrap"><button class="copy-btn" data-code="const filePath = lang.slice(` | src/components/AIChat.tsx |">📋 Copiar</button><pre><code class="language-texto">const filePath = lang.slice(` | src/components/AIChat.tsx |</code></pre></div><p>| <code>.length).trim();     return (       &lt;div className=</code> | src/components/AIChat.tsx |<br>| <code>) || [</code> | src/components/AIChat.tsx |<br>| <code>) || [</code> | src/components/AIChat.tsx |</p>
+<hr>
+<h2 id="componentes-react-componentes" data-heading="2" data-raw="🧩 Componentes React {#componentes}">🧩 Componentes React {#componentes}<button class="copy-btn" data-section="componentes-react-componentes">📋 Seção</button></h2><p>Total: <strong>131</strong> componentes</p>
+<h3 id="srccomponentsvoicecardtsx" data-heading="3" data-raw="📄 src/components/VoiceCard.tsx">📄 <code>src/components/VoiceCard.tsx</code><button class="copy-btn" data-section="srccomponentsvoicecardtsx">📋 Seção</button></h3><ul>
+<li><strong><api_base></api_base></strong></li>
+<li><strong><voicecard></voicecard></strong></li>
+</ul>
+<h3 id="srccomponentsassistentejuridicotsx" data-heading="3" data-raw="📄 src/components/AssistenteJuridico.tsx">📄 <code>src/components/AssistenteJuridico.tsx</code><button class="copy-btn" data-section="srccomponentsassistentejuridicotsx">📋 Seção</button></h3><ul>
+<li><strong><legaltext></legaltext></strong></li>
+<li><strong><assistentejuridico></assistentejuridico></strong></li>
+</ul>
+<h3 id="srccomponentsuispinnertsx" data-heading="3" data-raw="📄 src/components/ui/spinner.tsx">📄 <code>src/components/ui/spinner.tsx</code><button class="copy-btn" data-section="srccomponentsuispinnertsx">📋 Seção</button></h3><ul>
+<li><strong><spinner></spinner></strong></li>
+</ul>
+<h3 id="srccomponentsuisidebartsx" data-heading="3" data-raw="📄 src/components/ui/sidebar.tsx">📄 <code>src/components/ui/sidebar.tsx</code><button class="copy-btn" data-section="srccomponentsuisidebartsx">📋 Seção</button></h3><ul>
+<li><strong><sidebar></sidebar></strong></li>
+<li><strong><sidebartrigger></sidebartrigger></strong></li>
+<li><strong><sidebarrail></sidebarrail></strong></li>
+<li><strong><sidebarinset></sidebarinset></strong></li>
+<li><strong><sidebarinput></sidebarinput></strong></li>
+<li><strong><sidebarheader></sidebarheader></strong></li>
+<li><strong><sidebarfooter></sidebarfooter></strong></li>
+<li><strong><sidebarseparator></sidebarseparator></strong></li>
+<li><strong><sidebarcontent></sidebarcontent></strong></li>
+<li><strong><sidebargroup></sidebargroup></strong></li>
+<li><strong><sidebargrouplabel></sidebargrouplabel></strong></li>
+<li><strong><sidebargroupaction></sidebargroupaction></strong></li>
+<li><strong><sidebargroupcontent></sidebargroupcontent></strong></li>
+<li><strong><sidebarmenu></sidebarmenu></strong></li>
+<li><strong><sidebarmenuitem></sidebarmenuitem></strong></li>
+<li><strong><sidebarmenubutton></sidebarmenubutton></strong></li>
+<li><strong><sidebarmenuaction></sidebarmenuaction></strong></li>
+<li><strong><sidebarmenubadge></sidebarmenubadge></strong></li>
+<li><strong><sidebarmenuskeleton></sidebarmenuskeleton></strong></li>
+<li><strong><sidebarmenusub></sidebarmenusub></strong></li>
+<li><strong><sidebarmenusubitem></sidebarmenusubitem></strong></li>
+<li><strong><sidebarmenusubbutton></sidebarmenusubbutton></strong></li>
+</ul>
+<h3 id="srccomponentsuibutton-grouptsx" data-heading="3" data-raw="📄 src/components/ui/button-group.tsx">📄 <code>src/components/ui/button-group.tsx</code><button class="copy-btn" data-section="srccomponentsuibutton-grouptsx">📋 Seção</button></h3><ul>
+<li><strong><buttongroup></buttongroup></strong></li>
+<li><strong><buttongrouptext></buttongrouptext></strong></li>
+<li><strong><buttongroupseparator></buttongroupseparator></strong></li>
+</ul>
+<h3 id="srccomponentsuidropdown-menutsx" data-heading="3" data-raw="📄 src/components/ui/dropdown-menu.tsx">📄 <code>src/components/ui/dropdown-menu.tsx</code><button class="copy-btn" data-section="srccomponentsuidropdown-menutsx">📋 Seção</button></h3><ul>
+<li><strong><dropdownmenushortcut></dropdownmenushortcut></strong></li>
+</ul>
+<h3 id="srccomponentsuikbdtsx" data-heading="3" data-raw="📄 src/components/ui/kbd.tsx">📄 <code>src/components/ui/kbd.tsx</code><button class="copy-btn" data-section="srccomponentsuikbdtsx">📋 Seção</button></h3><ul>
+<li><strong><kbd></kbd></strong></li>
+<li><strong><kbdgroup></kbdgroup></strong></li>
+</ul>
+<h3 id="srccomponentsuiinput-grouptsx" data-heading="3" data-raw="📄 src/components/ui/input-group.tsx">📄 <code>src/components/ui/input-group.tsx</code><button class="copy-btn" data-section="srccomponentsuiinput-grouptsx">📋 Seção</button></h3><ul>
+<li><strong><inputgroup></inputgroup></strong></li>
+<li><strong><inputgroupaddon></inputgroupaddon></strong></li>
+<li><strong><inputgroupbutton></inputgroupbutton></strong></li>
+<li><strong><inputgrouptext></inputgrouptext></strong></li>
+<li><strong><inputgroupinput></inputgroupinput></strong></li>
+<li><strong><inputgrouptextarea></inputgrouptextarea></strong></li>
+</ul>
+<h3 id="srccomponentsuibadgetsx" data-heading="3" data-raw="📄 src/components/ui/badge.tsx">📄 <code>src/components/ui/badge.tsx</code><button class="copy-btn" data-section="srccomponentsuibadgetsx">📋 Seção</button></h3><ul>
+<li><strong><badge></badge></strong></li>
+</ul>
+<h3 id="srccomponentsuitoastertsx" data-heading="3" data-raw="📄 src/components/ui/toaster.tsx">📄 <code>src/components/ui/toaster.tsx</code><button class="copy-btn" data-section="srccomponentsuitoastertsx">📋 Seção</button></h3><ul>
+<li><strong><toaster></toaster></strong></li>
+</ul>
+<h3 id="srccomponentsuiemptytsx" data-heading="3" data-raw="📄 src/components/ui/empty.tsx">📄 <code>src/components/ui/empty.tsx</code><button class="copy-btn" data-section="srccomponentsuiemptytsx">📋 Seção</button></h3><ul>
+<li><strong><empty></empty></strong></li>
+<li><strong><emptyheader></emptyheader></strong></li>
+<li><strong><emptymedia></emptymedia></strong></li>
+<li><strong><emptytitle></emptytitle></strong></li>
+<li><strong><emptydescription></emptydescription></strong></li>
+<li><strong><emptycontent></emptycontent></strong></li>
+</ul>
+<h3 id="srccomponentsuicharttsx" data-heading="3" data-raw="📄 src/components/ui/chart.tsx">📄 <code>src/components/ui/chart.tsx</code><button class="copy-btn" data-section="srccomponentsuicharttsx">📋 Seção</button></h3><ul>
+<li><strong><themes></themes></strong></li>
+<li><strong><chartstyle></chartstyle></strong></li>
+</ul>
+<h3 id="srccomponentsuicommandtsx" data-heading="3" data-raw="📄 src/components/ui/command.tsx">📄 <code>src/components/ui/command.tsx</code><button class="copy-btn" data-section="srccomponentsuicommandtsx">📋 Seção</button></h3><ul>
+<li><strong><commanddialog></commanddialog></strong></li>
+<li><strong><commandshortcut></commandshortcut></strong></li>
+</ul>
+<h3 id="srccomponentsuicalendartsx" data-heading="3" data-raw="📄 src/components/ui/calendar.tsx">📄 <code>src/components/ui/calendar.tsx</code><button class="copy-btn" data-section="srccomponentsuicalendartsx">📋 Seção</button></h3><ul>
+<li><strong><calendar></calendar></strong></li>
+<li><strong><calendardaybutton></calendardaybutton></strong></li>
+</ul>
+<h3 id="srccomponentsuisonnertsx" data-heading="3" data-raw="📄 src/components/ui/sonner.tsx">📄 <code>src/components/ui/sonner.tsx</code><button class="copy-btn" data-section="srccomponentsuisonnertsx">📋 Seção</button></h3><ul>
+<li><strong><toaster></toaster></strong></li>
+</ul>
+<h3 id="srccomponentsuimenubartsx" data-heading="3" data-raw="📄 src/components/ui/menubar.tsx">📄 <code>src/components/ui/menubar.tsx</code><button class="copy-btn" data-section="srccomponentsuimenubartsx">📋 Seção</button></h3><ul>
+<li><strong><menubarmenu></menubarmenu></strong></li>
+<li><strong><menubargroup></menubargroup></strong></li>
+<li><strong><menubarportal></menubarportal></strong></li>
+<li><strong><menubarradiogroup></menubarradiogroup></strong></li>
+<li><strong><menubarsub></menubarsub></strong></li>
+<li><strong><menubarshortcut></menubarshortcut></strong></li>
+</ul>
+<h3 id="srccomponentsuiitemtsx" data-heading="3" data-raw="📄 src/components/ui/item.tsx">📄 <code>src/components/ui/item.tsx</code><button class="copy-btn" data-section="srccomponentsuiitemtsx">📋 Seção</button></h3><ul>
+<li><strong><itemgroup></itemgroup></strong></li>
+<li><strong><itemseparator></itemseparator></strong></li>
+<li><strong><item></item></strong></li>
+<li><strong><itemmedia></itemmedia></strong></li>
+<li><strong><itemcontent></itemcontent></strong></li>
+<li><strong><itemtitle></itemtitle></strong></li>
+<li><strong><itemdescription></itemdescription></strong></li>
+<li><strong><itemactions></itemactions></strong></li>
+<li><strong><itemheader></itemheader></strong></li>
+<li><strong><itemfooter></itemfooter></strong></li>
+</ul>
+<h3 id="srccomponentsuifieldtsx" data-heading="3" data-raw="📄 src/components/ui/field.tsx">📄 <code>src/components/ui/field.tsx</code><button class="copy-btn" data-section="srccomponentsuifieldtsx">📋 Seção</button></h3><ul>
+<li><strong></strong><fieldset><strong></strong></fieldset></li>
+<li><strong><fieldlegend></fieldlegend></strong></li>
+<li><strong><fieldgroup></fieldgroup></strong></li>
+<li><strong><field></field></strong></li>
+<li><strong><fieldcontent></fieldcontent></strong></li>
+<li><strong><fieldlabel></fieldlabel></strong></li>
+<li><strong><fieldtitle></fieldtitle></strong></li>
+<li><strong><fielddescription></fielddescription></strong></li>
+<li><strong><fieldseparator></fieldseparator></strong></li>
+<li><strong><fielderror></fielderror></strong></li>
+</ul>
+<h3 id="srccomponentsuicontext-menutsx" data-heading="3" data-raw="📄 src/components/ui/context-menu.tsx">📄 <code>src/components/ui/context-menu.tsx</code><button class="copy-btn" data-section="srccomponentsuicontext-menutsx">📋 Seção</button></h3><ul>
+<li><strong><contextmenushortcut></contextmenushortcut></strong></li>
+</ul>
+<h3 id="srccomponentsuiskeletontsx" data-heading="3" data-raw="📄 src/components/ui/skeleton.tsx">📄 <code>src/components/ui/skeleton.tsx</code><button class="copy-btn" data-section="srccomponentsuiskeletontsx">📋 Seção</button></h3><ul>
+<li><strong><skeleton></skeleton></strong></li>
+</ul>
+<h3 id="srccomponentspackagesearchtsx" data-heading="3" data-raw="📄 src/components/PackageSearch.tsx">📄 <code>src/components/PackageSearch.tsx</code><button class="copy-btn" data-section="srccomponentspackagesearchtsx">📋 Seção</button></h3><ul>
+<li><strong><categories></categories></strong></li>
+<li><strong><packagesearch></packagesearch></strong></li>
+</ul>
+<h3 id="srccomponentsfilescannertsx" data-heading="3" data-raw="📄 src/components/FileScanner.tsx">📄 <code>src/components/FileScanner.tsx</code><button class="copy-btn" data-section="srccomponentsfilescannertsx">📋 Seção</button></h3><ul>
+<li><strong><highlight></highlight></strong></li>
+<li><strong><filescanner></filescanner></strong></li>
+</ul>
+<h3 id="srccomponentspreviewtsx" data-heading="3" data-raw="📄 src/components/Preview.tsx">📄 <code>src/components/Preview.tsx</code><button class="copy-btn" data-section="srccomponentspreviewtsx">📋 Seção</button></h3><ul>
+<li><strong><preview></preview></strong></li>
+</ul>
+<h3 id="srccomponentseditorlayouttsx" data-heading="3" data-raw="📄 src/components/EditorLayout.tsx">📄 <code>src/components/EditorLayout.tsx</code><button class="copy-btn" data-section="srccomponentseditorlayouttsx">📋 Seção</button></h3><ul>
+<li><strong><editorlayout></editorlayout></strong></li>
+</ul>
+<h3 id="srccomponentstemplateselectortsx" data-heading="3" data-raw="📄 src/components/TemplateSelector.tsx">📄 <code>src/components/TemplateSelector.tsx</code><button class="copy-btn" data-section="srccomponentstemplateselectortsx">📋 Seção</button></h3><ul>
+<li><strong><projecticon></projecticon></strong></li>
+<li><strong><templateselector></templateselector></strong></li>
+</ul>
+<h3 id="srccomponentsmanualtsx" data-heading="3" data-raw="📄 src/components/Manual.tsx">📄 <code>src/components/Manual.tsx</code><button class="copy-btn" data-section="srccomponentsmanualtsx">📋 Seção</button></h3><ul>
+<li><strong><manual></manual></strong></li>
+<li><strong><badge></badge></strong></li>
+<li><strong><alert></alert></strong></li>
+<li><strong><alert></alert></strong></li>
+</ul>
+<h3 id="srccomponentsdatabasepaneltsx" data-heading="3" data-raw="📄 src/components/DatabasePanel.tsx">📄 <code>src/components/DatabasePanel.tsx</code><button class="copy-btn" data-section="srccomponentsdatabasepaneltsx">📋 Seção</button></h3><ul>
+<li><strong><codeblock></codeblock></strong></li>
+<li><strong><queryresulttable></queryresulttable></strong></li>
+<li><strong><guiastab></guiastab></strong></li>
+<li><strong><databasepanel></databasepanel></strong></li>
+</ul>
+<h3 id="srccomponentsgithubpaneltsx" data-heading="3" data-raw="📄 src/components/GitHubPanel.tsx">📄 <code>src/components/GitHubPanel.tsx</code><button class="copy-btn" data-section="srccomponentsgithubpaneltsx">📋 Seção</button></h3><ul>
+<li><strong><githubpanel></githubpanel></strong></li>
+</ul>
+<h3 id="srccomponentsdrivebackuppaneltsx" data-heading="3" data-raw="📄 src/components/DriveBackupPanel.tsx">📄 <code>src/components/DriveBackupPanel.tsx</code><button class="copy-btn" data-section="srccomponentsdrivebackuppaneltsx">📋 Seção</button></h3><ul>
+<li><strong><api_base></api_base></strong></li>
+<li><strong><drivebackuppanel></drivebackuppanel></strong></li>
+</ul>
+<h3 id="srccomponentscampolivretsx" data-heading="3" data-raw="📄 src/components/CampoLivre.tsx">📄 <code>src/components/CampoLivre.tsx</code><button class="copy-btn" data-section="srccomponentscampolivretsx">📋 Seção</button></h3><ul>
+<li><strong><codeblock></codeblock></strong></li>
+<li><strong><rendercontent></rendercontent></strong></li>
+<li><strong><campolivre></campolivre></strong></li>
+</ul>
+<h3 id="srccomponentselectronterminaltsx" data-heading="3" data-raw="📄 src/components/ElectronTerminal.tsx">📄 <code>src/components/ElectronTerminal.tsx</code><button class="copy-btn" data-section="srccomponentselectronterminaltsx">📋 Seção</button></h3><ul>
+<li><strong><electronterminal></electronterminal></strong></li>
+</ul>
+<h3 id="srccomponentsbuildpaneltsx" data-heading="3" data-raw="📄 src/components/BuildPanel.tsx">📄 <code>src/components/BuildPanel.tsx</code><button class="copy-btn" data-section="srccomponentsbuildpaneltsx">📋 Seção</button></h3><ul>
+<li><strong><buildpanel></buildpanel></strong></li>
+</ul>
+<h3 id="srccomponentscombinarappstsx" data-heading="3" data-raw="📄 src/components/CombinarApps.tsx">📄 <code>src/components/CombinarApps.tsx</code><button class="copy-btn" data-section="srccomponentscombinarappstsx">📋 Seção</button></h3><ul>
+<li><strong><combinarapps></combinarapps></strong></li>
+</ul>
+<h3 id="srccomponentsfiletreetsx" data-heading="3" data-raw="📄 src/components/FileTree.tsx">📄 <code>src/components/FileTree.tsx</code><button class="copy-btn" data-section="srccomponentsfiletreetsx">📋 Seção</button></h3><ul>
+<li><strong><filetree></filetree></strong></li>
+</ul>
+<h3 id="srccomponentshtmlplaygroundtsx" data-heading="3" data-raw="📄 src/components/HTMLPlayground.tsx">📄 <code>src/components/HTMLPlayground.tsx</code><button class="copy-btn" data-section="srccomponentshtmlplaygroundtsx">📋 Seção</button></h3><ul>
+<li><strong><htmlplayground></htmlplayground></strong></li>
+</ul>
+<h3 id="srccomponentssystemstatuspaneltsx" data-heading="3" data-raw="📄 src/components/SystemStatusPanel.tsx">📄 <code>src/components/SystemStatusPanel.tsx</code><button class="copy-btn" data-section="srccomponentssystemstatuspaneltsx">📋 Seção</button></h3><ul>
+<li><strong><statusbadge></statusbadge></strong></li>
+<li><strong><systemstatuspanel></systemstatuspanel></strong></li>
+</ul>
+<h3 id="srccomponentsterminalareatsx" data-heading="3" data-raw="📄 src/components/TerminalArea.tsx">📄 <code>src/components/TerminalArea.tsx</code><button class="copy-btn" data-section="srccomponentsterminalareatsx">📋 Seção</button></h3><ul>
+<li><strong><terminalarea></terminalarea></strong></li>
+<li><strong><helpcard></helpcard></strong></li>
+</ul>
+<h3 id="srccomponentsaichattsx" data-heading="3" data-raw="📄 src/components/AIChat.tsx">📄 <code>src/components/AIChat.tsx</code><button class="copy-btn" data-section="srccomponentsaichattsx">📋 Seção</button></h3><ul>
+<li><strong><copybtn></copybtn></strong></li>
+<li><strong><scope_options></scope_options></strong></li>
+<li><strong><analysis_prompts></analysis_prompts></strong></li>
+<li><strong><git_commands></git_commands></strong></li>
+<li><strong><aichat></aichat></strong></li>
+<li><strong><api_base_voice></api_base_voice></strong></li>
+</ul>
+<h3 id="srccomponentsdeploypaneltsx" data-heading="3" data-raw="📄 src/components/DeployPanel.tsx">📄 <code>src/components/DeployPanel.tsx</code><button class="copy-btn" data-section="srccomponentsdeploypaneltsx">📋 Seção</button></h3><ul>
+<li><strong><codeblock></codeblock></strong></li>
+<li><strong><deploypanel></deploypanel></strong></li>
+</ul>
+<h3 id="srccomponentssiteextractortsx" data-heading="3" data-raw="📄 src/components/SiteExtractor.tsx">📄 <code>src/components/SiteExtractor.tsx</code><button class="copy-btn" data-section="srccomponentssiteextractortsx">📋 Seção</button></h3><ul>
+<li><strong><siteextractor></siteextractor></strong></li>
+</ul>
+<h3 id="srccomponentswebcontainerterminaltsx" data-heading="3" data-raw="📄 src/components/WebContainerTerminal.tsx">📄 <code>src/components/WebContainerTerminal.tsx</code><button class="copy-btn" data-section="srccomponentswebcontainerterminaltsx">📋 Seção</button></h3><ul>
+<li><strong><webcontainerterminal></webcontainerterminal></strong></li>
+</ul>
+<h3 id="srcapptsx" data-heading="3" data-raw="📄 src/App.tsx">📄 <code>src/App.tsx</code><button class="copy-btn" data-section="srcapptsx">📋 Seção</button></h3><ul>
+<li><strong><app></app></strong></li>
+</ul>
+<h3 id="arquivonao-usadosxtermconnectortsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/XTermConnector.tsx">📄 <code>_arquivo/nao-usados/XTermConnector.tsx</code><button class="copy-btn" data-section="arquivonao-usadosxtermconnectortsx">📋 Seção</button></h3><ul>
+<li><strong><xtermconnector></xtermconnector></strong></li>
+</ul>
+<h3 id="arquivonao-usadosskterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/SKTerminal.tsx">📄 <code>_arquivo/nao-usados/SKTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosskterminaltsx">📋 Seção</button></h3><ul>
+<li><strong><skterminal></skterminal></strong></li>
+</ul>
+<h3 id="arquivonao-usadosrealterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/RealTerminal.tsx">📄 <code>_arquivo/nao-usados/RealTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosrealterminaltsx">📋 Seção</button></h3><ul>
+<li><strong><realterminal></realterminal></strong></li>
+</ul>
+<h3 id="arquivonao-usadosvoicemodetsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/VoiceMode.tsx">📄 <code>_arquivo/nao-usados/VoiceMode.tsx</code><button class="copy-btn" data-section="arquivonao-usadosvoicemodetsx">📋 Seção</button></h3><ul>
+<li><strong><voicemode></voicemode></strong></li>
+</ul>
+<h3 id="arquivonao-usadosterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/Terminal.tsx">📄 <code>_arquivo/nao-usados/Terminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosterminaltsx">📋 Seção</button></h3><ul>
+<li><strong><terminal></terminal></strong></li>
+</ul>
+<h3 id="arquivonao-usadosstreamterminaltsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/StreamTerminal.tsx">📄 <code>_arquivo/nao-usados/StreamTerminal.tsx</code><button class="copy-btn" data-section="arquivonao-usadosstreamterminaltsx">📋 Seção</button></h3><ul>
+<li><strong><streamterminal></streamterminal></strong></li>
+</ul>
+<h3 id="arquivonao-usadosquickprompttsx" data-heading="3" data-raw="📄 _arquivo/nao-usados/QuickPrompt.tsx">📄 <code>_arquivo/nao-usados/QuickPrompt.tsx</code><button class="copy-btn" data-section="arquivonao-usadosquickprompttsx">📋 Seção</button></h3><ul>
+<li><strong><quickprompt></quickprompt></strong></li>
+</ul>
+<hr>
+<h2 id="hooks-customizados-hooks" data-heading="2" data-raw="🪝 Hooks Customizados {#hooks}">🪝 Hooks Customizados {#hooks}<button class="copy-btn" data-section="hooks-customizados-hooks">📋 Seção</button></h2><p>Total: <strong>6</strong> hooks</p>
+<ul>
+<li><strong>useSidebar()</strong> em <code>src/components/ui/sidebar.tsx</code></li>
+<li><strong>useCarousel()</strong> em <code>src/components/ui/carousel.tsx</code></li>
+<li><strong>useFormField()</strong> em <code>src/components/ui/form.tsx</code></li>
+<li><strong>useChart()</strong> em <code>src/components/ui/chart.tsx</code></li>
+<li><strong>useIsMobile()</strong> em <code>src/hooks/use-mobile.tsx</code></li>
+<li><strong>useVoice()</strong> em <code>_arquivo/nao-usados/StreamTerminal.tsx</code></li>
+</ul>
+<hr>
+<hr>
+<p><em>Plano gerado automaticamente pelo Gerador de Plano de Projeto</em><br><em>Data: 01/10/2026, 19:45:28</em></p>
+</div>
+    <script>
+    document.querySelectorAll('.copy-btn[data-code]').forEach(b=>{
+      b.onclick=()=>{navigator.clipboard.writeText(b.dataset.code);b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Copiar',1500)};
+    });
+    document.querySelectorAll('.copy-btn[data-section]').forEach(b=>{
+      b.onclick=()=>{
+        const h=document.getElementById(b.dataset.section);
+        const lvl=parseInt(h.tagName[1]);
+        let txt=h.innerText.replace('📋 Seção','').trim()+'\n\n';
+        let el=h.nextElementSibling;
+        while(el){
+          if(/^H[1-6]$/.test(el.tagName)&&parseInt(el.tagName[1])<=lvl)break;
+          txt+=el.innerText+'\n\n';
+          el=el.nextElementSibling;
+        }
+        navigator.clipboard.writeText(txt.trim());
+        b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Seção',1500);
+      };
+    });
+    </script>
+  </body></html>
