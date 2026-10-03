@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Montador Interativo de Projeto</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 30px;
+      min-height: 600px;
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .section h3 {
+      color: #764ba2;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+
+    .input-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    textarea {
+      flex: 1;
+      min-height: 200px;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      resize: vertical;
+      margin-bottom: 10px;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 0.95em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-success {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #45a049;
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #da190b;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 0.85em;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .drop-zone {
+      border: 3px dashed #667eea;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .drop-zone:hover {
+      background: #f0f0f0;
+      border-color: #764ba2;
+    }
+
+    .drop-zone.dragover {
+      background: #e8e8ff;
+      border-color: #764ba2;
+      transform: scale(1.02);
+    }
+
+    .drop-zone p {
+      color: #666;
+      margin: 5px 0;
+    }
+
+    .output-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .output {
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      flex: 1;
+      overflow-y: auto;
+      border: 2px solid #ddd;
+      margin-bottom: 10px;
+    }
+
+    .output pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .file-item {
+      background: white;
+      padding: 12px;
+      margin: 8px 0;
+      border-left: 4px solid #667eea;
+      border-radius: 3px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .file-item-info {
+      flex: 1;
+    }
+
+    .file-item h4 {
+      color: #667eea;
+      margin-bottom: 3px;
+    }
+
+    .file-item p {
+      color: #666;
+      font-size: 0.85em;
+      margin: 2px 0;
+    }
+
+    .file-item-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 5px;
+      margin: 10px 0;
+      font-size: 0.95em;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab-btn {
+      padding: 8px 15px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: bold;
+      color: #666;
+      transition: all 0.3s;
+      font-size: 0.9em;
+    }
+
+    .tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .stat-box {
+      background: white;
+      padding: 12px;
+      border-radius: 5px;
+      border-left: 4px solid #667eea;
+      text-align: center;
+    }
+
+    .stat-box h4 {
+      color: #667eea;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+
+    .stat-box p {
+      color: #333;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🔧 Montador Interativo de Projeto</h1>
+      <p>Importe, cole, monte e organize seus arquivos</p>
+    </header>
+
+    <div class="content">
+      <!-- COLUNA 1: INPUT -->
+      <div class="section">
+        <h2>📥 Entrada</h2>
+
+        <h3>1️⃣ Importar Arquivo</h3>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <p>🎯 Arraste aqui</p>
+          <p>OU clique</p>
+        </div>
+        <input type="file" id="fileInput" onchange="importarArquivo(event)">
+
+        <h3>2️⃣ Ou Cole Manualmente</h3>
+        <div class="input-area">
+          <label>Tipo de arquivo:</label>
+          <select id="tipoArquivo" style="padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 2px solid #ddd;">
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="js">JavaScript</option>
+                        <option value="json">JSON</option>
+                        <option value="md">Markdown</option>
+                        <option value="txt">Texto</option>
+                    </select>
+
+          <label>Nome do arquivo:</label>
+          <input type="text" id="nomeArquivo" placeholder="exemplo.html" style="padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 2px solid #ddd;">
+
+          <label>Conteúdo:</label>
+          <textarea id="conteudoInput" placeholder="Cole o conteúdo aqui..."></textarea>
+
+          <div class="button-group">
+            <button class="btn-primary" onclick="adicionarArquivo()">➕ Adicionar Arquivo</button>
+            <button class="btn-secondary" onclick="limparInput()">🗑️ Limpar Input</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA 2: OUTPUT -->
+      <div class="section">
+        <h2>📤 Saída</h2>
+
+        <div id="statusContainer"></div>
+
+        <div class="stats" id="statsContainer"></div>
+
+        <div class="tabs">
+          <button class="tab-btn active" onclick="mudarTab('arquivos')">📁 Arquivos</button>
+          <button class="tab-btn" onclick="mudarTab('estrutura')">🗺️ Estrutura</button>
+          <button class="tab-btn" onclick="mudarTab('guia')">📖 Guia</button>
+        </div>
+
+        <div id="arquivos" class="tab-content active output" style="display: block;"></div>
+        <div id="estrutura" class="tab-content output"></div>
+        <div id="guia" class="tab-content output"></div>
+
+        <div class="button-group">
+          <button class="btn-success" onclick="gerarGuiaInterativo()">📖 Gerar Guia</button>
+          <button class="btn-success" onclick="gerarEstrutura()">🗺️ Gerar Estrutura</button>
+          <button class="btn-success" onclick="downloadZip()">📦 Download ZIP</button>
+          <button class="btn-danger" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <script>
+    // DADOS GLOBAIS
+        let arquivos = {};
+        let contador = 0;
+
+        // DRAG AND DROP
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                importarArquivoFile(files[0]);
+            }
+        });
+
+        // IMPORTAR ARQUIVO
+        function importarArquivo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                importarArquivoFile(file);
+            }
+        }
+
+        function importarArquivoFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const conteudo = e.target.result;
+                const tipo = file.name.split('.').pop().toLowerCase();
+                
+                document.getElementById('nomeArquivo').value = file.name;
+                document.getElementById('conteudoInput').value = conteudo;
+                document.getElementById('tipoArquivo').value = tipo;
+                
+                mostrarStatus('success', `✅ Arquivo "${file.name}" importado!`);
+            };
+            
+            reader.onerror = () => {
+                mostrarStatus('error', '❌ Erro ao ler arquivo!');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // ADICIONAR ARQUIVO
+        function adicionarArquivo() {
+            const nome = document.getElementById('nomeArquivo').value.trim();
+            const tipo = document.getElementById('tipoArquivo').value;
+            const conteudo = document.getElementById('conteudoInput').value.trim();
+            
+            if (!nome || !conteudo) {
+                mostrarStatus('error', '❌ Preencha nome e conteúdo!');
+                return;
+            }
+            
+            const nomeCompleto = nome.includes('.') ? nome : `${nome}.${tipo}`;
+            
+            arquivos[nomeCompleto] = {
+                tipo: tipo,
+                conteudo: conteudo,
+                tamanho: conteudo.length,
+                linhas: conteudo.split('\n').length,
+                adicionadoEm: new Date().toLocaleString()
+            };
+            
+            mostrarStatus('success', `✅ "${nomeCompleto}" adicionado!`);
+            limparInput();
+            atualizarVisualizacao();
+        }
+
+        // LIMPAR INPUT
+        function limparInput() {
+            document.getElementById('nomeArquivo').value = '';
+            document.getElementById('conteudoInput').value = '';
+        }
+
+        // ATUALIZAR VISUALIZAÇÃO
+        function atualizarVisualizacao() {
+            mostrarArquivos();
+            atualizarStats();
+        }
+
+        // MOSTRAR ARQUIVOS
+        function mostrarArquivos() {
+            const output = document.getElementById('arquivos');
+            
+            if (Object.keys(arquivos).length === 0) {
+                output.innerHTML = '<p style="color: #999; text-align: center;">Nenhum arquivo adicionado ainda.</p>';
+                return;
+            }
+            
+            let html = '';
+            Object.entries(arquivos).forEach(([nome, info]) => {
+                html += `
+                    <div class="file-item">
+                        <div class="file-item-info">
+                            <h4>📄 ${nome}</h4>
+                            <p>Tipo: ${info.tipo} | Linhas: ${info.linhas} | Tamanho: ${(info.tamanho / 1024).toFixed(2)} KB</p>
+                            <p style="font-size: 0.8em; color: #999;">Adicionado: ${info.adicionadoEm}</p>
+                        </div>
+                        <div class="file-item-buttons">
+                            <button class="btn-secondary btn-small" onclick="verArquivo('${nome}')">👁️</button>
+                            <button class="btn-secondary btn-small" onclick="copiarArquivo('${nome}')">📋</button>
+                            <button class="btn-danger btn-small" onclick="removerArquivo('${nome}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            output.innerHTML = html;
+        }
+
+        // VER ARQUIVO
+        function verArquivo(nome) {
+            const arquivo = arquivos[nome];
+            const output = document.getElementById('arquivos');
+            
+            output.innerHTML = `
+                <h3>${nome}</h3>
+                <pre>${escaparHTML(arquivo.conteudo.substring(0, 1500))}${arquivo.conteudo.length > 1500 ? '\n\n... (truncado)' : ''}</pre>
+                <button class="btn-secondary" onclick="atualizarVisualizacao()">← Voltar</button>
+            `;
+        }
+
+        // COPIAR ARQUIVO
+        function copiarArquivo(nome) {
+            const arquivo = arquivos[nome];
+            navigator.clipboard.writeText(arquivo.conteudo).then(() => {
+                mostrarStatus('success', `✅ "${nome}" copiado!`);
+            });
+        }
+
+        // REMOVER ARQUIVO
+        function removerArquivo(nome) {
+            if (confirm(`Remover "${nome}"?`)) {
+                delete arquivos[nome];
+                mostrarStatus('success', `✅ "${nome}" removido!`);
+                atualizarVisualizacao();
+            }
+        }
+
+        // ATUALIZAR STATS
+        function atualizarStats() {
+            const totalArquivos = Object.keys(arquivos).length;
+            const totalLinhas = Object.values(arquivos).reduce((sum, a) => sum + a.linhas, 0);
+            const totalTamanho = Object.values(arquivos).reduce((sum, a) => sum + a.tamanho, 0);
+            
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div class="stat-box">
+                    <h4>📁 Arquivos</h4>
+                    <p>${totalArquivos}</p>
+                </div>
+                <div class="stat-box">
+                    <h4>📝 Linhas</h4>
+                    <p>${totalLinhas}</p>
+                </div>
+                <div class="stat-box">
+                    <h4>💾 Tamanho</h4>
+                    <p>${(totalTamanho / 1024).toFixed(2)} KB</p>
+                </div>
+                <div class="stat-box">
+                    <h4>🏷️ Tipos</h4>
+                    <p>${new Set(Object.values(arquivos).map(a => a.tipo)).size}</p>
+                </div>
+            `;
+        }
+
+        // GERAR ESTRUTURA
+        function gerarEstrutura() {
+            const output = document.getElementById('estrutura');
+            
+            if (Object.keys(arquivos).length === 0) {
+                output.innerHTML = '<p style="color: #999;">Adicione arquivos primeiro!</p>';
+                return;
+            }
+            
+            let estrutura = '📦 ESTRUTURA DO PROJETO\n\n';
+            estrutura += 'projeto/\n';
+            
+            const tipos = {};
+            Object.keys(arquivos).forEach(nome => {
+                const tipo = arquivos[nome].tipo;
+                if (!tipos[tipo]) tipos[tipo] = [];
+                tipos[tipo].push(nome);
+            });
+            
+            Object.entries(tipos).forEach(([tipo, nomes]) => {
+                estrutura += `├─ ${tipo}/\n`;
+                nomes.forEach((nome, index) => {
+                    const isLast = index === nomes.length - 1;
+                    estrutura += `│  ${isLast ? '└─' : '├─'} ${nome}\n`;
+                });
+            });
+            
+            output.innerHTML = `<pre>${escaparHTML(estrutura)}</pre>`;
+            mudarTab('estrutura');
+        }
+
+        // GERAR GUIA INTERATIVO
+        function gerarGuiaInterativo() {
+            const output = document.getElementById('guia');
+            
+            if (Object.keys(arquivos).length === 0) {
+                output.innerHTML = '<p style="color: #999;">Adicione arquivos primeiro!</p>';
+                return;
+            }
+            
+            let guia = '📖 GUIA INTERATIVO DO PROJETO\n\n';
+            guia += '='.repeat(50) + '\n';
+            guia += 'ÍNDICE\n';
+            guia += '='.repeat(50) + '\n\n';
+            
+            Object.keys(arquivos).forEach((nome, index) => {
+                guia += `${index + 1}. ${nome}\n`;
+            });
+            
+            guia += '\n' + '='.repeat(50) + '\n';
+            guia += 'DETALHES\n';
+            guia += '='.repeat(50) + '\n\n';
+            
+            Object.entries(arquivos).forEach(([nome, info]) => {
+                guia += `\n📄 ARQUIVO: ${nome}\n`;
+                guia += '-'.repeat(40) + '\n';
+                guia += `Tipo: ${info.tipo}\n`;
+                guia += `Linhas: ${info.linhas}\n`;
+                guia += `Tamanho: ${(info.tamanho / 1024).toFixed(2)} KB\n`;
+                guia += `Adicionado: ${info.adicionadoEm}\n`;
+                guia += '\nPrimeiras 200 caracteres:\n';
+                guia += '```\n';
+                guia += info.conteudo.substring(0, 200) + '...\n';
+                guia += '```\n';
+            });
+            
+            output.innerHTML = `<pre>${escaparHTML(guia)}</pre>`;
+            mudarTab('guia');
+        }
+
+        // DOWNLOAD ZIP
+        async function downloadZip() {
+            if (Object.keys(arquivos).length === 0) {
+                mostrarStatus('error', '❌ Adicione arquivos primeiro!');
+                return;
+            }
+            
+            mostrarStatus('info', '⏳ Criando ZIP...');
+            
+            try {
+                const zip = new JSZip();
+                
+                // Adicionar arquivos
+                Object.entries(arquivos).forEach(([nome, info]) => {
+                    zip.file(nome, info.conteudo);
+                });
+                
+                // Gerar ZIP
+                const blob = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'projeto.zip';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                mostrarStatus('success', '✅ ZIP baixado com sucesso!');
+            } catch (erro) {
+                mostrarStatus('error', `❌ Erro: ${erro.message}`);
+            }
+        }
+
+        // MUDAR TAB
+        function mudarTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById(tabName).style.display = 'block';
+            
+            event.target.classList.add('active');
+        }
+
+        // LIMPAR TUDO
+        function limparTudo() {
+            if (confirm('Tem certeza? Vai perder tudo!')) {
+                arquivos = {};
+                document.getElementById('statusContainer').innerHTML = '';
+                document.getElementById('statsContainer').innerHTML = '';
+                document.getElementById('arquivos').innerHTML = '';
+                document.getElementById('estrutura').innerHTML = '';
+                document.getElementById('guia').innerHTML = '';
+                limparInput();
+                mostrarStatus('success', '✅ Tudo limpo!');
+            }
+        }
+
+        // MOSTRAR STATUS
+        function mostrarStatus(tipo, mensagem) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `<div class="status ${tipo}">${mensagem}</div>`;
+        }
+
+        // ESCAPAR HTML
+        function escaparHTML(texto) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return texto.replace(/[&<>"']/g, m => map[m]);
+        }
+  </script>
+</body>
+
+</html>
