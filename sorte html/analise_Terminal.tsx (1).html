@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: Terminal.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 Terminal.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 06:56:51 • 46 elementos • 27 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { useState, useRef, useEffect, useCallback } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;</div><div class="idx-item">L3 [import] import { Search } from &quot;lucide-react&quot;;</div><div class="idx-item">L5 [interface] TerminalProps</div><div class="idx-item">L15 [interface] TerminalLine</div><div class="idx-item">L20 [const] YOUTUBE_GUIDE</div><div class="idx-item">L73 [const] DB_GUIDE</div><div class="idx-item">L111 [import] import { initializeApp } from 'firebase/app';</div><div class="idx-item">L112 [import] import { getFirestore, collection, addDoc } from 'firebase/firestore';</div><div class="idx-item">L293 [function] simulateInstallDelay</div><div class="idx-item">L298 [component] Terminal</div><div class="idx-item">L540 [function] pattern →</div><div class="idx-item">L633 [function] addLog →</div><div class="idx-item">L648 [function] browserFetch →</div><div class="idx-item">L656 [function] makeServerObj →</div><div class="idx-item">L671 [function] fakeRequire →</div><div class="idx-item">L972 [function] createTables</div><div class="idx-item">L995 [const] MONGODB_URI</div><div class="idx-item">L1045 [function] testConnection</div><div class="idx-item">L1058 [function] setupDatabase</div><div class="idx-item">L1085 [function] query</div><div class="idx-item">L1093 [function] getClient</div><div class="idx-item">L1152 [comment] // ==================== AUTENTICACAO ====================</div><div class="idx-item">L1153 [function] signUp</div><div class="idx-item">L1159 [function] signIn</div><div class="idx-item">L1165 [function] signOut</div><div class="idx-item">L1169 [function] getUser</div><div class="idx-item">L1174 [comment] // ==================== DATABASE ====================</div><div class="idx-item">L1175 [function] getAll</div><div class="idx-item">L1181 [function] getById</div><div class="idx-item">L1187 [function] insert</div><div class="idx-item">L1193 [function] update</div><div class="idx-item">L1199 [function] remove</div><div class="idx-item">L1204 [comment] // ==================== STORAGE ====================</div><div class="idx-item">L1205 [function] uploadFile</div><div class="idx-item">L1211 [comment] // ==================== REALTIME ====================</div><div class="idx-item">L1212 [function] subscribeToTable</div><div class="idx-item">L1239 [import] import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebas</div><div class="idx-item">L1240 [import] import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } f</div><div class="idx-item">L1256 [comment] // const docRef = await addDoc(collection(db, 'users'), { na</div><div class="idx-item">L1257 [comment] // const snapshot = await getDocs(collection(db, 'users'));</div><div class="idx-item">L1258 [comment] // snapshot.forEach((doc) =&gt; console.log(doc.id, doc.data())</div><div class="idx-item">L1295 [const] VIDEO_URL</div><div class="idx-item">L1297 [function] downloadVideo</div><div class="idx-item">L1325 [function] getInfo</div><div class="idx-item">L1437 [function] handleKeyDown →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L292</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { useState, useRef, useEffect, useCallback } from &quot;react&quot;;
+import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;
+import { Search } from &quot;lucide-react&quot;;
+
+interface TerminalProps {
+  vfs: VirtualFileSystem;
+  externalCommand?: string;
+  onCommandExecuted?: () =&gt; void;
+  onServerToggle?: (running: boolean, port?: number) =&gt; void;
+  onGitClone?: (owner: string, repo: string) =&gt; Promise&lt;void&gt;;
+  onCommandOutput?: (cmd: string, output: string, ok: boolean) =&gt; void;
+  onBufferUpdate?: (buffer: string, hasError: boolean) =&gt; void;
+}
+
+interface TerminalLine {
+  type: &quot;input&quot; | &quot;output&quot; | &quot;error&quot; | &quot;info&quot; | &quot;success&quot; | &quot;warn&quot;;
+  content: string;
+}
+
+const YOUTUBE_GUIDE = `
+╔══════════════════════════════════════╗
+║      GUIA: DOWNLOAD YOUTUBE/MEDIA    ║
+╚══════════════════════════════════════╝
+
+Para baixar videos/audio do YouTube no Node.js:
+
+📦 Instalar dependencia:
+   npm install ytdl-core
+
+📄 Criar download.js:
+   const ytdl = require('ytdl-core');
+   const fs = require('fs');
+
+   const url = 'https://www.youtube.com/watch?v=SEU_VIDEO_ID';
+
+   // Baixar audio (MP3):
+   ytdl(url, { quality: 'lowestaudio' })
+     .pipe(fs.createWriteStream('audio.mp4'));
+
+   // Baixar video (MP4):
+   ytdl(url, { quality: 'highest' })
+     .pipe(fs.createWriteStream('video.mp4'));
+
+   // Obter informacoes do video:
+   ytdl.getInfo(url).then(info =&gt; {
+     console.log('Titulo:', info.videoDetails.title);
+     console.log('Duracao:', info.videoDetails.lengthSeconds + 's');
+     console.log('Autor:', info.videoDetails.author.name);
+   });
+
+🎵 Para converter para MP3 (com fluent-ffmpeg):
+   npm install fluent-ffmpeg ytdl-core
+   const ffmpeg = require('fluent-ffmpeg');
+   const ytdl = require('ytdl-core');
+
+   ffmpeg(ytdl(url, { quality: 'lowestaudio' }))
+     .audioBitrate(128)
+     .save('audio.mp3')
+     .on('end', () =&gt; console.log('MP3 salvo!'));
+
+📊 Para analisar conteudo (transcricao):
+   Use a API do YouTube Data:
+   npm install googleapis
+   ou: pip install youtube-transcript-api (Python)
+
+🌐 Alternativas online (sem backend):
+   - yt-dlp (Python): pip install yt-dlp
+   - youtube-dl: mais antigo
+
+💡 Use &quot;youtube setup&quot; para criar o projeto completo automaticamente!
+`;
+
+const DB_GUIDE = `
+╔══════════════════════════════════════╗
+║         GUIA DE BANCO DE DADOS       ║
+╚══════════════════════════════════════╝
+
+Para usar banco de dados no seu projeto:
+
+📦 SQLite (mais simples - no arquivo):
+   npm install better-sqlite3
+   Crie db.js:
+   \`\`\`
+   const db = require('better-sqlite3')('app.db');
+   db.exec('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT)');
+   const insert = db.prepare('INSERT INTO users (name) VALUES (?)');
+   insert.run('Joao');
+   const rows = db.prepare('SELECT * FROM users').all();
+   console.log(rows);
+   \`\`\`
+
+🐘 PostgreSQL:
+   npm install pg
+   Crie db.js:
+   \`\`\`
+   const { Pool } = require('pg');
+   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+   const res = await pool.query('SELECT NOW()');
+   \`\`\`
+
+🍃 MongoDB:
+   npm install mongoose
+   \`\`\`
+   const mongoose = require('mongoose');
+   await mongoose.connect(process.env.MONGODB_URI);
+   \`\`\`
+
+🔥 Firebase Firestore:
+   npm install firebase
+   \`\`\`
+   import { initializeApp } from 'firebase/app';
+   import { getFirestore, collection, addDoc } from 'firebase/firestore';
+   \`\`\`
+
+☁️ Neon (PostgreSQL na nuvem - gratuito):
+   1. Crie conta em: console.neon.tech
+   2. Crie um banco de dados
+   3. Copie a connection string (DATABASE_URL)
+   4. npm install pg
+   5. Use: const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: true })
+
+💡 Use &quot;db &lt;tipo&gt;&quot; para criar template automatico:
+   db sqlite | db postgres | db mongo | db firebase | db neon | db supabase
+`;
+
+const PACKAGES_DB: Record&lt;string, { version: string; description: string; files?: Record&lt;string, string&gt; }&gt; = {
+  express: { version: &quot;4.21.2&quot;, description: &quot;Framework web rapido e minimalista para Node.js&quot; },
+  react: { version: &quot;18.3.1&quot;, description: &quot;Biblioteca para construir interfaces de usuario&quot; },
+  &quot;react-dom&quot;: { version: &quot;18.3.1&quot;, description: &quot;Renderizador DOM para React&quot; },
+  axios: { version: &quot;1.7.9&quot;, description: &quot;Cliente HTTP baseado em Promises&quot; },
+  lodash: { version: &quot;4.17.21&quot;, description: &quot;Biblioteca utilitaria JavaScript&quot; },
+  moment: { version: &quot;2.30.1&quot;, description: &quot;Biblioteca para manipulacao de datas&quot; },
+  cors: { version: &quot;2.8.5&quot;, description: &quot;Middleware CORS para Express&quot; },
+  &quot;body-parser&quot;: { version: &quot;1.20.3&quot;, description: &quot;Middleware para parsear body HTTP&quot; },
+  mongoose: { version: &quot;8.9.5&quot;, description: &quot;ODM elegante para MongoDB&quot; },
+  pg: { version: &quot;8.13.1&quot;, description: &quot;Cliente PostgreSQL para Node.js&quot; },
+  &quot;better-sqlite3&quot;: { version: &quot;11.7.0&quot;, description: &quot;API SQLite3 rapida e simples&quot; },
+  dotenv: { version: &quot;16.4.7&quot;, description: &quot;Carrega variaveis de ambiente de .env&quot; },
+  jsonwebtoken: { version: &quot;9.0.2&quot;, description: &quot;Implementacao de JSON Web Tokens&quot; },
+  bcryptjs: { version: &quot;2.4.3&quot;, description: &quot;Biblioteca de hashing de senha&quot; },
+  socket_io: { version: &quot;4.8.1&quot;, description: &quot;Comunicacao em tempo real bidirecional&quot; },
+  &quot;socket.io&quot;: { version: &quot;4.8.1&quot;, description: &quot;Comunicacao em tempo real bidirecional&quot; },
+  nodemon: { version: &quot;3.1.9&quot;, description: &quot;Reinicia automaticamente apps Node.js&quot; },
+  webpack: { version: &quot;5.97.1&quot;, description: &quot;Empacotador de modulos JavaScript&quot; },
+  babel: { version: &quot;7.26.0&quot;, description: &quot;Compilador JavaScript&quot; },
+  typescript: { version: &quot;5.7.3&quot;, description: &quot;JavaScript com tipagem estatica&quot; },
+  tailwindcss: { version: &quot;3.4.17&quot;, description: &quot;Framework CSS utility-first&quot; },
+  vite: { version: &quot;6.0.7&quot;, description: &quot;Ferramenta de build rapida para web&quot; },
+  jest: { version: &quot;29.7.0&quot;, description: &quot;Framework de testes JavaScript&quot; },
+  &quot;next&quot;: { version: &quot;15.1.6&quot;, description: &quot;Framework React para producao&quot; },
+  &quot;vue&quot;: { version: &quot;3.5.13&quot;, description: &quot;Framework JavaScript progressivo&quot; },
+  &quot;svelte&quot;: { version: &quot;5.19.0&quot;, description: &quot;Framework UI compilado&quot; },
+  firebase: { version: &quot;11.2.0&quot;, description: &quot;SDK Firebase para web&quot; },
+  &quot;chart.js&quot;: { version: &quot;4.4.7&quot;, description: &quot;Biblioteca de graficos simples e flexivel&quot; },
+  &quot;three&quot;: { version: &quot;0.171.0&quot;, description: &quot;Biblioteca 3D para JavaScript&quot; },
+  &quot;d3&quot;: { version: &quot;7.9.0&quot;, description: &quot;Documentos orientados por dados&quot; },
+  &quot;uuid&quot;: { version: &quot;11.0.5&quot;, description: &quot;Geracao de UUID&quot; },
+  &quot;zod&quot;: { version: &quot;3.24.1&quot;, description: &quot;Validacao de schema TypeScript-first&quot; },
+  &quot;date-fns&quot;: { version: &quot;4.1.0&quot;, description: &quot;Utilitarios modernos para datas JavaScript&quot; },
+  &quot;ytdl-core&quot;: { version: &quot;4.11.5&quot;, description: &quot;Downloader de YouTube para Node.js&quot; },
+  &quot;fluent-ffmpeg&quot;: { version: &quot;2.1.3&quot;, description: &quot;Wrapper do FFmpeg para Node.js&quot; },
+  &quot;googleapis&quot;: { version: &quot;144.0.0&quot;, description: &quot;APIs do Google para Node.js&quot; },
+  &quot;sharp&quot;: { version: &quot;0.33.5&quot;, description: &quot;Processamento de imagens de alta performance&quot; },
+  &quot;multer&quot;: { version: &quot;2.0.0&quot;, description: &quot;Middleware para upload de arquivos&quot; },
+  &quot;nodemailer&quot;: { version: &quot;6.10.0&quot;, description: &quot;Envio de emails com Node.js&quot; },
+  &quot;stripe&quot;: { version: &quot;17.5.0&quot;, description: &quot;SDK do Stripe para pagamentos&quot; },
+  &quot;openai&quot;: { version: &quot;4.77.0&quot;, description: &quot;SDK oficial da OpenAI para Node.js&quot; },
+  &quot;@anthropic-ai/sdk&quot;: { version: &quot;0.36.3&quot;, description: &quot;SDK da Anthropic para Node.js&quot; },
+  &quot;telegraf&quot;: { version: &quot;4.16.3&quot;, description: &quot;Framework moderno de bots Telegram&quot; },
+  &quot;discord.js&quot;: { version: &quot;14.18.0&quot;, description: &quot;SDK do Discord para Node.js&quot; },
+  &quot;whatsapp-web.js&quot;: { version: &quot;1.26.1&quot;, description: &quot;API nao oficial do WhatsApp&quot; },
+  &quot;puppeteer&quot;: { version: &quot;23.11.1&quot;, description: &quot;Automacao de Chrome/Chromium&quot; },
+  &quot;cheerio&quot;: { version: &quot;1.0.0&quot;, description: &quot;Parsing de HTML no servidor&quot; },
+  &quot;playwright&quot;: { version: &quot;1.49.1&quot;, description: &quot;Automacao de browser cross-browser&quot; },
+  &quot;sequelize&quot;: { version: &quot;6.37.5&quot;, description: &quot;ORM multi-banco para Node.js&quot; },
+  &quot;typeorm&quot;: { version: &quot;0.3.20&quot;, description: &quot;ORM TypeScript para Node.js&quot; },
+  &quot;prisma&quot;: { version: &quot;6.2.1&quot;, description: &quot;ORM moderno para Node.js com TypeScript&quot; },
+  &quot;@supabase/supabase-js&quot;: { version: &quot;2.47.10&quot;, description: &quot;SDK do Supabase para JavaScript&quot; },
+  &quot;ioredis&quot;: { version: &quot;5.4.2&quot;, description: &quot;Cliente Redis robusto para Node.js&quot; },
+  &quot;bull&quot;: { version: &quot;4.16.5&quot;, description: &quot;Fila de jobs com Redis&quot; },
+  &quot;passport&quot;: { version: &quot;0.7.0&quot;, description: &quot;Autenticacao para Node.js&quot; },
+  &quot;express-validator&quot;: { version: &quot;7.2.1&quot;, description: &quot;Validacao de dados para Express&quot; },
+  &quot;helmet&quot;: { version: &quot;8.0.0&quot;, description: &quot;Seguranca HTTP para Express&quot; },
+  &quot;rate-limiter-flexible&quot;: { version: &quot;5.0.4&quot;, description: &quot;Rate limiting flexivel&quot; },
+  &quot;compression&quot;: { version: &quot;1.8.0&quot;, description: &quot;Compressao gzip para Express&quot; },
+  &quot;morgan&quot;: { version: &quot;1.10.0&quot;, description: &quot;Logger HTTP para Node.js&quot; },
+  &quot;winston&quot;: { version: &quot;3.17.0&quot;, description: &quot;Logger versatil para Node.js&quot; },
+  &quot;pino&quot;: { version: &quot;9.6.0&quot;, description: &quot;Logger rapido para Node.js&quot; },
+  &quot;pm2&quot;: { version: &quot;5.4.3&quot;, description: &quot;Gerenciador de processos para Node.js&quot; },
+  &quot;joi&quot;: { version: &quot;17.13.3&quot;, description: &quot;Validacao de objetos JavaScript&quot; },
+  &quot;yup&quot;: { version: &quot;1.6.1&quot;, description: &quot;Validacao de schema JavaScript&quot; },
+  &quot;luxon&quot;: { version: &quot;3.5.0&quot;, description: &quot;Biblioteca de datas moderna&quot; },
+  &quot;nanoid&quot;: { version: &quot;5.1.2&quot;, description: &quot;Gerador de IDs pequenos e seguros&quot; },
+  &quot;slugify&quot;: { version: &quot;1.6.6&quot;, description: &quot;Cria slugs de strings&quot; },
+  &quot;marked&quot;: { version: &quot;15.0.6&quot;, description: &quot;Parser de Markdown rapido&quot; },
+  &quot;pdf-lib&quot;: { version: &quot;1.17.1&quot;, description: &quot;Criacao e modificacao de PDFs&quot; },
+  &quot;exceljs&quot;: { version: &quot;4.4.0&quot;, description: &quot;Criacao de planilhas Excel&quot; },
+  &quot;csv-parser&quot;: { version: &quot;3.0.0&quot;, description: &quot;Parser de arquivos CSV&quot; },
+  &quot;archiver&quot;: { version: &quot;7.0.1&quot;, description: &quot;Criacao de arquivos ZIP/TAR&quot; },
+  &quot;chokidar&quot;: { version: &quot;4.0.3&quot;, description: &quot;Watcher de sistema de arquivos&quot; },
+  &quot;dotenv-safe&quot;: { version: &quot;9.1.0&quot;, description: &quot;dotenv com validacao de variaveis obrigatorias&quot; },
+  &quot;cross-env&quot;: { version: &quot;7.0.3&quot;, description: &quot;Variaveis de ambiente cross-platform&quot; },
+  &quot;concurrently&quot;: { version: &quot;9.1.2&quot;, description: &quot;Executa multiplos comandos simultaneamente&quot; },
+  &quot;husky&quot;: { version: &quot;9.1.7&quot;, description: &quot;Git hooks faceis&quot; },
+  &quot;lint-staged&quot;: { version: &quot;15.4.3&quot;, description: &quot;Linting em arquivos staged&quot; },
+  &quot;eslint&quot;: { version: &quot;9.18.0&quot;, description: &quot;Linter para JavaScript/TypeScript&quot; },
+  &quot;prettier&quot;: { version: &quot;3.4.2&quot;, description: &quot;Formatador de codigo&quot; },
+  &quot;vitest&quot;: { version: &quot;3.0.4&quot;, description: &quot;Framework de testes rapido para Vite&quot; },
+  &quot;supertest&quot;: { version: &quot;7.0.0&quot;, description: &quot;Testes HTTP para Node.js&quot; },
+  &quot;@testing-library/react&quot;: { version: &quot;16.2.0&quot;, description: &quot;Testes para componentes React&quot; },
+  &quot;cypress&quot;: { version: &quot;13.17.0&quot;, description: &quot;Testes end-to-end para web&quot; },
+  &quot;react-router-dom&quot;: { version: &quot;7.1.5&quot;, description: &quot;Roteamento para React&quot; },
+  &quot;react-query&quot;: { version: &quot;5.63.0&quot;, description: &quot;Gerenciamento de estado servidor para React&quot; },
+  &quot;@tanstack/react-query&quot;: { version: &quot;5.63.0&quot;, description: &quot;Gerenciamento de estado assíncrono&quot; },
+  &quot;zustand&quot;: { version: &quot;5.0.3&quot;, description: &quot;Gerenciamento de estado minimalista para React&quot; },
+  &quot;recoil&quot;: { version: &quot;0.7.7&quot;, description: &quot;Biblioteca de estado para React&quot; },
+  &quot;jotai&quot;: { version: &quot;2.11.3&quot;, description: &quot;Estado primitivo para React&quot; },
+  &quot;framer-motion&quot;: { version: &quot;12.0.6&quot;, description: &quot;Biblioteca de animacoes para React&quot; },
+  &quot;react-spring&quot;: { version: &quot;9.7.5&quot;, description: &quot;Animacoes baseadas em fisica para React&quot; },
+  &quot;gsap&quot;: { version: &quot;3.12.7&quot;, description: &quot;Animacoes JavaScript de alta performance&quot; },
+  &quot;p5&quot;: { version: &quot;1.11.2&quot;, description: &quot;Biblioteca criativa de JavaScript&quot; },
+  &quot;konva&quot;: { version: &quot;9.3.18&quot;, description: &quot;Canvas 2D para JavaScript&quot; },
+  &quot;leaflet&quot;: { version: &quot;1.9.4&quot;, description: &quot;Mapas interativos para web&quot; },
+  &quot;mapbox-gl&quot;: { version: &quot;3.9.4&quot;, description: &quot;Mapas vetoriais interativos&quot; },
+  &quot;pixi.js&quot;: { version: &quot;8.7.4&quot;, description: &quot;Renderizador 2D WebGL mais rapido&quot; },
+  &quot;babylon.js&quot;: { version: &quot;7.45.0&quot;, description: &quot;Motor de jogo 3D para web&quot; },
+};
+
+const PIP_PACKAGES: Record&lt;string, { version: string; description: string }&gt; = {
+  flask: { version: &quot;3.1.0&quot;, description: &quot;Microframework web para Python&quot; },
+  django: { version: &quot;5.1.5&quot;, description: &quot;Framework web de alto nivel para Python&quot; },
+  fastapi: { version: &quot;0.115.6&quot;, description: &quot;Framework web moderno e rapido para APIs&quot; },
+  requests: { version: &quot;2.32.3&quot;, description: &quot;Biblioteca HTTP elegante para Python&quot; },
+  numpy: { version: &quot;2.2.1&quot;, description: &quot;Computacao cientifica com Python&quot; },
+  pandas: { version: &quot;2.2.3&quot;, description: &quot;Analise de dados poderosa em Python&quot; },
+  matplotlib: { version: &quot;3.10.0&quot;, description: &quot;Biblioteca de visualizacao em Python&quot; },
+  sqlalchemy: { version: &quot;2.0.37&quot;, description: &quot;ORM Python SQL&quot; },
+  pydantic: { version: &quot;2.10.5&quot;, description: &quot;Validacao de dados para Python&quot; },
+  uvicorn: { version: &quot;0.34.0&quot;, description: &quot;Servidor ASGI para Python&quot; },
+  pytest: { version: &quot;8.3.4&quot;, description: &quot;Framework de testes para Python&quot; },
+  beautifulsoup4: { version: &quot;4.12.3&quot;, description: &quot;Analise de HTML e XML&quot; },
+  scikit_learn: { version: &quot;1.6.1&quot;, description: &quot;Machine learning em Python&quot; },
+  pillow: { version: &quot;11.1.0&quot;, description: &quot;Biblioteca de imagens para Python&quot; },
+  openai: { version: &quot;1.59.7&quot;, description: &quot;SDK oficial da OpenAI para Python&quot; },
+  anthropic: { version: &quot;0.43.0&quot;, description: &quot;SDK oficial da Anthropic para Python&quot; },
+  python_dotenv: { version: &quot;1.0.1&quot;, description: &quot;Carrega variaveis de .env para Python&quot; },
+  celery: { version: &quot;5.4.0&quot;, description: &quot;Fila de tarefas distribuida para Python&quot; },
+  redis: { version: &quot;5.2.1&quot;, description: &quot;Cliente Redis para Python&quot; },
+  aiohttp: { version: &quot;3.11.11&quot;, description: &quot;Cliente/servidor HTTP async para Python&quot; },
+  httpx: { version: &quot;0.28.1&quot;, description: &quot;Cliente HTTP async moderno para Python&quot; },
+  scrapy: { version: &quot;2.12.0&quot;, description: &quot;Framework de web scraping para Python&quot; },
+  selenium: { version: &quot;4.27.1&quot;, description: &quot;Automacao de browser para Python&quot; },
+  playwright: { version: &quot;1.49.1&quot;, description: &quot;Automacao de browser moderna para Python&quot; },
+  boto3: { version: &quot;1.35.94&quot;, description: &quot;SDK AWS para Python&quot; },
+  paramiko: { version: &quot;3.5.0&quot;, description: &quot;Implementacao SSHv2 para Python&quot; },
+  cryptography: { version: &quot;44.0.0&quot;, description: &quot;Biblioteca criptografica para Python&quot; },
+  jwt: { version: &quot;1.3.1&quot;, description: &quot;JSON Web Token para Python&quot; },
+  passlib: { version: &quot;1.7.4&quot;, description: &quot;Framework de hashing de senha&quot; },
+  alembic: { version: &quot;1.14.1&quot;, description: &quot;Migrations para SQLAlchemy&quot; },
+  psycopg2: { version: &quot;2.9.10&quot;, description: &quot;Adaptador PostgreSQL para Python&quot; },
+  pymongo: { version: &quot;4.10.1&quot;, description: &quot;Driver MongoDB para Python&quot; },
+  motor: { version: &quot;3.7.0&quot;, description: &quot;Driver MongoDB async para Python&quot; },
+  tortoise_orm: { version: &quot;0.22.1&quot;, description: &quot;ORM async inspirado no Django&quot; },
+  peewee: { version: &quot;3.17.8&quot;, description: &quot;ORM simples para Python&quot; },
+  tensorflow: { version: &quot;2.18.0&quot;, description: &quot;Machine learning de codigo aberto&quot; },
+  torch: { version: &quot;2.6.0&quot;, description: &quot;PyTorch - ML com aceleracao GPU&quot; },
+  transformers: { version: &quot;4.47.1&quot;, description: &quot;Modelos de ML prontos da Hugging Face&quot; },
+  langchain: { version: &quot;0.3.14&quot;, description: &quot;Framework para apps com LLMs&quot; },
+  yt_dlp: { version: &quot;2025.1.7&quot;, description: &quot;Downloader de YouTube e outros sites&quot; },
+  youtube_transcript_api: { version: &quot;0.6.3&quot;, description: &quot;Transcricoes de videos do YouTube&quot; },
+  pytube: { version: &quot;15.0.0&quot;, description: &quot;Downloader de YouTube para Python&quot; },
+  moviepy: { version: &quot;2.1.1&quot;, description: &quot;Edicao de video com Python&quot; },
+  pydub: { version: &quot;0.25.1&quot;, description: &quot;Manipulacao de audio simples para Python&quot; },
+  whisper: { version: &quot;1.1.10&quot;, description: &quot;Reconhecimento de voz da OpenAI&quot; },
+  gtts: { version: &quot;2.5.4&quot;, description: &quot;Texto para voz com Google TTS&quot; },
+  qrcode: { version: &quot;8.0.0&quot;, description: &quot;Gerador de QR Code para Python&quot; },
+  reportlab: { version: &quot;4.2.5&quot;, description: &quot;Criacao de PDFs para Python&quot; },
+  openpyxl: { version: &quot;3.1.5&quot;, description: &quot;Leitura e escrita de Excel em Python&quot; },
+  schedule: { version: &quot;1.2.2&quot;, description: &quot;Agendamento de tarefas em Python&quot; },
+  apscheduler: { version: &quot;3.11.0&quot;, description: &quot;Scheduler avancado para Python&quot; },
+  click: { version: &quot;8.1.8&quot;, description: &quot;Criacao de CLIs elegantes em Python&quot; },
+  typer: { version: &quot;0.15.1&quot;, description: &quot;CLIs com Python e type hints&quot; },
+  rich: { version: &quot;13.9.4&quot;, description: &quot;Output terminal bonito para Python&quot; },
+  loguru: { version: &quot;0.7.3&quot;, description: &quot;Logger simples e poderoso para Python&quot; },
+  python_telegram_bot: { version: &quot;21.10&quot;, description: &quot;Framework para bots do Telegram&quot; },
+  discord_py: { version: &quot;2.4.0&quot;, description: &quot;API Discord para Python&quot; },
+  tweepy: { version: &quot;4.15.0&quot;, description: &quot;SDK Twitter/X para Python&quot; },
+  stripe: { version: &quot;11.4.1&quot;, description: &quot;SDK Stripe para Python&quot; },
+  supabase: { version: &quot;2.12.0&quot;, description: &quot;SDK Supabase para Python&quot; },
+  firebase_admin: { version: &quot;6.6.0&quot;, description: &quot;SDK Firebase Admin para Python&quot; },
+};
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>simulateInstallDelay</span>
+    <div>
+      <small>L293–L297</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function simulateInstallDelay(pkg: string): Promise&lt;void&gt; {
+  const delay = 800 + Math.random() * 1200;
+  return new Promise((resolve) =&gt; setTimeout(resolve, delay));
+}
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>Terminal</span>
+    <div>
+      <small>L298–L539</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">export default function Terminal({ vfs, externalCommand, onCommandExecuted, onServerToggle, onGitClone, onCommandOutput, onBufferUpdate }: TerminalProps) {
+  const [lines, setLines] = useState&lt;TerminalLine[]&gt;([
+    { type: &quot;info&quot;, content: &quot;╔══════════════════════════════════╗&quot; },
+    { type: &quot;info&quot;, content: &quot;║   SK Code Editor - Terminal v2.0 ║&quot; },
+    { type: &quot;info&quot;, content: &quot;╚══════════════════════════════════╝&quot; },
+    { type: &quot;info&quot;, content: 'Digite &quot;help&quot; para comandos · &quot;db help&quot; para banco de dados' },
+    { type: &quot;info&quot;, content: &quot;&quot; },
+  ]);
+  const [input, setInput] = useState(&quot;&quot;);
+  const [cwd, setCwd] = useState(&quot;/&quot;);
+  const [history, setHistory] = useState&lt;string[]&gt;([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isRunning, setIsRunning] = useState(false);
+  const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+  const scrollRef = useRef&lt;HTMLDivElement&gt;(null);
+
+  useEffect(() =&gt; {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [lines]);
+
+  useEffect(() =&gt; {
+    if (externalCommand) {
+      executeCommand(externalCommand);
+      onCommandExecuted?.();
+    }
+  }, [externalCommand]);
+
+  // Refs estáveis pros callbacks (evitam re-render loop)
+  const onBufferUpdateRef = useRef(onBufferUpdate);
+  const onCommandOutputRef = useRef(onCommandOutput);
+  useEffect(() =&gt; { onBufferUpdateRef.current = onBufferUpdate; }, [onBufferUpdate]);
+  useEffect(() =&gt; { onCommandOutputRef.current = onCommandOutput; }, [onCommandOutput]);
+
+  // Emite buffer formatado pra Jasmim sempre que muda (limita aos últimos 50 linhas)
+  useEffect(() =&gt; {
+    if (!onBufferUpdateRef.current) return;
+    const recent = lines.slice(-50);
+    const buf = recent.map(l =&gt; l.content).join(&quot;\n&quot;);
+    const hasErr = recent.some(l =&gt; l.type === &quot;error&quot;);
+    onBufferUpdateRef.current(buf, hasErr);
+  }, [lines]);
+
+  const addLine = useCallback((type: TerminalLine[&quot;type&quot;], content: string) =&gt; {
+    setLines((prev) =&gt; [...prev, { type, content }]);
+  }, []);
+
+  const addLines = useCallback((type: TerminalLine[&quot;type&quot;], lines: string[]) =&gt; {
+    setLines((prev) =&gt; [...prev, ...lines.map((content) =&gt; ({ type, content }))]);
+  }, []);
+
+  const resolvePath = useCallback((path: string): string =&gt; {
+    if (path.startsWith(&quot;/&quot;)) return path.replace(/\/+$/, &quot;&quot;) || &quot;/&quot;;
+    const parts = cwd === &quot;/&quot; ? [] : cwd.split(&quot;/&quot;).filter(Boolean);
+    for (const seg of path.split(&quot;/&quot;)) {
+      if (seg === &quot;..&quot;) parts.pop();
+      else if (seg !== &quot;.&quot; &amp;&amp; seg !== &quot;&quot;) parts.push(seg);
+    }
+    return &quot;/&quot; + parts.join(&quot;/&quot;);
+  }, [cwd]);
+
+  const cmdStartIndexRef = useRef&lt;number&gt;(0);
+
+  const executeCommand = useCallback(async (cmd: string) =&gt; {
+    const trimmed = cmd.trim();
+    if (!trimmed) return;
+
+    setHistory((prev) =&gt; [trimmed, ...prev].slice(0, 100));
+    setHistoryIndex(-1);
+    addLine(&quot;input&quot;, `${cwd} $ ${trimmed}`);
+
+    // Marca onde começa a saída deste comando (pra emitir depois pra Jasmim)
+    setLines((prev) =&gt; { cmdStartIndexRef.current = prev.length; return prev; });
+
+    const parts = trimmed.match(/(?:[^\s&quot;']+|&quot;[^&quot;]*&quot;|'[^']*')+/g) || [];
+    const command = parts[0]?.toLowerCase() || &quot;&quot;;
+    const args = parts.slice(1).map((a) =&gt; a.replace(/^[&quot;']|[&quot;']$/g, &quot;&quot;));
+    const allFiles = vfs.listFiles();
+
+    if (isRunning &amp;&amp; command !== &quot;clear&quot;) {
+      addLine(&quot;warn&quot;, &quot;Aguarde... comando em execucao.&quot;);
+      return;
+    }
+
+    switch (command) {
+      case &quot;help&quot;: {
+        addLines(&quot;info&quot;, [
+          &quot;&quot;,
+          &quot;━━━ COMANDOS DE ARQUIVO ━━━&quot;,
+          &quot;  ls [dir]           Listar arquivos&quot;,
+          &quot;  cd &lt;dir&gt;           Mudar diretorio&quot;,
+          &quot;  pwd                Diretorio atual&quot;,
+          &quot;  cat &lt;arquivo&gt;      Ver conteudo&quot;,
+          &quot;  touch &lt;arquivo&gt;    Criar arquivo&quot;,
+          &quot;  mkdir &lt;dir&gt;        Criar diretorio&quot;,
+          &quot;  rm [-rf] &lt;alvo&gt;    Remover&quot;,
+          &quot;  mv &lt;orig&gt; &lt;dest&gt;   Mover/renomear&quot;,
+          &quot;  cp &lt;orig&gt; &lt;dest&gt;   Copiar&quot;,
+          &quot;  find &lt;padrao&gt;      Buscar arquivos&quot;,
+          &quot;  tree               Arvore&quot;,
+          &quot;&quot;,
+          &quot;━━━ EXECUCAO ━━━&quot;,
+          &quot;  node &lt;arquivo&gt;     Executar JavaScript&quot;,
+          &quot;  python &lt;arquivo&gt;   Executar Python&quot;,
+          &quot;  npm &lt;comando&gt;      Gerenciador npm&quot;,
+          &quot;  pip install &lt;pkg&gt;  Instalar pacote Python&quot;,
+          &quot;&quot;,
+          &quot;━━━ BANCO DE DADOS ━━━&quot;,
+          &quot;  db help            Guia de banco de dados&quot;,
+          &quot;  db sqlite          Template SQLite&quot;,
+          &quot;  db postgres        Template PostgreSQL&quot;,
+          &quot;  db mongo           Template MongoDB&quot;,
+          &quot;  db neon            Template Neon (Postgres cloud gratis)&quot;,
+          &quot;  db supabase        Template Supabase&quot;,
+          &quot;&quot;,
+          &quot;━━━ YOUTUBE / MIDIA ━━━&quot;,
+          &quot;  youtube            Guia de download do YouTube&quot;,
+          &quot;  youtube setup      Criar projeto completo de download&quot;,
+          &quot;  yt help            Mesmo que youtube&quot;,
+          &quot;&quot;,
+          &quot;━━━ UTILITARIOS ━━━&quot;,
+          &quot;  search &lt;termo&gt;     Buscar no projeto&quot;,
+          &quot;  env                Variaveis de ambiente&quot;,
+          &quot;  clear              Limpar terminal&quot;,
+          &quot;  date               Data e hora&quot;,
+          &quot;&quot;,
+          &quot;💡 100+ pacotes npm · 80+ pacotes pip · Use: npm install &lt;nome&gt;&quot;,
+        ]);
+        break;
+      }
+
+      case &quot;ls&quot;: {
+        const target = args[0] ? resolvePath(args[0]) : cwd;
+        const prefix = target === &quot;/&quot; ? &quot;&quot; : target.replace(/^\//, &quot;&quot;);
+        const entries = new Map&lt;string, boolean&gt;();
+        for (const f of allFiles) {
+          if (prefix === &quot;&quot;) {
+            const first = f.split(&quot;/&quot;)[0];
+            const isDir = allFiles.some((x) =&gt; x.startsWith(first + &quot;/&quot;) &amp;&amp; x !== first);
+            entries.set(first, isDir);
+          } else if (f.startsWith(prefix + &quot;/&quot;)) {
+            const rest = f.slice(prefix.length + 1);
+            const first = rest.split(&quot;/&quot;)[0];
+            const isDir = allFiles.some((x) =&gt; x.startsWith(prefix + &quot;/&quot; + first + &quot;/&quot;));
+            entries.set(first, isDir);
+          } else if (f === prefix) {
+            entries.set(f.split(&quot;/&quot;).pop()!, false);
+          }
+        }
+        if (entries.size === 0) { addLine(&quot;output&quot;, &quot;(diretorio vazio)&quot;); break; }
+        const sorted = Array.from(entries.entries()).sort(([a, ad], [b, bd]) =&gt; {
+          if (ad !== bd) return ad ? -1 : 1;
+          return a.localeCompare(b);
+        });
+        for (const [name, isDir] of sorted) {
+          addLine(&quot;output&quot;, isDir ? `📁 ${name}/` : `📄 ${name}`);
+        }
+        break;
+      }
+
+      case &quot;cd&quot;: {
+        if (!args[0] || args[0] === &quot;~&quot;) { setCwd(&quot;/&quot;); break; }
+        const target = resolvePath(args[0]);
+        if (target === &quot;/&quot;) { setCwd(&quot;/&quot;); break; }
+        const prefix = target.replace(/^\//, &quot;&quot;);
+        const exists = allFiles.some((f) =&gt; f.startsWith(prefix + &quot;/&quot;) || f === prefix);
+        if (exists) setCwd(target);
+        else addLine(&quot;error&quot;, `cd: ${args[0]}: Diretorio nao encontrado`);
+        break;
+      }
+
+      case &quot;pwd&quot;: addLine(&quot;output&quot;, cwd); break;
+
+      case &quot;cat&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;cat: falta argumento&quot;); break; }
+        const target = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        const content = vfs.readFile(target);
+        if (content !== undefined) addLine(&quot;output&quot;, content || &quot;(arquivo vazio)&quot;);
+        else addLine(&quot;error&quot;, `cat: ${args[0]}: Arquivo nao encontrado`);
+        break;
+      }
+
+      case &quot;touch&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;touch: falta nome do arquivo&quot;); break; }
+        const target = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        vfs.writeFile(target, vfs.readFile(target) || &quot;&quot;);
+        addLine(&quot;success&quot;, `✓ Arquivo criado: ${target}`);
+        break;
+      }
+
+      case &quot;mkdir&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;mkdir: falta nome&quot;); break; }
+        const target = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        vfs.writeFile(`${target}/.gitkeep`, &quot;&quot;);
+        addLine(&quot;success&quot;, `✓ Pasta criada: ${target}/`);
+        break;
+      }
+
+      case &quot;rm&quot;: {
+        const target_arg = args.find((a) =&gt; !a.startsWith(&quot;-&quot;)) || &quot;&quot;;
+        if (!target_arg) { addLine(&quot;error&quot;, &quot;rm: falta argumento&quot;); break; }
+        const target = resolvePath(target_arg).replace(/^\//, &quot;&quot;);
+        if (vfs.exists(target)) { vfs.deleteFile(target); addLine(&quot;success&quot;, `✓ Removido: ${target}`); }
+        else addLine(&quot;error&quot;, `rm: ${target_arg}: Nao encontrado`);
+        break;
+      }
+
+      case &quot;mv&quot;: {
+        if (args.length &lt; 2) { addLine(&quot;error&quot;, &quot;mv: mv &lt;origem&gt; &lt;destino&gt;&quot;); break; }
+        const from = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        const to = resolvePath(args[1]).replace(/^\//, &quot;&quot;);
+        if (vfs.exists(from)) { vfs.renameFile(from, to); addLine(&quot;success&quot;, `✓ ${from} → ${to}`); }
+        else addLine(&quot;error&quot;, `mv: ${args[0]}: Nao encontrado`);
+        break;
+      }
+
+      case &quot;cp&quot;: {
+        if (args.length &lt; 2) { addLine(&quot;error&quot;, &quot;cp: cp &lt;origem&gt; &lt;destino&gt;&quot;); break; }
+        const from = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        const to = resolvePath(args[1]).replace(/^\//, &quot;&quot;);
+        const content = vfs.readFile(from);
+        if (content !== undefined) { vfs.writeFile(to, content); addLine(&quot;success&quot;, `✓ Copiado: ${from} → ${to}`); }
+        else addLine(&quot;error&quot;, `cp: ${args[0]}: Nao encontrado`);
+        break;
+      }
+
+      case &quot;echo&quot;: {
+        const text = args.join(&quot; &quot;);
+        if (trimmed.includes(&quot;&gt;&quot;)) {
+          const [, filePart] = trimmed.split(&quot;&gt;&quot;);
+          const filePath = filePart.trim().replace(/^\//, &quot;&quot;);
+          const content = text.split(&quot;&gt;&quot;)[0].trim().replace(/^[&quot;']|[&quot;']$/g, &quot;&quot;);
+          vfs.writeFile(filePath, content + &quot;\n&quot;);
+          addLine(&quot;success&quot;, `✓ Escrito em ${filePath}`);
+        } else {
+          addLine(&quot;output&quot;, text);
+        }
+        break;
+      }
+
+      case &quot;find&quot;: {</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>pattern →</span>
+    <div>
+      <small>L540–L632</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">        const pattern = (args[0] || &quot;&quot;).toLowerCase();
+        const matches = allFiles.filter((f) =&gt; f.toLowerCase().includes(pattern));
+        if (matches.length === 0) addLine(&quot;output&quot;, &quot;Nenhum arquivo encontrado&quot;);
+        else matches.forEach((m) =&gt; addLine(&quot;output&quot;, `./${m}`));
+        break;
+      }
+
+      case &quot;search&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;search: falta termo&quot;); break; }
+        const term = args[0].toLowerCase();
+        let found = 0;
+        for (const f of allFiles) {
+          const content = vfs.readFile(f) || &quot;&quot;;
+          const idx = content.toLowerCase().indexOf(term);
+          if (idx !== -1) {
+            const lines = content.split(&quot;\n&quot;);
+            let lineNo = 0, charCount = 0;
+            for (let i = 0; i &lt; lines.length; i++) {
+              charCount += lines[i].length + 1;
+              if (charCount &gt; idx) { lineNo = i + 1; break; }
+            }
+            addLine(&quot;output&quot;, `${f}:${lineNo}: ${lines[lineNo - 1]?.trim()}`);
+            found++;
+          }
+        }
+        if (found === 0) addLine(&quot;output&quot;, `Nenhuma ocorrencia de &quot;${args[0]}&quot; encontrada`);
+        else addLine(&quot;success&quot;, `✓ ${found} arquivo(s) com &quot;${args[0]}&quot;`);
+        break;
+      }
+
+      case &quot;wc&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;wc: falta argumento&quot;); break; }
+        const target = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        const content = vfs.readFile(target);
+        if (content !== undefined) {
+          addLine(&quot;output&quot;, `  ${content.split(&quot;\n&quot;).length} linhas  ${content.split(/\s+/).filter(Boolean).length} palavras  ${content.length} chars  ${args[0]}`);
+        } else addLine(&quot;error&quot;, `wc: ${args[0]}: Nao encontrado`);
+        break;
+      }
+
+      case &quot;head&quot;: case &quot;tail&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, `${command}: falta argumento`); break; }
+        const target = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        const content = vfs.readFile(target);
+        if (content !== undefined) {
+          const lineArr = content.split(&quot;\n&quot;);
+          const slice = command === &quot;head&quot; ? lineArr.slice(0, 10) : lineArr.slice(-10);
+          addLine(&quot;output&quot;, slice.join(&quot;\n&quot;));
+        } else addLine(&quot;error&quot;, `${command}: ${args[0]}: Nao encontrado`);
+        break;
+      }
+
+      case &quot;tree&quot;: {
+        const prefix = cwd === &quot;/&quot; ? &quot;&quot; : cwd.replace(/^\//, &quot;&quot;);
+        const relevant = prefix ? allFiles.filter((f) =&gt; f.startsWith(prefix + &quot;/&quot;)) : allFiles;
+        if (relevant.length === 0) { addLine(&quot;output&quot;, &quot;(vazio)&quot;); break; }
+        const display = prefix ? relevant.map((f) =&gt; f.slice(prefix.length + 1)) : relevant;
+        const sorted = display.sort();
+        for (const f of sorted) {
+          const depth = f.split(&quot;/&quot;).length - 1;
+          const indent = &quot;│  &quot;.repeat(depth);
+          const name = f.split(&quot;/&quot;).pop();
+          addLine(&quot;output&quot;, `${indent}${depth &gt; 0 ? &quot;├─ &quot; : &quot;&quot;}${name}`);
+        }
+        break;
+      }
+
+      case &quot;clear&quot;: setLines([]); onServerToggle?.(false); break;
+      case &quot;date&quot;: addLine(&quot;output&quot;, new Date().toLocaleString(&quot;pt-BR&quot;)); break;
+      case &quot;whoami&quot;: addLine(&quot;output&quot;, &quot;developer&quot;); break;
+      case &quot;hostname&quot;: addLine(&quot;output&quot;, &quot;sk-code-editor&quot;); break;
+      case &quot;uname&quot;: addLine(&quot;output&quot;, &quot;SK-OS 1.0 (Browser Runtime)&quot;); break;
+
+      case &quot;env&quot;: {
+        addLines(&quot;output&quot;, [
+          &quot;NODE_ENV=development&quot;,
+          &quot;EDITOR=SK-Code-Editor&quot;,
+          &quot;LANG=pt_BR.UTF-8&quot;,
+          &quot;PATH=/usr/local/bin:/usr/bin:/bin&quot;,
+          &quot;(Adicione variaveis em .env no projeto)&quot;,
+        ]);
+        break;
+      }
+
+      case &quot;node&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;node: falta nome do arquivo&quot;); break; }
+        const target = resolvePath(args[0]).replace(/^\//, &quot;&quot;);
+        const content = vfs.readFile(target);
+        if (content === undefined) { addLine(&quot;error&quot;, `node: ${args[0]}: Arquivo nao encontrado`); break; }
+        setIsRunning(true);
+        addLine(&quot;info&quot;, `⚡ Executando ${args[0]}...`);
+        try {
+          const logLines: string[] = [];</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>addLog →</span>
+    <div>
+      <small>L633–L647</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">          const addLog = (prefix: string, ...a: any[]) =&gt; {
+            const line = prefix + a.map((x: any) =&gt; {
+              try { return typeof x === &quot;object&quot; ? JSON.stringify(x, null, 2) : String(x); } catch { return String(x); }
+            }).join(&quot; &quot;);
+            logLines.push(line);
+            addLine(prefix.startsWith(&quot;ERR&quot;) ? &quot;error&quot; : prefix.startsWith(&quot;WRN&quot;) ? &quot;warn&quot; : &quot;output&quot;, line.replace(/^(ERR|WRN|INF): /, &quot;&quot;));
+          };
+          const fakeConsole = {
+            log: (...a: any[]) =&gt; addLog(&quot;&quot;, ...a),
+            error: (...a: any[]) =&gt; addLog(&quot;ERR: &quot;, ...a),
+            warn: (...a: any[]) =&gt; addLog(&quot;WRN: &quot;, ...a),
+            info: (...a: any[]) =&gt; addLog(&quot;INF: &quot;, ...a),
+            table: (d: any) =&gt; addLog(&quot;&quot;, typeof d === &quot;object&quot; ? JSON.stringify(d, null, 2) : String(d)),
+          };
+          // fetch real do browser disponivel — suporta APIs com CORS habilitado</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>browserFetch →</span>
+    <div>
+      <small>L648–L655</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">          const browserFetch = (url: string, opts?: RequestInit) =&gt; {
+            addLine(&quot;info&quot;, `  → fetch ${url}`);
+            return window.fetch(url, opts).then(async r =&gt; {
+              const clone = r.clone();
+              addLine(&quot;info&quot;, `  ← ${r.status} ${r.statusText}`);
+              return clone;
+            });
+          };</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>makeServerObj →</span>
+    <div>
+      <small>L656–L670</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">          const makeServerObj = (port: number) =&gt; ({
+            listen: (p?: number | string, cbOrHost?: any, cb?: any) =&gt; {
+              const listenPort = typeof p === &quot;number&quot; ? p : port;
+              const callback = typeof cbOrHost === &quot;function&quot; ? cbOrHost : typeof cb === &quot;function&quot; ? cb : null;
+              addLine(&quot;success&quot;, `✅ Servidor rodando na porta ${listenPort}`);
+              addLine(&quot;info&quot;, `   Acesse: http://localhost:${listenPort}`);
+              onServerToggle?.(true, listenPort);
+              if (callback) try { callback(); } catch {}
+              return { close: () =&gt; { onServerToggle?.(false); } };
+            },
+            get: (_: string, h: any) =&gt; { try { h({}, { json: () =&gt; {}, send: () =&gt; {}, status: () =&gt; ({ json: () =&gt; {} }) }); } catch {} },
+            post: (_: string, h: any) =&gt; { try { h({body:{}}, { json: () =&gt; {}, send: () =&gt; {}, status: () =&gt; ({ json: () =&gt; {} }) }); } catch {} },
+            use: () =&gt; {},
+            set: () =&gt; {},
+          });</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>fakeRequire →</span>
+    <div>
+      <small>L671–L971</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">          const fakeRequire = (mod: string) =&gt; {
+            if (mod === &quot;path&quot;) return { join: (...a: string[]) =&gt; a.join(&quot;/&quot;), resolve: (...a: string[]) =&gt; &quot;/&quot; + a.join(&quot;/&quot;), dirname: (p: string) =&gt; p.split(&quot;/&quot;).slice(0,-1).join(&quot;/&quot;), basename: (p: string) =&gt; p.split(&quot;/&quot;).pop() };
+            if (mod === &quot;fs&quot;) return {
+              readFileSync: (p: string) =&gt; vfs.readFile(p.replace(/^\//, &quot;&quot;)) ?? &quot;&quot;,
+              writeFileSync: (p: string, d: string) =&gt; vfs.writeFile(p.replace(/^\//, &quot;&quot;), d),
+              existsSync: (p: string) =&gt; vfs.readFile(p.replace(/^\//, &quot;&quot;)) !== undefined,
+            };
+            if (mod === &quot;express&quot;) {
+              const app: any = Object.assign(() =&gt; {}, makeServerObj(3000), {
+                Router: () =&gt; makeServerObj(3000),
+                json: () =&gt; {},
+                urlencoded: () =&gt; {},
+                static: () =&gt; {},
+              });
+              const expressFn: any = () =&gt; app;
+              expressFn.Router = () =&gt; app;
+              expressFn.json = () =&gt; {};
+              expressFn.urlencoded = () =&gt; {};
+              expressFn.static = () =&gt; {};
+              return expressFn;
+            }
+            if (mod === &quot;http&quot; || mod === &quot;https&quot;) return {
+              createServer: (_handler?: any) =&gt; makeServerObj(3000),
+            };
+            if (mod === &quot;node-fetch&quot; || mod === &quot;axios&quot;) return Object.assign(browserFetch, { default: browserFetch, get: (u: string, o?: any) =&gt; browserFetch(u, { ...o, method: &quot;GET&quot; }), post: (u: string, d: any, o?: any) =&gt; browserFetch(u, { ...o, method: &quot;POST&quot;, body: JSON.stringify(d) }) });
+            if (mod === &quot;dotenv&quot;) return { config: () =&gt; {} };
+            if (mod === &quot;cors&quot;) return () =&gt; {};
+            if (mod === &quot;body-parser&quot;) return { json: () =&gt; {}, urlencoded: () =&gt; {} };
+            if (mod === &quot;crypto&quot;) return { randomBytes: (n: number) =&gt; Array.from({length: n}, () =&gt; Math.floor(Math.random()*256)), createHash: () =&gt; ({ update: (s: string) =&gt; ({ digest: () =&gt; btoa(s) }) }) };
+            throw new Error(`require('${mod}') nao disponivel no browser. Use fetch() diretamente para chamadas de API.`);
+          };
+          // AsyncFunction para suportar await/async no codigo do usuario
+          const AsyncFn = Object.getPrototypeOf(async function(){}).constructor;
+          const fn = new AsyncFn(&quot;console&quot;, &quot;require&quot;, &quot;process&quot;, &quot;fetch&quot;, content);
+          await fn(
+            fakeConsole,
+            fakeRequire,
+            { env: {}, argv: [&quot;node&quot;, args[0]], cwd: () =&gt; &quot;/&quot;, exit: (c: number) =&gt; { throw new Error(`process.exit(${c})`); } },
+            browserFetch
+          );
+          if (logLines.length === 0) addLine(&quot;success&quot;, &quot;✓ Executado sem saida no console&quot;);
+        } catch (e: any) {
+          if (e.message?.includes(&quot;process.exit&quot;)) {
+            addLine(&quot;info&quot;, e.message);
+          } else {
+            addLine(&quot;error&quot;, `Erro: ${e.message}`);
+            if (e.message?.includes(&quot;CORS&quot;) || e.message?.includes(&quot;fetch&quot;)) {
+              addLine(&quot;warn&quot;, &quot;Dica: A API pode nao permitir chamadas do browser (CORS). Verifique se a API tem CORS habilitado.&quot;);
+            }
+          }
+        } finally {
+          setIsRunning(false);
+        }
+        break;
+      }
+
+      case &quot;python&quot;: case &quot;python3&quot;: {
+        if (!args[0]) { addLine(&quot;error&quot;, &quot;python: falta nome do arquivo&quot;); break; }
+        addLine(&quot;info&quot;, `⚡ Simulando execucao de ${args[0]}...`);
+        addLine(&quot;warn&quot;, &quot;Python nao pode ser executado no browser.&quot;);
+        addLine(&quot;info&quot;, &quot;Para executar Python, use: Replit, Google Colab, ou instale Python localmente.&quot;);
+        const content = vfs.readFile(args[0].replace(/^\//, &quot;&quot;));
+        if (content) {
+          const printMatches = content.matchAll(/print\(([^)]+)\)/g);
+          for (const m of printMatches) {
+            addLine(&quot;output&quot;, `&gt;&gt;&gt; ${m[1].replace(/[&quot;']/g, &quot;&quot;)}`);
+          }
+        }
+        break;
+      }
+
+      case &quot;npm&quot;: {
+        const subCmd = args[0]?.toLowerCase();
+
+        if (subCmd === &quot;init&quot;) {
+          const pkgJson = vfs.readFile(&quot;package.json&quot;);
+          if (!pkgJson) {
+            const pkg = { name: &quot;meu-projeto&quot;, version: &quot;1.0.0&quot;, description: &quot;&quot;, main: &quot;index.js&quot;, scripts: { start: &quot;node index.js&quot;, test: &quot;echo \&quot;Error: no test specified\&quot;&quot; }, keywords: [], author: &quot;&quot;, license: &quot;ISC&quot;, dependencies: {} };
+            vfs.writeFile(&quot;package.json&quot;, JSON.stringify(pkg, null, 2));
+            addLine(&quot;success&quot;, &quot;✓ package.json criado!&quot;);
+          } else {
+            addLine(&quot;warn&quot;, &quot;package.json ja existe.&quot;);
+          }
+          break;
+        }
+
+        if (subCmd === &quot;run&quot;) {
+          const script = args[1];
+          if (!script) { addLine(&quot;error&quot;, &quot;npm run: informe o script&quot;); break; }
+          const pkgJson = vfs.readFile(&quot;package.json&quot;);
+          if (!pkgJson) { addLine(&quot;error&quot;, &quot;package.json nao encontrado. Execute: npm init&quot;); break; }
+          try {
+            const pkg = JSON.parse(pkgJson);
+            const scriptCmd = pkg.scripts?.[script];
+            if (!scriptCmd) { addLine(&quot;error&quot;, `Script &quot;${script}&quot; nao encontrado em package.json`); break; }
+            addLine(&quot;info&quot;, `&gt; ${pkg.name || &quot;projeto&quot;} ${script}`);
+            addLine(&quot;info&quot;, `&gt; ${scriptCmd}`);
+            addLine(&quot;success&quot;, `✓ Script &quot;${script}&quot; iniciado (simulado)`);
+          } catch { addLine(&quot;error&quot;, &quot;Erro ao ler package.json&quot;); }
+          break;
+        }
+
+        if (subCmd === &quot;install&quot; || subCmd === &quot;i&quot; || subCmd === &quot;add&quot;) {
+          const pkgNames = args.slice(1).filter((a) =&gt; !a.startsWith(&quot;-&quot;));
+          const flags    = args.slice(1).filter((a) =&gt;  a.startsWith(&quot;-&quot;));
+          const isSaveDev = flags.some(f =&gt; f === &quot;--save-dev&quot; || f === &quot;-D&quot;);
+
+          setIsRunning(true);
+
+          try {
+          // Modo Offline: simula direto, sem chamar servidor (rápido, previsível)
+          addLine(&quot;warn&quot;, `📴 Modo Offline — simulação rápida (não baixa código real)`);
+          addLine(&quot;info&quot;, `   Pra instalar de verdade: troque pra modo &quot;🌐 Online&quot; ou &quot;⚡ Real&quot; no botão do terminal.`);
+
+          if (pkgNames.length === 0) {
+            // npm install sem pacote: só processa o package.json existente
+            const pkgRaw = vfs.readFile(&quot;package.json&quot;);
+            if (!pkgRaw) {
+              addLine(&quot;error&quot;, &quot;package.json não encontrado. Use: npm init&quot;);
+            } else {
+              try {
+                const pkg = JSON.parse(pkgRaw);
+                const deps = Object.keys(pkg.dependencies || {}).length;
+                const devDeps = Object.keys(pkg.devDependencies || {}).length;
+                addLine(&quot;success&quot;, `✓ package.json processado: ${deps} dependência(s) + ${devDeps} dev`);
+                addLine(&quot;info&quot;, `💡 As entradas estão no package.json mas sem node_modules real.`);
+              } catch {
+                addLine(&quot;error&quot;, &quot;package.json com formato inválido&quot;);
+              }
+            }
+          } else {
+            for (const pkgName of pkgNames) {
+              const info = PACKAGES_DB[pkgName.toLowerCase()];
+              const version = info?.version || &quot;latest&quot;;
+              addLine(&quot;info&quot;, `  + ${pkgName}@${version}`);
+              await simulateInstallDelay(pkgName);
+
+              const pkgPath = &quot;package.json&quot;;
+              let pkg: any = {};
+              try { pkg = JSON.parse(vfs.readFile(pkgPath) || &quot;{}&quot;); } catch {}
+              if (!pkg.dependencies) pkg.dependencies = {};
+              if (!pkg.devDependencies) pkg.devDependencies = {};
+              if (isSaveDev) pkg.devDependencies[pkgName] = `^${version}`;
+              else           pkg.dependencies[pkgName]    = `^${version}`;
+              vfs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+
+              addLine(&quot;success&quot;, `  ✓ ${pkgName}@${version} ESCRITO em package.json (simulado)`);
+              if (info?.description) addLine(&quot;info&quot;, `    ${info.description}`);
+            }
+            addLine(&quot;warn&quot;, `⚠️  ${pkgNames.length} pacote(s) só no package.json. Sem node_modules.`);
+            addLine(&quot;info&quot;, `💡 Abra o package.json pra confirmar — as entradas estão lá.`);
+          }
+          } catch (err: any) {
+            addLine(&quot;error&quot;, `Erro inesperado: ${err?.message || String(err)}`);
+          } finally {
+            setIsRunning(false);
+          }
+          break;
+        }
+
+        if (subCmd === &quot;uninstall&quot; || subCmd === &quot;remove&quot; || subCmd === &quot;rm&quot;) {
+          const pkgName = args[1];
+          if (!pkgName) { addLine(&quot;error&quot;, &quot;npm uninstall: informe o pacote&quot;); break; }
+          const pkgPath = &quot;package.json&quot;;
+          let pkg: any = {};
+          try { pkg = JSON.parse(vfs.readFile(pkgPath) || &quot;{}&quot;); } catch {}
+          if (pkg.dependencies?.[pkgName]) {
+            delete pkg.dependencies[pkgName];
+            vfs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+            addLine(&quot;success&quot;, `✓ ${pkgName} removido do package.json`);
+          } else {
+            addLine(&quot;warn&quot;, `${pkgName} nao encontrado nas dependencias`);
+          }
+          break;
+        }
+
+        if (subCmd === &quot;list&quot; || subCmd === &quot;ls&quot;) {
+          const pkgPath = &quot;package.json&quot;;
+          try {
+            const pkg = JSON.parse(vfs.readFile(pkgPath) || &quot;{}&quot;);
+            const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+            if (Object.keys(deps).length === 0) { addLine(&quot;output&quot;, &quot;(sem dependencias)&quot;); break; }
+            for (const [name, ver] of Object.entries(deps)) {
+              addLine(&quot;output&quot;, `  ${name}@${ver}`);
+            }
+          } catch { addLine(&quot;error&quot;, &quot;Erro ao ler package.json&quot;); }
+          break;
+        }
+
+        addLine(&quot;error&quot;, `npm ${subCmd}: subcomando desconhecido`);
+        addLine(&quot;info&quot;, &quot;Comandos: install, uninstall, run, list, init&quot;);
+        break;
+      }
+
+      case &quot;pip&quot;: case &quot;pip3&quot;: {
+        const subCmd = args[0]?.toLowerCase();
+        if (subCmd === &quot;install&quot;) {
+          const pkgNames = args.slice(1).filter((a) =&gt; !a.startsWith(&quot;-&quot;));
+          if (pkgNames.length === 0) { addLine(&quot;error&quot;, &quot;pip install: informe o pacote&quot;); break; }
+          setIsRunning(true);
+          for (const pkgName of pkgNames) {
+            const info = PIP_PACKAGES[pkgName.toLowerCase()];
+            const version = info?.version || &quot;latest&quot;;
+            addLine(&quot;info&quot;, `Collecting ${pkgName}`);
+            await simulateInstallDelay(pkgName);
+            addLine(&quot;info&quot;, `  Downloading ${pkgName}-${version}.tar.gz`);
+            await simulateInstallDelay(pkgName);
+            addLine(&quot;info&quot;, `Installing collected packages: ${pkgName}`);
+            await simulateInstallDelay(pkgName);
+
+            let reqContent = vfs.readFile(&quot;requirements.txt&quot;) || &quot;&quot;;
+            if (!reqContent.includes(pkgName)) {
+              reqContent += (reqContent &amp;&amp; !reqContent.endsWith(&quot;\n&quot;) ? &quot;\n&quot; : &quot;&quot;) + `${pkgName}==${version}\n`;
+              vfs.writeFile(&quot;requirements.txt&quot;, reqContent);
+            }
+            addLine(&quot;success&quot;, `Successfully installed ${pkgName}-${version}`);
+            if (info?.description) addLine(&quot;info&quot;, `  ${info.description}`);
+          }
+          setIsRunning(false);
+          break;
+        }
+        if (subCmd === &quot;list&quot;) {
+          const reqs = vfs.readFile(&quot;requirements.txt&quot;) || &quot;&quot;;
+          if (!reqs.trim()) { addLine(&quot;output&quot;, &quot;(sem pacotes instalados)&quot;); break; }
+          addLine(&quot;output&quot;, &quot;Package          Version&quot;);
+          addLine(&quot;output&quot;, &quot;---------------- -------&quot;);
+          for (const line of reqs.split(&quot;\n&quot;).filter(Boolean)) {
+            const [name, ver] = line.split(&quot;==&quot;);
+            addLine(&quot;output&quot;, `${name.padEnd(16)} ${ver || &quot;latest&quot;}`);
+          }
+          break;
+        }
+        addLine(&quot;error&quot;, `pip ${subCmd}: subcomando desconhecido`);
+        addLine(&quot;info&quot;, &quot;Comandos: install, list&quot;);
+        break;
+      }
+
+      case &quot;db&quot;: {
+        const subCmd = args[0]?.toLowerCase();
+        if (!subCmd || subCmd === &quot;help&quot;) { addLine(&quot;info&quot;, DB_GUIDE); break; }
+
+        const templates: Record&lt;string, () =&gt; void&gt; = {
+          sqlite: () =&gt; {
+            vfs.writeFile(&quot;db.js&quot;, `const Database = require('better-sqlite3');
+
+const db = new Database('database.db');
+
+// Criar tabelas
+db.exec(\`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE IF NOT EXISTS posts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES users(id),
+    title TEXT NOT NULL,
+    content TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
+\`);
+
+// Inserir dados de exemplo
+const insertUser = db.prepare('INSERT OR IGNORE INTO users (name, email) VALUES (?, ?)');
+insertUser.run('Joao Silva', 'joao@exemplo.com');
+insertUser.run('Maria Santos', 'maria@exemplo.com');
+
+// Consultar dados
+const users = db.prepare('SELECT * FROM users').all();
+console.log('Usuarios:', users);
+
+// Exportar para uso em outros modulos
+module.exports = db;
+`);
+            addLine(&quot;success&quot;, &quot;✓ db.js criado com template SQLite&quot;);
+            addLine(&quot;info&quot;, &quot;Execute: npm install better-sqlite3&quot;);
+          },
+          postgres: () =&gt; {
+            vfs.writeFile(&quot;db.js&quot;, `const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  // Ou configure individualmente:
+  // host: 'localhost',
+  // port: 5432,
+  // database: 'meu_banco',
+  // user: 'postgres',
+  // password: 'senha',
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
+
+// Testar conexao
+pool.query('SELECT NOW()', (err, res) =&gt; {
+  if (err) console.error('Erro ao conectar:', err);
+  else console.log('PostgreSQL conectado:', res.rows[0].now);
+});
+
+// Criar tabelas</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>createTables</span>
+    <div>
+      <small>L972–L1044</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">async function createTables() {
+  await pool.query(\`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  \`);
+  console.log('Tabelas criadas!');
+}
+
+createTables();
+module.exports = pool;
+`);
+            vfs.writeFile(&quot;.env&quot;, &quot;DATABASE_URL=postgresql://user:password@localhost:5432/mydb\nNODE_ENV=development\n&quot;);
+            addLine(&quot;success&quot;, &quot;✓ db.js e .env criados com template PostgreSQL&quot;);
+            addLine(&quot;info&quot;, &quot;Execute: npm install pg&quot;);
+            addLine(&quot;warn&quot;, &quot;Configure DATABASE_URL no arquivo .env&quot;);
+          },
+          mongo: () =&gt; {
+            vfs.writeFile(&quot;db.js&quot;, `const mongoose = require('mongoose');
+
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/meu-banco';
+
+mongoose.connect(MONGODB_URI).then(() =&gt; {
+  console.log('MongoDB conectado!');
+}).catch((err) =&gt; {
+  console.error('Erro ao conectar:', err);
+});
+
+// Definir schemas
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const postSchema = new mongoose.Schema({
+  title: { type: String, required: true },
+  content: String,
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const User = mongoose.model('User', userSchema);
+const Post = mongoose.model('Post', postSchema);
+
+module.exports = { mongoose, User, Post };
+`);
+            vfs.writeFile(&quot;.env&quot;, &quot;MONGODB_URI=mongodb://localhost:27017/meu-banco\n&quot;);
+            addLine(&quot;success&quot;, &quot;✓ db.js criado com template MongoDB&quot;);
+            addLine(&quot;info&quot;, &quot;Execute: npm install mongoose&quot;);
+          },
+          neon: () =&gt; {
+            vfs.writeFile(&quot;db.js&quot;, `const { Pool } = require('pg');
+
+// Neon PostgreSQL - Banco de dados PostgreSQL gratuito na nuvem
+// 1. Crie uma conta em: console.neon.tech
+// 2. Crie um projeto e copie a connection string
+// 3. Cole a connection string no arquivo .env como DATABASE_URL
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // Necessario para Neon
+  },
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+});
+
+// Testar conexao</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>testConnection</span>
+    <div>
+      <small>L1045–L1057</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">async function testConnection() {
+  try {
+    const res = await pool.query('SELECT NOW() as now, version()');
+    console.log('✓ Neon PostgreSQL conectado!');
+    console.log('  Hora:', res.rows[0].now);
+    console.log('  Versao:', res.rows[0].version.split(' ').slice(0,2).join(' '));
+  } catch (err) {
+    console.error('✗ Erro ao conectar:', err.message);
+    console.log('Verifique a DATABASE_URL no arquivo .env');
+  }
+}
+
+// Criar tabelas de exemplo</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>setupDatabase</span>
+    <div>
+      <small>L1058–L1084</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">async function setupDatabase() {
+  await pool.query(\`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255),
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS sessions (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT NOT NULL,
+      expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+    CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token);
+  \`);
+  console.log('✓ Tabelas criadas no Neon!');
+}
+
+// Funcoes utilitarias</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>query</span>
+    <div>
+      <small>L1085–L1092</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">async function query(text, params) {
+  const start = Date.now();
+  const res = await pool.query(text, params);
+  const duration = Date.now() - start;
+  console.log('Query executada:', { text: text.slice(0, 50), duration: duration + 'ms', rows: res.rowCount });
+  return res;
+}
+</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>getClient</span>
+    <div>
+      <small>L1093–L1152</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">async function getClient() {
+  const client = await pool.connect();
+  const release = client.release;
+  client.release = () =&gt; {
+    client.release = release;
+    return release.apply(client);
+  };
+  return client;
+}
+
+// Inicializar
+testConnection()
+  .then(() =&gt; setupDatabase())
+  .catch(console.error);
+
+module.exports = { pool, query, getClient };
+`);
+            vfs.writeFile(&quot;.env&quot;, `# Neon PostgreSQL Connection String
+# Obtenha em: console.neon.tech -&gt; seu projeto -&gt; Connection String
+DATABASE_URL=postgresql://usuario:senha@ep-xxxx.region.aws.neon.tech/neondb?sslmode=require
+
+NODE_ENV=development
+PORT=3000
+`);
+            vfs.writeFile(&quot;.env.example&quot;, `DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
+NODE_ENV=development
+PORT=3000
+`);
+            vfs.writeFile(&quot;.gitignore&quot;, `.env
+node_modules/
+dist/
+*.log
+`);
+            addLine(&quot;success&quot;, &quot;✓ Template Neon PostgreSQL criado!&quot;);
+            addLines(&quot;info&quot;, [
+              &quot;  Proximos passos:&quot;,
+              &quot;  1. Acesse: console.neon.tech e crie uma conta gratuita&quot;,
+              &quot;  2. Crie um projeto e copie a Connection String&quot;,
+              &quot;  3. Cole no arquivo .env como DATABASE_URL&quot;,
+              &quot;  4. Execute: npm install pg&quot;,
+              &quot;  5. Execute: node db.js&quot;,
+              &quot;&quot;,
+              &quot;  Neon oferece: 512MB gratis, PostgreSQL gerenciado, branching de banco!&quot;,
+            ]);
+          },
+
+          supabase: () =&gt; {
+            vfs.writeFile(&quot;supabase.js&quot;, `import { createClient } from '@supabase/supabase-js';
+
+// Supabase - Backend completo com PostgreSQL + Auth + Storage + Realtime
+// 1. Crie uma conta em: supabase.com
+// 2. Crie um projeto
+// 3. Va em Settings &gt; API e copie a URL e a anon key
+
+const supabaseUrl = process.env.SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// ==================== AUTENTICACAO ====================</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>signUp</span>
+    <div>
+      <small>L1153–L1158</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">export async function signUp(email, password) {
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) throw error;
+  return data;
+}
+</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>signIn</span>
+    <div>
+      <small>L1159–L1164</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">export async function signIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+}
+</pre>
+</div>
+<div class="block" id="b15">
+  <div class="block-h">
+    <span>signOut</span>
+    <div>
+      <small>L1165–L1168</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre15').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre15">export async function signOut() {
+  await supabase.auth.signOut();
+}
+</pre>
+</div>
+<div class="block" id="b16">
+  <div class="block-h">
+    <span>getUser</span>
+    <div>
+      <small>L1169–L1174</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre16').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre16">export async function getUser() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
+
+// ==================== DATABASE ====================</pre>
+</div>
+<div class="block" id="b17">
+  <div class="block-h">
+    <span>getAll</span>
+    <div>
+      <small>L1175–L1180</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre17').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre17">export async function getAll(table) {
+  const { data, error } = await supabase.from(table).select('*');
+  if (error) throw error;
+  return data;
+}
+</pre>
+</div>
+<div class="block" id="b18">
+  <div class="block-h">
+    <span>getById</span>
+    <div>
+      <small>L1181–L1186</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre18').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre18">export async function getById(table, id) {
+  const { data, error } = await supabase.from(table).select('*').eq('id', id).single();
+  if (error) throw error;
+  return data;
+}
+</pre>
+</div>
+<div class="block" id="b19">
+  <div class="block-h">
+    <span>insert</span>
+    <div>
+      <small>L1187–L1192</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre19').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre19">export async function insert(table, values) {
+  const { data, error } = await supabase.from(table).insert(values).select();
+  if (error) throw error;
+  return data;
+}
+</pre>
+</div>
+<div class="block" id="b20">
+  <div class="block-h">
+    <span>update</span>
+    <div>
+      <small>L1193–L1198</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre20').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre20">export async function update(table, id, values) {
+  const { data, error } = await supabase.from(table).update(values).eq('id', id).select();
+  if (error) throw error;
+  return data;
+}
+</pre>
+</div>
+<div class="block" id="b21">
+  <div class="block-h">
+    <span>remove</span>
+    <div>
+      <small>L1199–L1204</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre21').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre21">export async function remove(table, id) {
+  const { error } = await supabase.from(table).delete().eq('id', id);
+  if (error) throw error;
+}
+
+// ==================== STORAGE ====================</pre>
+</div>
+<div class="block" id="b22">
+  <div class="block-h">
+    <span>uploadFile</span>
+    <div>
+      <small>L1205–L1211</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre22').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre22">export async function uploadFile(bucket, path, file) {
+  const { data, error } = await supabase.storage.from(bucket).upload(path, file);
+  if (error) throw error;
+  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+}
+
+// ==================== REALTIME ====================</pre>
+</div>
+<div class="block" id="b23">
+  <div class="block-h">
+    <span>subscribeToTable</span>
+    <div>
+      <small>L1212–L1296</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre23').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre23">export function subscribeToTable(table, callback) {
+  return supabase.channel('db-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table }, callback)
+    .subscribe();
+}
+`);
+            vfs.writeFile(&quot;.env&quot;, `SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+`);
+            vfs.writeFile(&quot;.env.example&quot;, `SUPABASE_URL=https://SEU_PROJETO.supabase.co
+SUPABASE_ANON_KEY=SUA_ANON_KEY_AQUI
+`);
+            addLine(&quot;success&quot;, &quot;✓ Template Supabase criado!&quot;);
+            addLines(&quot;info&quot;, [
+              &quot;  Proximos passos:&quot;,
+              &quot;  1. Acesse: supabase.com e crie uma conta&quot;,
+              &quot;  2. Crie um projeto (gratis ate 500MB)&quot;,
+              &quot;  3. Va em Settings &gt; API&quot;,
+              &quot;  4. Copie Project URL e anon/public key para o .env&quot;,
+              &quot;  5. Execute: npm install @supabase/supabase-js&quot;,
+              &quot;&quot;,
+              &quot;  Supabase oferece: PostgreSQL + Auth + Storage + Edge Functions + Realtime!&quot;,
+            ]);
+          },
+
+          firebase: () =&gt; {
+            vfs.writeFile(&quot;firebase.js&quot;, `import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+
+const firebaseConfig = {
+  apiKey: process.env.VITE_FIREBASE_API_KEY,
+  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.VITE_FIREBASE_APP_ID,
+};
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+
+// Exemplos de uso:
+// const docRef = await addDoc(collection(db, 'users'), { name: 'Joao', email: 'joao@email.com' });
+// const snapshot = await getDocs(collection(db, 'users'));
+// snapshot.forEach((doc) =&gt; console.log(doc.id, doc.data()));
+`);
+            vfs.writeFile(&quot;.env&quot;, &quot;VITE_FIREBASE_API_KEY=\nVITE_FIREBASE_AUTH_DOMAIN=\nVITE_FIREBASE_PROJECT_ID=\nVITE_FIREBASE_STORAGE_BUCKET=\nVITE_FIREBASE_MESSAGING_SENDER_ID=\nVITE_FIREBASE_APP_ID=\n&quot;);
+            addLine(&quot;success&quot;, &quot;✓ firebase.js e .env criados&quot;);
+            addLine(&quot;info&quot;, &quot;Execute: npm install firebase&quot;);
+            addLine(&quot;warn&quot;, &quot;Configure as variaveis no arquivo .env com suas credenciais do Firebase Console&quot;);
+          },
+        };
+
+        if (templates[subCmd]) {
+          templates[subCmd]();
+        } else {
+          addLine(&quot;error&quot;, `db: tipo desconhecido: ${subCmd}`);
+          addLine(&quot;info&quot;, &quot;Tipos: sqlite, postgres, mongo, firebase&quot;);
+        }
+        break;
+      }
+
+      case &quot;youtube&quot;: case &quot;yt&quot;: {
+        const sub = args[0]?.toLowerCase();
+        if (!sub || sub === &quot;help&quot;) { addLine(&quot;info&quot;, YOUTUBE_GUIDE); break; }
+
+        if (sub === &quot;setup&quot;) {
+          addLine(&quot;info&quot;, &quot;Criando projeto de download do YouTube...&quot;);
+          vfs.writeFile(&quot;package.json&quot;, JSON.stringify({
+            name: &quot;youtube-downloader&quot;,
+            version: &quot;1.0.0&quot;,
+            description: &quot;Downloader de videos do YouTube&quot;,
+            main: &quot;download.js&quot;,
+            scripts: { start: &quot;node download.js&quot;, download: &quot;node download.js&quot; },
+            dependencies: { &quot;ytdl-core&quot;: &quot;^4.11.5&quot;, &quot;fluent-ffmpeg&quot;: &quot;^2.1.3&quot; }
+          }, null, 2));
+          vfs.writeFile(&quot;download.js&quot;, `const ytdl = require('ytdl-core');
+const fs = require('fs');
+const path = require('path');
+
+// Configure a URL do video aqui:
+const VIDEO_URL = process.env.YOUTUBE_URL || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+</pre>
+</div>
+<div class="block" id="b24">
+  <div class="block-h">
+    <span>downloadVideo</span>
+    <div>
+      <small>L1297–L1324</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre24').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre24">async function downloadVideo(url, format = 'video') {
+  const info = await ytdl.getInfo(url);
+  const title = info.videoDetails.title.replace(/[^a-z0-9]/gi, '_');
+  console.log('Titulo:', info.videoDetails.title);
+  console.log('Duracao:', Math.floor(info.videoDetails.lengthSeconds / 60) + ' min');
+
+  const filename = format === 'audio' ? \`\${title}.mp4\` : \`\${title}_video.mp4\`;
+  const output = fs.createWriteStream(filename);
+
+  const quality = format === 'audio' ? 'lowestaudio' : 'highest';
+  const stream = ytdl(url, { quality });
+
+  let downloaded = 0;
+  stream.on('progress', (_, total, grand) =&gt; {
+    const pct = Math.floor((total / grand) * 100);
+    process.stdout.write(\`\\rBaixando: \${pct}%\`);
+  });
+
+  stream.pipe(output);
+  await new Promise((resolve, reject) =&gt; {
+    output.on('finish', resolve);
+    output.on('error', reject);
+  });
+
+  console.log(\`\\n✓ Salvo como: \${filename}\`);
+  return filename;
+}
+</pre>
+</div>
+<div class="block" id="b25">
+  <div class="block-h">
+    <span>getInfo</span>
+    <div>
+      <small>L1325–L1436</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre25').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre25">async function getInfo(url) {
+  const info = await ytdl.getInfo(url);
+  console.log('=== Informacoes do Video ===');
+  console.log('Titulo:', info.videoDetails.title);
+  console.log('Canal:', info.videoDetails.author.name);
+  console.log('Duracao:', Math.floor(info.videoDetails.lengthSeconds / 60) + 'min');
+  console.log('Views:', parseInt(info.videoDetails.viewCount).toLocaleString('pt-BR'));
+  console.log('Formatos disponiveis:', info.formats.length);
+}
+
+// Executar
+const action = process.argv[2] || 'info';
+if (action === 'info') getInfo(VIDEO_URL).catch(console.error);
+else if (action === 'video') downloadVideo(VIDEO_URL, 'video').catch(console.error);
+else if (action === 'audio') downloadVideo(VIDEO_URL, 'audio').catch(console.error);
+else console.log('Use: node download.js [info|video|audio]');
+`);
+          vfs.writeFile(&quot;README.md&quot;, `# YouTube Downloader
+
+## Instalacao
+\`\`\`bash
+npm install
+\`\`\`
+
+## Uso
+\`\`\`bash
+# Ver informacoes do video
+YOUTUBE_URL=&quot;https://youtube.com/watch?v=...&quot; node download.js info
+
+# Baixar video
+YOUTUBE_URL=&quot;https://youtube.com/watch?v=...&quot; node download.js video
+
+# Baixar audio
+YOUTUBE_URL=&quot;https://youtube.com/watch?v=...&quot; node download.js audio
+\`\`\`
+`);
+          addLine(&quot;success&quot;, &quot;✓ Projeto de download do YouTube criado!&quot;);
+          addLine(&quot;info&quot;, &quot;Execute: npm install&quot;);
+          addLine(&quot;info&quot;, &quot;Depois: YOUTUBE_URL=&lt;url&gt; node download.js [info|video|audio]&quot;);
+          break;
+        }
+
+        if (args[0]?.startsWith(&quot;http&quot;)) {
+          addLine(&quot;info&quot;, `Para baixar: ${args[0]}`);
+          addLine(&quot;info&quot;, &quot;Execute: youtube setup&quot;);
+          addLine(&quot;info&quot;, &quot;Depois configure a URL em download.js e rode: node download.js&quot;);
+          break;
+        }
+
+        addLine(&quot;info&quot;, YOUTUBE_GUIDE);
+        break;
+      }
+
+      case &quot;git&quot;: {
+        const sub = args[0];
+        if (!sub) { addLine(&quot;info&quot;, &quot;Uso: git clone &lt;url-do-repositorio&gt;&quot;); break; }
+        if (sub === &quot;clone&quot;) {
+          const url = args[1] || &quot;&quot;;
+          if (!url) { addLine(&quot;error&quot;, &quot;git clone: informe a URL do repositorio&quot;); addLine(&quot;info&quot;, &quot;Exemplo: git clone github.com/usuario/repositorio&quot;); break; }
+          const clean = url.replace(/\.git$/, &quot;&quot;).replace(/\/$/, &quot;&quot;).replace(/^https?:\/\//, &quot;&quot;);
+          const m = clean.match(/github\.com\/([^/]+)\/([^/]+)/);
+          const parts = m ? [m[1], m[2]] : clean.split(&quot;/&quot;).filter(Boolean);
+          if (parts.length &lt; 2) { addLine(&quot;error&quot;, `URL invalida: ${url}`); addLine(&quot;info&quot;, &quot;Formato: github.com/usuario/repositorio&quot;); break; }
+          const [owner, repo] = parts;
+          addLine(&quot;info&quot;, `Clonando ${owner}/${repo}...`);
+          if (onGitClone) {
+            onGitClone(owner, repo)
+              .then(() =&gt; addLine(&quot;success&quot;, `✓ Repositorio '${repo}' importado com sucesso`))
+              .catch((e: any) =&gt; addLine(&quot;error&quot;, `git clone falhou: ${e.message}`));
+          } else {
+            addLine(&quot;warn&quot;, &quot;git clone: use o painel GitHub (icone GitBranch) para importar repositorios&quot;);
+          }
+          break;
+        }
+        addLine(&quot;info&quot;, `git ${sub}: use o painel GitHub (icone GitBranch na barra inferior)`);
+        break;
+      }
+
+      case &quot;curl&quot;: case &quot;wget&quot;: {
+        addLine(&quot;warn&quot;, `${command}: requisicoes HTTP diretas nao disponiveis no browser`);
+        addLine(&quot;info&quot;, &quot;Use o painel de IA para buscar informacoes ou APIs externas&quot;);
+        addLine(&quot;info&quot;, &quot;Em aplicacoes Node.js reais, use: npm install axios&quot;);
+        break;
+      }
+
+      case &quot;which&quot;: addLine(&quot;output&quot;, `/usr/local/bin/${args[0] || &quot;&quot;}`); break;
+      case &quot;exit&quot;: addLine(&quot;info&quot;, &quot;exit: terminal browser nao pode ser fechado&quot;); break;
+
+      default: {
+        addLine(&quot;error&quot;, `${command}: comando nao encontrado`);
+        addLine(&quot;info&quot;, `Tente &quot;help&quot; para ver os comandos disponiveis`);
+        const similar = [&quot;ls&quot;, &quot;cd&quot;, &quot;cat&quot;, &quot;npm&quot;, &quot;pip&quot;, &quot;node&quot;, &quot;python&quot;, &quot;mkdir&quot;, &quot;rm&quot;, &quot;mv&quot;, &quot;cp&quot;, &quot;clear&quot;, &quot;help&quot;, &quot;db&quot;]
+          .find((c) =&gt; c.startsWith(command[0]) || command.startsWith(c[0]));
+        if (similar) addLine(&quot;info&quot;, `Voce quis dizer: ${similar}?`);
+        break;
+      }
+    }
+
+    // Emite resultado completo do comando pra Jasmim ler (lê estado mais atual via flushSync trick)
+    if (onCommandOutputRef.current) {
+      // Captura estado mais recente sem efeitos colaterais dentro do updater
+      let latestLines: TerminalLine[] = [];
+      let startIdx = cmdStartIndexRef.current;
+      setLines((prev) =&gt; { latestLines = prev; return prev; });
+      // Emite fora do updater
+      const slice = latestLines.slice(startIdx);
+      const out = slice.map(l =&gt; l.content).join(&quot;\n&quot;);
+      const ok = !slice.some(l =&gt; l.type === &quot;error&quot;);
+      try { onCommandOutputRef.current?.(trimmed, out, ok); } catch {}
+    }
+  }, [cwd, vfs, addLine, addLines, resolvePath, isRunning]);
+</pre>
+</div>
+<div class="block" id="b26">
+  <div class="block-h">
+    <span>handleKeyDown →</span>
+    <div>
+      <small>L1437–L1511</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre26').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre26">  const handleKeyDown = (e: React.KeyboardEvent) =&gt; {
+    if (e.key === &quot;Enter&quot; &amp;&amp; !isRunning) {
+      executeCommand(input);
+      setInput(&quot;&quot;);
+    } else if (e.key === &quot;ArrowUp&quot;) {
+      e.preventDefault();
+      setHistory((hist) =&gt; {
+        const newIndex = historyIndex === -1 ? 0 : Math.min(hist.length - 1, historyIndex + 1);
+        setHistoryIndex(newIndex);
+        setInput(hist[newIndex] || &quot;&quot;);
+        return hist;
+      });
+    } else if (e.key === &quot;ArrowDown&quot;) {
+      e.preventDefault();
+      if (historyIndex &gt; 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        setHistory((hist) =&gt; { setInput(hist[newIndex] || &quot;&quot;); return hist; });
+      } else {
+        setHistoryIndex(-1);
+        setInput(&quot;&quot;);
+      }
+    } else if (e.key === &quot;Tab&quot;) {
+      e.preventDefault();
+      const partial = input.split(&quot; &quot;).pop() || &quot;&quot;;
+      if (partial) {
+        const matches = vfs.listFiles().filter((f) =&gt; f.split(&quot;/&quot;).pop()?.startsWith(partial));
+        if (matches.length === 1) {
+          setInput((prev) =&gt; prev.slice(0, prev.length - partial.length) + matches[0].split(&quot;/&quot;).pop());
+        }
+      }
+    } else if (e.key === &quot;c&quot; &amp;&amp; e.ctrlKey) {
+      if (isRunning) { setIsRunning(false); addLine(&quot;warn&quot;, &quot;^C&quot;); }
+    } else if (e.key === &quot;l&quot; &amp;&amp; e.ctrlKey) {
+      setLines([]);
+    }
+  };
+
+  return (
+    &lt;div className=&quot;h-full bg-[#0a0e14] font-mono text-xs flex flex-col&quot; onClick={() =&gt; inputRef.current?.focus()}&gt;
+      &lt;div ref={scrollRef} className=&quot;flex-1 overflow-y-auto p-3 space-y-0.5&quot;&gt;
+        {lines.map((line, i) =&gt; (
+          &lt;div key={i} className={`whitespace-pre-wrap break-all leading-relaxed ${
+            line.type === &quot;error&quot; ? &quot;text-red-400&quot; :
+            line.type === &quot;info&quot; ? &quot;text-blue-300&quot; :
+            line.type === &quot;success&quot; ? &quot;text-green-400&quot; :
+            line.type === &quot;warn&quot; ? &quot;text-yellow-400&quot; :
+            line.type === &quot;input&quot; ? &quot;text-cyan-300&quot; :
+            &quot;text-gray-300&quot;
+          }`}&gt;
+            {line.content}
+          &lt;/div&gt;
+        ))}
+        &lt;div className=&quot;flex items-center gap-1&quot;&gt;
+          &lt;span className=&quot;text-purple-400 shrink-0&quot;&gt;{cwd}&lt;/span&gt;
+          &lt;span className=&quot;text-gray-600 shrink-0&quot;&gt;$&lt;/span&gt;
+          &lt;input
+            ref={inputRef}
+            type=&quot;text&quot;
+            value={input}
+            onChange={(e) =&gt; setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isRunning}
+            className=&quot;flex-1 bg-transparent outline-none text-gray-200 caret-cyan-400 disabled:opacity-50&quot;
+            autoFocus autoCapitalize=&quot;off&quot; autoCorrect=&quot;off&quot; spellCheck={false}
+          /&gt;
+          {isRunning &amp;&amp; (
+            &lt;span className=&quot;text-yellow-400 animate-pulse text-[10px]&quot;&gt;executando...&lt;/span&gt;
+          )}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
