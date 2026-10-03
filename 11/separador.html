@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Separador de Arquivos - IA Pessoal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .content {
+      padding: 30px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.5em;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-success {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #45a049;
+    }
+
+    .btn-danger {
+      background: #f44336;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #da190b;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .drop-zone {
+      border: 3px dashed #667eea;
+      border-radius: 10px;
+      padding: 40px;
+      text-align: center;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+    }
+
+    .drop-zone:hover {
+      background: #f0f0f0;
+      border-color: #764ba2;
+    }
+
+    .drop-zone.dragover {
+      background: #e8e8ff;
+      border-color: #764ba2;
+      transform: scale(1.02);
+    }
+
+    .drop-zone p {
+      color: #666;
+      font-size: 1.1em;
+      margin: 10px 0;
+    }
+
+    .drop-zone small {
+      color: #999;
+      display: block;
+      margin-top: 10px;
+    }
+
+    .output {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .output pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .file-item {
+      background: white;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #667eea;
+      border-radius: 3px;
+    }
+
+    .file-item h3 {
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    .file-item p {
+      color: #666;
+      font-size: 0.9em;
+      margin: 5px 0;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .progress {
+      width: 100%;
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      width: 0%;
+      transition: width 0.3s;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🔧 Separador de Arquivos</h1>
+      <p>Extraia código de um arquivo MD e organize em pastas</p>
+    </header>
+
+    <div class="content">
+      <!-- SEÇÃO 1: IMPORTAR ARQUIVO -->
+      <div class="section">
+        <h2>📂 Passo 1: Importar Arquivo</h2>
+
+        <!-- DRAG AND DROP -->
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <p>🎯 Arraste seu arquivo aqui</p>
+          <p>OU</p>
+          <p>👆 Clique para selecionar</p>
+          <small>Aceita: .md, .txt, .json</small>
+        </div>
+
+        <!-- INPUT FILE ESCONDIDO -->
+        <input type="file" id="fileInput" accept=".md,.txt,.json" onchange="importarArquivo(event)">
+
+        <!-- BOTÕES ALTERNATIVOS -->
+        <div class="button-group">
+          <button class="btn-primary" onclick="document.getElementById('fileInput').click()">📁 Selecionar Arquivo</button>
+          <button class="btn-secondary" onclick="mostrarExemplo()">📝 Carregar Exemplo</button>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: COLAR MANUALMENTE -->
+      <div class="section">
+        <h2>✏️ Passo 2: Ou Cole Manualmente</h2>
+        <div class="input-group">
+          <label for="mdInput">Cole o conteúdo aqui (se não quiser importar):</label>
+          <textarea id="mdInput" placeholder="Cole o conteúdo do arquivo MD aqui..."></textarea>
+        </div>
+        <div class="button-group">
+          <button class="btn-primary" onclick="analisarArquivo()">🔍 Analisar Arquivo</button>
+          <button class="btn-secondary" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: STATUS -->
+      <div class="section">
+        <div id="statusContainer"></div>
+        <div class="progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 4: ANÁLISE -->
+      <div class="section">
+        <h2>📊 Passo 3: Análise</h2>
+        <div id="analiseOutput" class="output" style="display:none;"></div>
+      </div>
+
+      <!-- SEÇÃO 5: ARQUIVOS ENCONTRADOS -->
+      <div class="section">
+        <h2>📁 Passo 4: Arquivos Encontrados</h2>
+        <div id="arquivosEncontrados"></div>
+      </div>
+
+      <!-- SEÇÃO 6: MAPA DA ESTRUTURA -->
+      <div class="section">
+        <h2>🗺️ Passo 5: Mapa da Estrutura</h2>
+        <div class="button-group">
+          <button class="btn-success" onclick="gerarMapa()">📋 Gerar Mapa</button>
+          <button class="btn-secondary" onclick="copiarMapa()">📋 Copiar Mapa</button>
+        </div>
+        <div id="mapaOutput" class="output" style="display:none;"></div>
+      </div>
+
+      <!-- SEÇÃO 7: DOWNLOAD -->
+      <div class="section">
+        <h2>⬇️ Passo 6: Download</h2>
+        <div class="button-group">
+          <button class="btn-success" onclick="downloadArquivos()">📦 Download Arquivos (JSON)</button>
+          <button class="btn-success" onclick="downloadMapa()">📋 Download Mapa (MD)</button>
+          <button class="btn-success" onclick="downloadTodos()">📦 Download Tudo (ZIP)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <script>
+    // DADOS GLOBAIS
+        let arquivosExtraidos = {};
+        let analiseCompleta = {};
+
+        // FUNÇÃO 1: DRAG AND DROP
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                importarArquivoFile(files[0]);
+            }
+        });
+
+        // FUNÇÃO 2: IMPORTAR ARQUIVO
+        function importarArquivo(event) {
+            const file = event.target.files[0];
+            if (file) {
+                importarArquivoFile(file);
+            }
+        }
+
+        function importarArquivoFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const conteudo = e.target.result;
+                document.getElementById('mdInput').value = conteudo;
+                mostrarStatus('success', `✅ Arquivo "${file.name}" importado! (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+                
+                // Analisar automaticamente
+                setTimeout(() => {
+                    analisarArquivo();
+                }, 500);
+            };
+            
+            reader.onerror = () => {
+                mostrarStatus('error', '❌ Erro ao ler arquivo!');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // FUNÇÃO 3: ANALISAR ARQUIVO
+        function analisarArquivo() {
+            const mdInput = document.getElementById('mdInput').value;
+            
+            if (!mdInput.trim()) {
+                mostrarStatus('error', '❌ Cole o arquivo MD primeiro!');
+                return;
+            }
+            
+            mostrarStatus('info', '⏳ Analisando arquivo...');
+            atualizarProgresso(25);
+            
+            setTimeout(() => {
+                try {
+                    arquivosExtraidos = extrairArquivos(mdInput);
+                    atualizarProgresso(50);
+                    
+                    analiseCompleta = analisarEstrutura(mdInput, arquivosExtraidos);
+                    atualizarProgresso(75);
+                    
+                    mostrarStatus('success', `✅ Análise concluída! ${Object.keys(arquivosExtraidos).length} arquivos encontrados.`);
+                    mostrarArquivosEncontrados();
+                    atualizarProgresso(100);
+                } catch (erro) {
+                    mostrarStatus('error', `❌ Erro: ${erro.message}`);
+                    atualizarProgresso(0);
+                }
+            }, 500);
+        }
+
+        // FUNÇÃO 4: EXTRAIR ARQUIVOS
+        function extrairArquivos(conteudo) {
+            const arquivos = {};
+            
+            // Padrão 1: ```tipo:nome
+            const regex1 = /```(html|css|javascript|js|json|md|txt):([^\n]+)\n([\s\S]*?)```/g;
+            let match;
+            
+            while ((match = regex1.exec(conteudo)) !== null) {
+                const tipo = match[1];
+                const nome = match[2].trim();
+                const codigo = match[3].trim();
+                
+                const extensao = tipo === 'js' ? 'js' : tipo === 'javascript' ? 'js' : tipo;
+                const chave = `${nome}.${extensao}`;
+                
+                arquivos[chave] = {
+                    tipo: tipo,
+                    nome: nome,
+                    codigo: codigo,
+                    linhas: codigo.split('\n').length,
+                    tamanho: new Blob([codigo]).size
+                };
+            }
+            
+            // Padrão 2: ```html (sem nome)
+            const regex2 = /```(html|css|javascript|js|json|md|txt)\n([\s\S]*?)```/g;
+            let contador = 1;
+            
+            while ((match = regex2.exec(conteudo)) !== null) {
+                const tipo = match[1];
+                const codigo = match[2].trim();
+                
+                if (codigo.length > 0) {
+                    const extensao = tipo === 'js' ? 'js' : tipo === 'javascript' ? 'js' : tipo;
+                    const chave = `arquivo_${contador}.${extensao}`;
+                    
+                    if (!arquivos[chave]) {
+                        arquivos[chave] = {
+                            tipo: tipo,
+                            nome: `arquivo_${contador}`,
+                            codigo: codigo,
+                            linhas: codigo.split('\n').length,
+                            tamanho: new Blob([codigo]).size
+                        };
+                        contador++;
+                    }
+                }
+            }
+            
+            return arquivos;
+        }
+
+        // FUNÇÃO 5: ANALISAR ESTRUTURA
+        function analisarEstrutura(conteudo, arquivos) {
+            const analise = {
+                totalLinhas: conteudo.split('\n').length,
+                totalArquivos: Object.keys(arquivos).length,
+                tiposArquivos: {},
+                arquivos: arquivos,
+                estrutura: {}
+            };
+            
+            // Contar tipos
+            Object.values(arquivos).forEach(arquivo => {
+                analise.tiposArquivos[arquivo.tipo] = (analise.tiposArquivos[arquivo.tipo] || 0) + 1;
+            });
+            
+            // Detectar estrutura
+            Object.keys(arquivos).forEach(nome => {
+                const pasta = nome.includes('/') ? nome.split('/')[0] : 'raiz';
+                if (!analise.estrutura[pasta]) {
+                    analise.estrutura[pasta] = [];
+                }
+                analise.estrutura[pasta].push(nome);
+            });
+            
+            return analise;
+        }
+
+        // FUNÇÃO 6: MOSTRAR ARQUIVOS ENCONTRADOS
+        function mostrarArquivosEncontrados() {
+            const container = document.getElementById('arquivosEncontrados');
+            container.innerHTML = '';
+            
+            let html = '';
+            Object.entries(arquivosExtraidos).forEach(([nome, info]) => {
+                html += `
+                    <div class="file-item">
+                        <h3>📄 ${nome}</h3>
+                        <p><strong>Tipo:</strong> ${info.tipo}</p>
+                        <p><strong>Linhas:</strong> ${info.linhas}</p>
+                        <p><strong>Tamanho:</strong> ${(info.tamanho / 1024).toFixed(2)} KB</p>
+                        <div class="button-group">
+                            <button class="btn-secondary" onclick="verArquivo('${nome}')">👁️ Ver</button>
+                            <button class="btn-secondary" onclick="copiarArquivo('${nome}')">📋 Copiar</button>
+                            <button class="btn-secondary" onclick="downloadArquivoIndividual('${nome}')">⬇️ Download</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html || '<p>Nenhum arquivo encontrado.</p>';
+        }
+
+        // FUNÇÃO 7: VER ARQUIVO
+        function verArquivo(nome) {
+            const arquivo = arquivosExtraidos[nome];
+            const output = document.getElementById('analiseOutput');
+            output.style.display = 'block';
+            output.innerHTML = `
+                <h3>${nome}</h3>
+                <pre>${escaparHTML(arquivo.codigo.substring(0, 2000))}${arquivo.codigo.length > 2000 ? '\n\n... (truncado)' : ''}</pre>
+                <button class="btn-secondary" onclick="copiarArquivo('${nome}')">📋 Copiar Completo</button>
+            `;
+        }
+
+        // FUNÇÃO 8: COPIAR ARQUIVO
+        function copiarArquivo(nome) {
+            const arquivo = arquivosExtraidos[nome];
+            navigator.clipboard.writeText(arquivo.codigo).then(() => {
+                mostrarStatus('success', `✅ ${nome} copiado para clipboard!`);
+            });
+        }
+
+        // FUNÇÃO 9: DOWNLOAD ARQUIVO INDIVIDUAL
+        function downloadArquivoIndividual(nome) {
+            const arquivo = arquivosExtraidos[nome];
+            const blob = new Blob([arquivo.codigo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nome;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // FUNÇÃO 10: GERAR MAPA
+        function gerarMapa() {
+            const mapaOutput = document.getElementById('mapaOutput');
+            mapaOutput.style.display = 'block';
+            
+            let mapa = '# 🗺️ MAPA DA ESTRUTURA\n\n';
+            mapa += `## 📊 Resumo\n`;
+            mapa += `- **Total de linhas:** ${analiseCompleta.totalLinhas}\n`;
+            mapa += `- **Total de arquivos:** ${analiseCompleta.totalArquivos}\n`;
+            mapa += `- **Tipos de arquivo:** ${Object.keys(analiseCompleta.tiposArquivos).join(', ')}\n\n`;
+            
+            mapa += `## 📈 Distribuição por Tipo\n`;
+            Object.entries(analiseCompleta.tiposArquivos).forEach(([tipo, count]) => {
+                mapa += `- **${tipo}:** ${count} arquivo(s)\n`;
+            });
+            
+            mapa += `\n## 📁 Estrutura de Pastas\n`;
+            Object.entries(analiseCompleta.estrutura).forEach(([pasta, arquivos]) => {
+                mapa += `\n### ${pasta}\n`;
+                arquivos.forEach(arquivo => {
+                    const info = arquivosExtraidos[arquivo];
+                    mapa += `- **${arquivo}** (${info.linhas} linhas, ${(info.tamanho / 1024).toFixed(2)} KB)\n`;
+                });
+            });
+            
+            mapa += `\n## 📝 Detalhes dos Arquivos\n`;
+            Object.entries(arquivosExtraidos).forEach(([nome, info]) => {
+                mapa += `\n### ${nome}\n`;
+                mapa += `- Tipo: ${info.tipo}\n`;
+                mapa += `- Linhas: ${info.linhas}\n`;
+                mapa += `- Tamanho: ${(info.tamanho / 1024).toFixed(2)} KB\n`;
+                mapa += `- Primeiras 100 caracteres:\n\`\`\`\n${info.codigo.substring(0, 100)}...\n\`\`\`\n`;
+            });
+            
+            mapaOutput.innerHTML = `<pre>${escaparHTML(mapa)}</pre>`;
+        }
+
+        // FUNÇÃO 11: COPIAR MAPA
+        function copiarMapa() {
+            const mapa = document.getElementById('mapaOutput').innerText;
+            navigator.clipboard.writeText(mapa).then(() => {
+                mostrarStatus('success', '✅ Mapa copiado para clipboard!');
+            });
+        }
+
+        // FUNÇÃO 12: DOWNLOAD ARQUIVOS
+        function downloadArquivos() {
+            const estrutura = {
+                arquivos: arquivosExtraidos,
+                analise: analiseCompleta,
+                dataExtracao: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(estrutura, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'arquivos_extraidos.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            mostrarStatus('success', '✅ Arquivos baixados em JSON!');
+        }
+
+        // FUNÇÃO 13: DOWNLOAD MAPA
+        function downloadMapa() {
+            const mapaOutput = document.getElementById('mapaOutput');
+            if (mapaOutput.style.display === 'none') {
+                gerarMapa();
+            }
+            
+            const mapa = mapaOutput.innerText;
+            const blob = new Blob([mapa], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'MAPA_ESTRUTURA.md';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            mostrarStatus('success', '✅ Mapa baixado em Markdown!');
+        }
+
+        // FUNÇÃO 14: DOWNLOAD TUDO EM ZIP
+        async function downloadTodos() {
+            try {
+                mostrarStatus('info', '⏳ Criando ZIP...');
+                
+                const zip = new JSZip();
+                
+                // Adicionar arquivos
+                Object.entries(arquivosExtraidos).forEach(([nome, info]) => {
+                    zip.file(nome, info.codigo);
+                });
+                
+                // Adicionar mapa
+                const mapaOutput = document.getElementById('mapaOutput');
+                if (mapaOutput.style.display === 'none') {
+                    gerarMapa();
+                }
+                const mapa = mapaOutput.innerText;
+                zip.file('MAPA_ESTRUTURA.md', mapa);
+                
+                // Gerar ZIP
+                const blob = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'projeto_extraido.zip';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                mostrarStatus('success', '✅ ZIP baixado com sucesso!');
+            } catch (erro) {
+                mostrarStatus('error', `❌ Erro ao criar ZIP: ${erro.message}`);
+            }
+        }
+
+        // FUNÇÃO 15: LIMPAR TUDO
+        function limparTudo() {
+            document.getElementById('mdInput').value = '';
+            document.getElementById('arquivosEncontrados').innerHTML = '';
+            document.getElementById('analiseOutput').style.display = 'none';
+            document.getElementById('mapaOutput').style.display = 'none';
+            document.getElementById('statusContainer').innerHTML = '';
+            arquivosExtraidos = {};
+            analiseCompleta = {};
+            atualizarProgresso(0);
+        }
+
+        // FUNÇÃO 16: MOSTRAR STATUS
+        function mostrarStatus(tipo, mensagem) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `<div class="status ${tipo}">${mensagem}</div>`;
+        }
+
+        // FUNÇÃO 17: ATUALIZAR PROGRESSO
+        function atualizarProgresso(valor) {
+            document.getElementById('progressBar').style.width = valor + '%';
+        }
+
+        // FUNÇÃO 18: ESCAPAR HTML
+        function escaparHTML(texto) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return texto.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // FUNÇÃO 19: MOSTRAR EXEMPLO
+        function mostrarExemplo() {
+            const exemplo = `# Exemplo de Arquivo
+
+## HTML
+
+\`\`\`html:index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exemplo</title>
+</head>
+<body>
+    <h1>Olá Mundo</h1>
+</body>
+</html>
+\`\`\`
+
+## CSS
+
+\`\`\`css:style.css
+body {
+    background: #f0f0f0;
+    font-family: Arial;
+}
+\`\`\`
+
+## JavaScript
+
+\`\`\`js:script.js
+console.log('Olá');
+\`\`\`
+`;
+            
+            document.getElementById('mdInput').value = exemplo;
+            mostrarStatus('info', '📝 Exemplo carregado!');
+        }
+  </script>
+</body>
+
+</html>
