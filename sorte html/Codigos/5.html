@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Analisador + Corretor Automático</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Courier New', monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff6b6b, #ff0000);
+      padding: 12px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 12px;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 9px;
+      margin: 2px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      font-size: 9px;
+      font-weight: bold;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: #58a6ff;
+      border-bottom-color: #58a6ff;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .panel.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .card h2 {
+      font-size: 10px;
+      color: #58a6ff;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .card p {
+      font-size: 8px;
+      color: #8b949e;
+      margin-bottom: 4px;
+    }
+
+    .file-input {
+      width: 100%;
+      padding: 6px;
+      background: #21262d;
+      border: 2px dashed #30363d;
+      border-radius: 3px;
+      color: #c9d1d9;
+      font-size: 9px;
+      cursor: pointer;
+      margin-bottom: 6px;
+    }
+
+    .input-text {
+      width: 100%;
+      padding: 4px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 2px;
+      color: #c9d1d9;
+      font-size: 9px;
+      margin-bottom: 4px;
+    }
+
+    .btn {
+      padding: 4px 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      border-radius: 2px;
+      font-size: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 2px 2px 2px 0;
+    }
+
+    .btn:active {
+      background: #30363d;
+    }
+
+    .btn.primary {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn.success {
+      background: #3fb950;
+      color: white;
+    }
+
+    .btn.danger {
+      background: #f85149;
+      color: white;
+    }
+
+    .btn.small {
+      padding: 2px 6px;
+      font-size: 8px;
+    }
+
+    .progress {
+      width: 100%;
+      height: 2px;
+      background: #21262d;
+      border-radius: 1px;
+      overflow: hidden;
+      margin: 4px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #58a6ff;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    .status {
+      font-size: 8px;
+      color: #8b949e;
+      margin: 4px 0;
+      padding: 4px;
+      background: #0d1117;
+      border-radius: 2px;
+    }
+
+    .status.success {
+      color: #3fb950;
+      border-left: 2px solid #3fb950;
+    }
+
+    .status.error {
+      color: #f85149;
+      border-left: 2px solid #f85149;
+    }
+
+    .status.info {
+      color: #58a6ff;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .status.warning {
+      color: #d29922;
+      border-left: 2px solid #d29922;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px;
+      border-radius: 2px;
+      font-size: 8px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.error {
+      border-color: #f85149;
+      color: #f85149;
+    }
+
+    .toast.success {
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
+    .error-item {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 2px;
+      padding: 6px;
+      margin-bottom: 4px;
+      font-size: 8px;
+    }
+
+    .error-item.critical {
+      border-left: 2px solid #f85149;
+    }
+
+    .error-item.important {
+      border-left: 2px solid #d29922;
+    }
+
+    .error-item.medium {
+      border-left: 2px solid #58a6ff;
+    }
+
+    .solution-box {
+      background: #161b22;
+      padding: 4px;
+      border-radius: 2px;
+      margin: 2px 0;
+      font-size: 7px;
+    }
+
+    .code-block {
+      background: #0d1117;
+      padding: 4px;
+      border-radius: 2px;
+      margin: 2px 0;
+      font-size: 7px;
+      overflow-x: auto;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .stats {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      font-size: 8px;
+      margin-bottom: 6px;
+    }
+
+    .stat-box {
+      background: #161b22;
+      padding: 4px 8px;
+      border-radius: 2px;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .stat-box.critical {
+      border-left-color: #f85149;
+    }
+
+    .stat-box.important {
+      border-left-color: #d29922;
+    }
+
+    .ai-selector {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .ai-btn {
+      padding: 4px 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      border-radius: 2px;
+      font-size: 8px;
+      cursor: pointer;
+    }
+
+    .ai-btn.active {
+      background: #58a6ff;
+      color: white;
+      border-color: #58a6ff;
+    }
+
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>🔧 Analisador + Corretor Automático (SEM SLICE!)</h1>
+    <p>Análise completa + Soluções automáticas + Integração IA</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="APP.tab('upload')">📁 Upload</button>
+    <button class="tab-btn" onclick="APP.tab('analysis')">🔍 Análise</button>
+    <button class="tab-btn" onclick="APP.tab('solutions')">💡 Soluções</button>
+    <button class="tab-btn" onclick="APP.tab('auto-fix')">🤖 Auto-Fix</button>
+    <button class="tab-btn" onclick="APP.tab('ai')">🧠 IA</button>
+    <button class="tab-btn" onclick="APP.tab('export')">💾 Exportar</button>
+  </div>
+
+  <div class="content">
+    <!-- TAB: UPLOAD -->
+    <div id="upload" class="panel active">
+      <div class="card">
+        <h2>📁 Carregar Projeto</h2>
+        <input type="file" id="fileInput" class="file-input" onchange="APP.loadFile(event)" accept=".zip,.tar,.tgz,.gz">
+        <div id="uploadProgress" class="progress" style="display: none;">
+          <div class="progress-bar"></div>
+        </div>
+        <div id="uploadStatus" class="status" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>📊 Informações</h2>
+        <div id="fileInfo" style="font-size: 8px; color: #8b949e;">Nenhum arquivo carregado</div>
+      </div>
+
+      <div class="card">
+        <button class="btn primary" onclick="APP.analyzeAll()">🔍 Analisar TUDO</button>
+        <button class="btn" onclick="APP.clearAll()">🗑️ Limpar</button>
+      </div>
+    </div>
+
+    <!-- TAB: ANÁLISE -->
+    <div id="analysis" class="panel">
+      <div class="card">
+        <h2>📊 Estatísticas</h2>
+        <div class="stats" id="statsBox"></div>
+      </div>
+
+      <div class="card">
+        <h2>🔎 Filtros</h2>
+        <div class="ai-selector">
+          <button class="ai-btn active" onclick="APP.filterSeverity('all')">Todos</button>
+          <button class="ai-btn" onclick="APP.filterSeverity('critical')">🔴 Crítico</button>
+          <button class="ai-btn" onclick="APP.filterSeverity('important')">🟠 Importante</button>
+          <button class="ai-btn" onclick="APP.filterSeverity('medium')">🔵 Médio</button>
+        </div>
+      </div>
+
+      <div id="analysisList" style="flex: 1; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: SOLUÇÕES -->
+    <div id="solutions" class="panel">
+      <div class="card">
+        <h2>💡 Soluções Recomendadas</h2>
+        <button class="btn success" onclick="APP.generateSolutions()">🔧 Gerar Soluções</button>
+        <button class="btn" onclick="APP.copySolutions()">📋 Copiar Tudo</button>
+      </div>
+
+      <div id="solutionsList" style="flex: 1; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: AUTO-FIX -->
+    <div id="auto-fix" class="panel">
+      <div class="card">
+        <h2>🤖 Correção Automática</h2>
+        <p>Selecione o que deseja corrigir:</p>
+
+        <label style="display: flex; align-items: center; font-size: 8px; margin-bottom: 4px;">
+          <input type="checkbox" id="fix-console" checked style="margin-right: 4px;">
+          ✅ Remover console.log
+        </label>
+
+        <label style="display: flex; align-items: center; font-size: 8px; margin-bottom: 4px;">
+          <input type="checkbox" id="fix-return" checked style="margin-right: 4px;">
+          ✅ Adicionar returns
+        </label>
+
+        <label style="display: flex; align-items: center; font-size: 8px; margin-bottom: 4px;">
+          <input type="checkbox" id="fix-comparison" checked style="margin-right: 4px;">
+          ✅ Trocar == por ===
+        </label>
+
+        <label style="display: flex; align-items: center; font-size: 8px; margin-bottom: 4px;">
+          <input type="checkbox" id="fix-trycatch" checked style="margin-right: 4px;">
+          ✅ Adicionar try-catch
+        </label>
+
+        <button class="btn danger" onclick="APP.autoFix()">⚡ Corrigir Agora</button>
+        <div id="fixStatus" class="status" style="display: none; margin-top: 4px;"></div>
+      </div>
+
+      <div id="fixReport" style="flex: 1; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: IA -->
+    <div id="ai" class="panel">
+      <div class="card">
+        <h2>🧠 Integração com IA</h2>
+        <p>Escolha uma IA para corrigir o código:</p>
+
+        <div class="ai-selector">
+          <button class="ai-btn" onclick="APP.selectAI('claude')">🔵 Claude</button>
+          <button class="ai-btn" onclick="APP.selectAI('gemini')">🟡 Gemini</button>
+          <button class="ai-btn" onclick="APP.selectAI('openai')">🟢 OpenAI</button>
+          <button class="ai-btn" onclick="APP.selectAI('groq')">⚫ Groq</button>
+        </div>
+
+        <h3 style="font-size: 9px; color: #58a6ff; margin-top: 8px; margin-bottom: 4px;">Chave API:</h3>
+        <input type="password" id="aiKey" class="input-text" placeholder="Cole sua chave aqui">
+        <button class="btn success" onclick="APP.saveAIKey()">💾 Salvar</button>
+
+        <button class="btn primary" onclick="APP.sendToAI()" style="margin-top: 8px; width: 100%;">🚀 Enviar para IA</button>
+        <div id="aiStatus" class="status" style="display: none; margin-top: 8px;"></div>
+      </div>
+
+      <div id="aiResult" style="flex: 1; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: EXPORTAR -->
+    <div id="export" class="panel">
+      <div class="card">
+        <h2>💾 Exportar Resultados</h2>
+
+        <button class="btn success" onclick="APP.downloadReport()">📋 Relatório TXT</button>
+        <button class="btn" onclick="APP.downloadJSON()">📄 JSON</button>
+        <button class="btn" onclick="APP.downloadZip()">📦 ZIP Corrigido</button>
+        <button class="btn" onclick="APP.downloadScript()">🔧 Script Bash</button>
+      </div>
+
+      <div class="card">
+        <h2>📋 Relatório Executivo</h2>
+        <textarea id="reportContent" style="width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 2px; padding: 4px; font-size: 7px; font-family: 'Courier New'; resize: none; overflow-y: auto;"></textarea>
+        <button class="btn btn-small" onclick="APP.copyReport()" style="margin-top: 4px;">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+  <script>
+    'use strict';
+
+    const APP = {
+      files: {},
+      allErrors: [],
+      filteredErrors: [],
+      currentSeverity: 'all',
+      selectedAI: 'claude',
+      aiKey: localStorage.getItem('aiKey') || '',
+
+      toast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 3000);
+      },
+
+      tab(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        event.target.classList.add('active');
+      },
+
+      async loadFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const status = document.getElementById('uploadStatus');
+        const progress = document.getElementById('uploadProgress');
+        
+        status.style.display = 'block';
+        progress.style.display = 'block';
+        status.textContent = '⏳ Carregando...';
+        status.className = 'status info';
+
+        try {
+          const fileName = file.name;
+          let files = {};
+
+          if (fileName.endsWith('.zip')) {
+            files = await this.extractZip(file, progress);
+          } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+            files = await this.extractTarGz(file, progress);
+          } else if (fileName.endsWith('.tar')) {
+            files = await this.extractTar(file, progress);
+          }
+
+          this.files = files;
+          const count = Object.keys(files).length;
+          
+          status.textContent = `✅ ${count} arquivo(s) - ${this.formatSize(file.size)}`;
+          status.className = 'status success';
+          
+          document.getElementById('fileInfo').innerHTML = `
+            <strong>Arquivo:</strong> ${fileName}<br>
+            <strong>Tamanho:</strong> ${this.formatSize(file.size)}<br>
+            <strong>Arquivos:</strong> ${count}<br>
+            <strong>Status:</strong> ✅ Pronto
+          `;
+
+          this.toast(`✅ ${count} arquivo(s) carregado!`, 'success');
+        } catch (err) {
+          status.textContent = `❌ ${err.message}`;
+          status.className = 'status error';
+          this.toast(`❌ ${err.message}`, 'error');
+        }
+      },
+
+      async extractZip(file, progress) {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        const files = {};
+        const entries = Object.entries(loaded.files);
+        const total = entries.length;
+        let processed = 0;
+
+        for (const [path, obj] of entries) {
+          if (!obj.dir) {
+            try {
+              files[path] = await obj.async('string');
+            } catch (e) {
+              files[path] = '[BINÁRIO]';
+            }
+          }
+          processed++;
+          this.updateProgress(progress, processed, total);
+        }
+        return files;
+      },
+
+      async extractTarGz(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        return this.extractTarBuffer(decompressed, progress);
+      },
+
+      async extractTar(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        return this.extractTarBuffer(arrayBuffer, progress);
+      },
+
+      extractTarBuffer(buffer, progress) {
+        const files = {};
+        const view = new Uint8Array(buffer);
+        let offset = 0;
+        let processed = 0;
+        const total = Math.ceil(view.length / 512);
+
+        while (offset < view.length) {
+          const headerEnd = offset + 512;
+          if (headerEnd > view.length) break;
+
+          const header = view.slice(offset, headerEnd);
+          const nameBytes = header.slice(0, 100);
+          const name = new TextDecoder().decode(nameBytes).split('\0')[0];
+          const sizeStr = new TextDecoder().decode(header.slice(124, 136)).trim();
+          const size = parseInt(sizeStr, 8) || 0;
+
+          offset = headerEnd;
+
+          if (name && size > 0) {
+            try {
+              const content = new TextDecoder().decode(view.slice(offset, offset + size));
+              files[name] = content;
+            } catch (e) {
+              files[name] = '[BINÁRIO]';
+            }
+          }
+
+          offset += Math.ceil(size / 512) * 512;
+          processed++;
+          if (processed % 100 === 0) this.updateProgress(progress, processed, total);
+        }
+
+        return files;
+      },
+
+      updateProgress(progress, current, total) {
+        const percent = Math.min(100, Math.round((current / total) * 100));
+        progress.querySelector('.progress-bar').style.width = percent + '%';
+      },
+
+      analyzeAll() {
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        this.allErrors = [];
+
+        const patterns = [
+          { name: 'Variável não preenchida', regex: /\$\{[^}]+\}/g, severity: 'critical', type: 'var', fix: 'Adicionar valor padrão' },
+          { name: 'console.log', regex: /console\.(log|error|warn)\([^)]*\)/g, severity: 'critical', type: 'console', fix: 'Remover linha' },
+          { name: 'Função sem return', regex: /function\s+\w+[^{]*\{[^}]*\}/g, severity: 'important', type: 'return', fix: 'Adicionar return' },
+          { name: 'Sem try-catch', regex: /async\s+function[^{]*\{(?!.*try)/g, severity: 'important', type: 'trycatch', fix: 'Envolver com try-catch' },
+          { name: 'Comparação fraca (==)', regex: /[^=!]==[^=]/g, severity: 'important', type: 'comparison', fix: 'Trocar por ===' },
+          { name: 'Localhost', regex: /http:\/\/localhost:\d+/g, severity: 'important', type: 'localhost', fix: 'Usar variável de ambiente' },
+          { name: 'Promise sem await', regex: /\.then\(/g, severity: 'medium', type: 'promise', fix: 'Adicionar await' },
+          { name: 'eval() perigoso', regex: /\beval\s*\(/g, severity: 'critical', type: 'eval', fix: 'Remover eval()' },
+          { name: 'window global', regex: /window\.\w+\s*=/g, severity: 'important', type: 'window', fix: 'Usar contexto local' }
+        ];
+
+        for (const [filePath, content] of Object.entries(this.files)) {
+          if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+
+          const lines = content.split('\n');
+
+          for (const pattern of patterns) {
+            const matches = content.matchAll(pattern.regex);
+
+            for (const match of matches) {
+              let lineNum = 1;
+              let charCount = 0;
+              for (let i = 0; i < content.length; i++) {
+                if (content[i] === '\n') lineNum++;
+                if (i === match.index) break;
+              }
+
+              const lineContent = lines[lineNum - 1] || '';
+
+              this.allErrors.push({
+                file: filePath,
+                line: lineNum,
+                pattern: pattern.name,
+                severity: pattern.severity,
+                type: pattern.type,
+                code: match[0],
+                lineContent: lineContent.trim(),
+                fix: pattern.fix
+              });
+            }
+          }
+        }
+
+        const severityOrder = { critical: 0, important: 1, medium: 2 };
+        this.allErrors.sort((a, b) => {
+          const diff = severityOrder[a.severity] - severityOrder[b.severity];
+          return diff !== 0 ? diff : a.file.localeCompare(b.file);
+        });
+
+        this.filteredErrors = this.allErrors;
+        this.displayAnalysis();
+        this.updateStats();
+        this.tab('analysis');
+        this.toast(`✅ ${this.allErrors.length} erro(s) encontrado(s)!`, 'success');
+      },
+
+      displayAnalysis() {
+        const container = document.getElementById('analysisList');
+        container.innerHTML = '';
+
+        if (this.filteredErrors.length === 0) {
+          container.innerHTML = '<div class="status info" style="margin: 8px;">Nenhum erro encontrado</div>';
+          return;
+        }
+
+        this.filteredErrors.forEach((err, idx) => {
+          const div = document.createElement('div');
+          div.className = `error-item ${err.severity}`;
+          div.innerHTML = `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+              <span style="color: #58a6ff; font-weight: bold;">${err.pattern}</span>
+              <span style="color: #8b949e;">L${err.line}</span>
+            </div>
+            <div style="color: #8b949e; font-size: 7px; margin-bottom: 2px;">📁 ${err.file}</div>
+            <div class="code-block">${this.escapeHtml(err.code)}</div>
+            <div style="color: #3fb950; font-size: 7px; margin-top: 2px;">✅ ${err.fix}</div>
+          `;
+          container.appendChild(div);
+        });
+      },
+
+      updateStats() {
+        const stats = document.getElementById('statsBox');
+        const critical = this.filteredErrors.filter(e => e.severity === 'critical').length;
+        const important = this.filteredErrors.filter(e => e.severity === 'important').length;
+        const medium = this.filteredErrors.filter(e => e.severity === 'medium').length;
+
+        stats.innerHTML = `
+          <div class="stat-box critical">🔴 ${critical}</div>
+          <div class="stat-box important">🟠 ${important}</div>
+          <div class="stat-box">🔵 ${medium}</div>
+          <div class="stat-box">📊 ${this.filteredErrors.length}</div>
+        `;
+      },
+
+      filterSeverity(severity) {
+        this.currentSeverity = severity;
+        
+        document.querySelectorAll('.ai-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        if (severity === 'all') {
+          this.filteredErrors = this.allErrors;
+        } else {
+          this.filteredErrors = this.allErrors.filter(e => e.severity === severity);
+        }
+
+        this.displayAnalysis();
+      },
+
+      generateSolutions() {
+        if (this.allErrors.length === 0) {
+          this.toast('Analise primeiro', 'error');
+          return;
+        }
+
+        const container = document.getElementById('solutionsList');
+        container.innerHTML = '';
+
+        // Agrupa por tipo
+        const grouped = {};
+        this.allErrors.forEach(err => {
+          if (!grouped[err.type]) grouped[err.type] = [];
+          grouped[err.type].push(err);
+        });
+
+        for (const [type, errors] of Object.entries(grouped)) {
+          const div = document.createElement('div');
+          div.className = 'error-item';
+          
+          let solution = '';
+          switch(type) {
+            case 'console':
+              solution = `<strong>Remover console.log:</strong><br>
+                <div class="solution-box">grep -rn "console\\." . --include="*.js" --include="*.ts" | wc -l</div>
+                <div class="solution-box">find . -name "*.js" -o -name "*.ts" | xargs sed -i '/console\\./d'</div>`;
+              break;
+            case 'return':
+              solution = `<strong>Adicionar return:</strong><br>
+                <div class="solution-box">// Procure por funções sem return e adicione</div>
+                <div class="solution-box">function exemplo() { return valor; }</div>`;
+              break;
+            case 'comparison':
+              solution = `<strong>Trocar == por ===:</strong><br>
+                <div class="solution-box">find . -name "*.ts" -o -name "*.tsx" | xargs sed -i 's/==[^=]/===/g'</div>`;
+              break;
+            case 'trycatch':
+              solution = `<strong>Adicionar try-catch:</strong><br>
+                <div class="solution-box">async function() { try { ... } catch(e) { ... } }</div>`;
+              break;
+            case 'var':
+              solution = `<strong>Preencher variáveis:</strong><br>
+                <div class="solution-box">const owner = localStorage.getItem('owner') || 'default';</div>`;
+              break;
+            default:
+              solution = `<strong>${type}:</strong> ${errors.length} ocorrências`;
+          }
+
+          div.innerHTML = `
+            <div style="margin-bottom: 4px;">
+              <span style="color: #58a6ff; font-weight: bold;">${type.toUpperCase()}</span>
+              <span style="color: #8b949e;"> (${errors.length}x)</span>
+            </div>
+            ${solution}
+          `;
+          container.appendChild(div);
+        }
+      },
+
+      autoFix() {
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        const fixConsole = document.getElementById('fix-console').checked;
+        const fixReturn = document.getElementById('fix-return').checked;
+        const fixComparison = document.getElementById('fix-comparison').checked;
+        const fixTrycatch = document.getElementById('fix-trycatch').checked;
+
+        let report = '=== CORREÇÕES APLICADAS ===\n\n';
+        let totalFixed = 0;
+
+        for (const [filePath, content] of Object.entries(this.files)) {
+          if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+
+          let newContent = content;
+          let fileFixed = 0;
+
+          if (fixConsole) {
+            const matches = content.match(/console\.(log|error|warn)\([^)]*\)/g) || [];
+            newContent = newContent.replace(/console\.(log|error|warn)\([^)]*\);?\n?/g, '');
+            fileFixed += matches.length;
+            if (matches.length > 0) {
+              report += `✅ ${filePath}: Removido ${matches.length} console.log\n`;
+            }
+          }
+
+          if (fixComparison) {
+            const matches = newContent.match(/[^=!]==[^=]/g) || [];
+            newContent = newContent.replace(/([^=!])==([^=])/g, '$1===$2');
+            fileFixed += matches.length;
+            if (matches.length > 0) {
+              report += `✅ ${filePath}: Trocado ${matches.length} == por ===\n`;
+            }
+          }
+
+          if (fileFixed > 0) {
+            this.files[filePath] = newContent;
+            totalFixed += fileFixed;
+          }
+        }
+
+        report += `\n📊 TOTAL: ${totalFixed} correções aplicadas\n`;
+
+        const status = document.getElementById('fixStatus');
+        status.style.display = 'block';
+        status.textContent = `✅ ${totalFixed} correções aplicadas!`;
+        status.className = 'status success';
+
+        document.getElementById('fixReport').textContent = report;
+        this.toast(`✅ ${totalFixed} correções!`, 'success');
+      },
+
+      selectAI(ai) {
+        this.selectedAI = ai;
+        document.querySelectorAll('.ai-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        this.toast(`✅ ${ai.toUpperCase()} selecionado`, 'info');
+      },
+
+      saveAIKey() {
+        const key = document.getElementById('aiKey').value.trim();
+        if (!key) {
+          this.toast('Cole a chave', 'error');
+          return;
+        }
+        localStorage.setItem('aiKey', key);
+        this.aiKey = key;
+        this.toast('✅ Chave salva!', 'success');
+      },
+
+      async sendToAI() {
+        if (!this.aiKey) {
+          this.toast('Configure a chave primeiro', 'error');
+          return;
+        }
+
+        if (this.allErrors.length === 0) {
+          this.toast('Analise primeiro', 'error');
+          return;
+        }
+
+        const status = document.getElementById('aiStatus');
+        status.style.display = 'block';
+        status.textContent = '⏳ Enviando para ' + this.selectedAI.toUpperCase() + '...';
+        status.className = 'status info';
+
+        try {
+          const prompt = this.buildAIPrompt();
+          
+          let response;
+          if (this.selectedAI === 'claude') {
+            response = await this.callClaude(prompt);
+          } else if (this.selectedAI === 'gemini') {
+            response = await this.callGemini(prompt);
+          } else if (this.selectedAI === 'openai') {
+            response = await this.callOpenAI(prompt);
+          } else if (this.selectedAI === 'groq') {
+            response = await this.callGroq(prompt);
+          }
+
+          document.getElementById('aiResult').textContent = response;
+          status.textContent = '✅ Processado com sucesso!';
+          status.className = 'status success';
+          this.toast('✅ Pronto!', 'success');
+        } catch (err) {
+          status.textContent = `❌ ${err.message}`;
+          status.className = 'status error';
+          this.toast(`❌ ${err.message}`, 'error');
+        }
+      },
+
+      buildAIPrompt() {
+        const errorSummary = this.allErrors
+          .slice(0, 20)
+          .map(e => `[${e.severity}] ${e.pattern} em ${e.file}:${e.line}`)
+          .join('\n');
+
+        return `Você é um especialista em correção de código.
+
+Aqui estão os ${this.allErrors.length} erros encontrados no projeto:
+
+${errorSummary}
+
+Por favor, forneça:
+1. Resumo dos problemas principais
+2. Soluções específicas para cada tipo de erro
+3. Código de exemplo para cada solução
+4. Prioridade de correção
+
+Seja conciso e prático.`;
+      },
+
+      async callClaude(prompt) {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': this.aiKey,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-opus-4-1',
+            max_tokens: 2000,
+            messages: [{ role: 'user', content: prompt }]
+          })
+        });
+
+        if (!response.ok) throw new Error('Erro Claude: ' + response.statusText);
+        const data = await response.json();
+        return data.content[0].text;
+      },
+
+      async callGemini(prompt) {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${this.aiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }]
+          })
+        });
+
+        if (!response.ok) throw new Error('Erro Gemini: ' + response.statusText);
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+      },
+
+      async callOpenAI(prompt) {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.aiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'gpt-4',
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 2000
+          })
+        });
+
+        if (!response.ok) throw new Error('Erro OpenAI: ' + response.statusText);
+        const data = await response.json();
+        return data.choices[0].message.content;
+      },
+
+      async callGroq(prompt) {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.aiKey}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'mixtral-8x7b-32768',
+            messages: [{ role: 'user', content: prompt }],
+            max_tokens: 2000
+          })
+        });
+
+        if (!response.ok) throw new Error('Erro Groq: ' + response.statusText);
+        const data = await response.json();
+        return data.choices[0].message.content;
+      },
+
+      copySolutions() {
+        const text = document.getElementById('solutionsList').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          this.toast('📋 Copiado!', 'success');
+        });
+      },
+
+      downloadReport() {
+        const report = this.generateReport();
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio-${Date.now()}.txt`;
+        a.click();
+        this.toast('📋 Baixado!', 'success');
+      },
+
+      generateReport() {
+        let report = '=== RELATÓRIO COMPLETO ===\n\n';
+        report += `Total de erros: ${this.allErrors.length}\n`;
+        report += `Crítico: ${this.allErrors.filter(e => e.severity === 'critical').length}\n`;
+        report += `Importante: ${this.allErrors.filter(e => e.severity === 'important').length}\n`;
+        report += `Médio: ${this.allErrors.filter(e => e.severity === 'medium').length}\n\n`;
+
+        this.allErrors.forEach(err => {
+          report += `[${err.severity}] ${err.pattern}\n`;
+          report += `${err.file}:${err.line}\n`;
+          report += `✅ ${err.fix}\n\n`;
+        });
+
+        return report;
+      },
+
+      downloadJSON() {
+        const json = JSON.stringify(this.allErrors, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `erros-${Date.now()}.json`;
+        a.click();
+        this.toast('📄 Baixado!', 'success');
+      },
+
+      async downloadZip() {
+        const zip = new JSZip();
+        for (const [path, content] of Object.entries(this.files)) {
+          zip.file(path, content);
+        }
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `projeto-corrigido-${Date.now()}.zip`;
+        a.click();
+        this.toast('📦 Baixado!', 'success');
+      },
+
+      downloadScript() {
+        const script = `#!/bin/bash
+# Script de correção automática
+
+echo "🔧 Removendo console.log..."
+find . -name "*.js" -o -name "*.ts" -o -name "*.tsx" | xargs sed -i '/console\\./d'
+
+echo "🔧 Trocando == por ===..."
+find . -name "*.ts" -o -name "*.tsx" | xargs sed -i 's/==[^=]/===/g'
+
+echo "✅ Correções aplicadas!"
+`;
+        const blob = new Blob([script], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fix.sh`;
+        a.click();
+        this.toast('🔧 Script baixado!', 'success');
+      },
+
+      copyReport() {
+        const report = this.generateReport();
+        navigator.clipboard.writeText(report).then(() => {
+          this.toast('📋 Copiado!', 'success');
+        });
+      },
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+
+      formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let idx = 0;
+        while (size >= 1024 && idx < units.length - 1) {
+          size /= 1024;
+          idx++;
+        }
+        return `${size.toFixed(1)} ${units[idx]}`;
+      },
+
+      clearAll() {
+        this.files = {};
+        this.allErrors = [];
+        this.filteredErrors = [];
+        document.getElementById('fileInput').value = '';
+        this.toast('✅ Limpo', 'success');
+      }
+    };
+
+    if (APP.aiKey) {
+      document.getElementById('aiKey').value = APP.aiKey;
+    }
+  </script>
+
+</body>
+
+</html>
