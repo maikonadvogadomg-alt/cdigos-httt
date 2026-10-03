@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: snippets.ts</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 snippets.ts</h1>
+<div class="meta">Gerado em 03/10/2026, 06:38:06 • 3 elementos • 1 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { Router, type IRouter } from &quot;express&quot;;</div><div class="idx-item">L2 [import] import { desc, eq } from &quot;drizzle-orm&quot;;</div><div class="idx-item">L3 [import] import { db, snippetsTable } from &quot;@workspace/db&quot;;</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>Bloco 1 (L1–L67)</span>
+    <div>
+      <small>L1–L67</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { Router, type IRouter } from &quot;express&quot;;
+import { desc, eq } from &quot;drizzle-orm&quot;;
+import { db, snippetsTable } from &quot;@workspace/db&quot;;
+
+const router: IRouter = Router();
+
+// List all snippets (most recent first)
+router.get(&quot;/snippets&quot;, async (_req, res): Promise&lt;void&gt; =&gt; {
+  try {
+    const rows = await db.select().from(snippetsTable).orderBy(desc(snippetsTable.createdAt));
+    res.json(rows.map((r) =&gt; ({ ...r, id: String(r.id) })));
+  } catch (err) {
+    res.status(500).json({ error: &quot;Erro ao buscar snippets&quot; });
+  }
+});
+
+// Create snippet
+router.post(&quot;/snippets&quot;, async (req, res): Promise&lt;void&gt; =&gt; {
+  try {
+    const { title = &quot;Sem título&quot;, html = &quot;&quot;, css = &quot;&quot;, js = &quot;&quot;, mode = &quot;html&quot; } = req.body;
+    const [row] = await db
+      .insert(snippetsTable)
+      .values({ title, html, css, js, mode })
+      .returning();
+    res.json({ ...row, id: String(row.id) });
+  } catch (err) {
+    res.status(500).json({ error: &quot;Erro ao salvar snippet&quot; });
+  }
+});
+
+// Rename snippet
+router.patch(&quot;/snippets/:id&quot;, async (req, res): Promise&lt;void&gt; =&gt; {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const { title } = req.body;
+    if (!title?.trim()) {
+      res.status(400).json({ error: &quot;Título não pode ser vazio&quot; });
+      return;
+    }
+    const [row] = await db
+      .update(snippetsTable)
+      .set({ title: title.trim() })
+      .where(eq(snippetsTable.id, id))
+      .returning();
+    if (!row) {
+      res.status(404).json({ error: &quot;Snippet não encontrado&quot; });
+      return;
+    }
+    res.json({ ...row, id: String(row.id) });
+  } catch (err) {
+    res.status(500).json({ error: &quot;Erro ao renomear snippet&quot; });
+  }
+});
+
+// Delete snippet
+router.delete(&quot;/snippets/:id&quot;, async (req, res): Promise&lt;void&gt; =&gt; {
+  try {
+    const id = parseInt(req.params.id, 10);
+    await db.delete(snippetsTable).where(eq(snippetsTable.id, id));
+    res.status(204).end();
+  } catch (err) {
+    res.status(500).json({ error: &quot;Erro ao excluir snippet&quot; });
+  }
+});
+
+export default router;
+</pre>
+</div>
+</body>
+</html>
