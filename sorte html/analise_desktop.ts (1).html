@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: desktop.ts</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 desktop.ts</h1>
+<div class="meta">Gerado em 03/10/2026, 06:58:24 • 13 elementos • 11 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L5 [import] import JSZip from &quot;jszip&quot;;</div><div class="idx-item">L6 [import] import type { ArchiveFile } from &quot;./archive&quot;;</div><div class="idx-item">L7 [import] import type { AppConfig } from &quot;./android&quot;;</div><div class="idx-item">L9 [function] strToAb</div><div class="idx-item">L33 [function] genElectronPackageJson</div><div class="idx-item">L112 [function] genElectronMain</div><div class="idx-item">L121 [function] createWindow</div><div class="idx-item">L165 [function] genElectronPreload</div><div class="idx-item">L178 [function] genNpmRc</div><div class="idx-item">L187 [function] genDesktopWorkflow</div><div class="idx-item">L369 [function] genDesktopReadme</div><div class="idx-item">L442 [function] buildDesktopFilesForGithub</div><div class="idx-item">L470 [function] buildDesktopZip</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L8</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">/**
+ * desktop.ts — Gerador de app Desktop (Electron) para Windows, Mac e Linux.
+ * Corrigido: sem code-signing, sem icon.ico ausente, electron-builder v25+.
+ */
+import JSZip from &quot;jszip&quot;;
+import type { ArchiveFile } from &quot;./archive&quot;;
+import type { AppConfig } from &quot;./android&quot;;
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>strToAb</span>
+    <div>
+      <small>L9–L32</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function strToAb(s: string): ArrayBuffer {
+  return new TextEncoder().encode(s).buffer as ArrayBuffer;
+}
+
+/* ══════════════════════════════════════════════════════════
+   DIAGNÓSTICO DOS ERROS COMUNS:
+
+   &quot;Fase 1&quot; (npm install) — raramente falha, Electron ~100MB
+   &quot;Fase 2&quot; (npm run build / electron-builder) — falha por:
+     ❌ icon.ico referenciado mas não incluído no projeto
+     ❌ Code signing ativo (Windows exige certificado pago)
+     ❌ electron-builder v24 tem bug no runner windows-latest
+     ❌ NSIS não disponível em todos os ambientes
+   
+   CORREÇÕES APLICADAS:
+     ✅ Removidas referências a icon.ico/icns (usa ícone padrão do Electron)
+     ✅ Code signing desabilitado (CSC_IDENTITY_AUTO_DISCOVERY=false)
+     ✅ electron-builder ^25.1.8 (versão estável que funciona no CI)
+     ✅ --publish=never para não tentar publicar externamente
+     ✅ npm cache habilitado (build mais rápido)
+     ✅ Versão explícita do target por plataforma
+══════════════════════════════════════════════════════════ */
+
+/* ── package.json do projeto Electron ── */</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>genElectronPackageJson</span>
+    <div>
+      <small>L33–L111</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">function genElectronPackageJson(c: AppConfig): string {
+  const safe = c.appName.replace(/[^a-zA-Z0-9]/g, &quot;-&quot;).toLowerCase() || &quot;meu-app&quot;;
+  return JSON.stringify({
+    name: safe,
+    version: c.versionName,
+    description: `${c.appName} — App desktop (Windows, Mac, Linux)`,
+    main: &quot;main.js&quot;,
+    private: true,
+    scripts: {
+      start:        &quot;electron .&quot;,
+      build:        &quot;electron-builder --publish=never&quot;,
+      &quot;build:win&quot;:  &quot;electron-builder --win --x64 --publish=never&quot;,
+      &quot;build:mac&quot;:  &quot;electron-builder --mac --x64 --arm64 --publish=never&quot;,
+      &quot;build:linux&quot;:&quot;electron-builder --linux --x64 --publish=never&quot;,
+    },
+    build: {
+      appId: c.appId || `com.desktop.${safe}`,
+      productName: c.appName || &quot;MeuApp&quot;,
+      copyright: `© ${new Date().getFullYear()} ${c.appName}`,
+      directories: {
+        output: &quot;dist&quot;,
+        buildResources: &quot;build&quot;,
+      },
+      files: [
+        &quot;main.js&quot;,
+        &quot;preload.js&quot;,
+        &quot;www/**/*&quot;,
+        /* Exclui package.json do www/ — evita conflito com electron-builder */
+        &quot;!www/package.json&quot;,
+        &quot;!www/**/package.json&quot;,
+        &quot;!www/**/*.map&quot;,
+      ],
+      /* ── Windows ── sem code signing, sem icon (usa padrão Electron) */
+      win: {
+        target: [{ target: &quot;nsis&quot;, arch: [&quot;x64&quot;] }],
+        /* SEM icon — evita falha por icon.ico ausente */
+        /* SEM certificateFile — sem code signing */
+        sign: null,
+      },
+      nsis: {
+        oneClick: false,
+        allowToChangeInstallationDirectory: true,
+        createDesktopShortcut: true,
+        createStartMenuShortcut: true,
+        shortcutName: c.appName || &quot;MeuApp&quot;,
+        /* SEM installerIcon/uninstallerIcon — usa padrão NSIS */
+      },
+      /* ── Mac ── sem dmg-license, sem code signing */
+      mac: {
+        target: [{ target: &quot;dmg&quot;, arch: [&quot;x64&quot;, &quot;arm64&quot;] }],
+        /* SEM icon.icns */
+        identity: null,       /* desabilita code signing no Mac */
+        hardenedRuntime: false,
+      },
+      dmg: {
+        background: null,
+        /* SEM icon */
+      },
+      /* ── Linux ── */
+      linux: {
+        target: [{ target: &quot;AppImage&quot;, arch: [&quot;x64&quot;] }],
+        /* SEM icon */
+        category: &quot;Utility&quot;,
+        description: `${c.appName} — App desktop`,
+      },
+      /* ── Configurações gerais ── */
+      compression: &quot;normal&quot;, /* &quot;maximum&quot; pode causar timeout no CI */
+      removePackageScripts: true,
+      nodeGypRebuild: false,
+      buildDependenciesFromSource: false,
+    },
+    devDependencies: {
+      electron: &quot;^33.4.0&quot;,
+      &quot;electron-builder&quot;: &quot;^25.1.8&quot;,
+    },
+  }, null, 2);
+}
+
+/* ── main.js do Electron ── */</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>genElectronMain</span>
+    <div>
+      <small>L112–L120</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">function genElectronMain(c: AppConfig): string {
+  const w = c.orientation === &quot;landscape&quot; ? 1280 : 960;
+  const h = c.orientation === &quot;landscape&quot; ? 800  : 700;
+  const title = c.appName.replace(/'/g, &quot;\\'&quot;) || &quot;App&quot;;
+  return `const { app, BrowserWindow, Menu } = require('electron');
+const path = require('path');
+
+let win;
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>createWindow</span>
+    <div>
+      <small>L121–L164</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">function createWindow() {
+  win = new BrowserWindow({
+    width: ${w},
+    height: ${h},
+    minWidth: 400,
+    minHeight: 300,
+    title: '${title}',
+    backgroundColor: '${c.bgColor || &quot;#0f172a&quot;}',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: false,          // permite file:// carregar recursos locais
+      allowRunningInsecureContent: true,
+    },
+    show: false,
+    autoHideMenuBar: true,
+    // Sem icon — usa ícone padrão do Electron (evita erro de arquivo ausente)
+  });
+
+  // Carrega o app web a partir da pasta www/
+  win.loadFile(path.join(__dirname, 'www', 'index.html'));
+
+  // Mostra janela só quando estiver pronto (evita flash branco)
+  win.once('ready-to-show', () =&gt; win.show());
+
+  // Sem barra de menu
+  Menu.setApplicationMenu(null);
+}
+
+app.whenReady().then(() =&gt; {
+  createWindow();
+  app.on('activate', () =&gt; {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on('window-all-closed', () =&gt; {
+  if (process.platform !== 'darwin') app.quit();
+});
+`;
+}
+
+/* ── preload.js do Electron ── */</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>genElectronPreload</span>
+    <div>
+      <small>L165–L177</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">function genElectronPreload(): string {
+  return `const { contextBridge } = require('electron');
+
+// Expõe informações do Electron para o app web
+contextBridge.exposeInMainWorld('electronAPI', {
+  platform: process.platform,   // 'win32' | 'darwin' | 'linux'
+  version: process.versions.electron,
+  isDesktop: true,
+});
+`;
+}
+
+/* ── .npmrc — configurações para evitar problemas no CI ── */</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>genNpmRc</span>
+    <div>
+      <small>L178–L186</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">function genNpmRc(): string {
+  return `# Configurações para builds no GitHub Actions
+legacy-peer-deps=true
+fetch-retry-mintimeout=20000
+fetch-retry-maxtimeout=120000
+`;
+}
+
+/* ── GitHub Actions corrigido ── */</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>genDesktopWorkflow</span>
+    <div>
+      <small>L187–L368</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">export function genDesktopWorkflow(c: AppConfig): string {
+  const safe = c.appName.replace(/[^a-zA-Z0-9]/g, &quot;-&quot;) || &quot;App&quot;;
+  return `name: Build Desktop — ${safe}
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  # ════════════════════════════════════
+  # Windows — .exe (NSIS installer)
+  # ════════════════════════════════════
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # Desabilita code signing (sem certificado pago não funciona)
+      - name: Instalar dependências
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
+        run: npm install --legacy-peer-deps
+
+      # Remove package.json de www/ — evita conflito com electron-builder
+      - name: Limpar package.json conflitantes
+        shell: bash
+        run: find www -name &quot;package.json&quot; -delete 2&gt;/dev/null || true
+
+      - name: Build Windows (.exe)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:win
+
+      - name: Localizar .exe gerado
+        id: find_win
+        shell: bash
+        run: |
+          FILE=\$(find dist -name &quot;*.exe&quot; 2&gt;/dev/null | head -1)
+          echo &quot;file=\$FILE&quot; &gt;&gt; \$GITHUB_OUTPUT
+          if [ -n &quot;\$FILE&quot; ]; then echo &quot;✅ EXE: \$FILE&quot;; else echo &quot;❌ .exe não encontrado&quot;; exit 1; fi
+
+      - name: Publicar Release Windows
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release delete latest-windows --yes 2&gt;/dev/null || true
+          gh release create latest-windows \\
+            --title &quot;✅ ${safe} — Windows (.exe)&quot; \\
+            --notes &quot;## Instalador Windows
+
+          **Como instalar:**
+          1. Baixe o arquivo **.exe** abaixo
+          2. Execute como administrador se necessário
+          3. Siga o assistente de instalação
+
+          &gt; Gerado com Electron + electron-builder&quot; \\
+            --latest \\
+            &quot;\${{ steps.find_win.outputs.file }}&quot;
+
+  # ════════════════════════════════════
+  # Linux — .AppImage (portátil)
+  # ════════════════════════════════════
+  build-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm install --legacy-peer-deps
+
+      - name: Limpar package.json conflitantes
+        run: find www -name &quot;package.json&quot; -delete 2&gt;/dev/null || true
+
+      - name: Build Linux (.AppImage)
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:linux
+
+      - name: Localizar .AppImage
+        id: find_linux
+        run: |
+          FILE=\$(find dist -name &quot;*.AppImage&quot; 2&gt;/dev/null | head -1)
+          echo &quot;file=\$FILE&quot; &gt;&gt; \$GITHUB_OUTPUT
+          if [ -n &quot;\$FILE&quot; ]; then echo &quot;✅ AppImage: \$FILE&quot;; else echo &quot;❌ AppImage não encontrado&quot;; exit 1; fi
+
+      - name: Publicar Release Linux
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest-linux --yes 2&gt;/dev/null || true
+          gh release create latest-linux \\
+            --title &quot;✅ ${safe} — Linux (.AppImage)&quot; \\
+            --notes &quot;## Executável Linux (portátil)
+
+          **Como usar:**
+          1. Baixe o **.AppImage** abaixo
+          2. \`chmod +x ${safe}*.AppImage\`
+          3. Execute: \`./${safe}*.AppImage\`&quot; \\
+            --latest \\
+            &quot;\${{ steps.find_linux.outputs.file }}&quot;
+
+  # ════════════════════════════════════
+  # Mac — .dmg (opcional, precisa de runner mac)
+  # ════════════════════════════════════
+  build-mac:
+    runs-on: macos-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npm install --legacy-peer-deps
+
+      - name: Limpar package.json conflitantes
+        run: find www -name &quot;package.json&quot; -delete 2&gt;/dev/null || true
+
+      - name: Build Mac (.dmg)
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          ELECTRON_BUILDER_ALLOW_UNRESOLVED_DEPENDENCIES: 'true'
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:mac
+
+      - name: Localizar .dmg
+        id: find_mac
+        run: |
+          FILE=\$(find dist -name &quot;*.dmg&quot; 2&gt;/dev/null | head -1)
+          echo &quot;file=\$FILE&quot; &gt;&gt; \$GITHUB_OUTPUT
+          if [ -n &quot;\$FILE&quot; ]; then echo &quot;✅ DMG: \$FILE&quot;; else echo &quot;❌ DMG não encontrado&quot;; exit 1; fi
+
+      - name: Publicar Release Mac
+        env:
+          GH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete latest-mac --yes 2&gt;/dev/null || true
+          gh release create latest-mac \\
+            --title &quot;✅ ${safe} — Mac (.dmg)&quot; \\
+            --notes &quot;## Instalador Mac
+
+          **Como instalar:**
+          1. Baixe o **.dmg** abaixo
+          2. Arraste o app para a pasta Aplicativos
+          3. Na primeira execução: clique direito → Abrir (para contornar Gatekeeper)&quot; \\
+            --latest \\
+            &quot;\${{ steps.find_mac.outputs.file }}&quot;
+`;
+}
+
+/* ── README ── */</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>genDesktopReadme</span>
+    <div>
+      <small>L369–L441</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">function genDesktopReadme(c: AppConfig): string {
+  const safe = c.appName.replace(/[^a-zA-Z0-9]/g, &quot;-&quot;) || &quot;App&quot;;
+  return `# ${c.appName || &quot;Meu App&quot;} — App Desktop
+
+Aplicativo gerado pelo **APK Builder** usando Electron.
+Funciona em **Windows**, **Mac** e **Linux** sem precisar de browser.
+
+## Estrutura do projeto
+
+\`\`\`
+├── main.js          ← Processo principal do Electron
+├── preload.js       ← Bridge segura entre Electron e web
+├── package.json     ← Dependências e config do electron-builder
+├── www/             ← Seus arquivos web (HTML/CSS/JS)
+│   └── index.html
+└── .github/
+    └── workflows/
+        └── build-desktop.yml  ← CI automático
+\`\`\`
+
+## Opções para compilar
+
+### ✅ Opção 1 — GitHub Actions (Gratuito, Automático)
+
+\`\`\`bash
+git init
+git add .
+git commit -m &quot;init: desktop app&quot;
+git remote add origin https://github.com/SEU_USUARIO/SEU_REPO.git
+git push -u origin main
+\`\`\`
+
+Aguarde ~15 min → **Repositório → Releases** → baixe:
+- \`${safe}-Setup-${c.versionName}.exe\` → Windows
+- \`${safe}-${c.versionName}.AppImage\` → Linux
+- \`${safe}-${c.versionName}.dmg\` → Mac
+
+### 💻 Opção 2 — Compilar localmente
+
+**Pré-requisitos:** Node.js 20+
+
+\`\`\`bash
+npm install
+npm run build:win    # Gera .exe para Windows
+npm run build:linux  # Gera .AppImage para Linux
+npm run build:mac    # Gera .dmg para Mac (precisa de Mac)
+\`\`\`
+
+### 🖥️ Opção 3 — Testar sem compilar
+
+\`\`\`bash
+npm install
+npm start            # Abre o app em modo desenvolvimento
+\`\`\`
+
+## Por que o build falha?
+
+- **Code signing**: O \`.exe\` não está assinado digitalmente — normal para distribuição privada.
+  No Windows pode aparecer aviso do SmartScreen → clique &quot;Mais informações → Executar assim mesmo&quot;.
+- **Mac Gatekeeper**: Clique direito no app → Abrir (primeira vez).
+- **Linux**: Execute \`chmod +x ${safe}*.AppImage\` antes de rodar.
+
+## Versões
+
+- Electron: 33.x
+- electron-builder: 25.x
+- Node.js: 20+
+`;
+}
+
+/* ══════════════════════════════════════════════════════════
+   buildDesktopFilesForGithub
+══════════════════════════════════════════════════════════ */</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>buildDesktopFilesForGithub</span>
+    <div>
+      <small>L442–L469</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">export async function buildDesktopFilesForGithub(
+  cfg: AppConfig,
+  webFiles: ArchiveFile[],
+): Promise&lt;ArchiveFile[]&gt; {
+  const result: ArchiveFile[] = [];
+
+  result.push({ path: &quot;package.json&quot;,   content: strToAb(genElectronPackageJson(cfg)) });
+  result.push({ path: &quot;main.js&quot;,        content: strToAb(genElectronMain(cfg)) });
+  result.push({ path: &quot;preload.js&quot;,     content: strToAb(genElectronPreload()) });
+  result.push({ path: &quot;.npmrc&quot;,         content: strToAb(genNpmRc()) });
+  result.push({ path: &quot;README.md&quot;,      content: strToAb(genDesktopReadme(cfg)) });
+  result.push({ path: &quot;.gitignore&quot;,     content: strToAb(&quot;node_modules/\ndist/\n.DS_Store\n&quot;) });
+  result.push({
+    path: &quot;.github/workflows/build-desktop.yml&quot;,
+    content: strToAb(genDesktopWorkflow(cfg)),
+  });
+
+  for (const f of webFiles) {
+    if (!f.path || f.path.endsWith(&quot;/&quot;)) continue;
+    result.push({ path: `www/${f.path}`, content: f.content });
+  }
+
+  return result;
+}
+
+/* ══════════════════════════════════════════════════════════
+   buildDesktopZip — ZIP para download local
+══════════════════════════════════════════════════════════ */</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>buildDesktopZip</span>
+    <div>
+      <small>L470–L501</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">export async function buildDesktopZip(
+  cfg: AppConfig,
+  webFiles: ArchiveFile[],
+): Promise&lt;Blob&gt; {
+  const zip = new JSZip();
+
+  zip.file(&quot;package.json&quot;,  genElectronPackageJson(cfg));
+  zip.file(&quot;main.js&quot;,       genElectronMain(cfg));
+  zip.file(&quot;preload.js&quot;,    genElectronPreload());
+  zip.file(&quot;.npmrc&quot;,        genNpmRc());
+  zip.file(&quot;README.md&quot;,     genDesktopReadme(cfg));
+  zip.file(&quot;.gitignore&quot;,    &quot;node_modules/\ndist/\n.DS_Store\n&quot;);
+  zip.file(&quot;.github/workflows/build-desktop.yml&quot;, genDesktopWorkflow(cfg));
+
+  const wwwFolder = zip.folder(&quot;www&quot;)!;
+  for (const f of webFiles) {
+    if (!f.path || f.path.endsWith(&quot;/&quot;)) continue;
+    const parts = f.path.split(&quot;/&quot;);
+    let cur = wwwFolder;
+    for (let i = 0; i &lt; parts.length - 1; i++) {
+      cur = cur.folder(parts[i])!;
+    }
+    cur.file(parts[parts.length - 1], f.content, { binary: true });
+  }
+
+  return zip.generateAsync({
+    type: &quot;blob&quot;,
+    compression: &quot;DEFLATE&quot;,
+    compressionOptions: { level: 6 },
+  });
+}
+</pre>
+</div>
+</body>
+</html>
