@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: settings.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 settings.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:19:54 • 26 elementos • 12 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { Feather } from &quot;@expo/vector-icons&quot;;</div><div class="idx-item">L2 [import] import * as Clipboard from &quot;expo-clipboard&quot;;</div><div class="idx-item">L3 [import] import * as Haptics from &quot;expo-haptics&quot;;</div><div class="idx-item">L4 [import] import React, { useState } from &quot;react&quot;;</div><div class="idx-item">L5 [import] import SystemStatus from &quot;@/components/SystemStatus&quot;;</div><div class="idx-item">L6 [import] import AIMemoryModal from &quot;@/components/AIMemoryModal&quot;;</div><div class="idx-item">L7 [import] import CheckpointsModal from &quot;@/components/CheckpointsModal&quot;;</div><div class="idx-item">L8 [import] import ProjectOverviewModal from &quot;@/components/ProjectOverviewModal&quot;;</div><div class="idx-item">L9 [import] import {</div><div class="idx-item">L23 [import] import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;</div><div class="idx-item">L25 [import] import { useApp } from &quot;@/context/AppContext&quot;;</div><div class="idx-item">L26 [import] import { useColors } from &quot;@/hooks/useColors&quot;;</div><div class="idx-item">L27 [import] import type { AIProvider, GitConfig, DBConfig } from &quot;@/context/AppContext&quot;;</div><div class="idx-item">L28 [import] import AppStatusChecker from &quot;@/components/AppStatusChecker&quot;;</div><div class="idx-item">L30 [interface] AIProviderType</div><div class="idx-item">L86 [component] SectionHeader</div><div class="idx-item">L94 [component] SettingRow</div><div class="idx-item">L107 [function] Inner →</div><div class="idx-item">L127 [component] SettingsScreen</div><div class="idx-item">L215 [function] detectKeyType →</div><div class="idx-item">L238 [function] handleKeyChange →</div><div class="idx-item">L256 [function] handleAddAI →</div><div class="idx-item">L276 [function] handleGitTokenChange →</div><div class="idx-item">L298 [function] handleAddGit →</div><div class="idx-item">L315 [function] handleAddDB →</div><div class="idx-item">L1189 [function] domain →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L85</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { Feather } from &quot;@expo/vector-icons&quot;;
+import * as Clipboard from &quot;expo-clipboard&quot;;
+import * as Haptics from &quot;expo-haptics&quot;;
+import React, { useState } from &quot;react&quot;;
+import SystemStatus from &quot;@/components/SystemStatus&quot;;
+import AIMemoryModal from &quot;@/components/AIMemoryModal&quot;;
+import CheckpointsModal from &quot;@/components/CheckpointsModal&quot;;
+import ProjectOverviewModal from &quot;@/components/ProjectOverviewModal&quot;;
+import {
+  Alert,
+  Linking,
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from &quot;react-native&quot;;
+
+import { useSafeAreaInsets } from &quot;react-native-safe-area-context&quot;;
+
+import { useApp } from &quot;@/context/AppContext&quot;;
+import { useColors } from &quot;@/hooks/useColors&quot;;
+import type { AIProvider, GitConfig, DBConfig } from &quot;@/context/AppContext&quot;;
+import AppStatusChecker from &quot;@/components/AppStatusChecker&quot;;
+
+type AIProviderType = AIProvider[&quot;type&quot;];
+
+const AI_PROVIDERS: { type: AIProviderType; label: string; placeholder: string; noKey?: boolean }[] = [
+  { type: &quot;cortesia&quot;,   label: &quot;✨ Cortesia Gemini (grátis)&quot;, placeholder: &quot;&quot;,         noKey: true },
+  { type: &quot;groq&quot;,       label: &quot;Groq (Grátis/Rápido)&quot;,       placeholder: &quot;gsk_...&quot; },
+  { type: &quot;openai&quot;,     label: &quot;OpenAI&quot;,                      placeholder: &quot;sk-...&quot; },
+  { type: &quot;anthropic&quot;,  label: &quot;Anthropic Claude&quot;,            placeholder: &quot;sk-ant-...&quot; },
+  { type: &quot;gemini&quot;,     label: &quot;Google Gemini&quot;,               placeholder: &quot;AIza...&quot; },
+  { type: &quot;xai&quot;,        label: &quot;xAI / Grok&quot;,                  placeholder: &quot;xai-...&quot; },
+  { type: &quot;openrouter&quot;, label: &quot;OpenRouter&quot;,                  placeholder: &quot;sk-or-...&quot; },
+  { type: &quot;perplexity&quot;, label: &quot;Perplexity&quot;,                  placeholder: &quot;pplx-...&quot; },
+  { type: &quot;deepseek&quot;,   label: &quot;DeepSeek&quot;,                    placeholder: &quot;sk-...&quot; },
+  { type: &quot;mistral&quot;,    label: &quot;Mistral AI&quot;,                  placeholder: &quot;...&quot; },
+  { type: &quot;custom&quot;,     label: &quot;Custom (OpenAI Compatível)&quot;,  placeholder: &quot;Bearer token...&quot; },
+];
+
+const AI_MODELS: Record&lt;AIProviderType, string[]&gt; = {
+  cortesia:   [&quot;gemini-2.5-flash&quot;, &quot;gemini-2.5-pro&quot;, &quot;gemini-2.0-flash&quot;, &quot;gemini-2.0-flash-lite&quot;, &quot;gemini-1.5-pro&quot;, &quot;gemini-1.5-flash&quot;],
+  groq:       [
+    &quot;llama-3.3-70b-versatile&quot;,
+    &quot;llama-3.1-8b-instant&quot;,
+    &quot;llama3-70b-8192&quot;,
+    &quot;llama3-8b-8192&quot;,
+    &quot;mixtral-8x7b-32768&quot;,
+    &quot;gemma2-9b-it&quot;,
+    &quot;gemma-7b-it&quot;,
+    &quot;llama-3.1-70b-versatile&quot;,
+    &quot;qwen-qwq-32b&quot;,
+    &quot;deepseek-r1-distill-llama-70b&quot;,
+  ],
+  openai:     [&quot;gpt-4.1&quot;, &quot;gpt-4.1-mini&quot;, &quot;gpt-4.1-nano&quot;, &quot;gpt-4o&quot;, &quot;gpt-4o-mini&quot;, &quot;gpt-4-turbo&quot;, &quot;o3-mini&quot;, &quot;o1&quot;, &quot;o1-mini&quot;, &quot;gpt-3.5-turbo&quot;],
+  anthropic:  [&quot;claude-opus-4-5&quot;, &quot;claude-sonnet-4-5&quot;, &quot;claude-haiku-4-20250514&quot;, &quot;claude-3-7-sonnet-latest&quot;, &quot;claude-3-5-haiku-20241022&quot;, &quot;claude-3-opus-20240229&quot;],
+  gemini:     [&quot;gemini-2.5-flash&quot;, &quot;gemini-2.5-pro&quot;, &quot;gemini-2.0-flash&quot;, &quot;gemini-2.0-flash-lite&quot;, &quot;gemini-1.5-pro&quot;, &quot;gemini-1.5-flash&quot;],
+  xai:        [&quot;grok-3&quot;, &quot;grok-3-mini&quot;, &quot;grok-2-latest&quot;, &quot;grok-2-mini&quot;, &quot;grok-beta&quot;],
+  openrouter: [
+    &quot;google/gemini-2.5-flash-preview&quot;,
+    &quot;google/gemini-2.5-pro-preview&quot;,
+    &quot;openai/gpt-4.1&quot;,
+    &quot;openai/gpt-4o-mini&quot;,
+    &quot;anthropic/claude-opus-4-5&quot;,
+    &quot;anthropic/claude-sonnet-4-5&quot;,
+    &quot;anthropic/claude-3-haiku&quot;,
+    &quot;meta-llama/llama-3.3-70b-instruct&quot;,
+    &quot;deepseek/deepseek-chat&quot;,
+    &quot;deepseek/deepseek-r1&quot;,
+    &quot;mistralai/mistral-large&quot;,
+    &quot;qwen/qwen-2.5-72b-instruct&quot;,
+    &quot;microsoft/phi-4&quot;,
+    &quot;nousresearch/hermes-3-llama-3.1-405b&quot;,
+  ],
+  perplexity: [&quot;sonar-pro&quot;, &quot;sonar&quot;, &quot;sonar-reasoning-pro&quot;, &quot;sonar-reasoning&quot;, &quot;sonar-deep-research&quot;],
+  deepseek:   [&quot;deepseek-chat&quot;, &quot;deepseek-coder&quot;, &quot;deepseek-reasoner&quot;],
+  mistral:    [&quot;mistral-large-latest&quot;, &quot;mistral-small-latest&quot;, &quot;codestral-latest&quot;, &quot;open-mixtral-8x22b&quot;, &quot;open-mistral-7b&quot;],
+  custom:     [],
+};
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>SectionHeader</span>
+    <div>
+      <small>L86–L93</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function SectionHeader({ title, colors }: { title: string; colors: ReturnType&lt;typeof useColors&gt; }) {
+  return (
+    &lt;Text style={[settingsStyles.sectionHeader, { color: colors.mutedForeground }]}&gt;
+      {title}
+    &lt;/Text&gt;
+  );
+}
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>SettingRow</span>
+    <div>
+      <small>L94–L106</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">function SettingRow({
+  label,
+  sublabel,
+  right,
+  colors,
+  onPress,
+}: {
+  label: string;
+  sublabel?: string;
+  right?: React.ReactNode;
+  colors: ReturnType&lt;typeof useColors&gt;;
+  onPress?: () =&gt; void;
+}) {</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>Inner →</span>
+    <div>
+      <small>L107–L126</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">  const Inner = (
+    &lt;View style={[settingsStyles.row, { borderBottomColor: colors.border }]}&gt;
+      &lt;View style={{ flex: 1 }}&gt;
+        &lt;Text style={[settingsStyles.rowLabel, { color: colors.foreground }]}&gt;{label}&lt;/Text&gt;
+        {sublabel ? (
+          &lt;Text style={[settingsStyles.rowSublabel, { color: colors.mutedForeground }]}&gt;
+            {sublabel}
+          &lt;/Text&gt;
+        ) : null}
+      &lt;/View&gt;
+      {right}
+    &lt;/View&gt;
+  );
+  return onPress ? (
+    &lt;TouchableOpacity onPress={onPress}&gt;{Inner}&lt;/TouchableOpacity&gt;
+  ) : (
+    Inner
+  );
+}
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>SettingsScreen</span>
+    <div>
+      <small>L127–L214</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">export default function SettingsScreen() {
+  const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const {
+    aiProviders,
+    gitConfigs,
+    dbConfigs,
+    settings,
+    updateSettings,
+    activeProject,
+    saveCheckpoint,
+    restoreCheckpoint,
+    deleteCheckpoint,
+    addAIProvider,
+    removeAIProvider,
+    setActiveAIProvider,
+    addGitConfig,
+    removeGitConfig,
+    addDBConfig,
+    removeDBConfig,
+  } = useApp();
+
+  const [systemPromptDraft, setSystemPromptDraft] = React.useState(settings.systemPrompt || &quot;&quot;);
+  const [checkpointLabel, setCheckpointLabel] = React.useState(&quot;&quot;);
+  const [serverUrlDraft, setServerUrlDraft] = React.useState(settings.customServerUrl || &quot;&quot;);
+  const [serverUrlEditing, setServerUrlEditing] = React.useState(false);
+  const [termuxPortDraft, setTermuxPortDraft] = React.useState(String(settings.termuxPort ?? 8080));
+  const [termuxPortEditing, setTermuxPortEditing] = React.useState(false);
+  const [expoAccountDraft, setExpoAccountDraft] = React.useState(settings.expoAccount || &quot;maikon1&quot;);
+  const [easSlugDraft, setEasSlugDraft] = React.useState(settings.easProjectSlug || &quot;app-ide&quot;);
+  const [expoEditing, setExpoEditing] = React.useState(false);
+  const [geminiKeyDraft, setGeminiKeyDraft] = React.useState(settings.geminiDirectKey || &quot;&quot;);
+  const [showGeminiKey, setShowGeminiKey] = React.useState(false);
+
+  // Sincroniza drafts quando as configurações carregam do AsyncStorage (carregamento assíncrono)
+  React.useEffect(() =&gt; {
+    if (settings.geminiDirectKey &amp;&amp; !geminiKeyDraft) {
+      setGeminiKeyDraft(settings.geminiDirectKey);
+    }
+  }, [settings.geminiDirectKey]);
+
+  React.useEffect(() =&gt; {
+    if (settings.customServerUrl &amp;&amp; !serverUrlDraft) {
+      setServerUrlDraft(settings.customServerUrl);
+    }
+  }, [settings.customServerUrl]);
+
+  React.useEffect(() =&gt; {
+    if (settings.systemPrompt &amp;&amp; !systemPromptDraft) {
+      setSystemPromptDraft(settings.systemPrompt);
+    }
+  }, [settings.systemPrompt]);
+
+  React.useEffect(() =&gt; {
+    if (settings.termuxPort) {
+      setTermuxPortDraft(String(settings.termuxPort));
+    }
+  }, [settings.termuxPort]);
+
+  const [showAIModal, setShowAIModal] = useState(false);
+  const [showGitModal, setShowGitModal] = useState(false);
+  const [showDBModal, setShowDBModal] = useState(false);
+  const [showStatus, setShowStatus] = useState(false);
+  const [showMemory, setShowMemory] = useState(false);
+  const [showCheckpoints, setShowCheckpoints] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
+
+  const [aiType, setAIType] = useState&lt;AIProviderType&gt;(&quot;openai&quot;);
+  const [aiKey, setAIKey] = useState(&quot;&quot;);
+  const [aiName, setAIName] = useState(&quot;&quot;);
+  const [aiModel, setAIModel] = useState(&quot;&quot;);
+  const [aiBaseUrl, setAIBaseUrl] = useState(&quot;&quot;);
+
+  const [gitProvider, setGitProvider] = useState&lt;&quot;github&quot; | &quot;gitlab&quot;&gt;(&quot;github&quot;);
+  const [gitToken, setGitToken] = useState(&quot;&quot;);
+  const [gitUsername, setGitUsername] = useState(&quot;&quot;);
+  const [gitEmail, setGitEmail] = useState(&quot;&quot;);
+  const [gitInstance, setGitInstance] = useState(&quot;https://gitlab.com&quot;);
+  const [gitFetching, setGitFetching] = useState(false);
+  const [gitAutoFilled, setGitAutoFilled] = useState(false);
+
+  const [dbProvider, setDBProvider] = useState&lt;&quot;neon&quot; | &quot;postgres&quot; | &quot;sqlite&quot; | &quot;supabase&quot; | &quot;mysql&quot; | &quot;mongodb&quot; | &quot;turso&quot; | &quot;redis&quot; | &quot;firebase&quot; | &quot;planetscale&quot; | &quot;railway&quot;&gt;(&quot;neon&quot;);
+  const [dbConnStr, setDBConnStr] = useState(&quot;&quot;);
+  const [dbName, setDBName] = useState(&quot;&quot;);
+
+  const topPadding = Platform.OS === &quot;web&quot; ? 14 : insets.top;
+  const bottomPadding = Platform.OS === &quot;web&quot; ? 70 : Math.max(insets.bottom, 16) + 70;
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>detectKeyType →</span>
+    <div>
+      <small>L215–L237</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">  const detectKeyType = (key: string): AIProviderType =&gt; {
+    const k = key.trim();
+    if (k.startsWith(&quot;gsk_&quot;))   return &quot;groq&quot;;
+    if (k.startsWith(&quot;sk-or-&quot;)) return &quot;openrouter&quot;;
+    if (k.startsWith(&quot;pplx-&quot;))  return &quot;perplexity&quot;;
+    if (k.startsWith(&quot;AIza&quot;))   return &quot;gemini&quot;;
+    if (k.startsWith(&quot;xai-&quot;))   return &quot;xai&quot;;
+    if (k.startsWith(&quot;sk-ant&quot;)) return &quot;anthropic&quot;;
+    if (k.startsWith(&quot;sk-&quot;))    return &quot;openai&quot;;
+    return &quot;custom&quot;;
+  };
+
+  // Map the same AUTO_DETECT table as AIChat
+  const AUTO_DETECT_SETTINGS: [string, string, string, string][] = [
+    [&quot;gsk_&quot;,   &quot;https://api.groq.com/openai/v1&quot;,                           &quot;llama-3.3-70b-versatile&quot;,  &quot;Groq&quot;],
+    [&quot;sk-or-&quot;, &quot;https://openrouter.ai/api/v1&quot;,                             &quot;openai/gpt-4o-mini&quot;,       &quot;OpenRouter&quot;],
+    [&quot;pplx-&quot;,  &quot;https://api.perplexity.ai&quot;,                                &quot;sonar-pro&quot;,                &quot;Perplexity&quot;],
+    [&quot;AIza&quot;,   &quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;, &quot;gemini-2.5-flash&quot;,         &quot;Google Gemini&quot;],
+    [&quot;xai-&quot;,   &quot;https://api.x.ai/v1&quot;,                                      &quot;grok-2-latest&quot;,            &quot;xAI / Grok&quot;],
+    [&quot;sk-ant&quot;, &quot;https://api.anthropic.com/v1&quot;,                             &quot;claude-haiku-4-20250514&quot;,  &quot;Anthropic Claude&quot;],
+    [&quot;sk-&quot;,    &quot;https://api.openai.com/v1&quot;,                                &quot;gpt-4o-mini&quot;,              &quot;OpenAI&quot;],
+  ];
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>handleKeyChange →</span>
+    <div>
+      <small>L238–L255</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  const handleKeyChange = (key: string) =&gt; {
+    setAIKey(key);
+    if (key.length &gt; 20) {
+      const detected = detectKeyType(key);
+      setAIType(detected);
+      const det = AUTO_DETECT_SETTINGS.find(([p]) =&gt; key.trim().startsWith(p));
+      if (det) {
+        const [, url, model, name] = det;
+        if (!aiName) setAIName(name);
+        if (!aiModel) setAIModel(model);
+        if (!aiBaseUrl) setAIBaseUrl(url);
+      } else if (!aiName) {
+        const found = AI_PROVIDERS.find((p) =&gt; p.type === detected);
+        if (found) setAIName(found.label);
+      }
+    }
+  };
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>handleAddAI →</span>
+    <div>
+      <small>L256–L275</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">  const handleAddAI = () =&gt; {
+    const isCortesia = aiType === &quot;cortesia&quot;;
+    if (!isCortesia &amp;&amp; !aiKey.trim()) return;
+    const defaultModel = AI_MODELS[aiType]?.[0];
+    addAIProvider({
+      name: aiName || AI_PROVIDERS.find((p) =&gt; p.type === aiType)?.label || aiType,
+      type: aiType,
+      apiKey: isCortesia ? &quot;&quot; : aiKey.trim(),
+      baseUrl: aiBaseUrl.trim() || undefined,
+      model: aiModel.trim() || defaultModel || undefined,
+      isActive: aiProviders.length === 0,
+    });
+    setShowAIModal(false);
+    setAIKey(&quot;&quot;);
+    setAIName(&quot;&quot;);
+    setAIModel(&quot;&quot;);
+    setAIBaseUrl(&quot;&quot;);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>handleGitTokenChange →</span>
+    <div>
+      <small>L276–L297</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">  const handleGitTokenChange = async (token: string) =&gt; {
+    setGitToken(token);
+    setGitAutoFilled(false);
+    setGitUsername(&quot;&quot;);
+    setGitEmail(&quot;&quot;);
+    if (gitProvider === &quot;github&quot; &amp;&amp; token.trim().length &gt; 20) {
+      setGitFetching(true);
+      try {
+        const resp = await fetch(&quot;https://api.github.com/user&quot;, {
+          headers: { Authorization: `token ${token.trim()}`, Accept: &quot;application/vnd.github+json&quot; },
+        });
+        if (resp.ok) {
+          const user = await resp.json() as { login: string; email?: string | null; name?: string | null };
+          setGitUsername(user.login || &quot;&quot;);
+          setGitEmail(user.email || &quot;&quot;);
+          setGitAutoFilled(true);
+        }
+      } catch {}
+      setGitFetching(false);
+    }
+  };
+</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>handleAddGit →</span>
+    <div>
+      <small>L298–L314</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">  const handleAddGit = () =&gt; {
+    if (!gitToken.trim()) return;
+    addGitConfig({
+      provider: gitProvider,
+      token: gitToken.trim(),
+      username: gitUsername.trim(),
+      email: gitEmail.trim() || undefined,
+      instanceUrl: gitProvider === &quot;gitlab&quot; ? gitInstance.trim() : undefined,
+    });
+    setShowGitModal(false);
+    setGitToken(&quot;&quot;);
+    setGitUsername(&quot;&quot;);
+    setGitEmail(&quot;&quot;);
+    setGitAutoFilled(false);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>handleAddDB →</span>
+    <div>
+      <small>L315–L1188</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">  const handleAddDB = () =&gt; {
+    if (!dbConnStr.trim() || !dbName.trim()) return;
+    addDBConfig({ provider: dbProvider, connectionString: dbConnStr.trim(), name: dbName.trim() });
+    setShowDBModal(false);
+    setDBConnStr(&quot;&quot;);
+    setDBName(&quot;&quot;);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  return (
+    &lt;View style={[styles.container, { backgroundColor: colors.background }]}&gt;
+      &lt;View
+        style={[
+          styles.header,
+          {
+            paddingTop: topPadding + 6,
+            backgroundColor: colors.card,
+            borderBottomColor: colors.border,
+          },
+        ]}
+      &gt;
+        &lt;Text style={[styles.headerTitle, { color: colors.foreground }]}&gt;Configuracoes&lt;/Text&gt;
+      &lt;/View&gt;
+
+      &lt;ScrollView contentContainerStyle={{ paddingBottom: bottomPadding + 20 }}&gt;
+        {/* ── Verificar Tudo ──────────────────────────────────────────────────── */}
+        &lt;AppStatusChecker /&gt;
+
+        {/* IA */}
+        &lt;SectionHeader title=&quot;INTELIGÊNCIA ARTIFICIAL&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          {aiProviders.map((p) =&gt; (
+            &lt;SettingRow
+              key={p.id}
+              colors={colors}
+              label={p.name}
+              sublabel={p.model || p.type}
+              right={
+                &lt;View style={{ flexDirection: &quot;row&quot;, gap: 10, alignItems: &quot;center&quot; }}&gt;
+                  {p.isActive &amp;&amp; (
+                    &lt;View style={[styles.activeBadge, { backgroundColor: colors.success }]}&gt;
+                      &lt;Text style={styles.activeBadgeText}&gt;Ativo&lt;/Text&gt;
+                    &lt;/View&gt;
+                  )}
+                  {!p.isActive &amp;&amp; (
+                    &lt;TouchableOpacity
+                      onPress={() =&gt; setActiveAIProvider(p.id)}
+                      style={[styles.badge, { borderColor: colors.border }]}
+                    &gt;
+                      &lt;Text style={[styles.badgeText, { color: colors.mutedForeground }]}&gt;
+                        Usar
+                      &lt;/Text&gt;
+                    &lt;/TouchableOpacity&gt;
+                  )}
+                  &lt;TouchableOpacity
+                    onPress={() =&gt; {
+                      if (Platform.OS === &quot;web&quot;) {
+                        removeAIProvider(p.id);
+                      } else {
+                        Alert.alert(&quot;Remover&quot;, `Remover ${p.name}?`, [
+                          { text: &quot;Cancelar&quot;, style: &quot;cancel&quot; },
+                          { text: &quot;Remover&quot;, style: &quot;destructive&quot;, onPress: () =&gt; removeAIProvider(p.id) },
+                        ]);
+                      }
+                    }}
+                    style={{ padding: 4 }}
+                  &gt;
+                    &lt;Feather name=&quot;trash-2&quot; size={16} color={colors.destructive} /&gt;
+                  &lt;/TouchableOpacity&gt;
+                &lt;/View&gt;
+              }
+            /&gt;
+          ))}
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Adicionar Provedor de IA&quot;
+            onPress={() =&gt; setShowAIModal(true)}
+            right={&lt;Feather name=&quot;plus&quot; size={16} color={colors.primary} /&gt;}
+          /&gt;
+        &lt;/View&gt;
+
+        {/* Git */}
+        &lt;SectionHeader title=&quot;GIT / CONTROLE DE VERSÃO&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          {gitConfigs.map((g) =&gt; (
+            &lt;SettingRow
+              key={g.provider}
+              colors={colors}
+              label={g.provider === &quot;github&quot; ? &quot;GitHub&quot; : &quot;GitLab&quot;}
+              sublabel={g.username}
+              right={
+                &lt;TouchableOpacity
+                  style={{ padding: 4 }}
+                  onPress={() =&gt; {
+                    if (Platform.OS === &quot;web&quot;) {
+                      removeGitConfig(g.provider);
+                    } else {
+                      Alert.alert(&quot;Remover&quot;, `Remover config do ${g.provider}?`, [
+                        { text: &quot;Cancelar&quot;, style: &quot;cancel&quot; },
+                        { text: &quot;Remover&quot;, style: &quot;destructive&quot;, onPress: () =&gt; removeGitConfig(g.provider) },
+                      ]);
+                    }
+                  }}
+                &gt;
+                  &lt;Feather name=&quot;trash-2&quot; size={16} color={colors.destructive} /&gt;
+                &lt;/TouchableOpacity&gt;
+              }
+            /&gt;
+          ))}
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Conectar GitHub / GitLab&quot;
+            onPress={() =&gt; setShowGitModal(true)}
+            right={&lt;Feather name=&quot;plus&quot; size={16} color={colors.primary} /&gt;}
+          /&gt;
+        &lt;/View&gt;
+
+        {/* EAS / Compilar APK */}
+        &lt;SectionHeader title=&quot;EAS BUILD — COMPILAR APK&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;View style={{ padding: 14, gap: 14 }}&gt;
+            &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, lineHeight: 18 }}&gt;
+              Configure sua conta Expo para compilar APKs. Você pode usar qualquer conta — não precisa ser a conta maikon1.
+            &lt;/Text&gt;
+
+            {/* Conta Expo */}
+            &lt;View style={{ gap: 6 }}&gt;
+              &lt;Text style={{ color: colors.foreground, fontWeight: &quot;600&quot;, fontSize: 13 }}&gt;
+                👤 Conta Expo (username)
+              &lt;/Text&gt;
+              {expoEditing ? (
+                &lt;View style={{ gap: 8 }}&gt;
+                  &lt;TextInput
+                    value={expoAccountDraft}
+                    onChangeText={setExpoAccountDraft}
+                    placeholder=&quot;nome-da-conta&quot;
+                    placeholderTextColor={colors.mutedForeground}
+                    autoCapitalize=&quot;none&quot;
+                    autoCorrect={false}
+                    style={{
+                      backgroundColor: colors.background,
+                      borderColor: colors.primary,
+                      borderWidth: 1, borderRadius: 8, padding: 10,
+                      color: colors.foreground, fontSize: 14, fontFamily: &quot;monospace&quot;,
+                    }}
+                  /&gt;
+                  &lt;Text style={{ color: colors.foreground, fontWeight: &quot;600&quot;, fontSize: 13, marginTop: 4 }}&gt;
+                    🔧 Slug do Projeto EAS (para DevMobile)
+                  &lt;/Text&gt;
+                  &lt;TextInput
+                    value={easSlugDraft}
+                    onChangeText={setEasSlugDraft}
+                    placeholder=&quot;app-ide&quot;
+                    placeholderTextColor={colors.mutedForeground}
+                    autoCapitalize=&quot;none&quot;
+                    autoCorrect={false}
+                    style={{
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                      borderWidth: 1, borderRadius: 8, padding: 10,
+                      color: colors.foreground, fontSize: 14, fontFamily: &quot;monospace&quot;,
+                    }}
+                  /&gt;
+                  &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8, marginTop: 4 }}&gt;
+                    &lt;TouchableOpacity
+                      onPress={() =&gt; {
+                        if (!expoAccountDraft.trim()) return;
+                        updateSettings({
+                          expoAccount: expoAccountDraft.trim(),
+                          easProjectSlug: easSlugDraft.trim() || &quot;app-ide&quot;,
+                        });
+                        setExpoEditing(false);
+                        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                        Alert.alert(&quot;✅ Salvo!&quot;, `Conta: ${expoAccountDraft.trim()}\nSlug: ${easSlugDraft.trim() || &quot;app-ide&quot;}\n\nAgora o APK será compilado com esta conta.`);
+                      }}
+                      style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 8, padding: 10, alignItems: &quot;center&quot; }}
+                    &gt;
+                      &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;Salvar&lt;/Text&gt;
+                    &lt;/TouchableOpacity&gt;
+                    &lt;TouchableOpacity
+                      onPress={() =&gt; {
+                        setExpoAccountDraft(settings.expoAccount || &quot;maikon1&quot;);
+                        setEasSlugDraft(settings.easProjectSlug || &quot;app-ide&quot;);
+                        setExpoEditing(false);
+                      }}
+                      style={{ borderRadius: 8, padding: 10, alignItems: &quot;center&quot;, borderWidth: 1, borderColor: colors.border }}
+                    &gt;
+                      &lt;Text style={{ color: colors.mutedForeground, fontSize: 13 }}&gt;Cancelar&lt;/Text&gt;
+                    &lt;/TouchableOpacity&gt;
+                  &lt;/View&gt;
+                &lt;/View&gt;
+              ) : (
+                &lt;TouchableOpacity
+                  onPress={() =&gt; setExpoEditing(true)}
+                  style={{
+                    flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;space-between&quot;,
+                    backgroundColor: colors.background, borderColor: colors.border,
+                    borderWidth: 1, borderRadius: 8, padding: 12,
+                  }}
+                &gt;
+                  &lt;View style={{ gap: 2 }}&gt;
+                    &lt;Text style={{ color: colors.foreground, fontSize: 14, fontFamily: &quot;monospace&quot;, fontWeight: &quot;600&quot; }}&gt;
+                      {settings.expoAccount || &quot;maikon1&quot;}
+                    &lt;/Text&gt;
+                    &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;
+                      Slug: {settings.easProjectSlug || &quot;app-ide&quot;}
+                    &lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;Feather name=&quot;edit-2&quot; size={14} color={colors.mutedForeground} /&gt;
+                &lt;/TouchableOpacity&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Link rápido para expo.dev */}
+            &lt;TouchableOpacity
+              onPress={() =&gt; {
+                Linking.openURL(`https://expo.dev/accounts/${settings.expoAccount || &quot;maikon1&quot;}/projects`);
+              }}
+              style={{
+                flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8,
+                backgroundColor: &quot;#0c1a2e&quot;, borderRadius: 8, padding: 12,
+                borderWidth: 1, borderColor: &quot;#2563eb44&quot;,
+              }}
+            &gt;
+              &lt;Feather name=&quot;external-link&quot; size={14} color=&quot;#60a5fa&quot; /&gt;
+              &lt;Text style={{ color: &quot;#60a5fa&quot;, fontSize: 13, fontWeight: &quot;600&quot; }}&gt;
+                Abrir expo.dev/{settings.expoAccount || &quot;maikon1&quot;}
+              &lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+
+            &lt;View style={{ backgroundColor: &quot;#0c1a0c&quot;, borderRadius: 8, padding: 10, borderWidth: 1, borderColor: &quot;#16a34a33&quot; }}&gt;
+              &lt;Text style={{ color: &quot;#4ade80&quot;, fontSize: 12, fontWeight: &quot;600&quot;, marginBottom: 4 }}&gt;
+                📋 Como usar outra conta:
+              &lt;/Text&gt;
+              &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 12, lineHeight: 18 }}&gt;
+                {&quot;1. Digite o username da nova conta Expo acima\n2. Salve\n3. Ao compilar, execute: eas login\n4. Entre com a nova conta\n5. Execute: eas init (para criar o projeto)\n6. Execute: EAS_NO_VCS=1 eas build --platform android --profile preview&quot;}
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          &lt;/View&gt;
+        &lt;/View&gt;
+
+        {/* DB */}
+        &lt;SectionHeader title=&quot;BANCO DE DADOS&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          {dbConfigs.length &gt; 0 &amp;&amp; (
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: &quot;#00d4aa18&quot; }}&gt;
+              &lt;Feather name=&quot;check-circle&quot; size={13} color=&quot;#00d4aa&quot; /&gt;
+              &lt;Text style={{ color: &quot;#00d4aa&quot;, fontSize: 12, fontWeight: &quot;600&quot; }}&gt;
+                IA instruída para criar e gerenciar o banco de dados
+              &lt;/Text&gt;
+            &lt;/View&gt;
+          )}
+          {dbConfigs.map((d) =&gt; (
+            &lt;SettingRow
+              key={d.name}
+              colors={colors}
+              label={d.name}
+              sublabel={`${
+                d.provider === &quot;neon&quot; ? &quot;⚡ Neon PostgreSQL&quot;
+                : d.provider === &quot;supabase&quot; ? &quot;🟢 Supabase&quot;
+                : d.provider === &quot;postgres&quot; ? &quot;🐘 PostgreSQL&quot;
+                : d.provider === &quot;mysql&quot; ? &quot;🐬 MySQL&quot;
+                : d.provider === &quot;mongodb&quot; ? &quot;🍃 MongoDB&quot;
+                : d.provider === &quot;sqlite&quot; ? &quot;📦 SQLite&quot;
+                : d.provider === &quot;turso&quot; ? &quot;🦔 Turso&quot;
+                : d.provider === &quot;redis&quot; ? &quot;🔴 Redis&quot;
+                : d.provider === &quot;firebase&quot; ? &quot;🔥 Firebase&quot;
+                : d.provider === &quot;planetscale&quot; ? &quot;🪐 PlanetScale&quot;
+                : d.provider === &quot;railway&quot; ? &quot;🚂 Railway&quot;
+                : d.provider
+              } · IA ativada`}
+              right={
+                &lt;View style={{ flexDirection: &quot;row&quot;, gap: 10, alignItems: &quot;center&quot; }}&gt;
+                  &lt;View style={{ backgroundColor: &quot;#00d4aa22&quot;, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 }}&gt;
+                    &lt;Text style={{ color: &quot;#00d4aa&quot;, fontSize: 10, fontWeight: &quot;700&quot; }}&gt;DB ✓&lt;/Text&gt;
+                  &lt;/View&gt;
+                  &lt;TouchableOpacity
+                    style={{ padding: 4 }}
+                    onPress={() =&gt; {
+                      if (Platform.OS === &quot;web&quot;) {
+                        removeDBConfig(d.name);
+                      } else {
+                        Alert.alert(&quot;Remover banco&quot;, `Remover &quot;${d.name}&quot;?\nA IA perderá o contexto do banco.`, [
+                          { text: &quot;Cancelar&quot;, style: &quot;cancel&quot; },
+                          { text: &quot;Remover&quot;, style: &quot;destructive&quot;, onPress: () =&gt; removeDBConfig(d.name) },
+                        ]);
+                      }
+                    }}
+                  &gt;
+                    &lt;Feather name=&quot;trash-2&quot; size={16} color={colors.destructive} /&gt;
+                  &lt;/TouchableOpacity&gt;
+                &lt;/View&gt;
+              }
+            /&gt;
+          ))}
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Adicionar Banco de Dados / Credencial&quot;
+            sublabel=&quot;Neon, Supabase, PostgreSQL, MySQL, MongoDB, Redis, Firebase, SQLite...&quot;
+            onPress={() =&gt; setShowDBModal(true)}
+            right={&lt;Feather name=&quot;plus&quot; size={16} color={colors.primary} /&gt;}
+          /&gt;
+        &lt;/View&gt;
+
+        {/* Editor */}
+        &lt;SectionHeader title=&quot;EDITOR&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Números de linha&quot;
+            right={
+              &lt;Switch
+                value={settings.showLineNumbers}
+                onValueChange={(v) =&gt; updateSettings({ showLineNumbers: v })}
+                trackColor={{ false: colors.muted, true: colors.primary }}
+              /&gt;
+            }
+          /&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Quebra de linha&quot;
+            right={
+              &lt;Switch
+                value={settings.wordWrap}
+                onValueChange={(v) =&gt; updateSettings({ wordWrap: v })}
+                trackColor={{ false: colors.muted, true: colors.primary }}
+              /&gt;
+            }
+          /&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Auto-salvar&quot;
+            right={
+              &lt;Switch
+                value={settings.autoSave}
+                onValueChange={(v) =&gt; updateSettings({ autoSave: v })}
+                trackColor={{ false: colors.muted, true: colors.primary }}
+              /&gt;
+            }
+          /&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;Tamanho da fonte&quot;
+            sublabel={`${settings.fontSize}px`}
+            right={
+              &lt;View style={{ flexDirection: &quot;row&quot;, gap: 12, alignItems: &quot;center&quot; }}&gt;
+                &lt;TouchableOpacity
+                  onPress={() =&gt; updateSettings({ fontSize: Math.max(10, settings.fontSize - 1) })}
+                  style={[styles.badge, { borderColor: colors.border }]}
+                &gt;
+                  &lt;Feather name=&quot;minus&quot; size={12} color={colors.foreground} /&gt;
+                &lt;/TouchableOpacity&gt;
+                &lt;Text style={[styles.fontSizeText, { color: colors.foreground }]}&gt;
+                  {settings.fontSize}
+                &lt;/Text&gt;
+                &lt;TouchableOpacity
+                  onPress={() =&gt; updateSettings({ fontSize: Math.min(24, settings.fontSize + 1) })}
+                  style={[styles.badge, { borderColor: colors.border }]}
+                &gt;
+                  &lt;Feather name=&quot;plus&quot; size={12} color={colors.foreground} /&gt;
+                &lt;/TouchableOpacity&gt;
+              &lt;/View&gt;
+            }
+          /&gt;
+        &lt;/View&gt;
+
+        {/* Prompt personalizado da IA */}
+        &lt;SectionHeader title=&quot;ASSISTENTE IA — PROMPT PERSONALIZADO&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border, padding: 12 }]}&gt;
+          &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, marginBottom: 6 }}&gt;
+            Instruções extras que a IA receberá em toda conversa (ex: &quot;Seja breve e use TypeScript sempre&quot;)
+          &lt;/Text&gt;
+          &lt;TextInput
+            value={systemPromptDraft}
+            onChangeText={setSystemPromptDraft}
+            placeholder=&quot;Ex: Prefiro TypeScript. Seja objetivo. Evite usar `any`.&quot;
+            placeholderTextColor={colors.mutedForeground}
+            multiline
+            numberOfLines={4}
+            style={{
+              backgroundColor: colors.background,
+              color: colors.foreground,
+              borderRadius: 6,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 10,
+              fontSize: 13,
+              fontFamily: &quot;monospace&quot;,
+              minHeight: 80,
+              textAlignVertical: &quot;top&quot;,
+            }}
+          /&gt;
+          &lt;TouchableOpacity
+            onPress={() =&gt; {
+              updateSettings({ systemPrompt: systemPromptDraft });
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Alert.alert(&quot;Salvo&quot;, &quot;Prompt personalizado atualizado.&quot;);
+            }}
+            style={{
+              marginTop: 10,
+              backgroundColor: colors.primary,
+              padding: 10,
+              borderRadius: 8,
+              alignItems: &quot;center&quot;,
+            }}
+          &gt;
+            &lt;Text style={{ color: &quot;#000&quot;, fontWeight: &quot;700&quot;, fontSize: 14 }}&gt;Salvar Prompt&lt;/Text&gt;
+          &lt;/TouchableOpacity&gt;
+          {settings.systemPrompt ? (
+            &lt;TouchableOpacity
+              onPress={() =&gt; { setSystemPromptDraft(&quot;&quot;); updateSettings({ systemPrompt: &quot;&quot; }); }}
+              style={{ marginTop: 6, alignItems: &quot;center&quot; }}
+            &gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 12 }}&gt;Limpar prompt&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          ) : null}
+        &lt;/View&gt;
+
+        {/* Chave Gemini Direta (sem servidor) */}
+        &lt;SectionHeader title=&quot;GEMINI DIRETO DO CELULAR (SEM SERVIDOR)&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border, padding: 12 }]}&gt;
+          &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, marginBottom: 4, lineHeight: 18 }}&gt;
+            {&quot;Chave gratuita do Google AI Studio — o app funciona standalone, sem precisar do Replit.&quot;}
+          &lt;/Text&gt;
+          &lt;TouchableOpacity
+            onPress={() =&gt; Linking.openURL(&quot;https://aistudio.google.com/apikey&quot;)}
+            style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginBottom: 10, backgroundColor: &quot;#4285f418&quot;, borderRadius: 8, padding: 8, borderWidth: 1, borderColor: &quot;#4285f433&quot; }}
+          &gt;
+            &lt;Text style={{ fontSize: 16 }}&gt;🔑&lt;/Text&gt;
+            &lt;View style={{ flex: 1 }}&gt;
+              &lt;Text style={{ color: &quot;#7cb9ff&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;Abrir Google AI Studio&lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;aistudio.google.com → Get API key → Grátis, sem cartão&lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;Feather name=&quot;external-link&quot; size={14} color=&quot;#7cb9ff&quot; /&gt;
+          &lt;/TouchableOpacity&gt;
+          &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8 }}&gt;
+            &lt;TextInput
+              value={geminiKeyDraft}
+              onChangeText={setGeminiKeyDraft}
+              placeholder=&quot;AIza...&quot;
+              placeholderTextColor={colors.mutedForeground}
+              secureTextEntry={!showGeminiKey}
+              autoCapitalize=&quot;none&quot;
+              autoCorrect={false}
+              style={{
+                flex: 1,
+                backgroundColor: colors.background,
+                color: colors.foreground,
+                borderRadius: 6,
+                borderWidth: 1,
+                borderColor: settings.geminiDirectKey ? &quot;#22c55e&quot; : colors.border,
+                padding: 10,
+                fontSize: 13,
+                fontFamily: &quot;monospace&quot;,
+              }}
+            /&gt;
+            &lt;TouchableOpacity onPress={() =&gt; setShowGeminiKey(v =&gt; !v)} style={{ padding: 8 }}&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 16 }}&gt;{showGeminiKey ? &quot;🙈&quot; : &quot;👁️&quot;}&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+          &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8, marginTop: 10 }}&gt;
+            &lt;TouchableOpacity
+              onPress={() =&gt; {
+                updateSettings({ geminiDirectKey: geminiKeyDraft.trim() });
+                Alert.alert(&quot;Salvo!&quot;, geminiKeyDraft.trim() ? &quot;Chave Gemini salva. O app usará Gemini direto se o servidor estiver offline.&quot; : &quot;Chave removida.&quot;);
+              }}
+              style={{ flex: 1, backgroundColor: colors.primary, padding: 10, borderRadius: 8, alignItems: &quot;center&quot; }}
+            &gt;
+              &lt;Text style={{ color: &quot;#000&quot;, fontWeight: &quot;700&quot;, fontSize: 14 }}&gt;Salvar Chave&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+            {settings.geminiDirectKey ? (
+              &lt;TouchableOpacity
+                onPress={() =&gt; { setGeminiKeyDraft(&quot;&quot;); updateSettings({ geminiDirectKey: &quot;&quot; }); }}
+                style={{ padding: 10, borderRadius: 8, borderWidth: 1, borderColor: colors.border, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot; }}
+              &gt;
+                &lt;Text style={{ color: colors.mutedForeground, fontSize: 12 }}&gt;Remover&lt;/Text&gt;
+              &lt;/TouchableOpacity&gt;
+            ) : null}
+          &lt;/View&gt;
+          {settings.geminiDirectKey ? (
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginTop: 8 }}&gt;
+              &lt;View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: &quot;#22c55e&quot; }} /&gt;
+              &lt;Text style={{ color: &quot;#22c55e&quot;, fontSize: 12, fontWeight: &quot;600&quot; }}&gt;Chave configurada — Gemini funciona offline&lt;/Text&gt;
+            &lt;/View&gt;
+          ) : (
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginTop: 8 }}&gt;
+              &lt;View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.mutedForeground }} /&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 12 }}&gt;Sem chave — depende do servidor externo&lt;/Text&gt;
+            &lt;/View&gt;
+          )}
+        &lt;/View&gt;
+
+        {/* Checkpoints do projeto ativo */}
+        {activeProject &amp;&amp; (
+          &lt;&gt;
+            &lt;SectionHeader title={`CHECKPOINTS — ${activeProject.name.toUpperCase()}`} colors={colors} /&gt;
+            &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border, padding: 12 }]}&gt;
+              &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8, marginBottom: 10 }}&gt;
+                &lt;TextInput
+                  value={checkpointLabel}
+                  onChangeText={setCheckpointLabel}
+                  placeholder=&quot;Nome do checkpoint (opcional)&quot;
+                  placeholderTextColor={colors.mutedForeground}
+                  style={{
+                    flex: 1,
+                    backgroundColor: colors.background,
+                    color: colors.foreground,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    paddingHorizontal: 10,
+                    fontSize: 13,
+                    height: 38,
+                  }}
+                /&gt;
+                &lt;TouchableOpacity
+                  onPress={() =&gt; {
+                    const cp = saveCheckpoint(activeProject.id, checkpointLabel || undefined);
+                    setCheckpointLabel(&quot;&quot;);
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    Alert.alert(&quot;Checkpoint salvo&quot;, cp.label);
+                  }}
+                  style={{ backgroundColor: colors.primary, paddingHorizontal: 14, justifyContent: &quot;center&quot;, borderRadius: 6 }}
+                &gt;
+                  &lt;Text style={{ color: &quot;#000&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;+ Salvar&lt;/Text&gt;
+                &lt;/TouchableOpacity&gt;
+              &lt;/View&gt;
+              {(activeProject.checkpoints || []).length === 0 ? (
+                &lt;Text style={{ color: colors.mutedForeground, fontSize: 13, textAlign: &quot;center&quot;, paddingVertical: 8 }}&gt;
+                  Nenhum checkpoint salvo ainda
+                &lt;/Text&gt;
+              ) : (
+                [...(activeProject.checkpoints || [])].reverse().map((cp) =&gt; (
+                  &lt;View
+                    key={cp.id}
+                    style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, paddingVertical: 8, borderTopWidth: 1, borderTopColor: colors.border, gap: 8 }}
+                  &gt;
+                    &lt;View style={{ flex: 1 }}&gt;
+                      &lt;Text style={{ color: colors.foreground, fontSize: 13, fontWeight: &quot;600&quot; }}&gt;{cp.label}&lt;/Text&gt;
+                      &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;
+                        {new Date(cp.createdAt).toLocaleString(&quot;pt-BR&quot;)} · {cp.files.length} arquivo(s)
+                      &lt;/Text&gt;
+                    &lt;/View&gt;
+                    &lt;TouchableOpacity
+                      onPress={() =&gt; Alert.alert(
+                        &quot;Restaurar checkpoint&quot;,
+                        `Restaurar &quot;${cp.label}&quot;? O estado atual dos arquivos será sobrescrito.`,
+                        [
+                          { text: &quot;Cancelar&quot;, style: &quot;cancel&quot; },
+                          {
+                            text: &quot;Restaurar&quot;,
+                            style: &quot;destructive&quot;,
+                            onPress: () =&gt; {
+                              restoreCheckpoint(activeProject.id, cp.id);
+                              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                              Alert.alert(&quot;Restaurado&quot;, `Projeto voltou para &quot;${cp.label}&quot;`);
+                            },
+                          },
+                        ]
+                      )}
+                      style={{ padding: 6 }}
+                    &gt;
+                      &lt;Feather name=&quot;rotate-ccw&quot; size={16} color={colors.primary} /&gt;
+                    &lt;/TouchableOpacity&gt;
+                    &lt;TouchableOpacity
+                      onPress={() =&gt; Alert.alert(
+                        &quot;Excluir checkpoint&quot;,
+                        `Excluir &quot;${cp.label}&quot;?`,
+                        [
+                          { text: &quot;Cancelar&quot;, style: &quot;cancel&quot; },
+                          { text: &quot;Excluir&quot;, style: &quot;destructive&quot;, onPress: () =&gt; deleteCheckpoint(activeProject.id, cp.id) },
+                        ]
+                      )}
+                      style={{ padding: 6 }}
+                    &gt;
+                      &lt;Feather name=&quot;trash-2&quot; size={16} color=&quot;#ef4444&quot; /&gt;
+                    &lt;/TouchableOpacity&gt;
+                  &lt;/View&gt;
+                ))
+              )}
+            &lt;/View&gt;
+          &lt;/&gt;
+        )}
+
+        {/* Ferramentas do Sistema */}
+        &lt;SectionHeader title=&quot;FERRAMENTAS DO SISTEMA&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;🩺 Status do Sistema ao Vivo&quot;
+            sublabel=&quot;Diagnóstico: IA, terminal, Git, banco, PWA&quot;
+            onPress={() =&gt; setShowStatus(true)}
+            right={&lt;Feather name=&quot;chevron-right&quot; size={16} color={colors.mutedForeground} /&gt;}
+          /&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;🧠 Memória da IA&quot;
+            sublabel=&quot;Contexto persistente entre conversas&quot;
+            onPress={() =&gt; setShowMemory(true)}
+            right={&lt;Feather name=&quot;chevron-right&quot; size={16} color={colors.mutedForeground} /&gt;}
+          /&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;📸 Checkpoints do Projeto&quot;
+            sublabel=&quot;Salvar e restaurar versões do projeto&quot;
+            onPress={() =&gt; setShowCheckpoints(true)}
+            right={&lt;Feather name=&quot;chevron-right&quot; size={16} color={colors.mutedForeground} /&gt;}
+          /&gt;
+        &lt;/View&gt;
+
+        {/* Servidor */}
+        &lt;SectionHeader title=&quot;SERVIDOR BACKEND&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+
+          {/* Toggle principal: ligar/desligar servidor */}
+          &lt;View style={{
+            padding: 14,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+            gap: 10,
+          }}&gt;
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;space-between&quot; }}&gt;
+              &lt;View style={{ flex: 1, gap: 2 }}&gt;
+                &lt;Text style={{ color: colors.foreground, fontWeight: &quot;700&quot;, fontSize: 15 }}&gt;
+                  {settings.serverEnabled ? &quot;🟢 Servidor ligado&quot; : &quot;⚫ Servidor desligado&quot;}
+                &lt;/Text&gt;
+                &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, lineHeight: 17 }}&gt;
+                  {settings.serverEnabled
+                    ? &quot;Terminal, VS Code e IA cortesia usam o servidor (Termux ou VPS).&quot;
+                    : &quot;App funciona 100% offline/standalone. Use suas chaves de IA direto.&quot;}
+                &lt;/Text&gt;
+              &lt;/View&gt;
+              &lt;Switch
+                value={settings.serverEnabled ?? false}
+                onValueChange={(v) =&gt; {
+                  updateSettings({ serverEnabled: v });
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                }}
+                trackColor={{ false: colors.muted, true: &quot;#22c55e&quot; }}
+                thumbColor=&quot;#fff&quot;
+              /&gt;
+            &lt;/View&gt;
+
+            {/* Aviso quando desligado */}
+            {!settings.serverEnabled &amp;&amp; (
+              &lt;View style={{ backgroundColor: &quot;#1a1a0a&quot;, borderRadius: 8, padding: 10, borderWidth: 1, borderColor: &quot;#ca8a0444&quot;, gap: 4 }}&gt;
+                &lt;Text style={{ color: &quot;#fbbf24&quot;, fontWeight: &quot;700&quot;, fontSize: 12 }}&gt;⚠️ Servidor desligado&lt;/Text&gt;
+                &lt;Text style={{ color: &quot;#fde68a&quot;, fontSize: 11, lineHeight: 16 }}&gt;
+                  {&quot;• IA: use Groq (grátis), Gemini, OpenAI, etc. com sua chave\n• Terminal: não disponível (precisa de servidor)\n• VS Code: abre direto no vscode.dev (sem servidor)\n• GitHub: funciona normalmente&quot;}
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* Aviso quando ligado */}
+            {settings.serverEnabled &amp;&amp; (
+              &lt;View style={{ backgroundColor: &quot;#0d2b0d&quot;, borderRadius: 8, padding: 10, borderWidth: 1, borderColor: &quot;#22c55e44&quot;, gap: 4 }}&gt;
+                &lt;Text style={{ color: &quot;#4ade80&quot;, fontWeight: &quot;700&quot;, fontSize: 12 }}&gt;✅ Servidor ativo&lt;/Text&gt;
+                &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 11, lineHeight: 16 }}&gt;
+                  {&quot;• IA Cortesia Gemini funciona via servidor\n• Terminal Linux disponível\n• VS Code Server disponível (se configurado)\n• Termux ou VPS detectado automaticamente&quot;}
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+          &lt;/View&gt;
+
+          &lt;View style={{ padding: 14, gap: 10 }}&gt;
+            &lt;Text style={{ color: colors.foreground, fontWeight: &quot;600&quot;, fontSize: 14 }}&gt;
+              URL do Servidor
+            &lt;/Text&gt;
+            &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, lineHeight: 18 }}&gt;
+              Configure o servidor do seu celular via Termux para usar terminal offline 24h sem depender de nada externo. O app detecta o Termux automaticamente.
+            &lt;/Text&gt;
+
+            {serverUrlEditing ? (
+              &lt;View style={{ gap: 8 }}&gt;
+                &lt;TextInput
+                  value={serverUrlDraft}
+                  onChangeText={setServerUrlDraft}
+                  placeholder=&quot;http://localhost:8080 ou http://192.168.1.x:8080&quot;
+                  placeholderTextColor={colors.mutedForeground}
+                  autoCapitalize=&quot;none&quot;
+                  autoCorrect={false}
+                  keyboardType=&quot;url&quot;
+                  style={{
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    padding: 10,
+                    color: colors.foreground,
+                    fontSize: 13,
+                    fontFamily: &quot;monospace&quot;,
+                  }}
+                /&gt;
+                &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8 }}&gt;
+                  &lt;TouchableOpacity
+                    onPress={() =&gt; {
+                      const url = serverUrlDraft.trim();
+                      updateSettings({ customServerUrl: url });
+                      setServerUrlEditing(false);
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      Alert.alert(&quot;Servidor salvo!&quot;, url ? `Usando: ${url}` : &quot;Detecção automática ativada.&quot;);
+                    }}
+                    style={{ flex: 1, backgroundColor: colors.primary, borderRadius: 8, padding: 10, alignItems: &quot;center&quot; }}
+                  &gt;
+                    &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;600&quot;, fontSize: 13 }}&gt;Salvar&lt;/Text&gt;
+                  &lt;/TouchableOpacity&gt;
+                  &lt;TouchableOpacity
+                    onPress={() =&gt; { setServerUrlDraft(settings.customServerUrl || &quot;&quot;); setServerUrlEditing(false); }}
+                    style={{ flex: 1, backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, borderRadius: 8, padding: 10, alignItems: &quot;center&quot; }}
+                  &gt;
+                    &lt;Text style={{ color: colors.mutedForeground, fontSize: 13 }}&gt;Cancelar&lt;/Text&gt;
+                  &lt;/TouchableOpacity&gt;
+                &lt;/View&gt;
+                {serverUrlDraft.trim() !== &quot;&quot; &amp;&amp; (
+                  &lt;TouchableOpacity
+                    onPress={() =&gt; { setServerUrlDraft(&quot;&quot;); updateSettings({ customServerUrl: &quot;&quot; }); setServerUrlEditing(false); }}
+                    style={{ alignItems: &quot;center&quot;, padding: 6 }}
+                  &gt;
+                    &lt;Text style={{ color: &quot;#ef4444&quot;, fontSize: 12 }}&gt;Limpar URL&lt;/Text&gt;
+                  &lt;/TouchableOpacity&gt;
+                )}
+              &lt;/View&gt;
+            ) : (
+              &lt;TouchableOpacity
+                onPress={() =&gt; setServerUrlEditing(true)}
+                style={{
+                  flexDirection: &quot;row&quot;,
+                  alignItems: &quot;center&quot;,
+                  justifyContent: &quot;space-between&quot;,
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  padding: 10,
+                }}
+              &gt;
+                &lt;Text style={{ color: settings.customServerUrl ? colors.foreground : colors.mutedForeground, fontSize: 13, fontFamily: &quot;monospace&quot;, flex: 1 }}&gt;
+                  {settings.customServerUrl || &quot;Automático (detecta Termux)&quot;}
+                &lt;/Text&gt;
+                &lt;Feather name=&quot;edit-2&quot; size={14} color={colors.mutedForeground} /&gt;
+              &lt;/TouchableOpacity&gt;
+            )}
+
+            {/* Porta do Termux */}
+            &lt;View style={{ gap: 6 }}&gt;
+              &lt;Text style={{ color: colors.foreground, fontWeight: &quot;600&quot;, fontSize: 13 }}&gt;
+                Porta do Termux
+              &lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11, lineHeight: 16 }}&gt;
+                Porta onde o servidor roda no seu celular via Termux. Padrão: 8080. Mude se precisar de outra porta.
+              &lt;/Text&gt;
+              {termuxPortEditing ? (
+                &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8, alignItems: &quot;center&quot; }}&gt;
+                  &lt;TextInput
+                    value={termuxPortDraft}
+                    onChangeText={setTermuxPortDraft}
+                    placeholder=&quot;8080&quot;
+                    placeholderTextColor={colors.mutedForeground}
+                    keyboardType=&quot;number-pad&quot;
+                    style={{
+                      flex: 1,
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                      borderWidth: 1,
+                      borderRadius: 8,
+                      padding: 10,
+                      color: colors.foreground,
+                      fontSize: 15,
+                      fontFamily: &quot;monospace&quot;,
+                    }}
+                  /&gt;
+                  &lt;TouchableOpacity
+                    onPress={() =&gt; {
+                      const port = Number(termuxPortDraft.trim()) || 8080;
+                      updateSettings({ termuxPort: port });
+                      setTermuxPortEditing(false);
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      Alert.alert(&quot;Porta salva!&quot;, `Termux: 127.0.0.1:${port}`);
+                    }}
+                    style={{ backgroundColor: colors.primary, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 10 }}
+                  &gt;
+                    &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;600&quot;, fontSize: 13 }}&gt;OK&lt;/Text&gt;
+                  &lt;/TouchableOpacity&gt;
+                  &lt;TouchableOpacity
+                    onPress={() =&gt; { setTermuxPortDraft(String(settings.termuxPort ?? 8080)); setTermuxPortEditing(false); }}
+                    style={{ borderRadius: 8, paddingHorizontal: 10, paddingVertical: 10 }}
+                  &gt;
+                    &lt;Text style={{ color: colors.mutedForeground, fontSize: 13 }}&gt;✕&lt;/Text&gt;
+                  &lt;/TouchableOpacity&gt;
+                &lt;/View&gt;
+              ) : (
+                &lt;TouchableOpacity
+                  onPress={() =&gt; setTermuxPortEditing(true)}
+                  style={{
+                    flexDirection: &quot;row&quot;,
+                    alignItems: &quot;center&quot;,
+                    justifyContent: &quot;space-between&quot;,
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    padding: 10,
+                  }}
+                &gt;
+                  &lt;Text style={{ color: colors.foreground, fontSize: 15, fontFamily: &quot;monospace&quot; }}&gt;
+                    {settings.termuxPort ?? 8080}
+                  &lt;/Text&gt;
+                  &lt;Feather name=&quot;edit-2&quot; size={14} color={colors.mutedForeground} /&gt;
+                &lt;/TouchableOpacity&gt;
+              )}
+            &lt;/View&gt;
+
+            {/* Atalho Modo Termux */}
+            &lt;TouchableOpacity
+              onPress={() =&gt; {
+                const port = settings.termuxPort ?? 8080;
+                updateSettings({ customServerUrl: &quot;&quot; });
+                setServerUrlDraft(&quot;&quot;);
+                setServerUrlEditing(false);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert(&quot;Modo Termux ativado!&quot;, `Detecção automática em 127.0.0.1:${port}.\n\nCertifique-se de que o servidor está rodando no Termux do seu celular.`, [{ text: &quot;OK&quot; }]);
+              }}
+              style={{
+                flexDirection: &quot;row&quot;,
+                alignItems: &quot;center&quot;,
+                justifyContent: &quot;center&quot;,
+                gap: 8,
+                backgroundColor: &quot;#0d2137&quot;,
+                borderColor: &quot;#007acc&quot;,
+                borderWidth: 1,
+                borderRadius: 8,
+                padding: 12,
+              }}
+            &gt;
+              &lt;Text style={{ fontSize: 16 }}&gt;📱&lt;/Text&gt;
+              &lt;Text style={{ color: &quot;#007acc&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;Ativar Modo Termux (127.0.0.1:{settings.termuxPort ?? 8080})&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+        &lt;/View&gt;
+
+        {/* Modo Termux */}
+        &lt;SectionHeader title=&quot;MODO TERMUX — CELULAR COMO SERVIDOR&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;View style={{ padding: 14, gap: 12 }}&gt;
+
+            {/* Status */}
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;space-between&quot; }}&gt;
+              &lt;Text style={{ color: colors.foreground, fontWeight: &quot;600&quot;, fontSize: 14 }}&gt;
+                Status atual
+              &lt;/Text&gt;
+              &lt;View style={{
+                flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6,
+                backgroundColor: settings.customServerUrl?.includes(&quot;localhost&quot;) ? &quot;#0d2b0d&quot; : &quot;#1a1a2e&quot;,
+                borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4,
+                borderWidth: 1,
+                borderColor: settings.customServerUrl?.includes(&quot;localhost&quot;) ? &quot;#22c55e&quot; : colors.border,
+              }}&gt;
+                &lt;View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: settings.customServerUrl?.includes(&quot;localhost&quot;) ? &quot;#22c55e&quot; : colors.mutedForeground }} /&gt;
+                &lt;Text style={{ color: settings.customServerUrl?.includes(&quot;localhost&quot;) ? &quot;#22c55e&quot; : colors.mutedForeground, fontSize: 12, fontWeight: &quot;600&quot; }}&gt;
+                  {settings.customServerUrl?.includes(&quot;localhost&quot;) ? &quot;ATIVO&quot; : &quot;INATIVO&quot;}
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            &lt;/View&gt;
+
+            &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, lineHeight: 18 }}&gt;
+              Seu celular vira o servidor. Sem internet, sem servidor externo, sem nuvem. Terminal real, VS Code real, plugins reais — tudo rodando no seu Android via Termux.
+            &lt;/Text&gt;
+
+            {/* Comandos de instalação */}
+            &lt;View style={{ gap: 4 }}&gt;
+              &lt;Text style={{ color: colors.foreground, fontSize: 12, fontWeight: &quot;600&quot; }}&gt;
+                1. Instalar o servidor no Termux (uma vez):
+              &lt;/Text&gt;
+              {(() =&gt; {</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>domain →</span>
+    <div>
+      <small>L1189–L1955</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">                const domain = (process.env.EXPO_PUBLIC_DOMAIN ?? &quot;&quot;).replace(/\/$/, &quot;&quot;);
+                const cmd = domain
+                  ? `curl -fsSL ${domain}/api/termux/setup.sh | bash`
+                  : `curl -fsSL https://SEU_DOMINIO/api/termux/setup.sh | bash`;
+                return (
+                  &lt;TouchableOpacity
+                    onPress={async () =&gt; {
+                      await Clipboard.setStringAsync(cmd);
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      Alert.alert(&quot;Copiado!&quot;, &quot;Cole no Termux e execute.\n\nIsso instala Node.js, o servidor e o VS Code automaticamente.&quot;, [{ text: &quot;OK&quot; }]);
+                    }}
+                    style={{
+                      backgroundColor: &quot;#0d1117&quot;,
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: &quot;#30363d&quot;,
+                      padding: 10,
+                      flexDirection: &quot;row&quot;,
+                      alignItems: &quot;center&quot;,
+                      gap: 8,
+                    }}
+                  &gt;
+                    &lt;Text style={{ color: &quot;#58d68d&quot;, fontSize: 11, fontFamily: &quot;monospace&quot;, flex: 1 }} numberOfLines={2}&gt;
+                      {cmd}
+                    &lt;/Text&gt;
+                    &lt;Feather name=&quot;copy&quot; size={14} color=&quot;#58d68d&quot; /&gt;
+                  &lt;/TouchableOpacity&gt;
+                );
+              })()}
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;
+                Toque para copiar → cole no Termux
+              &lt;/Text&gt;
+            &lt;/View&gt;
+
+            {/* Passo 2 */}
+            &lt;View style={{ gap: 4 }}&gt;
+              &lt;Text style={{ color: colors.foreground, fontSize: 12, fontWeight: &quot;600&quot; }}&gt;
+                2. Iniciar o servidor (sempre que quiser usar):
+              &lt;/Text&gt;
+              &lt;TouchableOpacity
+                onPress={async () =&gt; {
+                  await Clipboard.setStringAsync(&quot;bash ~/start-devmobile.sh&quot;);
+                  Haptics.selectionAsync();
+                  Alert.alert(&quot;Copiado!&quot;, &quot;Cole no Termux para iniciar o servidor.&quot;, [{ text: &quot;OK&quot; }]);
+                }}
+                style={{ backgroundColor: &quot;#0d1117&quot;, borderRadius: 8, borderWidth: 1, borderColor: &quot;#30363d&quot;, padding: 10, flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 8 }}
+              &gt;
+                &lt;Text style={{ color: &quot;#58d68d&quot;, fontSize: 11, fontFamily: &quot;monospace&quot;, flex: 1 }}&gt;
+                  bash ~/start-devmobile.sh
+                &lt;/Text&gt;
+                &lt;Feather name=&quot;copy&quot; size={14} color=&quot;#58d68d&quot; /&gt;
+              &lt;/TouchableOpacity&gt;
+            &lt;/View&gt;
+
+            {/* Botão ativar */}
+            {!settings.customServerUrl?.includes(&quot;localhost&quot;) ? (
+              &lt;TouchableOpacity
+                onPress={() =&gt; {
+                  updateSettings({ customServerUrl: &quot;http://localhost:8080&quot; });
+                  setServerUrlDraft(&quot;http://localhost:8080&quot;);
+                  setServerUrlEditing(false);
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  Alert.alert(&quot;✅ Modo Termux ativado!&quot;, &quot;O app agora usa http://localhost:8080.\n\nInicie o servidor no Termux e pronto!&quot;, [{ text: &quot;Entendido&quot; }]);
+                }}
+                style={{ backgroundColor: &quot;#007acc&quot;, borderRadius: 8, padding: 13, alignItems: &quot;center&quot;, flexDirection: &quot;row&quot;, justifyContent: &quot;center&quot;, gap: 8 }}
+              &gt;
+                &lt;Text style={{ fontSize: 16 }}&gt;📱&lt;/Text&gt;
+                &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;700&quot;, fontSize: 14 }}&gt;Ativar Modo Termux&lt;/Text&gt;
+              &lt;/TouchableOpacity&gt;
+            ) : (
+              &lt;View style={{ gap: 8 }}&gt;
+                &lt;View style={{ backgroundColor: &quot;#0d2b0d&quot;, borderRadius: 8, borderWidth: 1, borderColor: &quot;#22c55e&quot;, padding: 12, alignItems: &quot;center&quot; }}&gt;
+                  &lt;Text style={{ color: &quot;#22c55e&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;✅ Modo Termux ativo — usando localhost:8080&lt;/Text&gt;
+                &lt;/View&gt;
+                &lt;TouchableOpacity
+                  onPress={() =&gt; {
+                    updateSettings({ customServerUrl: &quot;&quot; });
+                    setServerUrlDraft(&quot;&quot;);
+                    setServerUrlEditing(false);
+                    Haptics.selectionAsync();
+                  }}
+                  style={{ alignItems: &quot;center&quot;, padding: 6 }}
+                &gt;
+                  &lt;Text style={{ color: colors.mutedForeground, fontSize: 12 }}&gt;Desativar Modo Termux&lt;/Text&gt;
+                &lt;/TouchableOpacity&gt;
+              &lt;/View&gt;
+            )}
+
+            {/* Requisitos */}
+            &lt;View style={{ backgroundColor: colors.background, borderRadius: 8, padding: 10, gap: 4 }}&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11, fontWeight: &quot;600&quot;, marginBottom: 2 }}&gt;REQUISITOS&lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;• Termux (instalar pelo F-Droid, não Play Store)&lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;• Node.js (instalado automaticamente pelo script)&lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;• Celular com Android 7+ e 2GB+ de RAM&lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;• VS Code: code-server (instalado automaticamente)&lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 11 }}&gt;• IA: configure GEMINI_API_KEY no ~/.bashrc&lt;/Text&gt;
+            &lt;/View&gt;
+          &lt;/View&gt;
+        &lt;/View&gt;
+
+        {/* GitHub Codespaces / Servidor Independente */}
+        &lt;SectionHeader title=&quot;TERMINAL SEM SERVIDOR EXTERNO — MICROSOFT / QUALQUER VPS&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border, padding: 14, gap: 12 }]}&gt;
+          &lt;Text style={{ color: &quot;#60a5fa&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;
+            🖥️ Use o terminal da Microsoft (GitHub Codespaces) ou qualquer servidor gratuito
+          &lt;/Text&gt;
+          &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, lineHeight: 19 }}&gt;
+            {&quot;O terminal do DevMobile funciona com QUALQUER servidor Linux — Microsoft, Oracle, sua casa, qualquer lugar. Só precisa de internet no celular.\n\nEscolha uma opção abaixo:&quot;}
+          &lt;/Text&gt;
+
+          {/* Opção 1: GitHub Codespaces */}
+          &lt;View style={{ backgroundColor: &quot;#0d1f3c&quot;, borderRadius: 10, borderWidth: 1, borderColor: &quot;#1d4ed8&quot;, padding: 12, gap: 8 }}&gt;
+            &lt;Text style={{ color: &quot;#60a5fa&quot;, fontWeight: &quot;800&quot;, fontSize: 13 }}&gt;🐙 OPÇÃO 1 — GitHub Codespaces (Microsoft)&lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#93c5fd&quot;, fontSize: 12, lineHeight: 18 }}&gt;
+              {&quot;✅ Grátis: 60h/mês (conta GitHub gratuita)\n✅ Linux real na nuvem Microsoft\n✅ Sem cartão de crédito&quot;}
+            &lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#60a5fa&quot;, fontSize: 11, fontWeight: &quot;600&quot;, marginTop: 4 }}&gt;PASSO A PASSO:&lt;/Text&gt;
+            {[
+              &quot;1. Acesse: github.com → clique no seu avatar → \&quot;Your Codespaces\&quot;&quot;,
+              &quot;2. Clique em \&quot;New codespace\&quot; → escolha qualquer repositório&quot;,
+              &quot;3. No terminal do codespace, execute o comando abaixo:&quot;,
+              &quot;4. Clique na aba \&quot;Ports\&quot; → copie o link da porta 8080&quot;,
+              &quot;5. Cole esse link no campo \&quot;URL do Servidor\&quot; acima&quot;,
+            ].map((step, i) =&gt; (
+              &lt;Text key={i} style={{ color: &quot;#bfdbfe&quot;, fontSize: 12, lineHeight: 18 }}&gt;{step}&lt;/Text&gt;
+            ))}
+            &lt;TouchableOpacity
+              onPress={async () =&gt; {
+                const script = `mkdir -p ~/devmobile &amp;&amp; cd ~/devmobile &amp;&amp; npm init -y 2&gt;/dev/null; npm install express cors 2&gt;/dev/null; cat &gt; server.js &lt;&lt; 'EOF'\nconst express=require('express'),cors=require('cors'),{spawn}=require('child_process'),app=express();\napp.use(cors({origin:'*'}));app.use(express.json());\napp.get('/api/healthz',(q,r)=&gt;r.json({status:'ok'}));\napp.post('/api/terminal/exec',(req,res)=&gt;{const{command='echo ok',sessionId='s1'}=req.body;res.setHeader('Content-Type','text/event-stream');res.setHeader('Cache-Control','no-cache');const p=spawn('bash',['-c',command],{env:process.env});p.stdout.on('data',d=&gt;res.write('data: '+JSON.stringify({type:'stdout',data:d.toString()})+'\n\n'));p.stderr.on('data',d=&gt;res.write('data: '+JSON.stringify({type:'output',data:d.toString()})+'\n\n'));p.on('close',c=&gt;{res.write('data: '+JSON.stringify({done:true,code:c})+'\n\n');res.end();});});\napp.listen(8080,'0.0.0.0',()=&gt;console.log('DevMobile Server :8080 ✅'));\nEOF\nnode server.js`;
+                await Clipboard.setStringAsync(script);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert(&quot;✅ Copiado!&quot;, &quot;Cole no terminal do GitHub Codespace e execute.\n\nDepois copie a URL da porta 8080 e configure em \&quot;Servidor Backend\&quot; acima.&quot;, [{ text: &quot;Entendido&quot; }]);
+              }}
+              style={{ backgroundColor: &quot;#1d4ed8&quot;, borderRadius: 8, padding: 11, alignItems: &quot;center&quot;, flexDirection: &quot;row&quot;, justifyContent: &quot;center&quot;, gap: 8 }}
+            &gt;
+              &lt;Text style={{ fontSize: 15 }}&gt;📋&lt;/Text&gt;
+              &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;Copiar Comando (cole no Codespace)&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+
+          {/* Opção 2: Oracle Cloud */}
+          &lt;View style={{ backgroundColor: &quot;#1a0d0d&quot;, borderRadius: 10, borderWidth: 1, borderColor: &quot;#dc2626&quot;, padding: 12, gap: 8 }}&gt;
+            &lt;Text style={{ color: &quot;#f87171&quot;, fontWeight: &quot;800&quot;, fontSize: 13 }}&gt;☁️ OPÇÃO 2 — Oracle Cloud (GRÁTIS para sempre)&lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#fca5a5&quot;, fontSize: 12, lineHeight: 18 }}&gt;
+              {&quot;✅ VM Linux grátis para sempre (sem expirar)\n✅ Ubuntu 22.04, 1GB RAM, 50GB disco\n✅ Sem cartão de crédito (conta Oracle gratuita)&quot;}
+            &lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#f87171&quot;, fontSize: 11, fontWeight: &quot;600&quot;, marginTop: 4 }}&gt;PASSO A PASSO:&lt;/Text&gt;
+            {[
+              &quot;1. Acesse: cloud.oracle.com → crie conta gratuita&quot;,
+              &quot;2. Crie uma VM Ubuntu 22.04 (Always Free)&quot;,
+              &quot;3. Conecte via SSH e execute o comando abaixo:&quot;,
+              &quot;4. Abra a porta 8080 no Security Group da Oracle&quot;,
+              &quot;5. Use o IP público da VM no \&quot;URL do Servidor\&quot; acima&quot;,
+            ].map((step, i) =&gt; (
+              &lt;Text key={i} style={{ color: &quot;#fecaca&quot;, fontSize: 12, lineHeight: 18 }}&gt;{step}&lt;/Text&gt;
+            ))}
+            &lt;TouchableOpacity
+              onPress={async () =&gt; {
+                const script = `sudo apt-get update -y &amp;&amp; curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &amp;&amp; sudo apt-get install -y nodejs &amp;&amp; mkdir -p ~/devmobile &amp;&amp; cd ~/devmobile &amp;&amp; npm init -y &amp;&amp; npm install express cors &amp;&amp; node -e &quot;const e=require('express'),c=require('cors'),{spawn}=require('child_process'),a=e();a.use(c({origin:'*'}));a.use(e.json());a.get('/api/healthz',(q,r)=&gt;r.json({status:'ok'}));a.post('/api/terminal/exec',(req,res)=&gt;{res.setHeader('Content-Type','text/event-stream');const p=spawn('bash',['-c',req.body.command||'echo ok'],{env:process.env});p.stdout.on('data',d=&gt;res.write('data: '+JSON.stringify({type:'stdout',data:d.toString()})+'\n\n'));p.stderr.on('data',d=&gt;res.write('data: '+JSON.stringify({type:'output',data:d.toString()})+'\n\n'));p.on('close',c=&gt;{res.write('data: '+JSON.stringify({done:true,code:c})+'\n\n');res.end();});});a.listen(8080,'0.0.0.0',()=&gt;console.log('DevMobile :8080 OK'));&quot;`;
+                await Clipboard.setStringAsync(script);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert(&quot;✅ Copiado!&quot;, &quot;Execute via SSH na sua VM Oracle.\n\nDepois use o IP_PÚBLICO:8080 no campo \&quot;URL do Servidor\&quot;.&quot;, [{ text: &quot;Entendido&quot; }]);
+              }}
+              style={{ backgroundColor: &quot;#dc2626&quot;, borderRadius: 8, padding: 11, alignItems: &quot;center&quot;, flexDirection: &quot;row&quot;, justifyContent: &quot;center&quot;, gap: 8 }}
+            &gt;
+              &lt;Text style={{ fontSize: 15 }}&gt;📋&lt;/Text&gt;
+              &lt;Text style={{ color: &quot;#fff&quot;, fontWeight: &quot;700&quot;, fontSize: 13 }}&gt;Copiar Comando (cole na VM Oracle)&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+
+          {/* Opção 3: Celular mesmo */}
+          &lt;View style={{ backgroundColor: &quot;#0d1a0d&quot;, borderRadius: 10, borderWidth: 1, borderColor: &quot;#16a34a&quot;, padding: 12, gap: 8 }}&gt;
+            &lt;Text style={{ color: &quot;#4ade80&quot;, fontWeight: &quot;800&quot;, fontSize: 13 }}&gt;📱 OPÇÃO 3 — Termux (seu próprio celular)&lt;/Text&gt;
+            &lt;Text style={{ color: &quot;#86efac&quot;, fontSize: 12, lineHeight: 18 }}&gt;
+              {&quot;✅ 100% offline — sem internet necessária\n✅ Node.js, Python, Git rodam no seu celular\n✅ Use a seção \&quot;MODO TERMUX\&quot; acima&quot;}
+            &lt;/Text&gt;
+          &lt;/View&gt;
+        &lt;/View&gt;
+
+        {/* Sobre */}
+        &lt;SectionHeader title=&quot;SOBRE&quot; colors={colors} /&gt;
+        &lt;View style={[styles.section, { backgroundColor: colors.card, borderColor: colors.border }]}&gt;
+          &lt;SettingRow colors={colors} label=&quot;DevMobile IDE&quot; sublabel=&quot;v1.9.5 — Gemini direto do celular + Terminal offline&quot; /&gt;
+          &lt;SettingRow colors={colors} label=&quot;Terminal&quot; sublabel=&quot;Node.js v24 + npm v11 no servidor&quot; /&gt;
+          &lt;SettingRow colors={colors} label=&quot;IA&quot; sublabel=&quot;11 provedores — Cortesia Gemini grátis&quot; /&gt;
+          &lt;SettingRow colors={colors} label=&quot;Armazenamento&quot; sublabel=&quot;Local no dispositivo (AsyncStorage)&quot; /&gt;
+          &lt;SettingRow
+            colors={colors}
+            label=&quot;📋 Visão Técnica Completa&quot;
+            sublabel=&quot;Arquitetura, rotas API, como recriar, limites e mais&quot;
+            onPress={() =&gt; setShowOverview(true)}
+            right={&lt;Feather name=&quot;chevron-right&quot; size={16} color={colors.mutedForeground} /&gt;}
+          /&gt;
+        &lt;/View&gt;
+      &lt;/ScrollView&gt;
+
+      &lt;SystemStatus visible={showStatus} onClose={() =&gt; setShowStatus(false)} /&gt;
+      &lt;AIMemoryModal visible={showMemory} onClose={() =&gt; setShowMemory(false)} /&gt;
+      &lt;CheckpointsModal visible={showCheckpoints} onClose={() =&gt; setShowCheckpoints(false)} /&gt;
+      &lt;ProjectOverviewModal visible={showOverview} onClose={() =&gt; setShowOverview(false)} /&gt;
+
+      {/* Modal: Adicionar IA — simplificado */}
+      &lt;Modal visible={showAIModal} animationType=&quot;slide&quot; presentationStyle=&quot;pageSheet&quot;&gt;
+        &lt;View style={[styles.modal, { backgroundColor: colors.background }]}&gt;
+          &lt;View style={[styles.modalHeader, { borderBottomColor: colors.border }]}&gt;
+            &lt;View&gt;
+              &lt;Text style={[styles.modalTitle, { color: colors.foreground }]}&gt;Adicionar Chave de IA&lt;/Text&gt;
+              &lt;Text style={[{ color: colors.mutedForeground, fontSize: 12, marginTop: 2 }]}&gt;
+                Cole a chave — provedor detectado automaticamente
+              &lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;TouchableOpacity onPress={() =&gt; { setShowAIModal(false); setAIKey(&quot;&quot;); setAIModel(&quot;&quot;); }}&gt;
+              &lt;Feather name=&quot;x&quot; size={22} color={colors.mutedForeground} /&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+          &lt;ScrollView contentContainerStyle={styles.modalBody}&gt;
+
+            {/* Cortesia Gemini — sem chave */}
+            {aiType === &quot;cortesia&quot; ? (
+              &lt;View style={[settingsStyles.keyBox, { backgroundColor: colors.primary + &quot;10&quot;, borderColor: colors.primary }]}&gt;
+                &lt;Text style={{ fontSize: 24, textAlign: &quot;center&quot; }}&gt;✨&lt;/Text&gt;
+                &lt;Text style={{ color: colors.foreground, fontWeight: &quot;700&quot;, textAlign: &quot;center&quot;, marginTop: 4 }}&gt;
+                  Cortesia Gemini
+                &lt;/Text&gt;
+                &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, textAlign: &quot;center&quot;, marginTop: 4 }}&gt;
+                  Sem chave necessária. Powered by Gemini 2.0 Flash.
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            ) : (
+              &lt;&gt;
+                {/* Campo de chave */}
+                &lt;View style={[settingsStyles.keyBox, { backgroundColor: colors.card, borderColor: aiKey.trim() ? colors.primary : colors.border }]}&gt;
+                  &lt;TextInput
+                    style={[settingsStyles.keyInput, { color: colors.foreground }]}
+                    value={aiKey}
+                    onChangeText={handleKeyChange}
+                    placeholder={&quot;Cole sua API key aqui\n\nsk-...  /  sk-ant-...  /  AIza...&quot;}
+                    placeholderTextColor={colors.mutedForeground}
+                    autoCapitalize=&quot;none&quot;
+                    autoCorrect={false}
+                    multiline
+                    autoFocus
+                  /&gt;
+                &lt;/View&gt;
+
+                {/* Provedor detectado */}
+                {aiKey.length &gt; 10 &amp;&amp; (
+                  &lt;View style={[settingsStyles.detectedBadge, { backgroundColor: colors.secondary, borderColor: colors.primary }]}&gt;
+                    &lt;Feather name=&quot;check-circle&quot; size={14} color={colors.success} /&gt;
+                    &lt;Text style={[settingsStyles.detectedText, { color: colors.foreground }]}&gt;
+                      Detectado: &lt;Text style={{ color: colors.primary, fontWeight: &quot;700&quot; }}&gt;
+                        {AI_PROVIDERS.find(p =&gt; p.type === aiType)?.label || aiType}
+                      &lt;/Text&gt;
+                    &lt;/Text&gt;
+                  &lt;/View&gt;
+                )}
+              &lt;/&gt;
+            )}
+
+            {/* Modelos rápidos */}
+            {(AI_MODELS[aiType] || []).length &gt; 0 &amp;&amp; (
+              &lt;&gt;
+                &lt;Text style={[styles.label, { color: colors.mutedForeground, marginTop: 16 }]}&gt;
+                  Modelo (opcional — usa o melhor por padrão)
+                &lt;/Text&gt;
+                &lt;ScrollView horizontal showsHorizontalScrollIndicator={false}&gt;
+                  &lt;View style={{ flexDirection: &quot;row&quot;, gap: 8, paddingVertical: 4 }}&gt;
+                    {(AI_MODELS[aiType] || []).map((m) =&gt; (
+                      &lt;TouchableOpacity
+                        key={m}
+                        onPress={() =&gt; setAIModel(aiModel === m ? &quot;&quot; : m)}
+                        style={[styles.chip, {
+                          backgroundColor: aiModel === m ? colors.primary : colors.secondary,
+                          borderColor: aiModel === m ? colors.primary : colors.border,
+                        }]}
+                      &gt;
+                        &lt;Text style={[styles.chipText, {
+                          color: aiModel === m ? colors.primaryForeground : colors.mutedForeground,
+                          fontSize: 11,
+                        }]}&gt;{m}&lt;/Text&gt;
+                      &lt;/TouchableOpacity&gt;
+                    ))}
+                  &lt;/View&gt;
+                &lt;/ScrollView&gt;
+              &lt;/&gt;
+            )}
+
+            {/* Custom URL */}
+            {aiType === &quot;custom&quot; &amp;&amp; (
+              &lt;&gt;
+                &lt;Text style={[styles.label, { color: colors.mutedForeground, marginTop: 12 }]}&gt;Base URL&lt;/Text&gt;
+                &lt;TextInput
+                  style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+                  value={aiBaseUrl}
+                  onChangeText={setAIBaseUrl}
+                  placeholder=&quot;https://api.example.com&quot;
+                  placeholderTextColor={colors.mutedForeground}
+                  autoCapitalize=&quot;none&quot;
+                  autoCorrect={false}
+                /&gt;
+              &lt;/&gt;
+            )}
+
+            &lt;TouchableOpacity
+              onPress={handleAddAI}
+              disabled={aiType !== &quot;cortesia&quot; &amp;&amp; !aiKey.trim()}
+              style={[settingsStyles.saveBtn, { backgroundColor: (aiType === &quot;cortesia&quot; || aiKey.trim()) ? colors.primary : colors.muted }]}
+            &gt;
+              &lt;Feather name=&quot;check&quot; size={18} color={colors.primaryForeground} /&gt;
+              &lt;Text style={[settingsStyles.saveBtnText, { color: colors.primaryForeground }]}&gt;
+                Salvar e Usar
+              &lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+
+          &lt;/ScrollView&gt;
+        &lt;/View&gt;
+      &lt;/Modal&gt;
+
+      {/* Modal: Git */}
+      &lt;Modal visible={showGitModal} animationType=&quot;slide&quot; presentationStyle=&quot;pageSheet&quot;&gt;
+        &lt;View style={[styles.modal, { backgroundColor: colors.background }]}&gt;
+          &lt;View style={[styles.modalHeader, { borderBottomColor: colors.border }]}&gt;
+            &lt;Text style={[styles.modalTitle, { color: colors.foreground }]}&gt;
+              Conectar Git
+            &lt;/Text&gt;
+            &lt;TouchableOpacity onPress={() =&gt; setShowGitModal(false)}&gt;
+              &lt;Feather name=&quot;x&quot; size={22} color={colors.mutedForeground} /&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+          &lt;ScrollView contentContainerStyle={styles.modalBody}&gt;
+            &lt;Text style={[styles.label, { color: colors.mutedForeground }]}&gt;Provedor&lt;/Text&gt;
+            &lt;View style={{ flexDirection: &quot;row&quot;, gap: 10, marginBottom: 8 }}&gt;
+              {([&quot;github&quot;, &quot;gitlab&quot;] as const).map((p) =&gt; (
+                &lt;TouchableOpacity
+                  key={p}
+                  onPress={() =&gt; setGitProvider(p)}
+                  style={[
+                    styles.providerBtn,
+                    {
+                      backgroundColor: gitProvider === p ? colors.primary : colors.secondary,
+                      borderColor: gitProvider === p ? colors.primary : colors.border,
+                    },
+                  ]}
+                &gt;
+                  &lt;Text
+                    style={[
+                      styles.chipText,
+                      { color: gitProvider === p ? colors.primaryForeground : colors.mutedForeground },
+                    ]}
+                  &gt;
+                    {p === &quot;github&quot; ? &quot;GitHub&quot; : &quot;GitLab&quot;}
+                  &lt;/Text&gt;
+                &lt;/TouchableOpacity&gt;
+              ))}
+            &lt;/View&gt;
+            {gitProvider === &quot;gitlab&quot; &amp;&amp; (
+              &lt;&gt;
+                &lt;Text style={[styles.label, { color: colors.mutedForeground }]}&gt;URL da Instância GitLab&lt;/Text&gt;
+                &lt;TextInput
+                  style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+                  value={gitInstance}
+                  onChangeText={setGitInstance}
+                  placeholder=&quot;https://gitlab.com&quot;
+                  placeholderTextColor={colors.mutedForeground}
+                  autoCapitalize=&quot;none&quot;
+                  autoCorrect={false}
+                /&gt;
+              &lt;/&gt;
+            )}
+            &lt;Text style={[styles.label, { color: colors.mutedForeground }]}&gt;
+              Token de Acesso Pessoal
+            &lt;/Text&gt;
+            &lt;TextInput
+              style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+              value={gitToken}
+              onChangeText={handleGitTokenChange}
+              placeholder={gitProvider === &quot;github&quot; ? &quot;ghp_xxxxxxxxxxxx&quot; : &quot;glpat-xxxxxxxxxxxx&quot;}
+              placeholderTextColor={colors.mutedForeground}
+              autoCapitalize=&quot;none&quot;
+              autoCorrect={false}
+              secureTextEntry
+            /&gt;
+            {gitFetching &amp;&amp; (
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, marginTop: 4 }}&gt;
+                🔄 Buscando dados da conta...
+              &lt;/Text&gt;
+            )}
+            {gitAutoFilled &amp;&amp; gitUsername ? (
+              &lt;View style={{ backgroundColor: colors.card, borderColor: colors.border, borderWidth: 1, borderRadius: 8, padding: 10, marginTop: 6 }}&gt;
+                &lt;Text style={{ color: colors.mutedForeground, fontSize: 11, marginBottom: 2 }}&gt;✅ Conta detectada automaticamente&lt;/Text&gt;
+                &lt;Text style={{ color: colors.foreground, fontWeight: &quot;600&quot; }}&gt;@{gitUsername}&lt;/Text&gt;
+                {gitEmail ? &lt;Text style={{ color: colors.mutedForeground, fontSize: 12 }}&gt;{gitEmail}&lt;/Text&gt; : null}
+              &lt;/View&gt;
+            ) : gitProvider === &quot;gitlab&quot; ? (
+              &lt;&gt;
+                &lt;Text style={[styles.label, { color: colors.mutedForeground, marginTop: 8 }]}&gt;Username&lt;/Text&gt;
+                &lt;TextInput
+                  style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+                  value={gitUsername}
+                  onChangeText={setGitUsername}
+                  placeholder=&quot;seu-usuario&quot;
+                  placeholderTextColor={colors.mutedForeground}
+                  autoCapitalize=&quot;none&quot;
+                  autoCorrect={false}
+                /&gt;
+                &lt;Text style={[styles.label, { color: colors.mutedForeground }]}&gt;Email (opcional)&lt;/Text&gt;
+                &lt;TextInput
+                  style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card }]}
+                  value={gitEmail}
+                  onChangeText={setGitEmail}
+                  placeholder=&quot;seu@email.com&quot;
+                  placeholderTextColor={colors.mutedForeground}
+                  autoCapitalize=&quot;none&quot;
+                  autoCorrect={false}
+                  keyboardType=&quot;email-address&quot;
+                /&gt;
+              &lt;/&gt;
+            ) : null}
+            &lt;TouchableOpacity
+              onPress={handleAddGit}
+              disabled={!gitToken.trim() || gitFetching}
+              style={[
+                styles.primaryBtn,
+                { backgroundColor: gitToken.trim() &amp;&amp; !gitFetching ? colors.primary : colors.muted },
+              ]}
+            &gt;
+              &lt;Text style={[styles.primaryBtnText, { color: colors.primaryForeground }]}&gt;
+                {gitFetching ? &quot;Verificando...&quot; : &quot;Salvar Configuração&quot;}
+              &lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/ScrollView&gt;
+        &lt;/View&gt;
+      &lt;/Modal&gt;
+
+      {/* Modal: DB */}
+      &lt;Modal visible={showDBModal} animationType=&quot;slide&quot; presentationStyle=&quot;fullScreen&quot;&gt;
+        &lt;View style={[styles.modal, { backgroundColor: colors.background }]}&gt;
+          &lt;View style={[styles.modalHeader, { borderBottomColor: colors.border, paddingTop: 48 }]}&gt;
+            &lt;View&gt;
+              &lt;Text style={[styles.modalTitle, { color: colors.foreground }]}&gt;
+                Banco de Dados / Credenciais
+              &lt;/Text&gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 12, marginTop: 2 }}&gt;
+                A IA recebe a conexão e gera código automaticamente
+              &lt;/Text&gt;
+            &lt;/View&gt;
+            &lt;TouchableOpacity onPress={() =&gt; setShowDBModal(false)}&gt;
+              &lt;Feather name=&quot;x&quot; size={22} color={colors.mutedForeground} /&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/View&gt;
+
+          &lt;ScrollView contentContainerStyle={[styles.modalBody, { paddingBottom: 60 }]} keyboardShouldPersistTaps=&quot;handled&quot;&gt;
+
+            {/* Tipo de banco */}
+            &lt;Text style={[styles.label, { color: colors.mutedForeground }]}&gt;TIPO DE BANCO / SERVIÇO&lt;/Text&gt;
+            &lt;View style={{ flexDirection: &quot;row&quot;, flexWrap: &quot;wrap&quot;, gap: 8, marginBottom: 12 }}&gt;
+              {([
+                { id: &quot;neon&quot;,        label: &quot;Neon&quot;,         emoji: &quot;⚡&quot;, color: &quot;#00d4aa&quot; },
+                { id: &quot;supabase&quot;,    label: &quot;Supabase&quot;,     emoji: &quot;🟢&quot;, color: &quot;#3ecf8e&quot; },
+                { id: &quot;postgres&quot;,    label: &quot;PostgreSQL&quot;,   emoji: &quot;🐘&quot;, color: &quot;#336791&quot; },
+                { id: &quot;mysql&quot;,       label: &quot;MySQL&quot;,        emoji: &quot;🐬&quot;, color: &quot;#f59e0b&quot; },
+                { id: &quot;mongodb&quot;,     label: &quot;MongoDB&quot;,      emoji: &quot;🍃&quot;, color: &quot;#4DB33D&quot; },
+                { id: &quot;sqlite&quot;,      label: &quot;SQLite&quot;,       emoji: &quot;📦&quot;, color: &quot;#60a5fa&quot; },
+                { id: &quot;turso&quot;,       label: &quot;Turso&quot;,        emoji: &quot;🦔&quot;, color: &quot;#a78bfa&quot; },
+                { id: &quot;redis&quot;,       label: &quot;Redis&quot;,        emoji: &quot;🔴&quot;, color: &quot;#ef4444&quot; },
+                { id: &quot;firebase&quot;,    label: &quot;Firebase&quot;,     emoji: &quot;🔥&quot;, color: &quot;#ff8a00&quot; },
+                { id: &quot;planetscale&quot;, label: &quot;PlanetScale&quot;,  emoji: &quot;🪐&quot;, color: &quot;#e879f9&quot; },
+                { id: &quot;railway&quot;,     label: &quot;Railway&quot;,      emoji: &quot;🚂&quot;, color: &quot;#a855f7&quot; },
+              ] as { id: typeof dbProvider; label: string; emoji: string; color: string }[]).map(({ id, label, emoji, color }) =&gt; {
+                const active = dbProvider === id;
+                return (
+                  &lt;TouchableOpacity
+                    key={id}
+                    onPress={() =&gt; setDBProvider(id)}
+                    style={{
+                      flexDirection: &quot;row&quot;,
+                      alignItems: &quot;center&quot;,
+                      gap: 6,
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      borderRadius: 10,
+                      borderWidth: active ? 2 : 1,
+                      backgroundColor: active ? color + &quot;22&quot; : colors.secondary,
+                      borderColor: active ? color : colors.border,
+                    }}
+                  &gt;
+                    &lt;Text style={{ fontSize: 14 }}&gt;{emoji}&lt;/Text&gt;
+                    &lt;Text style={{ color: active ? color : colors.mutedForeground, fontSize: 13, fontWeight: active ? &quot;700&quot; : &quot;400&quot; }}&gt;
+                      {label}
+                    &lt;/Text&gt;
+                  &lt;/TouchableOpacity&gt;
+                );
+              })}
+            &lt;/View&gt;
+
+            {/* Instruções do banco selecionado */}
+            &lt;View style={[styles.hint, { backgroundColor: colors.secondary, borderColor: colors.border, marginBottom: 12 }]}&gt;
+              &lt;Feather name=&quot;info&quot; size={13} color={colors.info} /&gt;
+              &lt;Text style={[styles.hintText, { color: colors.mutedForeground, lineHeight: 18 }]}&gt;
+                {dbProvider === &quot;neon&quot;
+                  ? &quot;Neon (grátis): console.neon.tech → crie projeto → Connection string → Node.js → copie a URL completa&quot;
+                  : dbProvider === &quot;supabase&quot;
+                  ? &quot;Supabase: supabase.com → projeto → Settings → Database → Connection string (URI) → copie&quot;
+                  : dbProvider === &quot;postgres&quot;
+                  ? &quot;PostgreSQL: Railway, Render, ou local. Formato: postgresql://user:senha@host:5432/banco&quot;
+                  : dbProvider === &quot;mysql&quot;
+                  ? &quot;MySQL (PlanetScale, Railway): mysql://user:senha@host:3306/banco ou mysql://user:senha@host/banco?ssl=true&quot;
+                  : dbProvider === &quot;mongodb&quot;
+                  ? &quot;MongoDB Atlas: cluster → Connect → Drivers → copie a connection string (mongodb+srv://...)&quot;
+                  : dbProvider === &quot;sqlite&quot;
+                  ? &quot;SQLite: caminho local do arquivo .db (ex: /data/meuapp.db) ou :memory: para memória&quot;
+                  : dbProvider === &quot;turso&quot;
+                  ? &quot;Turso (SQLite na nuvem): turso.tech → banco → Connect → copie a URL libsql:// e o token de autenticação&quot;
+                  : dbProvider === &quot;redis&quot;
+                  ? &quot;Redis: Upstash (grátis), Railway. Formato: redis://default:senha@host:6379 ou rediss://...&quot;
+                  : dbProvider === &quot;firebase&quot;
+                  ? &quot;Firebase: console.firebase.google.com → projeto → Configurações → serviceAccountKey.json → copie o JSON completo&quot;
+                  : dbProvider === &quot;planetscale&quot;
+                  ? &quot;PlanetScale: app.planetscale.com → banco → Connect → Node.js → copie a DATABASE_URL&quot;
+                  : &quot;Railway: railway.app → projeto → banco → Variables → DATABASE_URL → copie&quot;}
+              &lt;/Text&gt;
+            &lt;/View&gt;
+
+            {/* IA integration info */}
+            &lt;View style={[styles.hint, { backgroundColor: &quot;#00d4aa12&quot;, borderColor: &quot;#00d4aa44&quot;, marginBottom: 16 }]}&gt;
+              &lt;Feather name=&quot;cpu&quot; size={13} color=&quot;#00d4aa&quot; /&gt;
+              &lt;Text style={[styles.hintText, { color: &quot;#00d4aa&quot;, lineHeight: 18 }]}&gt;
+                {`A IA receberá a conexão e poderá:\n• Criar tabelas, migrations, CRUD completo\n• Escrever código de conexão (Prisma, Drizzle, mongoose, etc)\n• Fazer consultas SQL / NoSQL por voz`}
+              &lt;/Text&gt;
+            &lt;/View&gt;
+
+            {/* Nome */}
+            &lt;Text style={[styles.label, { color: colors.mutedForeground }]}&gt;NOME DA CONEXÃO&lt;/Text&gt;
+            &lt;TextInput
+              style={[styles.input, { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.card, fontSize: 16, paddingVertical: 14 }]}
+              value={dbName}
+              onChangeText={setDBName}
+              placeholder=&quot;Ex: Banco Principal, Redis Cache...&quot;
+              placeholderTextColor={colors.mutedForeground}
+            /&gt;
+
+            {/* Connection string */}
+            &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;space-between&quot;, marginTop: 10, marginBottom: 4 }}&gt;
+              &lt;Text style={[styles.label, { color: colors.mutedForeground, marginTop: 0, marginBottom: 0 }]}&gt;
+                {dbProvider === &quot;firebase&quot; ? &quot;SERVICE ACCOUNT JSON / CREDENCIAL&quot; : &quot;STRING DE CONEXÃO / URL&quot;}
+              &lt;/Text&gt;
+              &lt;TouchableOpacity
+                onPress={async () =&gt; {
+                  try {
+                    const text = await Clipboard.getStringAsync();
+                    if (text.trim()) {
+                      setDBConnStr(text.trim());
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    }
+                  } catch {}
+                }}
+                style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 4, backgroundColor: &quot;#007acc22&quot;, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 }}
+              &gt;
+                &lt;Feather name=&quot;clipboard&quot; size={12} color=&quot;#007acc&quot; /&gt;
+                &lt;Text style={{ color: &quot;#007acc&quot;, fontSize: 11, fontWeight: &quot;700&quot; }}&gt;Colar&lt;/Text&gt;
+              &lt;/TouchableOpacity&gt;
+            &lt;/View&gt;
+            &lt;TextInput
+              style={[styles.input, {
+                color: colors.foreground,
+                borderColor: dbConnStr.trim() ? &quot;#22c55e88&quot; : colors.border,
+                backgroundColor: colors.card,
+                height: 160,
+                fontSize: 13,
+                fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;,
+                lineHeight: 20,
+              }]}
+              value={dbConnStr}
+              onChangeText={setDBConnStr}
+              placeholder={
+                dbProvider === &quot;neon&quot;        ? &quot;postgresql://user:pass@ep-xxx.neon.tech/neondb?sslmode=require&quot;
+                : dbProvider === &quot;supabase&quot;  ? &quot;postgresql://postgres:[senha]@db.xxxx.supabase.co:5432/postgres&quot;
+                : dbProvider === &quot;postgres&quot;  ? &quot;postgresql://usuario:senha@host:5432/banco&quot;
+                : dbProvider === &quot;mysql&quot;     ? &quot;mysql://usuario:senha@host:3306/banco&quot;
+                : dbProvider === &quot;mongodb&quot;   ? &quot;mongodb+srv://usuario:senha@cluster.xxxxx.mongodb.net/banco&quot;
+                : dbProvider === &quot;sqlite&quot;    ? &quot;/data/meuapp.db&quot;
+                : dbProvider === &quot;turso&quot;     ? &quot;libsql://banco-usuario.turso.io\n\nToken: eyJhb...&quot;
+                : dbProvider === &quot;redis&quot;     ? &quot;redis://default:senha@host:6379&quot;
+                : dbProvider === &quot;firebase&quot;  ? '{&quot;type&quot;:&quot;service_account&quot;,&quot;project_id&quot;:&quot;...&quot;,&quot;private_key&quot;:&quot;...&quot;}'
+                : dbProvider === &quot;planetscale&quot; ? &quot;mysql://usuario:senha@aws.connect.psdb.cloud/banco?ssl=true&quot;
+                : &quot;postgresql://postgres:senha@monorail.proxy.rlwy.net:12345/railway&quot;
+              }
+              placeholderTextColor={colors.mutedForeground}
+              autoCapitalize=&quot;none&quot;
+              autoCorrect={false}
+              multiline
+              textAlignVertical=&quot;top&quot;
+            /&gt;
+            {dbConnStr.trim().length &gt; 0 &amp;&amp; (
+              &lt;View style={{ flexDirection: &quot;row&quot;, alignItems: &quot;center&quot;, gap: 6, marginTop: 4 }}&gt;
+                &lt;Feather name=&quot;check-circle&quot; size={13} color=&quot;#22c55e&quot; /&gt;
+                &lt;Text style={{ color: &quot;#22c55e&quot;, fontSize: 12 }}&gt;
+                  {dbConnStr.trim().length} caracteres — pronto para salvar
+                &lt;/Text&gt;
+              &lt;/View&gt;
+            )}
+
+            &lt;TouchableOpacity
+              onPress={handleAddDB}
+              disabled={!dbConnStr.trim() || !dbName.trim()}
+              style={[
+                styles.primaryBtn,
+                { backgroundColor: dbConnStr.trim() &amp;&amp; dbName.trim() ? &quot;#22c55e&quot; : colors.muted, marginTop: 20 },
+              ]}
+            &gt;
+              &lt;Feather name=&quot;database&quot; size={18} color=&quot;#fff&quot; /&gt;
+              &lt;Text style={[styles.primaryBtnText, { color: &quot;#fff&quot; }]}&gt;
+                Salvar Banco de Dados
+              &lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+
+            &lt;TouchableOpacity
+              onPress={() =&gt; setShowDBModal(false)}
+              style={{ alignItems: &quot;center&quot;, padding: 16 }}
+            &gt;
+              &lt;Text style={{ color: colors.mutedForeground, fontSize: 14 }}&gt;Cancelar&lt;/Text&gt;
+            &lt;/TouchableOpacity&gt;
+          &lt;/ScrollView&gt;
+        &lt;/View&gt;
+      &lt;/Modal&gt;
+    &lt;/View&gt;
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  header: {
+    paddingHorizontal: 20,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+  },
+  headerTitle: { fontSize: 28, fontWeight: &quot;800&quot;, letterSpacing: -0.5 },
+  section: {
+    marginHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    overflow: &quot;hidden&quot;,
+    marginBottom: 4,
+  },
+  modal: { flex: 1 },
+  modalHeader: {
+    flexDirection: &quot;row&quot;,
+    justifyContent: &quot;space-between&quot;,
+    alignItems: &quot;center&quot;,
+    padding: 20,
+    paddingTop: 24,
+    borderBottomWidth: 1,
+  },
+  modalTitle: { fontSize: 18, fontWeight: &quot;700&quot; },
+  modalBody: { padding: 20, gap: 4, paddingBottom: 40 },
+  label: { fontSize: 11, fontWeight: &quot;700&quot;, marginTop: 10, marginBottom: 2, letterSpacing: 0.5 },
+  input: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  chip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  chipText: { fontSize: 12, fontWeight: &quot;500&quot; },
+  providerBtn: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: &quot;center&quot;,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  primaryBtn: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;center&quot;,
+    justifyContent: &quot;center&quot;,
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginTop: 16,
+  },
+  primaryBtnText: { fontSize: 16, fontWeight: &quot;700&quot; },
+  activeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 20,
+  },
+  activeBadgeText: { color: &quot;#fff&quot;, fontSize: 10, fontWeight: &quot;700&quot; },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  badgeText: { fontSize: 11, fontWeight: &quot;500&quot; },
+  fontSizeText: { fontSize: 15, fontWeight: &quot;600&quot;, width: 28, textAlign: &quot;center&quot; },
+  hint: {
+    flexDirection: &quot;row&quot;,
+    gap: 8,
+    padding: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 4,
+    alignItems: &quot;flex-start&quot;,
+  },
+  hintText: { flex: 1, fontSize: 12, lineHeight: 18 },
+});
+
+const settingsStyles = StyleSheet.create({
+  sectionHeader: {
+    fontSize: 11,
+    fontWeight: &quot;700&quot;,
+    letterSpacing: 0.8,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 8,
+  },
+  row: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;center&quot;,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  rowLabel: { fontSize: 15 },
+  rowSublabel: { fontSize: 12, marginTop: 1 },
+  keyBox: {
+    borderWidth: 2,
+    borderRadius: 14,
+    padding: 16,
+    minHeight: 110,
+    marginBottom: 12,
+  },
+  keyInput: {
+    fontSize: 15,
+    fontFamily: Platform.OS === &quot;ios&quot; ? &quot;Menlo&quot; : &quot;monospace&quot;,
+    minHeight: 80,
+  },
+  detectedBadge: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;center&quot;,
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 4,
+  },
+  detectedText: { fontSize: 14 },
+  saveBtn: {
+    flexDirection: &quot;row&quot;,
+    alignItems: &quot;center&quot;,
+    justifyContent: &quot;center&quot;,
+    gap: 10,
+    borderRadius: 14,
+    paddingVertical: 16,
+    marginTop: 24,
+  },
+  saveBtnText: { fontSize: 17, fontWeight: &quot;700&quot; },
+});
+</pre>
+</div>
+</body>
+</html>
