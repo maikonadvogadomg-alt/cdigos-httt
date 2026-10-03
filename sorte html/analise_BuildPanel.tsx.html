@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: BuildPanel.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 BuildPanel.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 08:35:09 • 30 elementos • 15 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { useState, useCallback } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import {</div><div class="idx-item">L8 [import] import JSZip from &quot;jszip&quot;;</div><div class="idx-item">L9 [import] import { saveAs } from &quot;file-saver&quot;;</div><div class="idx-item">L10 [import] import HTMLPlayground from &quot;./HTMLPlayground&quot;;</div><div class="idx-item">L12 [interface] BuildPanelProps</div><div class="idx-item">L19 [interface] BuildTarget</div><div class="idx-item">L21 [const] SECTIONS</div><div class="idx-item">L33 [component] CodeBlock</div><div class="idx-item">L35 [function] doCopy →</div><div class="idx-item">L51 [const] CLEAN_VITE_CONFIG</div><div class="idx-item">L52 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L53 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L54 [import] import path from &quot;path&quot;;</div><div class="idx-item">L71 [const] GITIGNORE</div><div class="idx-item">L84 [function] cleanDeps</div><div class="idx-item">L92 [function] parseVfsPkg</div><div class="idx-item">L96 [function] makeCleanPkg</div><div class="idx-item">L97 [function] cleanName →</div><div class="idx-item">L110 [function] getAllVfsFiles</div><div class="idx-item">L119 [function] generatePlatformZip</div><div class="idx-item">L127 [function] name →</div><div class="idx-item">L235 [const] CACHE_NAME</div><div class="idx-item">L236 [const] ASSETS</div><div class="idx-item">L455 [component] BuildPanel</div><div class="idx-item">L466 [function] toggle →</div><div class="idx-item">L524 [function] readSafe →</div><div class="idx-item">L584 [interface] TNode</div><div class="idx-item">L590 [function] sortK</div><div class="idx-item">L597 [function] renderT</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L32</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { useState, useCallback } from &quot;react&quot;;
+import {
+  Package, Smartphone, Globe, Zap, GitBranch, X,
+  ChevronDown, ChevronRight, Copy, Check, Download,
+  Settings2, Key, RefreshCw, FileCode2, AlertCircle,
+  ExternalLink, Play, Archive, HardDriveDownload, Code2,
+} from &quot;lucide-react&quot;;
+import JSZip from &quot;jszip&quot;;
+import { saveAs } from &quot;file-saver&quot;;
+import HTMLPlayground from &quot;./HTMLPlayground&quot;;
+
+interface BuildPanelProps {
+  vfs: { listFiles: () =&gt; string[]; readFile: (p: string) =&gt; string | null; writeFile: (p: string, c: string) =&gt; void };
+  projectName: string;
+  onClose: () =&gt; void;
+  onRunCommand?: (cmd: string) =&gt; void;
+}
+
+type BuildTarget = &quot;eas&quot; | &quot;capacitor&quot; | &quot;githubpages&quot; | &quot;electron&quot; | &quot;pwa&quot; | &quot;git&quot; | &quot;clean&quot; | &quot;netlify&quot; | &quot;vercel&quot;;
+
+const SECTIONS = [
+  { id: &quot;eas&quot;         as BuildTarget, label: &quot;APK via EAS (Expo)&quot;,      icon: &quot;📱&quot;, color: &quot;bg-blue-900/30 border-blue-500/40 text-blue-300&quot;,     desc: &quot;Build APK/AAB pelo serviço EAS da Expo&quot; },
+  { id: &quot;capacitor&quot;   as BuildTarget, label: &quot;APK via Capacitor&quot;,        icon: &quot;⚡&quot;, color: &quot;bg-cyan-900/30 border-cyan-500/40 text-cyan-300&quot;,     desc: &quot;Empacota o projeto web como APK Android&quot; },
+  { id: &quot;githubpages&quot; as BuildTarget, label: &quot;GitHub Pages&quot;,             icon: &quot;🌐&quot;, color: &quot;bg-green-900/30 border-green-500/40 text-green-300&quot;,  desc: &quot;Publica no GitHub Pages gratuitamente&quot; },
+  { id: &quot;electron&quot;    as BuildTarget, label: &quot;Executável (Electron)&quot;,    icon: &quot;🖥&quot;, color: &quot;bg-purple-900/30 border-purple-500/40 text-purple-300&quot;,desc: &quot;Executável Desktop (Win/Mac/Linux)&quot; },
+  { id: &quot;pwa&quot;         as BuildTarget, label: &quot;PWA (Instalável no Cel.)&quot;, icon: &quot;📲&quot;, color: &quot;bg-orange-900/30 border-orange-500/40 text-orange-300&quot;,desc: &quot;Instala como app no celular sem APK&quot; },
+  { id: &quot;git&quot;         as BuildTarget, label: &quot;Deploy via Git&quot;,           icon: &quot;🚀&quot;, color: &quot;bg-pink-900/30 border-pink-500/40 text-pink-300&quot;,     desc: &quot;Configura e publica via repositório Git&quot; },
+  { id: &quot;netlify&quot;     as BuildTarget, label: &quot;Netlify (Publicar grátis)&quot;, icon: &quot;🔷&quot;, color: &quot;bg-teal-900/30 border-teal-500/40 text-teal-300&quot;,    desc: &quot;Deploy gratuito com URL pública em minutos&quot; },
+  { id: &quot;vercel&quot;      as BuildTarget, label: &quot;Vercel (Publicar grátis)&quot;,  icon: &quot;▲&quot;, color: &quot;bg-gray-900/50 border-gray-400/40 text-gray-200&quot;,    desc: &quot;Deploy grátis + SSL automático via Vercel&quot; },
+  { id: &quot;clean&quot;       as BuildTarget, label: &quot;Versão Limpa (Standalone)&quot;, icon: &quot;✨&quot;, color: &quot;bg-gray-800/50 border-gray-500/40 text-gray-300&quot;,     desc: &quot;ZIP limpo sem dependências do Replit&quot; },
+];
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>CodeBlock</span>
+    <div>
+      <small>L33–L34</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function CodeBlock({ code, onCopy }: { code: string; onCopy?: () =&gt; void }) {
+  const [copied, setCopied] = useState(false);</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>doCopy →</span>
+    <div>
+      <small>L35–L83</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">  const doCopy = () =&gt; { navigator.clipboard.writeText(code); setCopied(true); onCopy?.(); setTimeout(() =&gt; setCopied(false), 2000); };
+  return (
+    &lt;div className=&quot;relative bg-[#0d1117] border border-gray-800/60 rounded-xl overflow-hidden my-2&quot;&gt;
+      &lt;div className=&quot;flex items-center justify-between px-3 py-1.5 bg-[#161b22] border-b border-gray-800/40&quot;&gt;
+        &lt;span className=&quot;text-[10px] text-gray-600 font-mono&quot;&gt;terminal&lt;/span&gt;
+        &lt;button onClick={doCopy} className=&quot;flex items-center gap-1 text-[10px] text-gray-600 hover:text-gray-300 transition-colors&quot;&gt;
+          {copied ? &lt;&gt;&lt;Check size={10} className=&quot;text-green-400&quot; /&gt; Copiado&lt;/&gt; : &lt;&gt;&lt;Copy size={10} /&gt; Copiar&lt;/&gt;}
+        &lt;/button&gt;
+      &lt;/div&gt;
+      &lt;pre className=&quot;px-3 py-2.5 text-[11px] font-mono text-gray-300 whitespace-pre-wrap break-all&quot;&gt;{code}&lt;/pre&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ── Helpers para geração de ZIPs ─────────────────────────────────────────────
+
+const CLEAN_VITE_CONFIG = `import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: { &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;) },
+  },
+  server: {
+    port: 5173,
+    host: &quot;0.0.0.0&quot;,
+  },
+  build: {
+    outDir: &quot;dist&quot;,
+  },
+});
+`;
+
+const GITIGNORE = `node_modules/
+dist/
+build/
+.expo/
+.expo-shared/
+*.local
+.env
+.DS_Store
+*.log
+android/
+ios/
+`;
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>cleanDeps</span>
+    <div>
+      <small>L84–L91</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">function cleanDeps(deps: Record&lt;string, string&gt; = {}): Record&lt;string, string&gt; {
+  const r: Record&lt;string, string&gt; = {};
+  for (const [k, v] of Object.entries(deps)) {
+    if (!k.startsWith(&quot;@replit/&quot;) &amp;&amp; !k.startsWith(&quot;@workspace/&quot;)) r[k] = v;
+  }
+  return r;
+}
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>parseVfsPkg</span>
+    <div>
+      <small>L92–L95</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">function parseVfsPkg(vfs: BuildPanelProps[&quot;vfs&quot;]): any {
+  try { return JSON.parse(vfs.readFile(&quot;package.json&quot;) || &quot;{}&quot;); } catch { return {}; }
+}
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>makeCleanPkg</span>
+    <div>
+      <small>L96–L96</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">function makeCleanPkg(pkg: any, name: string, overrides?: Partial&lt;any&gt;): string {</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>cleanName →</span>
+    <div>
+      <small>L97–L109</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  const cleanName = (pkg.name || name).toLowerCase().replace(/\s+/g, &quot;-&quot;);
+  return JSON.stringify({
+    name: cleanName,
+    version: pkg.version || &quot;1.0.0&quot;,
+    description: pkg.description || cleanName,
+    type: &quot;module&quot;,
+    scripts: { dev: &quot;vite&quot;, build: &quot;vite build&quot;, preview: &quot;vite preview&quot; },
+    dependencies: cleanDeps(pkg.dependencies),
+    devDependencies: { ...cleanDeps(pkg.devDependencies), &quot;vite&quot;: &quot;^6.0.0&quot;, &quot;@vitejs/plugin-react&quot;: &quot;^4.0.0&quot;, &quot;@tailwindcss/vite&quot;: &quot;^4.0.0&quot;, &quot;tailwindcss&quot;: &quot;^4.0.0&quot; },
+    ...overrides,
+  }, null, 2);
+}
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>getAllVfsFiles</span>
+    <div>
+      <small>L110–L118</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">function getAllVfsFiles(vfs: BuildPanelProps[&quot;vfs&quot;]): Record&lt;string, string&gt; {
+  const files: Record&lt;string, string&gt; = {};
+  for (const f of vfs.listFiles()) {
+    const content = vfs.readFile(f);
+    if (content !== null) files[f] = content;
+  }
+  return files;
+}
+</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>generatePlatformZip</span>
+    <div>
+      <small>L119–L126</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">async function generatePlatformZip(
+  target: BuildTarget,
+  vfs: BuildPanelProps[&quot;vfs&quot;],
+  projectName: string,
+  extras: { easToken?: string; ghUser?: string; ghRepo?: string; ghToken?: string }
+): Promise&lt;Blob&gt; {
+  const zip = new JSZip();
+  const pkg = parseVfsPkg(vfs);</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>name →</span>
+    <div>
+      <small>L127–L454</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">  const name = (pkg.name || projectName).toLowerCase().replace(/\s+/g, &quot;-&quot;);
+  const allFiles = getAllVfsFiles(vfs);
+
+  // Adiciona arquivos VFS (exceto package.json e vite.config.ts que serão substituídos)
+  const skipFiles = new Set([&quot;package.json&quot;, &quot;vite.config.ts&quot;, &quot;vite.config.js&quot;]);
+  for (const [path, content] of Object.entries(allFiles)) {
+    if (!skipFiles.has(path)) zip.file(path, content);
+  }
+  zip.file(&quot;.gitignore&quot;, GITIGNORE);
+
+  if (target === &quot;eas&quot;) {
+    const appJson = {
+      expo: {
+        name: projectName,
+        slug: name,
+        version: pkg.version || &quot;1.0.0&quot;,
+        orientation: &quot;portrait&quot;,
+        icon: &quot;./assets/icon.png&quot;,
+        splash: { image: &quot;./assets/splash.png&quot;, resizeMode: &quot;contain&quot;, backgroundColor: &quot;#ffffff&quot; },
+        platforms: [&quot;ios&quot;, &quot;android&quot;, &quot;web&quot;],
+        android: { adaptiveIcon: { foregroundImage: &quot;./assets/adaptive-icon.png&quot;, backgroundColor: &quot;#ffffff&quot; }, package: `com.${name.replace(/-/g, &quot;&quot;)}.app` },
+        ios: { supportsTablet: true, bundleIdentifier: `com.${name.replace(/-/g, &quot;&quot;)}.app` },
+        web: { favicon: &quot;./assets/favicon.png&quot; },
+        extra: { eas: { projectId: &quot;&quot; } },
+      },
+    };
+    zip.file(&quot;app.json&quot;, JSON.stringify(appJson, null, 2));
+    zip.file(&quot;eas.json&quot;, JSON.stringify({
+      cli: { version: &quot;&gt;= 5.9.1&quot; },
+      build: {
+        development: { developmentClient: true, distribution: &quot;internal&quot;, env: {} },
+        preview: { distribution: &quot;internal&quot;, android: { buildType: &quot;apk&quot; }, env: {} },
+        production: { android: { buildType: &quot;apk&quot; }, env: { EXPO_TOKEN: extras.easToken || &quot;&quot; } },
+      },
+      submit: { production: {} },
+    }, null, 2));
+    zip.file(&quot;babel.config.js&quot;, `module.exports = function(api) {\n  api.cache(true);\n  return { presets: ['babel-preset-expo'] };\n};\n`);
+    zip.file(&quot;.env.example&quot;, `# Cole seu token EAS aqui\nEXPO_TOKEN=${extras.easToken || &quot;seu_token_eas_aqui&quot;}\n`);
+    zip.file(&quot;package.json&quot;, JSON.stringify({
+      name, version: pkg.version || &quot;1.0.0&quot;, main: &quot;node_modules/expo/AppEntry.js&quot;,
+      scripts: { start: &quot;expo start&quot;, android: &quot;expo run:android&quot;, ios: &quot;expo run:ios&quot;, web: &quot;expo start --web&quot;, &quot;build:apk&quot;: &quot;eas build --platform android --profile preview&quot; },
+      dependencies: { expo: &quot;~51.0.0&quot;, &quot;expo-status-bar&quot;: &quot;~1.12.1&quot;, react: &quot;18.2.0&quot;, &quot;react-native&quot;: &quot;0.74.1&quot;, ...cleanDeps(pkg.dependencies) },
+      devDependencies: { &quot;@babel/core&quot;: &quot;^7.20.0&quot;, &quot;typescript&quot;: &quot;^5.1.3&quot; },
+    }, null, 2));
+    zip.file(&quot;README-EAS.md&quot;, `# Build APK via EAS\n\n## Pré-requisitos\n\`\`\`bash\nnpm install -g @expo/eas-cli\nnpm install\nexpo login\neas login\n\`\`\`\n\n## Configurar token EAS\n1. Acesse https://expo.dev/accounts/[user]/settings/access-tokens\n2. Crie um token e cole no \`.env\`\n\n## Build APK\n\`\`\`bash\neas build --platform android --profile preview\n# ou para produção:\neas build --platform android --profile production\n\`\`\`\n\n## Build local (sem EAS cloud)\n\`\`\`bash\neas build --platform android --profile preview --local\n\`\`\`\n`);
+
+  } else if (target === &quot;capacitor&quot;) {
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name, {
+      dependencies: { ...cleanDeps(pkg.dependencies), &quot;@capacitor/core&quot;: &quot;^6.0.0&quot;, &quot;@capacitor/android&quot;: &quot;^6.0.0&quot;, &quot;@capacitor/ios&quot;: &quot;^6.0.0&quot;, &quot;@capacitor/cli&quot;: &quot;^6.0.0&quot; },
+    }));
+    zip.file(&quot;capacitor.config.ts&quot;, `import { CapacitorConfig } from '@capacitor/cli';\n\nconst config: CapacitorConfig = {\n  appId: 'com.${name.replace(/-/g,&quot;&quot;)}.app',\n  appName: '${projectName}',\n  webDir: 'dist',\n  bundledWebRuntime: false,\n  server: {\n    androidScheme: 'https',\n  },\n};\n\nexport default config;\n`);
+    zip.file(&quot;android/build.gradle&quot;, `buildscript {\n  repositories { google(); mavenCentral() }\n  dependencies { classpath 'com.android.tools.build:gradle:8.2.2' }\n}\nallprojects { repositories { google(); mavenCentral() } }\n`);
+    zip.file(&quot;android/app/build.gradle&quot;, `apply plugin: 'com.android.application'\nandroid {\n  compileSdkVersion 34\n  defaultConfig {\n    applicationId &quot;com.${name.replace(/-/g,&quot;&quot;)}.app&quot;\n    minSdkVersion 22\n    targetSdkVersion 34\n    versionCode 1\n    versionName &quot;${pkg.version || &quot;1.0.0&quot;}&quot;\n  }\n  buildTypes { release { minifyEnabled false } }\n}\n`);
+    zip.file(&quot;android/app/src/main/AndroidManifest.xml&quot;, `&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;\n&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;\n  &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;\n  &lt;application android:label=&quot;${projectName}&quot; android:usesCleartextTraffic=&quot;true&quot;&gt;\n    &lt;activity android:name=&quot;.MainActivity&quot; android:exported=&quot;true&quot;&gt;\n      &lt;intent-filter&gt;\n        &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;\n        &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;\n      &lt;/intent-filter&gt;\n    &lt;/activity&gt;\n  &lt;/application&gt;\n&lt;/manifest&gt;\n`);
+    zip.file(&quot;android/app/src/main/res/values/strings.xml&quot;, `&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;\n&lt;resources&gt;&lt;string name=&quot;app_name&quot;&gt;${projectName}&lt;/string&gt;&lt;/resources&gt;\n`);
+    zip.file(&quot;scripts/build-android.sh&quot;, `#!/bin/bash\nset -e\necho &quot;Construindo projeto web...&quot;\nnpm run build\necho &quot;Sincronizando com Capacitor...&quot;\nnpx cap sync android\necho &quot;Pronto! Abra 'android/' no Android Studio para gerar o APK.&quot;\n`);
+    zip.file(&quot;README-CAPACITOR.md&quot;, `# APK via Capacitor\n\n## Instalar dependências\n\`\`\`bash\nnpm install\nnpm install @capacitor/core @capacitor/android @capacitor/ios @capacitor/cli\n\`\`\`\n\n## Inicializar Capacitor (primeira vez)\n\`\`\`bash\nnpx cap init &quot;${projectName}&quot; &quot;com.${name.replace(/-/g,&quot;&quot;)}.app&quot; --web-dir dist\nnpx cap add android\n\`\`\`\n\n## Build e gerar APK\n\`\`\`bash\nnpm run build\nnpx cap sync\nnpx cap open android\n# No Android Studio: Build → Generate Signed APK\n\`\`\`\n\n## Build APK por linha de comando\n\`\`\`bash\nbash scripts/build-android.sh\ncd android &amp;&amp; ./gradlew assembleDebug\n# APK estará em: android/app/build/outputs/apk/debug/app-debug.apk\n\`\`\`\n`);
+
+  } else if (target === &quot;githubpages&quot;) {
+    const repo = extras.ghRepo || name;
+    const viteGhPages = CLEAN_VITE_CONFIG.replace(&quot;outDir: \&quot;dist\&quot;&quot;, `outDir: &quot;dist&quot;,\n    // GitHub Pages base path\n    // base: &quot;/${repo}/&quot;,  // Descomente se o repo não for o site principal`);
+    zip.file(&quot;vite.config.ts&quot;, viteGhPages);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name));
+    zip.file(&quot;.github/workflows/deploy.yml&quot;, `name: Deploy to GitHub Pages\n\non:\n  push:\n    branches: [main, master]\n  workflow_dispatch:\n\npermissions:\n  contents: read\n  pages: write\n  id-token: write\n\nconcurrency:\n  group: &quot;pages&quot;\n  cancel-in-progress: false\n\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '20', cache: 'npm' }\n      - run: npm ci\n      - run: npm run build\n      - uses: actions/upload-pages-artifact@v3\n        with: { path: ./dist }\n\n  deploy:\n    environment:\n      name: github-pages\n      url: \${{ steps.deployment.outputs.page_url }}\n    runs-on: ubuntu-latest\n    needs: build\n    steps:\n      - id: deployment\n        uses: actions/deploy-pages@v4\n`);
+    zip.file(&quot;README-GHPAGES.md&quot;, `# Deploy no GitHub Pages\n\n## Setup inicial\n1. Crie um repositório no GitHub\n2. \`git init &amp;&amp; git add . &amp;&amp; git commit -m &quot;inicial&quot; &amp;&amp; git remote add origin https://github.com/${extras.ghUser || &quot;SEU_USUARIO&quot;}/${repo}.git\`\n3. \`git push -u origin main\`\n\n## Habilitar GitHub Pages\n1. Acesse Settings → Pages no repositório\n2. Em **Source**, selecione **GitHub Actions**\n3. O deploy ocorrerá automaticamente a cada push em main\n\n## URL do site\nhttps://${extras.ghUser || &quot;SEU_USUARIO&quot;}.github.io/${repo}/\n\n## Build manual\n\`\`\`bash\nnpm install\nnpm run build\n# Os arquivos ficam em dist/\n\`\`\`\n`);
+
+  } else if (target === &quot;electron&quot;) {
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, JSON.stringify({
+      name, version: pkg.version || &quot;1.0.0&quot;, description: pkg.description || name,
+      main: &quot;electron/main.js&quot;, type: &quot;commonjs&quot;,
+      scripts: {
+        dev: &quot;vite&quot;,
+        build: &quot;vite build&quot;,
+        &quot;electron:dev&quot;: &quot;concurrently \&quot;npm run dev\&quot; \&quot;wait-on http://localhost:5173 &amp;&amp; electron .\&quot;&quot;,
+        &quot;electron:build&quot;: &quot;npm run build &amp;&amp; electron-builder&quot;,
+      },
+      dependencies: cleanDeps(pkg.dependencies),
+      devDependencies: {
+        ...cleanDeps(pkg.devDependencies),
+        electron: &quot;^29.0.0&quot;,
+        &quot;electron-builder&quot;: &quot;^24.0.0&quot;,
+        concurrently: &quot;^8.0.0&quot;,
+        &quot;wait-on&quot;: &quot;^7.0.0&quot;,
+        vite: &quot;^6.0.0&quot;,
+        &quot;@vitejs/plugin-react&quot;: &quot;^4.0.0&quot;,
+      },
+    }, null, 2));
+    zip.file(&quot;electron/main.js&quot;, `const { app, BrowserWindow } = require('electron');\nconst path = require('path');\nconst isDev = process.env.NODE_ENV === 'development';\n\nfunction createWindow() {\n  const win = new BrowserWindow({\n    width: 1280, height: 800,\n    webPreferences: {\n      nodeIntegration: false,\n      contextIsolation: true,\n      preload: path.join(__dirname, 'preload.js'),\n    },\n    title: '${projectName}',\n  });\n\n  if (isDev) {\n    win.loadURL('http://localhost:5173');\n    win.webContents.openDevTools();\n  } else {\n    win.loadFile(path.join(__dirname, '../dist/index.html'));\n  }\n}\n\napp.whenReady().then(() =&gt; {\n  createWindow();\n  app.on('activate', () =&gt; { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });\n});\n\napp.on('window-all-closed', () =&gt; { if (process.platform !== 'darwin') app.quit(); });\n`);
+    zip.file(&quot;electron/preload.js&quot;, `const { contextBridge, ipcRenderer } = require('electron');\n\ncontextBridge.exposeInMainWorld('electronAPI', {\n  platform: process.platform,\n  versions: process.versions,\n});\n`);
+    zip.file(&quot;electron-builder.yml&quot;, `appId: com.${name.replace(/-/g,&quot;&quot;)}.app\nproductName: &quot;${projectName}&quot;\ndirectories:\n  buildResources: assets\n  output: dist-electron\nfiles:\n  - dist/**/*\n  - electron/**/*\n  - package.json\nwin:\n  target:\n    - target: nsis\n      arch: [x64]\nmac:\n  target: dmg\nlinux:\n  target: AppImage\n`);
+    zip.file(&quot;README-ELECTRON.md&quot;, `# Executável Desktop (Electron)\n\n## Instalar\n\`\`\`bash\nnpm install\n\`\`\`\n\n## Desenvolver\n\`\`\`bash\nnpm run electron:dev\n\`\`\`\n\n## Build executável\n\`\`\`bash\nnpm run electron:build\n\`\`\`\n\nOs executáveis ficarão em \`dist-electron/\`:\n- **Windows**: \`.exe\` (instalador NSIS)\n- **macOS**: \`.dmg\`\n- **Linux**: \`.AppImage\`\n`);
+
+  } else if (target === &quot;pwa&quot;) {
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name));
+    const manifest = {
+      name: projectName, short_name: name, start_url: &quot;/&quot;,
+      display: &quot;standalone&quot;, background_color: &quot;#111a0a&quot;, theme_color: &quot;#2d5a1b&quot;,
+      description: `App ${projectName} — instalável sem loja`,
+      icons: [
+        { src: &quot;icon-192.png&quot;, sizes: &quot;192x192&quot;, type: &quot;image/png&quot;, purpose: &quot;any maskable&quot; },
+        { src: &quot;icon-512.png&quot;, sizes: &quot;512x512&quot;, type: &quot;image/png&quot;, purpose: &quot;any maskable&quot; },
+      ],
+    };
+    zip.file(&quot;public/manifest.json&quot;, JSON.stringify(manifest, null, 2));
+    zip.file(&quot;public/sw.js&quot;, `// Service Worker — ${projectName}
+const CACHE_NAME = 'pwa-cache-v1';
+const ASSETS = ['/', '/index.html'];
+
+self.addEventListener('install', e =&gt; {
+  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE_NAME).then(c =&gt; c.addAll(ASSETS)));
+});
+
+self.addEventListener('activate', e =&gt; {
+  e.waitUntil(caches.keys().then(keys =&gt;
+    Promise.all(keys.filter(k =&gt; k !== CACHE_NAME).map(k =&gt; caches.delete(k)))
+  ));
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e =&gt; {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    caches.match(e.request).then(cached =&gt; cached || fetch(e.request)
+      .then(res =&gt; {
+        if (res &amp;&amp; res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c =&gt; c.put(e.request, clone));
+        }
+        return res;
+      }).catch(() =&gt; caches.match('/index.html'))
+    )
+  );
+});
+`);
+    zip.file(&quot;index.html&quot;, `&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;pt-BR&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;meta name=&quot;theme-color&quot; content=&quot;#2d5a1b&quot; /&gt;
+  &lt;meta name=&quot;description&quot; content=&quot;${projectName} — app instalável&quot; /&gt;
+  &lt;meta name=&quot;mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+  &lt;meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot; /&gt;
+  &lt;meta name=&quot;apple-mobile-web-app-status-bar-style&quot; content=&quot;black-translucent&quot; /&gt;
+  &lt;meta name=&quot;apple-mobile-web-app-title&quot; content=&quot;${projectName}&quot; /&gt;
+  &lt;link rel=&quot;manifest&quot; href=&quot;/manifest.json&quot; /&gt;
+  &lt;link rel=&quot;apple-touch-icon&quot; href=&quot;/icon-192.png&quot; /&gt;
+  &lt;title&gt;${projectName}&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+  &lt;script type=&quot;module&quot; src=&quot;/src/main.tsx&quot;&gt;&lt;/script&gt;
+  &lt;script&gt;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () =&gt; {
+        navigator.serviceWorker.register('/sw.js')
+          .then(r =&gt; console.log('[PWA] SW registrado:', r.scope))
+          .catch(e =&gt; console.warn('[PWA] SW falhou:', e));
+      });
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+`);
+    zip.file(&quot;README-PWA.md&quot;, `# PWA — ${projectName}
+
+## O que está incluso
+
+| Arquivo | Função |
+|---|---|
+| \`index.html\` | HTML completo com manifest + SW registration |
+| \`public/manifest.json\` | Manifesto PWA (nome, ícones, tema) |
+| \`public/sw.js\` | Service Worker com cache offline |
+
+## Como publicar
+
+### Netlify (mais fácil)
+\`\`\`bash
+npm install
+npm run build
+# Arraste a pasta dist/ para https://app.netlify.com/drop
+\`\`\`
+
+### Vercel
+\`\`\`bash
+npm install
+npx vercel
+\`\`\`
+
+## Como instalar no celular
+
+1. Publique em algum host HTTPS (Netlify, Vercel, GitHub Pages)
+2. Acesse a URL no Chrome (Android) ou Safari (iPhone)
+3. Menu → **&quot;Adicionar à tela inicial&quot;** ou **&quot;Instalar app&quot;**
+4. ✅ O app fica no celular sem loja!
+
+## Tags importantes do index.html
+
+\`\`\`html
+&lt;!-- Manifesto PWA --&gt;
+&lt;link rel=&quot;manifest&quot; href=&quot;/manifest.json&quot;&gt;
+
+&lt;!-- Tema e cor de fundo --&gt;
+&lt;meta name=&quot;theme-color&quot; content=&quot;#2d5a1b&quot;&gt;
+
+&lt;!-- Suporte iPhone --&gt;
+&lt;meta name=&quot;apple-mobile-web-app-capable&quot; content=&quot;yes&quot;&gt;
+&lt;meta name=&quot;apple-mobile-web-app-title&quot; content=&quot;${projectName}&quot;&gt;
+
+&lt;!-- Ícone no iPhone --&gt;
+&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;/icon-192.png&quot;&gt;
+\`\`\`
+
+## Service Worker (public/sw.js)
+Já configurado com:
+- Cache de assets na instalação
+- Estratégia &quot;cache first&quot; para requests GET
+- Limpeza automática de versões antigas
+- Fallback para /index.html (SPA routing)
+`);
+
+  } else if (target === &quot;git&quot;) {
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name));
+    zip.file(&quot;.github/workflows/ci.yml&quot;, `name: CI\non: [push, pull_request]\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with: { node-version: '20' }\n      - run: npm ci\n      - run: npm run build\n      - uses: actions/upload-artifact@v4\n        with: { name: dist, path: dist/ }\n`);
+    zip.file(&quot;README-GIT.md&quot;, `# Deploy via Git\n\n## Setup inicial\n\`\`\`bash\ngit init\ngit add .\ngit commit -m &quot;feat: versão inicial&quot;\n\`\`\`\n\n## Conectar ao GitHub\n\`\`\`bash\ngit remote add origin https://github.com/${extras.ghUser || &quot;SEU_USUARIO&quot;}/${extras.ghRepo || name}.git\ngit push -u origin main\n\`\`\`\n\n## Vercel (deploy automático)\n\`\`\`bash\nnpm i -g vercel\nvercel\n\`\`\`\n\n## Netlify\n\`\`\`bash\nnpm i -g netlify-cli\nnetlify deploy --dir dist --prod\n\`\`\`\n`);
+
+  } else if (target === &quot;netlify&quot;) {
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name));
+    zip.file(&quot;netlify.toml&quot;, `[build]
+  command = &quot;npm run build&quot;
+  publish = &quot;dist&quot;
+
+[build.environment]
+  NODE_VERSION = &quot;20&quot;
+
+[[redirects]]
+  from = &quot;/*&quot;
+  to = &quot;/index.html&quot;
+  status = 200
+`);
+    zip.file(&quot;README-NETLIFY.md&quot;, `# Deploy no Netlify
+
+## Método 1 — Arrastar e soltar (mais fácil)
+1. Rode \`npm install &amp;&amp; npm run build\` localmente
+2. Acesse https://app.netlify.com/drop
+3. Arraste a pasta \`dist/\` para a área de deploy
+4. ✅ Site publicado com URL automática!
+
+## Método 2 — Via CLI
+\`\`\`bash
+npm install
+npm run build
+npx netlify-cli deploy --dir dist --prod
+\`\`\`
+
+## Método 3 — Via GitHub (deploy automático)
+1. Envie o projeto para um repositório GitHub
+2. Acesse https://app.netlify.com → &quot;Add new site&quot; → &quot;Import from Git&quot;
+3. Configure:
+   - Build command: \`npm run build\`
+   - Publish directory: \`dist\`
+4. ✅ Deploy automático a cada push!
+
+## URL do seu site
+Após o deploy, a Netlify fornece uma URL gratuita como:
+\`https://seu-nome-abc123.netlify.app\`
+
+Você pode configurar um domínio personalizado grátis.
+`);
+
+  } else if (target === &quot;vercel&quot;) {
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name));
+    zip.file(&quot;vercel.json&quot;, JSON.stringify({
+      buildCommand: &quot;npm run build&quot;,
+      outputDirectory: &quot;dist&quot;,
+      framework: &quot;vite&quot;,
+      rewrites: [{ source: &quot;/(.*)&quot;, destination: &quot;/index.html&quot; }],
+    }, null, 2));
+    zip.file(&quot;.vercelignore&quot;, `node_modules\n.env\n*.log\n`);
+    zip.file(&quot;README-VERCEL.md&quot;, `# Deploy na Vercel
+
+## Método 1 — Via CLI (mais rápido)
+\`\`\`bash
+npm install
+npm run build
+npx vercel
+# Siga as instruções no terminal
+# Responda: &quot;Qual framework?&quot; → Vite
+\`\`\`
+
+## Método 2 — Via importação do GitHub
+1. Envie o projeto para um repositório GitHub
+2. Acesse https://vercel.com/new
+3. Importe o repositório
+4. Vercel detecta Vite automaticamente
+5. ✅ Deploy automático a cada push!
+
+## Método 3 — Via drag-and-drop
+1. Rode \`npm run build\` localmente  
+2. Acesse https://vercel.com/new
+3. Arraste a pasta \`dist/\` 
+4. ✅ Online em segundos!
+
+## URL do site
+Após o deploy:
+\`https://seu-projeto.vercel.app\`
+
+SSL gratuito e CDN global incluídos.
+`);
+
+  } else { // clean
+    zip.file(&quot;vite.config.ts&quot;, CLEAN_VITE_CONFIG);
+    zip.file(&quot;package.json&quot;, makeCleanPkg(pkg, name));
+    zip.file(&quot;README.md&quot;, `# ${projectName}\n\n## Instalação\n\`\`\`bash\nnpm install\n\`\`\`\n\n## Desenvolvimento\n\`\`\`bash\nnpm run dev\n# Acesse http://localhost:5173\n\`\`\`\n\n## Build de produção\n\`\`\`bash\nnpm run build\nnpm run preview\n\`\`\`\n\n## Publicar online\n\n### Netlify (grátis)\n1. \`npm run build\`\n2. Arraste a pasta \`dist/\` para https://app.netlify.com/drop\n\n### Vercel (grátis)\n\`\`\`bash\nnpx vercel\n\`\`\`\n\n## Estrutura do projeto\n\`\`\`\nsrc/\n  components/   # Componentes React\n  lib/          # Utilitários e serviços\n  App.tsx       # Componente raiz\n  main.tsx      # Ponto de entrada\n\`\`\`\n`);
+  }
+
+  return zip.generateAsync({ type: &quot;blob&quot;, compression: &quot;DEFLATE&quot; });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>BuildPanel</span>
+    <div>
+      <small>L455–L465</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">export default function BuildPanel({ vfs, projectName, onClose, onRunCommand }: BuildPanelProps) {
+  const [expanded, setExpanded] = useState&lt;BuildTarget | null&gt;(null);
+  const [easToken, setEasToken] = useState(() =&gt; localStorage.getItem(&quot;sk-eas-token&quot;) || &quot;&quot;);
+  const [githubUser, setGithubUser] = useState(() =&gt; localStorage.getItem(&quot;sk-gh-user&quot;) || &quot;&quot;);
+  const [githubRepo, setGithubRepo] = useState(() =&gt; localStorage.getItem(&quot;sk-gh-repo&quot;) || projectName.toLowerCase().replace(/\s+/g, &quot;-&quot;));
+  const [githubToken, setGithubToken] = useState(() =&gt; localStorage.getItem(&quot;sk-gh-token&quot;) || &quot;&quot;);
+  const [generating, setGenerating] = useState&lt;BuildTarget | null&gt;(null);
+  const [generatingAll, setGeneratingAll] = useState(false);
+  const [generated, setGenerated] = useState&lt;string | null&gt;(null);
+  const [showPlayground, setShowPlayground] = useState(false);
+</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>toggle →</span>
+    <div>
+      <small>L466–L523</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">  const toggle = (id: BuildTarget) =&gt; setExpanded(e =&gt; e === id ? null : id);
+
+  const saveConfig = useCallback(() =&gt; {
+    localStorage.setItem(&quot;sk-eas-token&quot;, easToken);
+    localStorage.setItem(&quot;sk-gh-user&quot;, githubUser);
+    localStorage.setItem(&quot;sk-gh-repo&quot;, githubRepo);
+    localStorage.setItem(&quot;sk-gh-token&quot;, githubToken);
+  }, [easToken, githubUser, githubRepo, githubToken]);
+
+  const handleDownloadZip = useCallback(async (target: BuildTarget) =&gt; {
+    setGenerating(target); setGenerated(null);
+    try {
+      saveConfig();
+      const blob = await generatePlatformZip(target, vfs, projectName, {
+        easToken, ghUser: githubUser, ghRepo: githubRepo, ghToken: githubToken,
+      });
+      const labels: Record&lt;string, string&gt; = {
+        eas: &quot;eas&quot;, capacitor: &quot;capacitor&quot;, githubpages: &quot;github-pages&quot;,
+        electron: &quot;electron&quot;, pwa: &quot;pwa&quot;, git: &quot;git&quot;, clean: &quot;clean&quot;,
+        netlify: &quot;netlify&quot;, vercel: &quot;vercel&quot;,
+      };
+      saveAs(blob, `${projectName.toLowerCase().replace(/\s+/g, &quot;-&quot;)}-${labels[target]}.zip`);
+      setGenerated(`✅ ZIP ${target} gerado com sucesso!`);
+    } catch (e: any) {
+      setGenerated(`❌ Erro: ${e.message}`);
+    } finally { setGenerating(null); }
+  }, [vfs, projectName, easToken, githubUser, githubRepo, githubToken, saveConfig]);
+
+  const handleDownloadAll = useCallback(async () =&gt; {
+    setGeneratingAll(true); setGenerated(null);
+    try {
+      saveConfig();
+      const targets: BuildTarget[] = [&quot;clean&quot;, &quot;netlify&quot;, &quot;vercel&quot;, &quot;githubpages&quot;, &quot;pwa&quot;, &quot;capacitor&quot;, &quot;eas&quot;, &quot;electron&quot;];
+      const superZip = new JSZip();
+      for (const target of targets) {
+        const blob = await generatePlatformZip(target, vfs, projectName, {
+          easToken, ghUser: githubUser, ghRepo: githubRepo, ghToken: githubToken,
+        });
+        const bytes = await blob.arrayBuffer();
+        const labels: Record&lt;string, string&gt; = {
+          eas: &quot;eas&quot;, capacitor: &quot;capacitor&quot;, githubpages: &quot;github-pages&quot;,
+          electron: &quot;electron&quot;, pwa: &quot;pwa&quot;, git: &quot;git&quot;, clean: &quot;clean&quot;,
+          netlify: &quot;netlify&quot;, vercel: &quot;vercel&quot;,
+        };
+        superZip.file(`${projectName.toLowerCase().replace(/\s+/g, &quot;-&quot;)}-${labels[target]}.zip`, bytes);
+      }
+      const finalBlob = await superZip.generateAsync({ type: &quot;blob&quot; });
+      saveAs(finalBlob, `${projectName.toLowerCase().replace(/\s+/g, &quot;-&quot;)}-todos-os-builds.zip`);
+      setGenerated(&quot;✅ Todos os ZIPs gerados com sucesso!&quot;);
+    } catch (e: any) { setGenerated(`❌ Erro: ${e.message}`); }
+    finally { setGeneratingAll(false); }
+  }, [vfs, projectName, easToken, githubUser, githubRepo, githubToken, saveConfig]);
+
+  const [planGenerated, setPlanGenerated] = useState(false);
+
+  const handleGeneratePlano = useCallback(() =&gt; {
+    const name = projectName;
+    const allFiles = vfs.listFiles();</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>readSafe →</span>
+    <div>
+      <small>L524–L589</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">    const readSafe = (p: string) =&gt; { try { return vfs.readFile(p) || &quot;&quot;; } catch { return &quot;&quot;; } };
+
+    let pkg: any = {};
+    try { pkg = JSON.parse(readSafe(&quot;package.json&quot;)); } catch {}
+    const deps: Record&lt;string, string&gt; = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+    const depNames = Object.keys(deps);
+
+    const hasReact    = depNames.includes(&quot;react&quot;) || allFiles.some(f =&gt; f.endsWith(&quot;.tsx&quot;) || f.endsWith(&quot;.jsx&quot;));
+    const hasVite     = depNames.includes(&quot;vite&quot;);
+    const hasNext     = depNames.includes(&quot;next&quot;);
+    const hasExpress  = depNames.includes(&quot;express&quot;);
+    const hasTS       = depNames.includes(&quot;typescript&quot;) || allFiles.some(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.tsx&quot;));
+    const hasTailwind = depNames.includes(&quot;tailwindcss&quot;);
+    const hasPostgres = depNames.includes(&quot;pg&quot;) || depNames.includes(&quot;@neondatabase/serverless&quot;) || depNames.includes(&quot;postgres&quot;);
+    const hasPrisma   = depNames.includes(&quot;@prisma/client&quot;) || depNames.includes(&quot;prisma&quot;);
+    const hasMongo    = depNames.includes(&quot;mongoose&quot;) || depNames.includes(&quot;mongodb&quot;);
+    const hasPython   = allFiles.some(f =&gt; f.endsWith(&quot;.py&quot;));
+    const hasHTML     = allFiles.some(f =&gt; f.endsWith(&quot;.html&quot;));
+
+    const stackFront: string[] = [];
+    if (hasNext) stackFront.push(&quot;Next.js&quot;);
+    else if (hasReact) stackFront.push(`React${hasVite ? &quot; + Vite&quot; : &quot;&quot;}`);
+    if (hasTS) stackFront.push(&quot;TypeScript&quot;);
+    if (hasTailwind) stackFront.push(&quot;Tailwind CSS&quot;);
+    if (hasPython) stackFront.push(&quot;Python&quot;);
+    if (hasHTML &amp;&amp; !hasReact &amp;&amp; !hasPython) stackFront.push(&quot;HTML/CSS/JS&quot;);
+
+    const stackBack: string[] = [];
+    if (hasExpress) stackBack.push(&quot;Node.js + Express&quot;);
+    if (hasPostgres) stackBack.push(&quot;PostgreSQL&quot;);
+    if (hasPrisma)  stackBack.push(&quot;Prisma ORM&quot;);
+    if (hasMongo)   stackBack.push(&quot;MongoDB&quot;);
+
+    const apiRoutes: string[] = [];
+    allFiles.filter(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.js&quot;)).forEach(f =&gt; {
+      const content = readSafe(f);
+      const re = /(?:router|app)\.(get|post|put|patch|delete|use)\s*\(\s*[&quot;'`]([^&quot;'`]+)[&quot;'`]/gi;
+      let m: RegExpExecArray | null;
+      const reI = new RegExp(re.source, &quot;gi&quot;);
+      while ((m = reI.exec(content)) !== null) {
+        const method = m[1].toUpperCase().padEnd(6);
+        const path = m[2];
+        if (!path.includes(&quot;{{&quot;) &amp;&amp; path !== &quot;/&quot;) apiRoutes.push(`${method} ${path}  (${f})`);
+      }
+    });
+
+    const envVars = new Set&lt;string&gt;();
+    allFiles.filter(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.js&quot;) || f.endsWith(&quot;.py&quot;)).forEach(f =&gt; {
+      const content = readSafe(f);
+      const reI = /process\.env\.([A-Z_][A-Z0-9_]*)/g;
+      let m: RegExpExecArray | null;
+      while ((m = reI.exec(content)) !== null) { if (m[1] !== &quot;NODE_ENV&quot;) envVars.add(m[1]); }
+    });
+    [&quot;.env&quot;, &quot;.env.example&quot;].forEach(ef =&gt; {
+      readSafe(ef).split(&quot;\n&quot;).forEach(line =&gt; {
+        const m = line.match(/^([A-Z_][A-Z0-9_]*)=/);
+        if (m) envVars.add(m[1]);
+      });
+    });
+
+    type TNode = { [k: string]: TNode };
+    const root: TNode = {};
+    allFiles.forEach(f =&gt; {
+      const parts = f.split(&quot;/&quot;); let cur = root;
+      parts.forEach(p =&gt; { if (!cur[p]) cur[p] = {}; cur = cur[p]; });
+    });</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>sortK</span>
+    <div>
+      <small>L590–L596</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">    function sortK(t: TNode) {
+      return Object.keys(t).sort((a, b) =&gt; {
+        const aD = Object.keys(t[a]).length &gt; 0, bD = Object.keys(t[b]).length &gt; 0;
+        if (aD &amp;&amp; !bD) return -1; if (!aD &amp;&amp; bD) return 1;
+        return a.localeCompare(b);
+      });
+    }</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>renderT</span>
+    <div>
+      <small>L597–L1248</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">    function renderT(t: TNode, prefix: string, nm: string, isLast: boolean): string {
+      const conn = isLast ? &quot;└── &quot; : &quot;├── &quot;;
+      const keys = sortK(t); const isDir = keys.length &gt; 0;
+      let r = prefix + conn + nm + (isDir ? &quot;/&quot; : &quot;&quot;) + &quot;\n&quot;;
+      keys.forEach((k, i) =&gt; { r += renderT(t[k], prefix + (isLast ? &quot;    &quot; : &quot;│   &quot;), k, i === keys.length - 1); });
+      return r;
+    }
+    const topK = sortK(root);
+    const asciiTree = topK.map((k, i) =&gt; renderT(root[k], &quot;&quot;, k, i === topK.length - 1).trimEnd()).join(&quot;\n&quot;);
+
+    const appType = hasNext ? &quot;Full-Stack (Next.js)&quot;
+      : (hasReact &amp;&amp; hasExpress) ? &quot;Full-Stack (React + Express)&quot;
+      : hasReact ? &quot;Frontend (React)&quot;
+      : hasExpress ? &quot;Backend/API (Node.js + Express)&quot;
+      : hasHTML ? &quot;Site Web (HTML/CSS/JS)&quot;
+      : hasPython ? &quot;Aplicação Python&quot;
+      : &quot;Projeto de Código&quot;;
+
+    const scripts = pkg.scripts || {};
+    const totalLines = allFiles.reduce((s, f) =&gt; s + readSafe(f).split(&quot;\n&quot;).length, 0);
+    const now = new Date().toLocaleString(&quot;pt-BR&quot;);
+    const slug = name.toLowerCase().replace(/\s+/g, &quot;-&quot;);
+
+    const depDeps = Object.keys(pkg.dependencies || {});
+    const devDeps = Object.keys(pkg.devDependencies || {});
+
+    const plano = `# PLANO DO PROJETO: ${name}
+
+&gt; Gerado em: ${now}
+&gt; Arquivos: ${allFiles.length} | Linhas de código: ~${totalLines.toLocaleString(&quot;pt-BR&quot;)}
+
+---
+
+## RESUMO EXECUTIVO
+
+- **Tipo:** ${appType}
+${stackFront.length ? `- **Frontend/Stack:** ${stackFront.join(&quot;, &quot;)}` : &quot;&quot;}
+${stackBack.length ? `- **Backend/Dados:** ${stackBack.join(&quot;, &quot;)}` : &quot;&quot;}
+${pkg.version ? `- **Versão:** ${pkg.version}` : &quot;&quot;}
+${pkg.description ? `- **Descrição:** ${pkg.description}` : &quot;&quot;}
+${pkg.author ? `- **Autor:** ${pkg.author}` : &quot;&quot;}
+
+---
+
+## ESTRUTURA DE ARQUIVOS
+
+\`\`\`
+${name}/
+${asciiTree}
+\`\`\`
+
+---
+${apiRoutes.length &gt; 0 ? `
+## ROTAS DA API DETECTADAS (${apiRoutes.length} endpoint(s))
+
+\`\`\`
+${apiRoutes.join(&quot;\n&quot;)}
+\`\`\`
+
+---
+` : &quot;&quot;}${Object.keys(scripts).length &gt; 0 ? `
+## SCRIPTS DISPONÍVEIS (package.json)
+
+\`\`\`bash
+${Object.entries(scripts).map(([k, v]) =&gt; `npm run ${k.padEnd(12)}  # ${v}`).join(&quot;\n&quot;)}
+\`\`\`
+
+---
+` : &quot;&quot;}${envVars.size &gt; 0 ? `
+## VARIÁVEIS DE AMBIENTE NECESSÁRIAS
+
+Crie o arquivo \`.env\` na raiz do projeto:
+
+\`\`\`env
+${[...envVars].map(v =&gt; `${v}=seu_valor_aqui`).join(&quot;\n&quot;)}
+\`\`\`
+
+---
+` : &quot;&quot;}
+## DEPENDÊNCIAS (${depNames.length} pacotes)
+
+${depDeps.length &gt; 0 ? `### Produção (${depDeps.length})\n${depDeps.map(d =&gt; `- \`${d}\` ${deps[d]}`).join(&quot;\n&quot;)}` : &quot;&quot;}
+
+${devDeps.length &gt; 0 ? `### Desenvolvimento (${devDeps.length})\n${devDeps.map(d =&gt; `- \`${d}\` ${deps[d]}`).join(&quot;\n&quot;)}` : &quot;&quot;}
+
+---
+
+## GUIA COMPLETO PARA RECRIAR DO ZERO
+
+&gt; Siga este passo a passo em qualquer máquina com Node.js instalado para recriar o projeto ${name}.
+
+### Pré-requisitos
+
+\`\`\`bash
+# Verificar Node.js 20+ instalado
+node -v   # precisa ser v20 ou superior
+npm -v    # precisa ser 10 ou superior
+\`\`\`
+
+&gt; Não tem Node.js? Baixe em: https://nodejs.org (escolha LTS)
+
+---
+
+### Passo 1 — Criar a estrutura do projeto
+
+\`\`\`bash
+${hasNext
+  ? `# Next.js
+npx create-next-app@latest ${slug} --typescript --tailwind --eslint
+cd ${slug}`
+  : hasReact &amp;&amp; hasVite
+  ? `# React + Vite + TypeScript
+npm create vite@latest ${slug} -- --template react-ts
+cd ${slug}`
+  : hasReact
+  ? `# React com Create React App
+npx create-react-app ${slug} --template typescript
+cd ${slug}`
+  : `# Projeto Node.js
+mkdir ${slug} &amp;&amp; cd ${slug}
+npm init -y`}
+\`\`\`
+
+---
+
+### Passo 2 — Instalar dependências
+
+\`\`\`bash
+${depDeps.length &gt; 0 ? `# Dependências de produção\nnpm install ${depDeps.join(&quot; &quot;)}` : &quot;# Nenhuma dependência de produção detectada&quot;}
+
+${devDeps.length &gt; 0 ? `# Dependências de desenvolvimento\nnpm install --save-dev ${devDeps.join(&quot; &quot;)}` : &quot;&quot;}
+\`\`\`
+
+---
+
+### Passo 3 — Recriar os arquivos do projeto
+
+&gt; Importe o ZIP do projeto pelo SK Editor (ícone 📁 → Importar ZIP)
+&gt; ou copie os ${allFiles.length} arquivos manualmente:
+
+\`\`\`
+${allFiles.join(&quot;\n&quot;)}
+\`\`\`
+
+---
+${envVars.size &gt; 0 ? `
+### Passo 4 — Configurar variáveis de ambiente
+
+\`\`\`bash
+# Crie o arquivo .env na raiz do projeto:
+cat &gt; .env &lt;&lt; 'EOF'
+${[...envVars].map(v =&gt; `${v}=seu_valor_aqui`).join(&quot;\n&quot;)}
+EOF
+\`\`\`
+
+&gt; ⚠️ NUNCA versione o .env no GitHub! Adicione ao .gitignore.
+
+---
+` : &quot;&quot;}
+### Passo ${envVars.size &gt; 0 ? &quot;5&quot; : &quot;4&quot;} — Rodar o projeto
+
+\`\`\`bash
+${scripts.dev ? &quot;npm run dev&quot; : scripts.start ? &quot;npm start&quot; : hasPython ? &quot;python main.py&quot; : &quot;npm start&quot;}
+# O projeto estará disponível em http://localhost:${scripts.dev ? &quot;5173&quot; : &quot;3000&quot;}
+\`\`\`
+
+---
+${hasPostgres || hasPrisma ? `
+### Passo extra — Configurar banco de dados
+${hasPrisma ? `\`\`\`bash
+# Executar migrações Prisma
+npx prisma generate
+npx prisma migrate dev --name init
+npx prisma studio  # interface visual (opcional)
+\`\`\`` : &quot;&quot;}
+${hasPostgres &amp;&amp; !hasPrisma ? `&gt; Configure a variável DATABASE_URL no .env com sua connection string PostgreSQL.` : &quot;&quot;}
+
+---
+` : &quot;&quot;}
+
+## CONTEXTO PARA IA
+
+&gt; Copie e cole este bloco para continuar o projeto em qualquer IA (ChatGPT, Gemini, Claude...):
+
+\`\`\`
+Projeto: ${name}
+Tipo: ${appType}
+Stack: ${[...stackFront, ...stackBack].join(&quot;, &quot;) || &quot;Não detectado&quot;}
+Arquivos: ${allFiles.length} | Linhas: ~${totalLines.toLocaleString(&quot;pt-BR&quot;)}
+${apiRoutes.length ? `Rotas API detectadas: ${apiRoutes.length}\n${apiRoutes.join(&quot;\n&quot;)}` : &quot;&quot;}
+${envVars.size ? `Variáveis de ambiente: ${[...envVars].join(&quot;, &quot;)}` : &quot;&quot;}
+
+Estrutura completa do projeto:
+${allFiles.join(&quot;\n&quot;)}
+\`\`\`
+
+---
+
+## CHECKLIST DE RECRIAÇÃO
+
+- [ ] Node.js 20+ instalado
+- [ ] Projeto criado (\`npm create vite\` ou similar)
+- [ ] Dependências instaladas (\`npm install\`)
+${envVars.size &gt; 0 ? &quot;- [ ] Arquivo .env configurado com as variáveis necessárias&quot; : &quot;&quot;}
+${hasPostgres ? &quot;- [ ] Banco de dados PostgreSQL configurado e acessível&quot; : &quot;&quot;}
+${hasPrisma ? &quot;- [ ] Migrações Prisma executadas (\`npx prisma migrate dev\`)&quot; : &quot;&quot;}
+- [ ] Projeto rodando localmente sem erros
+${scripts.build ? &quot;- [ ] Build de produção testado (\`npm run build\`)&quot; : &quot;&quot;}
+- [ ] Deploy/publicação configurado (Netlify, Vercel, Replit...)
+
+---
+
+## FASES DE PUBLICAÇÃO
+
+### Web (mais fácil — recomendado primeiro)
+1. Baixe o ZIP **Netlify** em Build &amp; Deploy
+2. Extraia → \`npm install &amp;&amp; npm run build\`
+3. Arraste a pasta \`dist/\` para https://app.netlify.com/drop
+4. ✅ URL pública em segundos!
+
+### PWA no celular (sem APK)
+1. Publique na web (passo acima)
+2. Acesse no Chrome do Android → Menu → &quot;Adicionar à tela inicial&quot;
+3. ✅ App instalado sem loja!
+
+### APK Android
+1. Baixe o ZIP **Capacitor** ou **EAS** em Build &amp; Deploy
+2. Siga as instruções do README dentro do ZIP
+
+### Executável Desktop (Windows/Linux)
+1. Baixe **MaikonJuridicoPro-windows.zip** ou **MaikonJuridicoPro-linux.AppImage**
+   na seção &quot;Executável Desktop — Electron&quot;
+2. Extraia e execute — roda offline, sem instalar nada
+
+---
+
+*Plano gerado automaticamente pelo SK Code Editor — ${now}*
+`;
+
+    vfs.writeFile(&quot;PLANO.md&quot;, plano);
+    setPlanGenerated(true);
+    setTimeout(() =&gt; setPlanGenerated(false), 3000);
+  }, [projectName, vfs]);
+
+  const files = vfs.listFiles();
+  const hasPkg = files.some(f =&gt; f === &quot;package.json&quot;);
+  const hasIndexHtml = files.some(f =&gt; f === &quot;index.html&quot; || f.endsWith(&quot;/index.html&quot;));
+
+  const sectionContent: Record&lt;BuildTarget, React.ReactNode&gt; = {
+    eas: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2 text-[12px] text-yellow-400 bg-yellow-900/10 border border-yellow-700/30 rounded-xl p-2.5&quot;&gt;
+          &lt;AlertCircle size={12} className=&quot;shrink-0 mt-0.5&quot; /&gt;
+          &lt;span&gt;Requer conta &lt;a href=&quot;https://expo.dev&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot; className=&quot;underline&quot;&gt;expo.dev&lt;/a&gt; + &lt;a href=&quot;https://expo.dev/eas&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot; className=&quot;underline&quot;&gt;EAS CLI&lt;/a&gt; instalado&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;space-y-2&quot;&gt;
+          &lt;label className=&quot;text-[11px] text-gray-500 font-semibold uppercase tracking-wider&quot;&gt;Token EAS&lt;/label&gt;
+          &lt;div className=&quot;flex gap-2&quot;&gt;
+            &lt;input type=&quot;password&quot; value={easToken} onChange={e =&gt; setEasToken(e.target.value)} placeholder=&quot;expo_...&quot; className=&quot;flex-1 px-3 py-2 bg-[#0d1117] border border-gray-700/50 rounded-xl text-[12px] text-gray-200 outline-none focus:border-blue-500/60&quot; /&gt;
+            &lt;button onClick={saveConfig} className=&quot;px-3 py-2 bg-blue-600/20 border border-blue-500/40 rounded-xl text-blue-300 text-[12px] hover:bg-blue-600/30&quot;&gt;&lt;Key size={12} /&gt;&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Comandos:&lt;/div&gt;
+        &lt;CodeBlock code={`npm install -g @expo/eas-cli\nnpm install\nexpo login\neas login\neas build --platform android --profile preview`} onCopy={() =&gt; onRunCommand?.(&quot;eas build --platform android --profile preview&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Build local (sem internet):&lt;/div&gt;
+        &lt;CodeBlock code={`eas build --platform android --profile preview --local`} onCopy={() =&gt; onRunCommand?.(&quot;eas build --platform android --profile preview --local&quot;)} /&gt;
+      &lt;/div&gt;
+    ),
+    capacitor: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Instalar Capacitor:&lt;/div&gt;
+        &lt;CodeBlock code={`npm install\nnpm install @capacitor/core @capacitor/android @capacitor/cli\nnpx cap init\nnpx cap add android`} onCopy={() =&gt; onRunCommand?.(&quot;npm install @capacitor/core @capacitor/android @capacitor/cli&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Build APK:&lt;/div&gt;
+        &lt;CodeBlock code={`npm run build\nnpx cap sync\nnpx cap open android\n# No Android Studio: Build → Generate Signed APK`} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Build linha de comando:&lt;/div&gt;
+        &lt;CodeBlock code={`npm run build &amp;&amp; npx cap sync\ncd android &amp;&amp; ./gradlew assembleDebug\n# APK: android/app/build/outputs/apk/debug/`} onCopy={() =&gt; onRunCommand?.(&quot;npm run build &amp;&amp; npx cap sync&quot;)} /&gt;
+      &lt;/div&gt;
+    ),
+    githubpages: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+          &lt;div&gt;
+            &lt;label className=&quot;text-[11px] text-gray-500 block mb-1&quot;&gt;Usuário GitHub&lt;/label&gt;
+            &lt;input value={githubUser} onChange={e =&gt; setGithubUser(e.target.value)} placeholder=&quot;seu-usuario&quot; className=&quot;w-full px-3 py-2 bg-[#0d1117] border border-gray-700/50 rounded-xl text-[12px] text-gray-200 outline-none focus:border-green-500/60&quot; /&gt;
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;label className=&quot;text-[11px] text-gray-500 block mb-1&quot;&gt;Nome do Repositório&lt;/label&gt;
+            &lt;input value={githubRepo} onChange={e =&gt; setGithubRepo(e.target.value)} placeholder=&quot;meu-projeto&quot; className=&quot;w-full px-3 py-2 bg-[#0d1117] border border-gray-700/50 rounded-xl text-[12px] text-gray-200 outline-none focus:border-green-500/60&quot; /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Comandos:&lt;/div&gt;
+        &lt;CodeBlock code={`git init &amp;&amp; git add .\ngit commit -m &quot;inicial&quot;\ngit remote add origin https://github.com/${githubUser || &quot;USUARIO&quot;}/${githubRepo || &quot;repo&quot;}.git\ngit push -u origin main`} onCopy={() =&gt; onRunCommand?.(&quot;git init &amp;&amp; git add . &amp;&amp; git commit -m 'inicial'&quot;)} /&gt;
+        &lt;div className=&quot;text-[11px] text-gray-500&quot;&gt;O workflow `.github/workflows/deploy.yml` fará o deploy automático no push.&lt;/div&gt;
+        {githubUser &amp;&amp; githubRepo &amp;&amp; (
+          &lt;a href={`https://${githubUser}.github.io/${githubRepo}/`} target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+            className=&quot;flex items-center gap-1 text-[12px] text-green-400 hover:underline&quot;&gt;
+            &lt;ExternalLink size={11} /&gt; {githubUser}.github.io/{githubRepo}/
+          &lt;/a&gt;
+        )}
+      &lt;/div&gt;
+    ),
+    electron: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Instalar dependências:&lt;/div&gt;
+        &lt;CodeBlock code={`npm install\nnpm install --save-dev electron electron-builder concurrently wait-on`} onCopy={() =&gt; onRunCommand?.(&quot;npm install --save-dev electron electron-builder&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Desenvolver:&lt;/div&gt;
+        &lt;CodeBlock code={`npm run electron:dev`} onCopy={() =&gt; onRunCommand?.(&quot;npm run electron:dev&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Build executável:&lt;/div&gt;
+        &lt;CodeBlock code={`npm run electron:build\n# Saída em dist-electron/\n# Windows: .exe | macOS: .dmg | Linux: .AppImage`} onCopy={() =&gt; onRunCommand?.(&quot;npm run electron:build&quot;)} /&gt;
+      &lt;/div&gt;
+    ),
+    pwa: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2 text-[12px] text-blue-400 bg-blue-900/10 border border-blue-700/30 rounded-xl p-2.5&quot;&gt;
+          &lt;AlertCircle size={12} className=&quot;shrink-0 mt-0.5&quot; /&gt;
+          &lt;span&gt;O ZIP inclui manifest.json e sw.js. Adicione as tags no index.html conforme o README.&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Script de Service Worker incluído. Adicione no HTML:&lt;/div&gt;
+        &lt;CodeBlock code={`&lt;link rel=&quot;manifest&quot; href=&quot;/manifest.json&quot;&gt;\n&lt;meta name=&quot;theme-color&quot; content=&quot;#2d5a1b&quot;&gt;`} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Hospedar com HTTPS (GitHub Pages, Vercel, Netlify):&lt;/div&gt;
+        &lt;CodeBlock code={`npm run build\n# Hospedar dist/ em qualquer servidor HTTPS`} onCopy={() =&gt; onRunCommand?.(&quot;npm run build&quot;)} /&gt;
+      &lt;/div&gt;
+    ),
+    git: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+          &lt;div&gt;
+            &lt;label className=&quot;text-[11px] text-gray-500 block mb-1&quot;&gt;Usuário GitHub&lt;/label&gt;
+            &lt;input value={githubUser} onChange={e =&gt; setGithubUser(e.target.value)} placeholder=&quot;seu-usuario&quot; className=&quot;w-full px-3 py-2 bg-[#0d1117] border border-gray-700/50 rounded-xl text-[12px] text-gray-200 outline-none focus:border-pink-500/60&quot; /&gt;
+          &lt;/div&gt;
+          &lt;div&gt;
+            &lt;label className=&quot;text-[11px] text-gray-500 block mb-1&quot;&gt;Token GitHub&lt;/label&gt;
+            &lt;input type=&quot;password&quot; value={githubToken} onChange={e =&gt; setGithubToken(e.target.value)} placeholder=&quot;ghp_...&quot; className=&quot;w-full px-3 py-2 bg-[#0d1117] border border-gray-700/50 rounded-xl text-[12px] text-gray-200 outline-none focus:border-pink-500/60&quot; /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Criar repositório e fazer push:&lt;/div&gt;
+        &lt;CodeBlock code={`git init &amp;&amp; git add . &amp;&amp; git commit -m &quot;inicial&quot;\ncurl -H &quot;Authorization: token ${githubToken || &quot;TOKEN&quot;}&quot; \\\n  https://api.github.com/user/repos \\\n  -d '{&quot;name&quot;:&quot;${githubRepo || &quot;meu-repo&quot;}&quot;,&quot;private&quot;:false}'\ngit remote add origin https://github.com/${githubUser || &quot;USER&quot;}/${githubRepo || &quot;REPO&quot;}.git\ngit push -u origin main`} onCopy={() =&gt; onRunCommand?.(&quot;git init &amp;&amp; git add . &amp;&amp; git commit -m 'inicial'&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Vercel (deploy rápido):&lt;/div&gt;
+        &lt;CodeBlock code={`npx vercel`} onCopy={() =&gt; onRunCommand?.(&quot;npx vercel&quot;)} /&gt;
+      &lt;/div&gt;
+    ),
+    netlify: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2 text-[12px] text-teal-400 bg-teal-900/10 border border-teal-700/30 rounded-xl p-2.5&quot;&gt;
+          &lt;span className=&quot;shrink-0&quot;&gt;🔷&lt;/span&gt;
+          &lt;span&gt;Deploy grátis em &lt;a href=&quot;https://netlify.com&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot; className=&quot;underline&quot;&gt;netlify.com&lt;/a&gt; — sem cartão de crédito.&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Método mais fácil — arrastar pasta:&lt;/div&gt;
+        &lt;CodeBlock code={`npm install\nnpm run build\n# Acesse https://app.netlify.com/drop\n# Arraste a pasta dist/ para o site`} onCopy={() =&gt; onRunCommand?.(&quot;npm run build&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Via CLI:&lt;/div&gt;
+        &lt;CodeBlock code={`npm install\nnpm run build\nnpx netlify-cli deploy --dir dist --prod`} /&gt;
+        &lt;a href=&quot;https://app.netlify.com/drop&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+          className=&quot;flex items-center gap-1 text-[12px] text-teal-400 hover:underline&quot;&gt;
+          &lt;ExternalLink size={11} /&gt; Abrir Netlify Drop
+        &lt;/a&gt;
+      &lt;/div&gt;
+    ),
+    vercel: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;flex items-start gap-2 text-[12px] text-gray-300 bg-gray-800/40 border border-gray-600/30 rounded-xl p-2.5&quot;&gt;
+          &lt;span className=&quot;shrink-0&quot;&gt;▲&lt;/span&gt;
+          &lt;span&gt;Deploy grátis em &lt;a href=&quot;https://vercel.com&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot; className=&quot;underline&quot;&gt;vercel.com&lt;/a&gt; — SSL automático + CDN global.&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Via CLI (recomendado):&lt;/div&gt;
+        &lt;CodeBlock code={`npm install\nnpm run build\nnpx vercel\n# Siga o assistente: Framework → Vite\n# URL pública gerada automaticamente`} onCopy={() =&gt; onRunCommand?.(&quot;npm run build&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Via drag-and-drop:&lt;/div&gt;
+        &lt;CodeBlock code={`npm run build\n# Acesse https://vercel.com/new\n# Arraste a pasta dist/`} /&gt;
+        &lt;a href=&quot;https://vercel.com/new&quot; target=&quot;_blank&quot; rel=&quot;noreferrer&quot;
+          className=&quot;flex items-center gap-1 text-[12px] text-gray-300 hover:underline&quot;&gt;
+          &lt;ExternalLink size={11} /&gt; Abrir Vercel Dashboard
+        &lt;/a&gt;
+      &lt;/div&gt;
+    ),
+    clean: (
+      &lt;div className=&quot;space-y-3 p-3&quot;&gt;
+        &lt;div className=&quot;text-[12px] text-gray-400&quot;&gt;Versão limpa sem nenhuma dependência do Replit. Pronta para rodar localmente ou hospedar em qualquer servidor.&lt;/div&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Rodar localmente:&lt;/div&gt;
+        &lt;CodeBlock code={`npm install\nnpm run dev\n# Acesse http://localhost:5173`} onCopy={() =&gt; onRunCommand?.(&quot;npm install &amp;&amp; npm run dev&quot;)} /&gt;
+        &lt;div className=&quot;text-[12px] text-gray-500 font-semibold&quot;&gt;Publicar online (mais fácil):&lt;/div&gt;
+        &lt;CodeBlock code={`npm run build\n# Arraste dist/ para https://app.netlify.com/drop`} onCopy={() =&gt; onRunCommand?.(&quot;npm run build&quot;)} /&gt;
+        &lt;div className=&quot;space-y-1.5 bg-[#0d1117] border border-gray-800/40 rounded-xl p-3&quot;&gt;
+          &lt;div className=&quot;text-[11px] text-gray-500 font-semibold&quot;&gt;Conteúdo do ZIP:&lt;/div&gt;
+          &lt;div className=&quot;text-[11px] text-gray-600 space-y-0.5&quot;&gt;
+            &lt;div&gt;✓ Todos os {files.length} arquivo(s) do projeto&lt;/div&gt;
+            &lt;div&gt;✓ package.json limpo (sem @replit/*)&lt;/div&gt;
+            &lt;div&gt;✓ vite.config.ts sem plugins Replit&lt;/div&gt;
+            &lt;div&gt;✓ .gitignore + README.md com instruções&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    ),
+  };
+
+  return (
+    &lt;&gt;
+    &lt;div className=&quot;fixed inset-0 z-[9990] flex flex-col bg-[#0d1117]&quot;&gt;
+      &lt;div className=&quot;flex items-center justify-between px-4 py-3 border-b border-gray-700/60 bg-[#161b22] shrink-0&quot;&gt;
+        &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+          &lt;Package size={18} className=&quot;text-green-400&quot; /&gt;
+          &lt;span className=&quot;text-[15px] font-bold text-white&quot;&gt;Build &amp; Deploy&lt;/span&gt;
+          {!hasPkg &amp;&amp; !hasIndexHtml &amp;&amp; (
+            &lt;span className=&quot;text-[11px] text-yellow-500 bg-yellow-900/20 border border-yellow-700/30 px-2 py-0.5 rounded-full&quot;&gt;Projeto vazio&lt;/span&gt;
+          )}
+        &lt;/div&gt;
+        &lt;button onClick={onClose} className=&quot;p-2 rounded-xl hover:bg-white/10 text-gray-400&quot;&gt;&lt;X size={18} /&gt;&lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Botão &quot;Baixar Todos&quot; + PLANO.md */}
+      &lt;div className=&quot;px-4 py-3 border-b border-gray-700/30 shrink-0 bg-[#111622] space-y-2&quot;&gt;
+        &lt;button
+          onClick={handleDownloadAll}
+          disabled={generatingAll}
+          className=&quot;w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-green-700/30 to-blue-700/30 border border-green-500/40 rounded-2xl text-[14px] text-white font-bold hover:from-green-600/40 hover:to-blue-600/40 transition-all disabled:opacity-60&quot;
+        &gt;
+          {generatingAll
+            ? &lt;&gt;&lt;RefreshCw size={15} className=&quot;animate-spin&quot; /&gt; Gerando ZIPs ({SECTIONS.length} plataformas)...&lt;/&gt;
+            : &lt;&gt;&lt;Archive size={15} /&gt; Baixar TODOS os ZIPs ({SECTIONS.length} plataformas)&lt;/&gt;
+          }
+        &lt;/button&gt;
+        &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+          &lt;button
+            onClick={handleGeneratePlano}
+            className=&quot;flex items-center justify-center gap-2 py-2.5 bg-amber-900/20 border border-amber-600/30 rounded-2xl text-[13px] text-amber-300 font-semibold hover:bg-amber-900/30 transition-all&quot;
+          &gt;
+            {planGenerated
+              ? &lt;&gt;&lt;Check size={14} className=&quot;text-green-400&quot; /&gt; PLANO.md salvo!&lt;/&gt;
+              : &lt;&gt;&lt;FileCode2 size={14} /&gt; Gerar PLANO.md&lt;/&gt;
+            }
+          &lt;/button&gt;
+          &lt;button
+            onClick={() =&gt; setShowPlayground(true)}
+            className=&quot;flex items-center justify-center gap-2 py-2.5 bg-orange-900/20 border border-orange-600/30 rounded-2xl text-[13px] text-orange-300 font-semibold hover:bg-orange-900/30 transition-all&quot;
+          &gt;
+            &lt;Code2 size={14} /&gt; Playground HTML
+          &lt;/button&gt;
+        &lt;/div&gt;
+          {generated &amp;&amp; (
+          &lt;div className={`text-[12px] text-center py-1.5 rounded-xl ${generated.startsWith(&quot;✅&quot;) ? &quot;text-green-400 bg-green-900/20&quot; : &quot;text-red-400 bg-red-900/20&quot;}`}&gt;
+            {generated}
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+
+      {/* ── Banner versão + changelog ─────────────────────────────────────── */}
+      &lt;div className=&quot;px-4 py-3 border-b border-gray-700/30 shrink-0 bg-gradient-to-r from-purple-950/40 to-blue-950/20&quot;&gt;
+        &lt;div className=&quot;flex items-center gap-2 mb-1.5&quot;&gt;
+          &lt;span className=&quot;text-[18px]&quot;&gt;📦&lt;/span&gt;
+          &lt;div&gt;
+            &lt;span className=&quot;text-[13px] font-bold text-white&quot;&gt;Maikon Juridico Pro&lt;/span&gt;
+            &lt;span className=&quot;ml-2 text-[10px] px-2 py-0.5 rounded-full bg-green-700/40 border border-green-600/30 text-green-300 font-bold&quot;&gt;v1.2.0&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;span className=&quot;ml-auto text-[10px] text-gray-500&quot;&gt;Build: 17/06/2026&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;bg-black/20 border border-gray-700/30 rounded-xl px-3 py-2 space-y-1&quot;&gt;
+          &lt;p className=&quot;text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1&quot;&gt;O que há de novo nesta versão&lt;/p&gt;
+          {[
+            &quot;🚀 Terminal Real — npm install + npm run dev via SSE streaming com detecção de porta&quot;,
+            &quot;🔍 Preview automático — detecta porta do servidor e abre preview instantaneamente&quot;,
+            &quot;⚙️ /api/exec-stream — executa qualquer comando shell com saída em tempo real&quot;,
+            &quot;🔄 /api/proxy/:port/* — proxy para servers do usuário (React, Node, Python, etc.)&quot;,
+            &quot;💾 /api/settings — salva chaves AI no disco sem depender de Replit&quot;,
+            &quot;🛡 100% standalone — zero dependência de servidor externo, roda offline&quot;,
+          ].map((item, i) =&gt; (
+            &lt;p key={i} className=&quot;text-[10px] text-gray-300 leading-relaxed&quot;&gt;{item}&lt;/p&gt;
+          ))}
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      {/* ── Executáveis compilados ────────────────────────────────────────── */}
+      &lt;div className=&quot;px-4 py-3 border-b border-gray-700/30 shrink-0 bg-[#0d1117]&quot;&gt;
+        &lt;div className=&quot;flex items-center gap-2 mb-2&quot;&gt;
+          &lt;span className=&quot;text-purple-400&quot;&gt;🖥&lt;/span&gt;
+          &lt;span className=&quot;text-[12px] font-bold text-purple-300&quot;&gt;Executável Desktop — Electron (pronto pra usar)&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;grid grid-cols-1 gap-1.5&quot;&gt;
+          &lt;a
+            href={`${import.meta.env.BASE_URL}downloads/MaikonJuridicoPro-linux.AppImage`}
+            download=&quot;MaikonJuridicoPro-v1.2.0-linux.AppImage&quot;
+            className=&quot;flex items-center gap-2 px-3 py-2.5 bg-purple-900/20 border border-purple-500/40 rounded-xl hover:bg-purple-900/40 transition-colors text-purple-300&quot;
+          &gt;
+            &lt;span className=&quot;text-[16px]&quot;&gt;🐧&lt;/span&gt;
+            &lt;div className=&quot;flex-1&quot;&gt;
+              &lt;div className=&quot;text-[12px] font-bold&quot;&gt;Linux — AppImage &lt;span className=&quot;text-[10px] font-normal text-green-400 ml-1&quot;&gt;v1.2.0&lt;/span&gt;&lt;/div&gt;
+              &lt;div className=&quot;text-[10px] text-purple-400/70&quot;&gt;Build 17/06/2026 · 64-bit · Baixe, dê permissão e execute&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div className=&quot;text-right shrink-0&quot;&gt;
+              &lt;div className=&quot;text-[10px] text-purple-400/60&quot;&gt;849 MB&lt;/div&gt;
+              &lt;Download size={12} className=&quot;ml-auto mt-0.5&quot; /&gt;
+            &lt;/div&gt;
+          &lt;/a&gt;
+          &lt;a
+            href={`${import.meta.env.BASE_URL}downloads/MaikonJuridicoPro-windows.zip`}
+            download=&quot;MaikonJuridicoPro-v1.2.0-windows.zip&quot;
+            className=&quot;flex items-center gap-2 px-3 py-2.5 bg-blue-900/20 border border-blue-500/40 rounded-xl hover:bg-blue-900/40 transition-colors text-blue-300&quot;
+          &gt;
+            &lt;span className=&quot;text-[16px]&quot;&gt;🪟&lt;/span&gt;
+            &lt;div className=&quot;flex-1&quot;&gt;
+              &lt;div className=&quot;text-[12px] font-bold&quot;&gt;Windows — Portátil &lt;span className=&quot;text-[10px] font-normal text-green-400 ml-1&quot;&gt;v1.2.0&lt;/span&gt;&lt;/div&gt;
+              &lt;div className=&quot;text-[10px] text-blue-400/70&quot;&gt;Build 17/06/2026 · 64-bit · Extraia e execute o .exe&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div className=&quot;text-right shrink-0&quot;&gt;
+              &lt;div className=&quot;text-[10px] text-blue-400/60&quot;&gt;888 MB&lt;/div&gt;
+              &lt;Download size={12} className=&quot;ml-auto mt-0.5&quot; /&gt;
+            &lt;/div&gt;
+          &lt;/a&gt;
+        &lt;/div&gt;
+
+        {/* ── Relatório de Independência ───────────────────────────────── */}
+        &lt;div className=&quot;mt-2.5 bg-green-950/30 border border-green-700/30 rounded-xl px-3 py-2.5 space-y-1.5&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-1.5 mb-1&quot;&gt;
+            &lt;span className=&quot;text-[13px]&quot;&gt;🛡&lt;/span&gt;
+            &lt;span className=&quot;text-[11px] font-bold text-green-300&quot;&gt;Certificado de Independência&lt;/span&gt;
+            &lt;span className=&quot;ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-green-800/40 border border-green-600/30 text-green-400 font-bold&quot;&gt;✓ LIMPO&lt;/span&gt;
+          &lt;/div&gt;
+          {[
+            [&quot;✅&quot;, &quot;Servidor local 100% offline&quot;, &quot;Roda em 127.0.0.1 com porta aleatória — igual ao app anterior que mostrava IP+porta&quot;],
+            [&quot;✅&quot;, &quot;Zero dependência Replit&quot;, &quot;O executável NÃO chama nenhum servidor externo. Funciona sem internet.&quot;],
+            [&quot;✅&quot;, &quot;Terminal real no PC&quot;, &quot;Abre bash (Linux) ou cmd.exe (Windows) — npm, git, python rodam de verdade&quot;],
+            [&quot;✅&quot;, &quot;Projetos salvos no seu PC&quot;, &quot;Pasta: ~/MaikonJuridicoPro/projetos/ — seus arquivos ficam só na sua máquina&quot;],
+            [&quot;✅&quot;, &quot;COOP/COEP habilitados&quot;, &quot;Headers corretos para WebContainer — npm install real funciona no desktop&quot;],
+          ].map(([icon, title, desc]) =&gt; (
+            &lt;div key={title} className=&quot;flex gap-1.5 items-start&quot;&gt;
+              &lt;span className=&quot;text-[11px] shrink-0 mt-0.5&quot;&gt;{icon}&lt;/span&gt;
+              &lt;div&gt;
+                &lt;span className=&quot;text-[10px] font-bold text-green-200&quot;&gt;{title}&lt;/span&gt;
+                &lt;span className=&quot;text-[10px] text-green-400/70 ml-1&quot;&gt;— {desc}&lt;/span&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+
+        &lt;div className=&quot;mt-2 text-[10px] text-gray-600 text-center&quot;&gt;
+          App Electron completo · Roda 100% offline · Servidor local em 127.0.0.1
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      {/* ── ZIP Limpo do SK Editor ────────────────────────────────────────── */}
+      &lt;div className=&quot;px-4 py-3 border-b border-gray-700/30 shrink-0 bg-[#0d1117]&quot;&gt;
+        &lt;a
+          href={`${import.meta.env.BASE_URL}downloads/sk-editor-source-v1.1.0-limpo.zip`}
+          download=&quot;sk-editor-source-v1.1.0-limpo.zip&quot;
+          className=&quot;flex items-center gap-3 px-3 py-3 bg-yellow-950/40 border-2 border-yellow-500/50 rounded-xl hover:bg-yellow-900/40 transition-colors&quot;
+        &gt;
+          &lt;span className=&quot;text-[22px]&quot;&gt;📦&lt;/span&gt;
+          &lt;div className=&quot;flex-1&quot;&gt;
+            &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+              &lt;span className=&quot;text-[13px] font-bold text-yellow-200&quot;&gt;SK Editor — Código-Fonte Limpo&lt;/span&gt;
+              &lt;span className=&quot;text-[9px] px-1.5 py-0.5 rounded-full bg-green-800/50 border border-green-600/40 text-green-300 font-bold&quot;&gt;v1.1.0&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div className=&quot;text-[10px] text-yellow-400/70 mt-0.5&quot;&gt;Build 15/06/2026 · 109 arquivos · src/ + electron/ + configs · SEM node_modules&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;text-right shrink-0&quot;&gt;
+            &lt;div className=&quot;text-[10px] text-yellow-500/60&quot;&gt;~0.4 MB&lt;/div&gt;
+            &lt;Download size={13} className=&quot;ml-auto mt-0.5 text-yellow-400&quot; /&gt;
+          &lt;/div&gt;
+        &lt;/a&gt;
+        &lt;p className=&quot;text-[10px] text-gray-600 text-center mt-1.5&quot;&gt;
+          Versão limpa para importar, corrigir e fazer novo build — sem mistura de versões anteriores
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      {/* ── Backup pré-gerado do SK Editor ───────────────────────────────── */}
+      &lt;div className=&quot;px-4 py-3 border-b border-gray-700/30 shrink-0 bg-[#0d1117]&quot;&gt;
+        &lt;div className=&quot;flex items-center gap-2 mb-2&quot;&gt;
+          &lt;HardDriveDownload size={14} className=&quot;text-yellow-400&quot; /&gt;
+          &lt;span className=&quot;text-[12px] font-bold text-yellow-300&quot;&gt;Projetos de Deploy — Pacotes prontos&lt;/span&gt;
+          &lt;span className=&quot;text-[10px] text-gray-600 bg-gray-800/50 px-1.5 py-0.5 rounded-full&quot;&gt;~464 KB cada&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;grid grid-cols-2 gap-1.5&quot;&gt;
+          {[
+            { name: &quot;clean&quot;,        icon: &quot;✨&quot;, label: &quot;Versão Limpa&quot;,    color: &quot;text-gray-300&quot; },
+            { name: &quot;netlify&quot;,      icon: &quot;🔷&quot;, label: &quot;Netlify&quot;,         color: &quot;text-teal-300&quot; },
+            { name: &quot;vercel&quot;,       icon: &quot;▲&quot;,  label: &quot;Vercel&quot;,          color: &quot;text-gray-200&quot; },
+            { name: &quot;github-pages&quot;, icon: &quot;🌐&quot;, label: &quot;GitHub Pages&quot;,    color: &quot;text-green-300&quot; },
+            { name: &quot;pwa&quot;,          icon: &quot;📲&quot;, label: &quot;PWA&quot;,             color: &quot;text-orange-300&quot; },
+            { name: &quot;eas&quot;,          icon: &quot;📱&quot;, label: &quot;EAS (Expo APK)&quot;,  color: &quot;text-blue-300&quot; },
+            { name: &quot;capacitor&quot;,    icon: &quot;⚡&quot;, label: &quot;Capacitor APK&quot;,   color: &quot;text-cyan-300&quot; },
+            { name: &quot;electron&quot;,     icon: &quot;🖥&quot;, label: &quot;Electron Desktop&quot;,color: &quot;text-purple-300&quot; },
+          ].map(item =&gt; (
+            &lt;a
+              key={item.name}
+              href={`${import.meta.env.BASE_URL}downloads/maikon-juridico-pro-${item.name}.zip`}
+              download
+              className={`flex items-center gap-1.5 px-2.5 py-2 bg-gray-900/60 border border-gray-700/40 rounded-xl hover:bg-gray-800/60 transition-colors ${item.color}`}
+            &gt;
+              &lt;span className=&quot;text-[13px]&quot;&gt;{item.icon}&lt;/span&gt;
+              &lt;span className=&quot;text-[11px] font-medium truncate&quot;&gt;{item.label}&lt;/span&gt;
+              &lt;Download size={10} className=&quot;ml-auto shrink-0 opacity-60&quot; /&gt;
+            &lt;/a&gt;
+          ))}
+        &lt;/div&gt;
+        &lt;div className=&quot;mt-2 text-[10px] text-gray-600 text-center&quot;&gt;
+          Código-fonte real do SK Editor, sem dependências do Replit · Pronto para importar e rodar
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div className=&quot;flex-1 overflow-y-auto&quot;&gt;
+        &lt;div className=&quot;px-4 py-3 space-y-2&quot;&gt;
+          {SECTIONS.map(sec =&gt; (
+            &lt;div key={sec.id} className={`border rounded-2xl overflow-hidden ${sec.color}`}&gt;
+              &lt;button
+                onClick={() =&gt; toggle(sec.id)}
+                className=&quot;w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors&quot;
+              &gt;
+                &lt;span className=&quot;text-[18px]&quot;&gt;{sec.icon}&lt;/span&gt;
+                &lt;div className=&quot;flex-1 text-left&quot;&gt;
+                  &lt;div className=&quot;text-[13px] font-bold&quot;&gt;{sec.label}&lt;/div&gt;
+                  &lt;div className=&quot;text-[11px] opacity-60&quot;&gt;{sec.desc}&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;flex items-center gap-2 shrink-0&quot;&gt;
+                  &lt;button
+                    onClick={(e) =&gt; { e.stopPropagation(); handleDownloadZip(sec.id); }}
+                    disabled={generating === sec.id}
+                    className=&quot;flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-[11px] font-bold text-white transition-colors disabled:opacity-60&quot;
+                  &gt;
+                    {generating === sec.id
+                      ? &lt;RefreshCw size={11} className=&quot;animate-spin&quot; /&gt;
+                      : &lt;Download size={11} /&gt;
+                    }
+                    {generating === sec.id ? &quot;...&quot; : &quot;ZIP&quot;}
+                  &lt;/button&gt;
+                  {expanded === sec.id ? &lt;ChevronDown size={14} /&gt; : &lt;ChevronRight size={14} /&gt;}
+                &lt;/div&gt;
+              &lt;/button&gt;
+              {expanded === sec.id &amp;&amp; (
+                &lt;div className=&quot;border-t border-white/10 bg-[#0d1117]/80&quot;&gt;
+                  {sectionContent[sec.id]}
+                &lt;/div&gt;
+              )}
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+
+        &lt;div className=&quot;px-4 pb-4&quot;&gt;
+          &lt;div className=&quot;bg-[#161b22] border border-gray-800/40 rounded-2xl p-4 space-y-2&quot;&gt;
+            &lt;div className=&quot;text-[12px] text-gray-500 font-semibold uppercase tracking-wider&quot;&gt;Projeto atual&lt;/div&gt;
+            &lt;div className=&quot;grid grid-cols-2 gap-2 text-[12px] text-gray-400&quot;&gt;
+              &lt;div&gt;📄 {files.length} arquivo(s)&lt;/div&gt;
+              &lt;div&gt;📦 {hasPkg ? &quot;package.json ✓&quot; : &quot;sem package.json&quot;}&lt;/div&gt;
+              &lt;div&gt;🌐 {hasIndexHtml ? &quot;index.html ✓&quot; : &quot;sem index.html&quot;}&lt;/div&gt;
+              &lt;div&gt;🔑 EAS token: {easToken ? &quot;configurado ✓&quot; : &quot;não configurado&quot;}&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    {showPlayground &amp;&amp; &lt;HTMLPlayground onClose={() =&gt; setShowPlayground(false)} /&gt;}
+    &lt;/&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
