@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: eas.ts</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 eas.ts</h1>
+<div class="meta">Gerado em 03/10/2026, 06:49:53 • 12 elementos • 8 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [const] GQL</div><div class="idx-item">L3 [function] gql</div><div class="idx-item">L22 [interface] EasUser</div><div class="idx-item">L28 [function] easGetMe</div><div class="idx-item">L37 [interface] EasApp</div><div class="idx-item">L44 [function] easEnsureApp</div><div class="idx-item">L69 [interface] UploadUrl</div><div class="idx-item">L75 [function] easGetUploadUrl</div><div class="idx-item">L83 [function] easUploadTarball</div><div class="idx-item">L94 [interface] EasBuild</div><div class="idx-item">L102 [function] easCreateBuild</div><div class="idx-item">L137 [function] easGetBuild</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L2</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">const GQL = &quot;https://api.expo.dev/graphql&quot;;
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>gql</span>
+    <div>
+      <small>L3–L27</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">async function gql&lt;T = unknown&gt;(
+  token: string,
+  query: string,
+  variables?: Record&lt;string, unknown&gt;
+): Promise&lt;T&gt; {
+  const res = await fetch(GQL, {
+    method: &quot;POST&quot;,
+    headers: {
+      &quot;Content-Type&quot;: &quot;application/json&quot;,
+      Authorization: `Bearer ${token}`,
+      &quot;expo-client-info&quot;: '{&quot;appVersion&quot;:&quot;14.4.2&quot;,&quot;appName&quot;:&quot;eas-cli&quot;}',
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+  const json = await res.json();
+  if (json.errors?.length) throw new Error(json.errors[0].message);
+  return json.data as T;
+}
+
+export interface EasUser {
+  id: string;
+  username: string;
+  primaryAccount: { id: string; name: string };
+}
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>easGetMe</span>
+    <div>
+      <small>L28–L43</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">export async function easGetMe(token: string): Promise&lt;EasUser&gt; {
+  const data = await gql&lt;{ me: EasUser }&gt;(
+    token,
+    `query Me { me { id username primaryAccount { id name } } }`
+  );
+  if (!data?.me) throw new Error(&quot;Token inválido ou sem permissão&quot;);
+  return data.me;
+}
+
+export interface EasApp {
+  id: string;
+  slug: string;
+  name: string;
+  fullName: string;
+}
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>easEnsureApp</span>
+    <div>
+      <small>L44–L74</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">export async function easEnsureApp(
+  token: string,
+  accountName: string,
+  slug: string,
+  name: string
+): Promise&lt;EasApp&gt; {
+  try {
+    const data = await gql&lt;{ app: { byFullName: EasApp } }&gt;(
+      token,
+      `query GetApp($name: String!) { app { byFullName(fullName: $name) { id slug name fullName } } }`,
+      { name: `${accountName}/${slug}` }
+    );
+    if (data?.app?.byFullName?.id) return data.app.byFullName;
+  } catch {}
+
+  const data = await gql&lt;{ app: { createApp: EasApp } }&gt;(
+    token,
+    `mutation CreateApp($input: AppInput!) {
+       app { createApp(appInput: $input) { id slug name fullName } }
+     }`,
+    { input: { accountName, projectName: slug } }
+  );
+  return data.app.createApp;
+}
+
+export interface UploadUrl {
+  url: string;
+  headers: Array&lt;{ key: string; value: string }&gt;;
+  bucketKey: string;
+}
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>easGetUploadUrl</span>
+    <div>
+      <small>L75–L82</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">export async function easGetUploadUrl(token: string): Promise&lt;UploadUrl&gt; {
+  const data = await gql&lt;{ buildJob: { getUploadUrl: UploadUrl } }&gt;(
+    token,
+    `mutation GetUploadUrl { buildJob { getUploadUrl(platform: ANDROID) { url headers { key value } bucketKey } } }`
+  );
+  return data.buildJob.getUploadUrl;
+}
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>easUploadTarball</span>
+    <div>
+      <small>L83–L101</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">export async function easUploadTarball(
+  uploadUrl: UploadUrl,
+  base64Zip: string
+): Promise&lt;void&gt; {
+  const binary = Uint8Array.from(atob(base64Zip), c =&gt; c.charCodeAt(0));
+  const headers: Record&lt;string, string&gt; = { &quot;Content-Type&quot;: &quot;application/zip&quot; };
+  for (const h of uploadUrl.headers) headers[h.key] = h.value;
+  const res = await fetch(uploadUrl.url, { method: &quot;PUT&quot;, headers, body: binary });
+  if (!res.ok) throw new Error(`Upload falhou: HTTP ${res.status}`);
+}
+
+export interface EasBuild {
+  id: string;
+  status: string;
+  artifacts?: { buildUrl?: string } | null;
+  expirationDate?: string | null;
+  updatedAt?: string | null;
+}
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>easCreateBuild</span>
+    <div>
+      <small>L102–L136</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">export async function easCreateBuild(
+  token: string,
+  appId: string,
+  bucketKey: string,
+  cfg: { appId: string; versionName: string; versionCode: number; minSdk: number }
+): Promise&lt;EasBuild&gt; {
+  const data = await gql&lt;{ buildJob: { createAndroidBuild: { build: EasBuild } } }&gt;(
+    token,
+    `mutation CreateBuild($appId: String!, $job: BuildJobInput!) {
+       buildJob {
+         createAndroidBuild(appId: $appId, job: $job) {
+           build { id status artifacts { buildUrl } }
+         }
+       }
+     }`,
+    {
+      appId,
+      job: {
+        platform: &quot;ANDROID&quot;,
+        artifactPath: &quot;android/app/build/outputs/apk/**/*.apk&quot;,
+        projectArchive: { type: &quot;S3&quot;, bucketKey },
+        projectRootDirectory: &quot;.&quot;,
+        builderEnvironment: { image: &quot;default&quot; },
+        cache: { clear: false },
+        secrets: {},
+        gradleCommand: &quot;:app:assembleDebug&quot;,
+        releaseChannel: &quot;default&quot;,
+        buildType: &quot;apk&quot;,
+        applicationArchivePath: &quot;android/app/build/outputs/apk/debug/app-debug.apk&quot;,
+      },
+    }
+  );
+  return data.buildJob.createAndroidBuild.build;
+}
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>easGetBuild</span>
+    <div>
+      <small>L137–L147</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">export async function easGetBuild(token: string, buildId: string): Promise&lt;EasBuild&gt; {
+  const data = await gql&lt;{ builds: { byId: EasBuild } }&gt;(
+    token,
+    `query GetBuild($id: ID!) {
+       builds { byId(buildId: $id) { id status artifacts { buildUrl } updatedAt } }
+     }`,
+    { id: buildId }
+  );
+  return data.builds.byId;
+}
+</pre>
+</div>
+</body>
+</html>
