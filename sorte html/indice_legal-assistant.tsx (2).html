@@ -1,0 +1,126 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>indice_legal-assistant.tsx (2).md</title><style>
+    body{font-family:Georgia,Cambria,'Times New Roman',serif;max-width:860px;margin:30px auto;padding:0 24px;color:#222;line-height:1.7;background:#fafafa}
+    h1,h2,h3,h4{color:#2d4a1e;margin-top:28px;margin-bottom:12px}
+    h1{border-bottom:2px solid #5aab56;padding-bottom:8px}
+    h2{border-bottom:1px solid #ccc;padding-bottom:6px}
+    a{color:#0066cc}
+    code{background:#eee;padding:2px 5px;border-radius:3px;font-family:Consolas,monospace;font-size:90%}
+    pre{background:#0d1309;color:#a8d5a2;padding:14px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5}
+    pre code{background:transparent;color:inherit;padding:0}
+    blockquote{border-left:4px solid #5aab56;padding:6px 14px;margin:14px 0;background:#f0f7ed;color:#444}
+    table{border-collapse:collapse;margin:14px 0;width:100%}
+    th,td{border:1px solid #ccc;padding:8px 12px;text-align:left}
+    th{background:#e8f5e9}
+    .copy-btn{font-size:11px;padding:4px 10px;border:1px solid #5aab56;background:#fff;color:#2d4a1e;border-radius:5px;cursor:pointer;margin-left:8px}
+    .copy-btn:hover{background:#5aab56;color:#fff}
+    .code-wrap{position:relative;margin:14px 0}
+    .code-wrap .copy-btn{position:absolute;top:8px;right:8px}
+    @media print{.copy-btn{display:none}body{background:#fff}}
+  </style></head><body><h1 style="border:none">indice_legal-assistant.tsx (2).md</h1><div class="md" id="md"><h1 id="indice-legal-assistanttsx" data-heading="1" data-raw="Índice: legal-assistant.tsx">Índice: legal-assistant.tsx<button class="copy-btn" data-section="indice-legal-assistanttsx">📋 Seção</button></h1><p>Total: 83 elementos</p>
+<ul>
+<li><strong>L1</strong> <code>[import]</code> import { useState, useRef, useCallback, useMemo, useEffect } from "react";</li>
+<li><strong>L2</strong> <code>[import]</code> import TiptapEditor from "@/components/tiptap-editor";</li>
+<li><strong>L3</strong> <code>[import]</code> import { Button } from "@/components/ui/button";</li>
+<li><strong>L4</strong> <code>[import]</code> import { Input } from "@/components/ui/input";</li>
+<li><strong>L5</strong> <code>[import]</code> import { Textarea } from "@/components/ui/textarea";</li>
+<li><strong>L6</strong> <code>[import]</code> import { useToast } from "@/hooks/use-toast";</li>
+<li><strong>L7</strong> <code>[import]</code> import { Link } from "wouter";</li>
+<li><strong>L8</strong> <code>[import]</code> import { ThemeToggle } from "@/components/theme-toggle";</li>
+<li><strong>L9</strong> <code>[import]</code> import { useQuery, useMutation } from "@tanstack/react-query";</li>
+<li><strong>L10</strong> <code>[import]</code> import { apiRequest, queryClient } from "@/lib/queryClient";</li>
+<li><strong>L11</strong> <code>[import]</code> import type { CustomAction, Ementa, AiHistory, PromptTemplate, DocTemplate } fro</li>
+<li><strong>L12</strong> <code>[import]</code> import { Card } from "@/components/ui/card";</li>
+<li><strong>L13</strong> <code>[import]</code> import { Badge } from "@/components/ui/badge";</li>
+<li><strong>L14</strong> <code>[import]</code> import { Slider } from "@/components/ui/slider";</li>
+<li><strong>L15</strong> <code>[import]</code> import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge</li>
+<li><strong>L16</strong> <code>[import]</code> import {</li>
+<li><strong>L23</strong> <code>[import]</code> import {</li>
+<li><strong>L78</strong> <code>[interface]</code> ActionType</li>
+<li><strong>L80</strong> <code>[interface]</code> ActionOption</li>
+<li><strong>L101</strong> <code>[const]</code> ESTILOS</li>
+<li><strong>L111</strong> <code>[const]</code> ESTILOS_WORD</li>
+<li><strong>L114</strong> <code>[component]</code> LegalAssistant</li>
+<li><strong>L192</strong> <code>[const]</code> MAX_LOAD_CHARS</li>
+<li><strong>L257</strong> <code>[function]</code> updateFormat →</li>
+<li><strong>L275</strong> <code>[const]</code> MAX_SAVE_CHARS</li>
+<li><strong>L301</strong> <code>[function]</code> handler →</li>
+<li><strong>L396</strong> <code>[function]</code> SpeechRecognition →</li>
+<li><strong>L406</strong> <code>[function]</code> iniciarDitado →</li>
+<li><strong>L480</strong> <code>[function]</code> refreshDemoKeyStatus →</li>
+<li><strong>L664</strong> <code>[function]</code> SR →</li>
+<li><strong>L667</strong> <code>[function]</code> startMic →</li>
+<li><strong>L791</strong> <code>[function]</code> resetPromptTplForm →</li>
+<li><strong>L799</strong> <code>[function]</code> openNewPromptTpl →</li>
+<li><strong>L807</strong> <code>[function]</code> openEditPromptTpl →</li>
+<li><strong>L815</strong> <code>[function]</code> savePromptTpl →</li>
+<li><strong>L828</strong> <code>[function]</code> copyPromptTplToClipboard →</li>
+<li><strong>L871</strong> <code>[function]</code> resetDocTplForm →</li>
+<li><strong>L879</strong> <code>[function]</code> openNewDocTpl →</li>
+<li><strong>L887</strong> <code>[function]</code> openEditDocTpl →</li>
+<li><strong>L895</strong> <code>[function]</code> saveDocTpl →</li>
+<li><strong>L913</strong> <code>[function]</code> handleDocxTemplateUpload →</li>
+<li><strong>L999</strong> <code>[function]</code> loadFromHistory →</li>
+<li><strong>L1117</strong> <code>[function]</code> resetModelForm →</li>
+<li><strong>L1125</strong> <code>[function]</code> openNewModel →</li>
+<li><strong>L1133</strong> <code>[function]</code> openEditModel →</li>
+<li><strong>L1141</strong> <code>[function]</code> saveModel →</li>
+<li><strong>L1154</strong> <code>[function]</code> resetEmentaForm →</li>
+<li><strong>L1162</strong> <code>[function]</code> openNewEmenta →</li>
+<li><strong>L1170</strong> <code>[function]</code> pasteEmentaFromClipboard →</li>
+<li><strong>L1187</strong> <code>[function]</code> openEditEmenta →</li>
+<li><strong>L1195</strong> <code>[function]</code> saveEmenta →</li>
+<li><strong>L1208</strong> <code>[function]</code> buscarJurisprudencias →</li>
+<li><strong>L1238</strong> <code>[function]</code> toggleJuriTribunal →</li>
+<li><strong>L1245</strong> <code>[function]</code> insertJuriIntoEditor →</li>
+<li><strong>L1251</strong> <code>[function]</code> saveJuriToLibrary →</li>
+<li><strong>L1257</strong> <code>[function]</code> resumirEmenta →</li>
+<li><strong>L1301</strong> <code>[function]</code> toggleEmentaSelection →</li>
+<li><strong>L1318</strong> <code>[function]</code> handleUrlImport →</li>
+<li><strong>L1357</strong> <code>[function]</code> getExt →</li>
+<li><strong>L1503</strong> <code>[function]</code> selectModel →</li>
+<li><strong>L1633</strong> <code>[function]</code> confirmStreamResponse →</li>
+<li><strong>L1715</strong> <code>[function]</code> actionName →</li>
+<li><strong>L1739</strong> <code>[function]</code> doRefine →</li>
+<li><strong>L2024</strong> <code>[function]</code> isDateLocalLine →</li>
+<li><strong>L2030</strong> <code>[function]</code> isSignatureLine →</li>
+<li><strong>L2037</strong> <code>[function]</code> isOabLine →</li>
+<li><strong>L2045</strong> <code>[function]</code> isTituloLine →</li>
+<li><strong>L2057</strong> <code>[function]</code> isPedidosLine →</li>
+<li><strong>L2063</strong> <code>[function]</code> isCitationLine →</li>
+<li><strong>L2070</strong> <code>[function]</code> isHeaderLine →</li>
+<li><strong>L2078</strong> <code>[function]</code> applyInlineMarkdown →</li>
+<li><strong>L2099</strong> <code>[function]</code> linkifyHtml →</li>
+<li><strong>L2104</strong> <code>[function]</code> walk →</li>
+<li><strong>L2124</strong> <code>[function]</code> decodeHtmlEntities →</li>
+<li><strong>L2131</strong> <code>[function]</code> formatMarkdown →</li>
+<li><strong>L2157</strong> <code>[function]</code> flushList →</li>
+<li><strong>L2172</strong> <code>[function]</code> flushBlockquote →</li>
+<li><strong>L2179</strong> <code>[function]</code> flushPara →</li>
+<li><strong>L2281</strong> <code>[function]</code> toTiptapHtml →</li>
+<li><strong>L5297</strong> <code>[function]</code> inCost →</li>
+<li><strong>L5298</strong> <code>[function]</code> outCost →</li>
+<li><strong>L5328</strong> <code>[function]</code> tMin →</li>
+<li><strong>L5331</strong> <code>[function]</code> cheapCost →</li>
+</ul>
+</div>
+    <script>
+    document.querySelectorAll('.copy-btn[data-code]').forEach(b=>{
+      b.onclick=()=>{navigator.clipboard.writeText(b.dataset.code);b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Copiar',1500)};
+    });
+    document.querySelectorAll('.copy-btn[data-section]').forEach(b=>{
+      b.onclick=()=>{
+        const h=document.getElementById(b.dataset.section);
+        const lvl=parseInt(h.tagName[1]);
+        let txt=h.innerText.replace('📋 Seção','').trim()+'\n\n';
+        let el=h.nextElementSibling;
+        while(el){
+          if(/^H[1-6]$/.test(el.tagName)&&parseInt(el.tagName[1])<=lvl)break;
+          txt+=el.innerText+'\n\n';
+          el=el.nextElementSibling;
+        }
+        navigator.clipboard.writeText(txt.trim());
+        b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Seção',1500);
+      };
+    });
+    </script>
+  </body></html>
