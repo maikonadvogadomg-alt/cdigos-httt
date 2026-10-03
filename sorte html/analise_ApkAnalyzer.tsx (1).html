@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: ApkAnalyzer.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 ApkAnalyzer.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:25:30 • 9 elementos • 7 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L7 [import] import { useState, useCallback } from &quot;react&quot;;</div><div class="idx-item">L9 [interface] ApkInfo</div><div class="idx-item">L26 [function] parseAxml</div><div class="idx-item">L60 [const] REPLIT_PATTERNS</div><div class="idx-item">L68 [function] hasReplitRef</div><div class="idx-item">L72 [function] cleanReplitRefs</div><div class="idx-item">L84 [function] extractInfo</div><div class="idx-item">L107 [component] ApkAnalyzer</div><div class="idx-item">L159 [function] cleanApk</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L25</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">/**
+ * ApkAnalyzer — Abre qualquer APK, mostra o que está dentro
+ * e tem aba &quot;Limpar Replit&quot; para remover dependências do Replit
+ * e fazer o APK funcionar fora do servidor.
+ * 100% no browser, sem upload, sem servidor.
+ */
+import { useState, useCallback } from &quot;react&quot;;
+
+interface ApkInfo {
+  fileName: string;
+  fileSizeMB: string;
+  packageName: string;
+  versionCode: string;
+  versionName: string;
+  appLabel: string;
+  minSdk: string;
+  targetSdk: string;
+  permissions: string[];
+  activities: string[];
+  files: { name: string; sizeMB: string }[];
+  rawStrings: string[];
+  replitFiles: string[];   // arquivos com refs ao Replit
+}
+
+// ── Parser AXML ──────────────────────────────────────────</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>parseAxml</span>
+    <div>
+      <small>L26–L67</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function parseAxml(buf: ArrayBuffer): string[] {
+  const data = new Uint8Array(buf);
+  const dv = new DataView(buf);
+  const strings: string[] = [];
+  try {
+    const off = 8;
+    const strCount  = dv.getUint32(off + 8, true);
+    const flags     = dv.getUint32(off + 16, true);
+    const strStart  = dv.getUint32(off + 20, true);
+    const poolHSize = dv.getUint16(off + 2, true);
+    const isUtf8    = !!(flags &amp; (1 &lt;&lt; 8));
+    const offsetsBase = off + poolHSize;
+    const stringsBase = off + strStart;
+    for (let i = 0; i &lt; Math.min(strCount, 500); i++) {
+      const idxOff = offsetsBase + i * 4;
+      if (idxOff + 4 &gt; data.byteLength) break;
+      const sOff = stringsBase + dv.getUint32(idxOff, true);
+      if (sOff &gt;= data.byteLength) continue;
+      let s = &quot;&quot;;
+      if (isUtf8) {
+        const clen = data[sOff + 1];
+        if (sOff + 2 + clen &gt; data.byteLength) continue;
+        for (let j = 0; j &lt; clen; j++) { const c = data[sOff + 2 + j]; if (c &gt;= 0x20) s += String.fromCharCode(c); }
+      } else {
+        const clen = dv.getUint16(sOff, true);
+        if (sOff + 2 + clen * 2 &gt; data.byteLength) continue;
+        for (let j = 0; j &lt; clen; j++) { const c = dv.getUint16(sOff + 2 + j * 2, true); if (c &gt;= 0x20) s += String.fromCharCode(c); }
+      }
+      if (s.length &gt;= 2) strings.push(s);
+    }
+  } catch {}
+  return strings;
+}
+
+const REPLIT_PATTERNS = [
+  /replit\.dev/gi, /repl\.co/gi, /repl\.it/gi,
+  /REPL_ID/g, /REPLIT_DEV_DOMAIN/g, /REPLIT_DOMAINS/g,
+  /replit\.com/gi, /cartographer/gi, /vite-plugin-dev-banner/gi,
+  /vite-plugin-runtime-error-modal/gi, /replitDomain/gi,
+  /__replit/gi,
+];
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>hasReplitRef</span>
+    <div>
+      <small>L68–L71</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">function hasReplitRef(text: string) {
+  return REPLIT_PATTERNS.some(p =&gt; { p.lastIndex = 0; return p.test(text); });
+}
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>cleanReplitRefs</span>
+    <div>
+      <small>L72–L83</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">function cleanReplitRefs(text: string): string {
+  let out = text;
+  out = out.replace(/https?:\/\/[a-z0-9-]+\.replit\.dev[^\s&quot;'`)]*/gi, &quot;&quot;);
+  out = out.replace(/https?:\/\/[a-z0-9-]+\.repl\.co[^\s&quot;'`)]*/gi, &quot;&quot;);
+  out = out.replace(/[&quot;']REPLIT_DEV_DOMAIN[&quot;']\s*:\s*[&quot;'][^&quot;']*[&quot;']/gi, '&quot;REPLIT_DEV_DOMAIN&quot;:&quot;&quot;');
+  out = out.replace(/[&quot;']REPL_ID[&quot;']\s*:\s*[&quot;'][^&quot;']*[&quot;']/gi, '&quot;REPL_ID&quot;:&quot;&quot;');
+  out = out.replace(/process\.env\.REPL_ID/g, '&quot;&quot;');
+  out = out.replace(/process\.env\.REPLIT_DEV_DOMAIN/g, '&quot;&quot;');
+  out = out.replace(/import\.meta\.env\.REPLIT[A-Z_]*/g, '&quot;&quot;');
+  return out;
+}
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>extractInfo</span>
+    <div>
+      <small>L84–L106</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">function extractInfo(strings: string[], fileName: string, fileSizeMB: string, replitFiles: string[]): ApkInfo {
+  const pkg      = strings.find(s =&gt; /^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*){1,6}$/.test(s) &amp;&amp; !s.startsWith(&quot;android&quot;) &amp;&amp; !s.startsWith(&quot;androidx&quot;) &amp;&amp; !s.startsWith(&quot;com.google&quot;) &amp;&amp; !s.startsWith(&quot;com.facebook&quot;) &amp;&amp; s.split(&quot;.&quot;).length &gt;= 2) ?? &quot;—&quot;;
+  const verName  = strings.find(s =&gt; /^\d+(\.\d+){0,3}$/.test(s) &amp;&amp; s !== &quot;1.0&quot; &amp;&amp; Number(s.split(&quot;.&quot;)[0]) &gt; 1) ?? strings.find(s =&gt; /^\d+\.\d+/.test(s)) ?? &quot;—&quot;;
+  const verCode  = strings.find(s =&gt; /^\d{2,6}$/.test(s)) ?? &quot;—&quot;;
+  const minSdk   = strings.find(s =&gt; /^(2[4-9]|3[0-9])$/.test(s)) ?? &quot;24&quot;;
+  const tgtSdk   = strings.find(s =&gt; /^3[0-9]$/.test(s)) ?? &quot;—&quot;;
+  const perms    = strings.filter(s =&gt; s.startsWith(&quot;android.permission.&quot;) || (s.includes(&quot;.permission.&quot;) &amp;&amp; s.length &lt; 80)).map(s =&gt; s.replace(&quot;android.permission.&quot;, &quot;&quot;)).slice(0, 30);
+  const activities = strings.filter(s =&gt; (s.includes(&quot;Activity&quot;) || s.includes(&quot;activity&quot;)) &amp;&amp; s.includes(&quot;.&quot;) &amp;&amp; !s.startsWith(&quot;android&quot;) &amp;&amp; s.length &lt; 80).slice(0, 10);
+  const appLabel = strings.find(s =&gt; s.length &gt; 3 &amp;&amp; s.length &lt; 30 &amp;&amp; /^[A-Z]/.test(s) &amp;&amp; !/^[A-Z_]+$/.test(s) &amp;&amp; !s.includes(&quot;.&quot;) &amp;&amp; !s.includes(&quot;/&quot;)) ?? fileName.replace(&quot;.apk&quot;, &quot;&quot;);
+  return { fileName, fileSizeMB, packageName: pkg, versionCode: verCode, versionName: verName, appLabel, minSdk, targetSdk: tgtSdk, permissions: perms, activities, files: [], rawStrings: strings, replitFiles };
+}
+
+const PERM_LABELS: Record&lt;string, string&gt; = {
+  INTERNET: &quot;Internet&quot;, CAMERA: &quot;Câmera&quot;, RECORD_AUDIO: &quot;Microfone&quot;,
+  READ_EXTERNAL_STORAGE: &quot;Ler arquivos&quot;, WRITE_EXTERNAL_STORAGE: &quot;Gravar arquivos&quot;,
+  ACCESS_FINE_LOCATION: &quot;GPS preciso&quot;, ACCESS_COARSE_LOCATION: &quot;Localização aprox.&quot;,
+  READ_CONTACTS: &quot;Contatos&quot;, WRITE_CONTACTS: &quot;Editar contatos&quot;,
+  CALL_PHONE: &quot;Ligar&quot;, SEND_SMS: &quot;Enviar SMS&quot;, RECEIVE_SMS: &quot;Receber SMS&quot;,
+  RECEIVE_BOOT_COMPLETED: &quot;Iniciar com o celular&quot;, FOREGROUND_SERVICE: &quot;Segundo plano&quot;,
+  WAKE_LOCK: &quot;Manter tela&quot;, BILLING: &quot;Compras no app&quot;, USE_BIOMETRIC: &quot;Biometria&quot;,
+  BLUETOOTH: &quot;Bluetooth&quot;, NFC: &quot;NFC&quot;, FLASHLIGHT: &quot;Lanterna&quot;,
+};
+</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>ApkAnalyzer</span>
+    <div>
+      <small>L107–L158</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">export default function ApkAnalyzer() {
+  const [apks, setApks]       = useState&lt;ApkInfo[]&gt;([]);
+  const [loading, setLoading] = useState(false);
+  const [drag, setDrag]       = useState(false);
+  const [selected, setSelected] = useState&lt;number | null&gt;(null);
+  const [tab2, setTab2]       = useState&lt;&quot;info&quot; | &quot;perms&quot; | &quot;files&quot; | &quot;limpar&quot;&gt;(&quot;info&quot;);
+  const [cleaning, setCleaning] = useState(false);
+  const [cleanMsg, setCleanMsg] = useState&lt;string | null&gt;(null);
+
+  const analyze = useCallback(async (fileList: FileList | File[]) =&gt; {
+    setLoading(true);
+    const arr = Array.from(fileList);
+    const results: ApkInfo[] = [];
+    for (const file of arr) {
+      if (!file.name.endsWith(&quot;.apk&quot;) &amp;&amp; !file.name.endsWith(&quot;.zip&quot;)) continue;
+      try {
+        const buf = await file.arrayBuffer();
+        const { default: JSZip } = await import(&quot;jszip&quot;);
+        const zip = await JSZip.loadAsync(buf);
+        const manifestEntry = zip.files[&quot;AndroidManifest.xml&quot;];
+        let strings: string[] = [];
+        if (manifestEntry) {
+          const mBuf = await manifestEntry.async(&quot;arraybuffer&quot;);
+          strings = parseAxml(mBuf);
+        }
+        // detecta arquivos com refs Replit
+        const replitFiles: string[] = [];
+        for (const [name, entry] of Object.entries(zip.files)) {
+          if (entry.dir) continue;
+          if (/\.(js|html|css|json|ts|jsx|tsx)$/.test(name)) {
+            try {
+              const text = await entry.async(&quot;text&quot;);
+              if (hasReplitRef(text)) replitFiles.push(name);
+            } catch {}
+          }
+        }
+        const fileList2 = Object.entries(zip.files)
+          .filter(([, e]) =&gt; !e.dir)
+          .map(([name, e]) =&gt; ({ name, sizeMB: e._data?.uncompressedSize ? (e._data.uncompressedSize / 1024 / 1024).toFixed(2) : &quot;?&quot; }))
+          .sort((a, b) =&gt; parseFloat(b.sizeMB) - parseFloat(a.sizeMB))
+          .slice(0, 60);
+        const info = extractInfo(strings, file.name, (file.size / 1024 / 1024).toFixed(1), replitFiles);
+        info.files = fileList2;
+        results.push(info);
+      } catch {
+        results.push({ fileName: file.name, fileSizeMB: &quot;?&quot;, packageName: &quot;Erro&quot;, versionCode: &quot;—&quot;, versionName: &quot;—&quot;, appLabel: file.name, minSdk: &quot;—&quot;, targetSdk: &quot;—&quot;, permissions: [], activities: [], files: [], rawStrings: [], replitFiles: [] });
+      }
+    }
+    setApks(a =&gt; { const m = [...a, ...results]; setSelected(m.length - 1); return m; });
+    setLoading(false);
+  }, []);
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>cleanApk</span>
+    <div>
+      <small>L159–L399</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  async function cleanApk(apk: ApkInfo) {
+    setCleaning(true); setCleanMsg(null);
+    try {
+      const input = document.createElement(&quot;input&quot;);
+      input.type = &quot;file&quot;; input.accept = &quot;.apk,.zip&quot;;
+      input.onchange = async () =&gt; {
+        const file = input.files?.[0]; if (!file) { setCleaning(false); return; }
+        const buf = await file.arrayBuffer();
+        const { default: JSZip } = await import(&quot;jszip&quot;);
+        const zip = await JSZip.loadAsync(buf);
+        const outZip = new JSZip();
+        let cleaned = 0;
+        for (const [name, entry] of Object.entries(zip.files)) {
+          if (entry.dir) { outZip.folder(name); continue; }
+          if (/\.(js|html|css|json)$/.test(name)) {
+            try {
+              const text = await entry.async(&quot;text&quot;);
+              if (hasReplitRef(text)) {
+                outZip.file(name, cleanReplitRefs(text));
+                cleaned++;
+              } else { outZip.file(name, await entry.async(&quot;uint8array&quot;)); }
+            } catch { outZip.file(name, await entry.async(&quot;uint8array&quot;)); }
+          } else { outZip.file(name, await entry.async(&quot;uint8array&quot;)); }
+        }
+        const blob = await outZip.generateAsync({ type: &quot;blob&quot;, compression: &quot;DEFLATE&quot;, compressionOptions: { level: 6 } });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement(&quot;a&quot;);
+        a.href = url; a.download = file.name.replace(&quot;.apk&quot;, &quot;-limpo.apk&quot;).replace(&quot;.zip&quot;, &quot;-limpo.zip&quot;);
+        document.body.appendChild(a); a.click();
+        setTimeout(() =&gt; { document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        setCleanMsg(`✅ ${cleaned} arquivo(s) limpo(s). Baixando APK sem Replit...`);
+        setCleaning(false);
+      };
+      input.click();
+    } catch (e: any) { setCleanMsg(`❌ Erro: ${e.message}`); setCleaning(false); }
+  }
+
+  const cur = selected !== null ? apks[selected] : null;
+
+  return (
+    &lt;div className=&quot;space-y-3&quot;&gt;
+      {/* Drop zone */}
+      &lt;div
+        onDragOver={e =&gt; { e.preventDefault(); setDrag(true); }}
+        onDragLeave={() =&gt; setDrag(false)}
+        onDrop={e =&gt; { e.preventDefault(); setDrag(false); analyze(e.dataTransfer.files); }}
+        onClick={() =&gt; document.getElementById(&quot;apk-input&quot;)?.click()}
+        className={`border-2 border-dashed rounded-2xl p-6 text-center cursor-pointer transition-all ${drag ? &quot;border-violet-400 bg-violet-900/20&quot; : &quot;border-slate-600 bg-slate-900/40 hover:border-violet-600/60&quot;}`}
+      &gt;
+        &lt;input id=&quot;apk-input&quot; type=&quot;file&quot; accept=&quot;.apk,.zip&quot; multiple className=&quot;hidden&quot; onChange={e =&gt; e.target.files &amp;&amp; analyze(e.target.files)} /&gt;
+        &lt;p className=&quot;text-2xl mb-2&quot;&gt;📱&lt;/p&gt;
+        &lt;p className=&quot;font-bold text-slate-200 text-sm&quot;&gt;Arraste APK(s) aqui ou clique para selecionar&lt;/p&gt;
+        &lt;p className=&quot;text-xs text-slate-500 mt-1&quot;&gt;Múltiplos arquivos · 100% no browser · sem upload · suporta .apk e .zip&lt;/p&gt;
+        {loading &amp;&amp; &lt;p className=&quot;text-xs text-violet-300 mt-2 animate-pulse&quot;&gt;⏳ Analisando...&lt;/p&gt;}
+      &lt;/div&gt;
+
+      {/* O que faz */}
+      &lt;div className=&quot;bg-blue-900/20 border border-blue-700/30 rounded-xl p-3&quot;&gt;
+        &lt;p className=&quot;text-xs font-bold text-blue-300 mb-1&quot;&gt;ℹ️ O que este analisador faz&lt;/p&gt;
+        &lt;p className=&quot;text-[11px] text-slate-400 leading-relaxed&quot;&gt;
+          Abre o APK e lê o &lt;strong className=&quot;text-yellow-300&quot;&gt;Package ID&lt;/strong&gt; (nome interno único),
+          a &lt;strong className=&quot;text-yellow-300&quot;&gt;versão real&lt;/strong&gt;, as &lt;strong className=&quot;text-yellow-300&quot;&gt;permissões&lt;/strong&gt;,
+          e detecta arquivos com referências ao &lt;strong className=&quot;text-red-300&quot;&gt;Replit&lt;/strong&gt;.
+          A aba &lt;strong className=&quot;text-green-300&quot;&gt;🧹 Limpar Replit&lt;/strong&gt; remove essas referências
+          e baixa uma versão do APK que funciona &lt;strong className=&quot;text-white&quot;&gt;fora do Replit&lt;/strong&gt;.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      {/* Lista de APKs */}
+      {apks.length &gt; 0 &amp;&amp; (
+        &lt;div className=&quot;bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden&quot;&gt;
+          &lt;div className=&quot;flex items-center justify-between px-3 py-2 border-b border-slate-700 bg-slate-800/50&quot;&gt;
+            &lt;span className=&quot;text-[11px] text-slate-400 font-semibold&quot;&gt;{apks.length} APK{apks.length &gt; 1 ? &quot;s&quot; : &quot;&quot;}&lt;/span&gt;
+            &lt;button onClick={() =&gt; { setApks([]); setSelected(null); }} className=&quot;text-[10px] text-red-400 hover:text-red-300&quot;&gt;limpar tudo&lt;/button&gt;
+          &lt;/div&gt;
+          {apks.map((a, i) =&gt; (
+            &lt;div key={i} onClick={() =&gt; setSelected(i)}
+              className={`flex items-center gap-3 px-3 py-2 cursor-pointer border-b border-slate-800 transition-colors ${selected === i ? &quot;bg-violet-900/30&quot; : &quot;hover:bg-slate-800/40&quot;}`}&gt;
+              &lt;span className=&quot;text-lg&quot;&gt;📦&lt;/span&gt;
+              &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                &lt;p className=&quot;text-xs font-bold text-slate-200 truncate&quot;&gt;{a.appLabel}&lt;/p&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 font-mono truncate&quot;&gt;{a.packageName}&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;text-right shrink-0&quot;&gt;
+                &lt;p className=&quot;text-[10px] text-violet-300 font-bold&quot;&gt;v{a.versionName}&lt;/p&gt;
+                {a.replitFiles.length &gt; 0 &amp;&amp; &lt;p className=&quot;text-[10px] text-red-400&quot;&gt;⚠️ {a.replitFiles.length} refs Replit&lt;/p&gt;}
+                &lt;p className=&quot;text-[10px] text-slate-500&quot;&gt;{a.fileSizeMB} MB&lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      )}
+
+      {/* Detalhe */}
+      {cur &amp;&amp; (
+        &lt;div className=&quot;bg-slate-900 border border-violet-700/40 rounded-2xl overflow-hidden&quot;&gt;
+          &lt;div className=&quot;bg-gradient-to-r from-violet-900/40 to-slate-900/60 px-4 py-3 border-b border-slate-700 flex items-center gap-3&quot;&gt;
+            &lt;span className=&quot;text-3xl&quot;&gt;📱&lt;/span&gt;
+            &lt;div&gt;
+              &lt;p className=&quot;font-bold text-white text-sm&quot;&gt;{cur.appLabel}&lt;/p&gt;
+              &lt;p className=&quot;text-[11px] text-slate-400 font-mono&quot;&gt;{cur.fileName} · {cur.fileSizeMB} MB&lt;/p&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          {/* Sub-tabs */}
+          &lt;div className=&quot;flex border-b border-slate-700 bg-slate-800/40&quot;&gt;
+            {([&quot;info&quot;, &quot;perms&quot;, &quot;files&quot;, &quot;limpar&quot;] as const).map(t =&gt; (
+              &lt;button key={t} onClick={() =&gt; setTab2(t)}
+                className={`flex-1 py-2 text-[11px] font-semibold transition-colors ${tab2 === t ? &quot;text-violet-300 border-b-2 border-violet-400 bg-slate-900/60&quot; : &quot;text-slate-500 hover:text-slate-300&quot;}`}&gt;
+                {t === &quot;info&quot; ? &quot;ℹ️ Dados&quot; : t === &quot;perms&quot; ? &quot;🔒 Permissões&quot; : t === &quot;files&quot; ? &quot;📁 Arquivos&quot; : &quot;🧹 Limpar Replit&quot;}
+              &lt;/button&gt;
+            ))}
+          &lt;/div&gt;
+
+          &lt;div className=&quot;p-4 space-y-3&quot;&gt;
+            {/* ── INFO ── */}
+            {tab2 === &quot;info&quot; &amp;&amp; (
+              &lt;&gt;
+                &lt;div className=&quot;bg-yellow-900/20 border border-yellow-600/40 rounded-xl p-3&quot;&gt;
+                  &lt;p className=&quot;text-[10px] text-yellow-400 font-semibold mb-1&quot;&gt;⚠️ Package ID — nome interno único&lt;/p&gt;
+                  &lt;p className=&quot;text-sm font-bold text-yellow-200 font-mono break-all&quot;&gt;{cur.packageName}&lt;/p&gt;
+                  &lt;p className=&quot;text-[10px] text-slate-400 mt-1&quot;&gt;
+                    Dois APKs com o &lt;strong&gt;mesmo Package ID&lt;/strong&gt; não instalam juntos — um sobrescreve o outro.&lt;br /&gt;
+                    Package IDs &lt;strong&gt;diferentes&lt;/strong&gt; instalam juntos sem conflito.
+                  &lt;/p&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                  {[
+                    { l: &quot;Versão Exibida&quot;,      v: cur.versionName, c: &quot;text-green-300&quot; },
+                    { l: &quot;Versão Interna (Code)&quot;, v: cur.versionCode, c: &quot;text-cyan-300&quot; },
+                    { l: &quot;Android Mínimo&quot;,       v: `API ${cur.minSdk}`, c: &quot;text-blue-300&quot; },
+                    { l: &quot;Android Alvo&quot;,         v: `API ${cur.targetSdk}`, c: &quot;text-blue-300&quot; },
+                    { l: &quot;Permissões&quot;,           v: `${cur.permissions.length} pedidas`, c: &quot;text-orange-300&quot; },
+                    { l: &quot;Refs Replit&quot;,          v: cur.replitFiles.length &gt; 0 ? `⚠️ ${cur.replitFiles.length} arquivos` : &quot;✅ Nenhuma&quot;, c: cur.replitFiles.length &gt; 0 ? &quot;text-red-400&quot; : &quot;text-green-400&quot; },
+                  ].map((item, i) =&gt; (
+                    &lt;div key={i} className=&quot;bg-slate-800/60 rounded-xl p-3&quot;&gt;
+                      &lt;p className=&quot;text-[10px] text-slate-500 mb-0.5&quot;&gt;{item.l}&lt;/p&gt;
+                      &lt;p className={`text-sm font-bold ${item.c}`}&gt;{item.v}&lt;/p&gt;
+                    &lt;/div&gt;
+                  ))}
+                &lt;/div&gt;
+              &lt;/&gt;
+            )}
+
+            {/* ── PERMISSÕES ── */}
+            {tab2 === &quot;perms&quot; &amp;&amp; (
+              &lt;div className=&quot;space-y-2&quot;&gt;
+                {cur.permissions.length === 0
+                  ? &lt;p className=&quot;text-sm text-slate-500 text-center py-4&quot;&gt;Nenhuma permissão encontrada&lt;/p&gt;
+                  : cur.permissions.map((p, i) =&gt; (
+                    &lt;div key={i} className=&quot;flex items-start gap-2 bg-slate-800/50 rounded-xl p-3&quot;&gt;
+                      &lt;span className=&quot;text-base mt-0.5&quot;&gt;
+                        {p.includes(&quot;CAMERA&quot;) ? &quot;📷&quot; : p.includes(&quot;LOCATION&quot;) ? &quot;📍&quot; : p.includes(&quot;AUDIO&quot;) ? &quot;🎙️&quot; : p.includes(&quot;SMS&quot;) ? &quot;💬&quot; : p.includes(&quot;STORAGE&quot;) ? &quot;💾&quot; : p.includes(&quot;INTERNET&quot;) ? &quot;🌐&quot; : p.includes(&quot;CONTACT&quot;) ? &quot;👤&quot; : p.includes(&quot;PHONE&quot;) || p.includes(&quot;CALL&quot;) ? &quot;📞&quot; : p.includes(&quot;BLUETOOTH&quot;) ? &quot;🔵&quot; : p.includes(&quot;BILLING&quot;) ? &quot;💳&quot; : &quot;🔒&quot;}
+                      &lt;/span&gt;
+                      &lt;div&gt;
+                        &lt;p className=&quot;text-xs font-bold text-orange-200&quot;&gt;{PERM_LABELS[p] ?? p}&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-slate-500 font-mono&quot;&gt;{p}&lt;/p&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  ))
+                }
+              &lt;/div&gt;
+            )}
+
+            {/* ── ARQUIVOS ── */}
+            {tab2 === &quot;files&quot; &amp;&amp; (
+              &lt;div className=&quot;space-y-1&quot;&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 mb-2&quot;&gt;Maiores primeiro (máx. 60)&lt;/p&gt;
+                {cur.files.map((f, i) =&gt; (
+                  &lt;div key={i} className={`flex items-center justify-between rounded-lg px-3 py-1.5 ${cur.replitFiles.includes(f.name) ? &quot;bg-red-900/20 border border-red-700/30&quot; : &quot;bg-slate-800/40&quot;}`}&gt;
+                    &lt;p className={`text-[10px] font-mono truncate flex-1 ${cur.replitFiles.includes(f.name) ? &quot;text-red-300&quot; : &quot;text-slate-300&quot;}`}&gt;
+                      {cur.replitFiles.includes(f.name) ? &quot;⚠️ &quot; : &quot;&quot;}{f.name}
+                    &lt;/p&gt;
+                    &lt;span className=&quot;text-[10px] text-slate-500 ml-2 shrink-0&quot;&gt;{f.sizeMB} MB&lt;/span&gt;
+                  &lt;/div&gt;
+                ))}
+              &lt;/div&gt;
+            )}
+
+            {/* ── LIMPAR REPLIT ── */}
+            {tab2 === &quot;limpar&quot; &amp;&amp; (
+              &lt;div className=&quot;space-y-3&quot;&gt;
+                &lt;div className={`rounded-xl p-3 border ${cur.replitFiles.length &gt; 0 ? &quot;bg-red-900/20 border-red-700/40&quot; : &quot;bg-green-900/20 border-green-700/40&quot;}`}&gt;
+                  &lt;p className={`text-xs font-bold mb-1 ${cur.replitFiles.length &gt; 0 ? &quot;text-red-300&quot; : &quot;text-green-300&quot;}`}&gt;
+                    {cur.replitFiles.length &gt; 0 ? `⚠️ ${cur.replitFiles.length} arquivo(s) com referências ao Replit` : &quot;✅ Nenhuma referência ao Replit encontrada&quot;}
+                  &lt;/p&gt;
+                  {cur.replitFiles.length &gt; 0
+                    ? &lt;p className=&quot;text-[10px] text-slate-400&quot;&gt;Esses arquivos contêm URLs ou variáveis do Replit que podem impedir o app de funcionar fora do servidor. A limpeza substitui essas referências por strings vazias.&lt;/p&gt;
+                    : &lt;p className=&quot;text-[10px] text-slate-400&quot;&gt;Este APK parece não ter dependências do Replit embutidas.&lt;/p&gt;
+                  }
+                &lt;/div&gt;
+
+                {cur.replitFiles.length &gt; 0 &amp;&amp; (
+                  &lt;div className=&quot;bg-slate-800/40 rounded-xl p-3 space-y-1&quot;&gt;
+                    &lt;p className=&quot;text-[10px] text-slate-500 font-semibold mb-2&quot;&gt;Arquivos que serão limpos:&lt;/p&gt;
+                    {cur.replitFiles.map((f, i) =&gt; (
+                      &lt;p key={i} className=&quot;text-[10px] text-red-300 font-mono&quot;&gt;⚠️ {f}&lt;/p&gt;
+                    ))}
+                  &lt;/div&gt;
+                )}
+
+                &lt;div className=&quot;bg-slate-800/40 rounded-xl p-3&quot;&gt;
+                  &lt;p className=&quot;text-[10px] text-slate-500 font-semibold mb-2&quot;&gt;O que a limpeza remove:&lt;/p&gt;
+                  {[&quot;URLs *.replit.dev e *.repl.co&quot;, &quot;Variáveis REPL_ID e REPLIT_DEV_DOMAIN&quot;, &quot;import.meta.env.REPLIT_*&quot;, &quot;Plugin cartographer do Replit&quot;, &quot;Plugin dev-banner do Replit&quot;, &quot;Plugin runtime-error-modal do Replit&quot;].map((item, i) =&gt; (
+                    &lt;p key={i} className=&quot;text-[10px] text-slate-400 flex items-center gap-1&quot;&gt;
+                      &lt;span className=&quot;text-green-400&quot;&gt;✓&lt;/span&gt; {item}
+                    &lt;/p&gt;
+                  ))}
+                &lt;/div&gt;
+
+                {cleanMsg &amp;&amp; (
+                  &lt;div className={`rounded-xl p-3 text-xs font-bold ${cleanMsg.startsWith(&quot;✅&quot;) ? &quot;bg-green-900/20 text-green-300 border border-green-700/40&quot; : &quot;bg-red-900/20 text-red-300 border border-red-700/40&quot;}`}&gt;
+                    {cleanMsg}
+                  &lt;/div&gt;
+                )}
+
+                &lt;button
+                  onClick={() =&gt; cleanApk(cur)}
+                  disabled={cleaning}
+                  className=&quot;w-full py-3 bg-green-700 hover:bg-green-600 disabled:opacity-50 text-white font-bold text-sm rounded-xl transition-colors flex items-center justify-center gap-2&quot;
+                &gt;
+                  {cleaning ? &quot;⏳ Limpando...&quot; : &quot;🧹 Limpar e Baixar APK sem Replit&quot;}
+                &lt;/button&gt;
+                &lt;p className=&quot;text-[10px] text-slate-500 text-center&quot;&gt;
+                  Selecione o APK original quando o seletor abrir · O APK limpo é baixado automaticamente
+                &lt;/p&gt;
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+
+      {apks.length === 0 &amp;&amp; !loading &amp;&amp; (
+        &lt;div className=&quot;bg-slate-900/40 border border-slate-700/40 rounded-2xl p-6 text-center&quot;&gt;
+          &lt;p className=&quot;text-slate-500 text-xs&quot;&gt;Arraste um ou mais arquivos .apk acima para começar.&lt;/p&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
