@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cirurgião de Código 4.0</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:#0a0f1e;color:#e2e8f0;min-height:100vh;}
+h1{text-align:center;color:#38bdf8;padding:12px;font-size:20px;}
+.sub{text-align:center;color:#64748b;margin-bottom:16px;font-size:12px;}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:14px;max-width:1800px;margin:0 auto;padding:0 10px 20px;}
+@media(max-width:800px){.grid{grid-template-columns:1fr;}}
+.card{background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:14px;margin-bottom:12px;}
+.card h2{color:#7dd3fc;font-size:14px;margin-bottom:10px;border-bottom:1px solid #1e3a5f;padding-bottom:6px;}
+button{background:#1d4ed8;color:white;border:none;padding:9px 12px;border-radius:7px;cursor:pointer;font-weight:bold;width:100%;margin:3px 0;font-size:12px;transition:background .2s;}
+button:hover{background:#2563eb;}
+button.verde{background:#065f46;} button.verde:hover{background:#047857;}
+button.laranja{background:#92400e;} button.laranja:hover{background:#b45309;}
+button.roxo{background:#4c1d95;} button.roxo:hover{background:#6d28d9;}
+button.vermelho{background:#7f1d1d;} button.vermelho:hover{background:#991b1b;}
+button.ciano{background:#0e7490;} button.ciano:hover{background:#0891b2;}
+button.rosa{background:#831843;} button.rosa:hover{background:#9d174d;}
+button.amarelo{background:#78350f;} button.amarelo:hover{background:#92400e;}
+button:disabled{opacity:.5;cursor:not-allowed;}
+input[type="file"]{width:100%;background:#0f172a;color:#94a3b8;border:1px dashed #334155;border-radius:7px;padding:8px;margin-bottom:6px;cursor:pointer;}
+input[type="text"],input[type="password"],textarea,select{width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:7px;padding:7px 9px;font-size:12px;margin-bottom:5px;}
+textarea{resize:vertical;font-family:monospace;}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:8px 0;}
+.stat-box{background:#0f172a;border:1px solid #1e3a5f;border-radius:7px;padding:9px;text-align:center;}
+.stat-n{font-size:22px;font-weight:bold;color:#38bdf8;}
+.stat-l{font-size:10px;color:#64748b;margin-top:2px;}
+.tag{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:bold;margin:2px;}
+.tag-v{background:#064e3b;color:#6ee7b7;}
+.tag-a{background:#1e3a5f;color:#7dd3fc;}
+.tag-r{background:#3b0764;color:#c4b5fd;}
+.tag-y{background:#451a03;color:#fcd34d;}
+.tag-e{background:#450a0a;color:#fca5a5;}
+
+/* Explorador de arquivos */
+.arquivo-item{display:flex;align-items:center;gap:7px;background:#0f172a;border:1px solid #1e3a5f;border-radius:5px;padding:7px 9px;margin:3px 0;cursor:pointer;transition:background .2s;font-size:11px;}
+.arquivo-item:hover{background:#1e293b;}
+.arquivo-item.ativo{background:#1e3a5f;border-color:#38bdf8;}
+.ext{font-size:9px;padding:1px 5px;border-radius:3px;font-weight:bold;}
+.ext-js{background:#451a03;color:#fcd34d;}
+.ext-html{background:#1e3a5f;color:#7dd3fc;}
+.ext-json{background:#3b0764;color:#c4b5fd;}
+.ext-ts{background:#1e2a4a;color:#60a5fa;}
+.ext-css{background:#1a1a3e;color:#a78bfa;}
+.ext-txt{background:#064e3b;color:#6ee7b7;}
+.ext-outro{background:#1e293b;color:#94a3b8;}
+
+/* Blocos */
+.item-bloco{background:#0f172a;border-left:4px solid #3b82f6;padding:7px 10px;margin:5px 0;border-radius:0 5px 5px 0;cursor:pointer;transition:background .2s;font-size:12px;}
+.item-bloco:hover{background:#1e293b;}
+.item-bloco.replit{border-left-color:#ef4444;}
+.item-bloco.bug{border-left-color:#f59e0b;}
+.item-bloco.local{border-left-color:#4ade80;}
+.item-bloco.api{border-left-color:#fb923c;}
+.item-bloco.classe{border-left-color:#f472b6;}
+.nome-bloco{color:#93c5fd;font-weight:bold;font-size:12px;}
+.desc-bloco{color:#64748b;font-size:10px;margin-top:2px;}
+.linha-bloco{color:#475569;font-size:9px;}
+
+/* Visualização */
+#area-viz{background:#020617;border:1px solid #1e3a5f;border-radius:7px;padding:14px;font-family:'Consolas',monospace;font-size:12px;min-height:400px;max-height:70vh;overflow-y:auto;white-space:pre-wrap;word-break:break-word;color:#a5b4fc;}
+.titulo-viz{color:#7dd3fc;font-size:13px;font-weight:bold;}
+
+/* IA */
+.ia-panel{background:#0f172a;border:1px solid #1e3a5f;border-radius:7px;padding:10px;margin:8px 0;}
+.ia-panel label{font-size:11px;color:#94a3b8;display:block;margin-bottom:3px;}
+.ia-resp{background:#020617;border:1px solid #1e3a5f;border-radius:7px;padding:10px;margin-top:7px;font-size:12px;color:#a5b4fc;white-space:pre-wrap;max-height:350px;overflow-y:auto;}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid #334155;border-top-color:#38bdf8;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:5px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.provider-info{font-size:10px;color:#4ade80;margin:3px 0;min-height:14px;}
+
+/* Busca */
+.busca-res{background:#0f172a;border-left:3px solid #38bdf8;padding:7px;margin:3px 0;border-radius:0 5px 5px 0;font-size:11px;cursor:pointer;}
+.busca-res:hover{background:#1e293b;}
+.busca-linha{color:#64748b;font-size:9px;}
+.busca-hl{background:#451a03;color:#fcd34d;padding:0 2px;border-radius:2px;}
+.busca-hl2{background:#3b0764;color:#c4b5fd;padding:0 2px;border-radius:2px;}
+
+/* Histórico IA */
+.hist-item{background:#0f172a;border:1px solid #1e3a5f;border-radius:7px;padding:9px;margin:5px 0;cursor:pointer;}
+.hist-item:hover{background:#1e293b;}
+.hist-q{color:#fcd34d;font-size:10px;font-weight:bold;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hist-r{color:#94a3b8;font-size:10px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.hist-m{color:#475569;font-size:9px;margin-top:3px;}
+
+/* Notas */
+.nota-item{background:#0f172a;border-left:4px solid #f59e0b;border-radius:0 7px 7px 0;padding:9px;margin:5px 0;}
+.nota-txt{color:#e2e8f0;font-size:11px;white-space:pre-wrap;}
+.nota-m{color:#475569;font-size:9px;margin-top:3px;}
+
+/* Memória */
+.mem-item{background:#0f172a;border:1px solid #1e3a5f;border-radius:7px;padding:9px;margin:5px 0;}
+.mem-nome{color:#38bdf8;font-size:11px;font-weight:bold;}
+.mem-info{color:#94a3b8;font-size:10px;font-family:monospace;margin-top:3px;word-break:break-all;}
+
+/* Bug/Replit items */
+.bug-item{background:#1c1203;border-left:4px solid #f59e0b;border-radius:0 7px 7px 0;padding:7px 10px;margin:5px 0;font-size:11px;cursor:pointer;}
+.bug-item:hover{background:#251a05;}
+.bug-tipo{color:#fcd34d;font-weight:bold;font-size:10px;}
+.bug-linha{color:#64748b;font-size:9px;}
+.bug-desc{color:#d1d5db;margin-top:2px;}
+.bug-sol{color:#6ee7b7;font-size:10px;margin-top:2px;font-style:italic;}
+.replit-item{background:#1c0505;border-left:4px solid #ef4444;border-radius:0 7px 7px 0;padding:7px 10px;margin:5px 0;font-size:11px;cursor:pointer;}
+.replit-item:hover{background:#250a0a;}
+.aviso{background:#1c1917;border:1px solid #78350f;border-radius:7px;padding:9px;color:#fcd34d;font-size:11px;margin:7px 0;}
+.aviso-v{background:#052e16;border:1px solid #166534;border-radius:7px;padding:9px;color:#86efac;font-size:11px;margin:7px 0;}
+
+/* Tabs */
+.tab-bar{display:flex;gap:3px;margin-bottom:9px;flex-wrap:wrap;}
+.tab{padding:5px 11px;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer;border:1px solid #1e3a5f;background:#0f172a;color:#64748b;width:auto;margin:0;transition:all .2s;}
+.tab.ativo{background:#1d4ed8;color:white;border-color:#1d4ed8;}
+
+/* Modal */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:999;align-items:center;justify-content:center;}
+.modal-ov.aberto{display:flex;}
+.modal-box{background:#111827;border:1px solid #1e3a5f;border-radius:10px;padding:22px;width:90vw;max-width:880px;max-height:90vh;display:flex;flex-direction:column;gap:10px;}
+.modal-box h3{color:#38bdf8;font-size:15px;}
+.modal-box textarea{flex:1;height:50vh;font-size:11px;background:#020617;border-color:#1e3a5f;color:#a5b4fc;}
+.modal-btns{display:flex;gap:7px;}
+.modal-btns button{margin:0;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:3px;}
+</style>
+</head>
+<body>
+
+<h1>🔬 CIRURGIÃO DE CÓDIGO 4.0</h1>
+<p class="sub">Sem limite de tamanho · Abre qualquer arquivo completo · IA multi-provedor · Detecta Replit e bugs · Histórico · Triagem</p>
+
+<!-- MODAL COLAR -->
+<div class="modal-ov" id="modalColar">
+  <div class="modal-box">
+    <h3>📋 Colar Código — sem limite</h3>
+    <div style="font-size:11px;color:#64748b;">Cole qualquer código, por maior que seja. HTML, JS, JSON, Python, qualquer coisa.</div>
+    <textarea id="txtColar" placeholder="Cole seu código aqui... (Ctrl+V)"></textarea>
+    <div style="font-size:10px;color:#475569;" id="cntColar">0 caracteres</div>
+    <div class="modal-btns">
+      <button class="verde" onclick="confirmarColar()" style="flex:1">✅ Analisar</button>
+      <button class="vermelho" onclick="fecharModal('modalColar')" style="width:auto">✕</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NOTA -->
+<div class="modal-ov" id="modalNota">
+  <div class="modal-box" style="max-width:560px;">
+    <h3>📌 Anotar Triagem</h3>
+    <textarea id="txtNota" rows="6" placeholder="Ex: Linha 234 — função fetch usa rota /api/code-assistant da Replit. Trocar por chamada direta ao Gemini."></textarea>
+    <div class="modal-btns">
+      <button class="amarelo" onclick="confirmarNota()" style="flex:1">💾 Salvar</button>
+      <button class="vermelho" onclick="fecharModal('modalNota')" style="width:auto">✕</button>
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+<!-- ═══════════════ COL ESQUERDA ═══════════════ -->
+<div>
+
+<!-- CARREGAR -->
+<div class="card">
+  <h2>📂 1. Carregar</h2>
+  <input type="file" id="arq" accept=".html,.js,.ts,.tsx,.jsx,.txt,.json,.zip,.apk,.css,.md,.py,.xml,.yaml,.yml,.env,.cjs,.mjs">
+  <div style="font-size:10px;color:#64748b;margin-bottom:6px;text-align:center;">HTML · JS · TS · JSON · <strong style="color:#38bdf8">ZIP · APK</strong> · CSS · PY · MD · e mais</div>
+  <button onclick="carregar()">🚀 Analisar Arquivo</button>
+  <button class="laranja" onclick="abrirModal('modalColar')">📋 Colar Código (sem limite)</button>
+  <button class="vermelho" onclick="limparTudo()">🗑️ Limpar Tudo</button>
+  <div id="statusCarga" style="color:#64748b;font-size:11px;margin-top:7px;text-align:center;">Nenhum arquivo</div>
+</div>
+
+<!-- BUSCA -->
+<div class="card" id="cardBusca" style="display:none">
+  <h2>🔍 2. Busca</h2>
+  <input type="text" id="campoBusca" placeholder="Palavra 1, palavra 2 (separe por vírgula)"
+         onkeydown="if(event.key==='Enter')buscar()">
+  <div style="font-size:10px;color:#475569;margin-bottom:5px;">💡 Múltiplos termos separados por vírgula</div>
+  <div style="display:flex;gap:5px;">
+    <button onclick="buscar()" style="flex:1">🔍 Buscar</button>
+    <button onclick="buscarReplit()" class="vermelho" style="flex:1">🚨 Replit</button>
+    <button onclick="buscarBugs()" class="amarelo" style="flex:1">🐛 Bugs</button>
+  </div>
+  <div id="resBusca"></div>
+</div>
+
+<!-- STATS -->
+<div class="card" id="cardStats" style="display:none">
+  <h2>📊 3. Estatísticas</h2>
+  <div class="stats">
+    <div class="stat-box"><div class="stat-n" id="sLinhas">0</div><div class="stat-l">Linhas</div></div>
+    <div class="stat-box"><div class="stat-n" id="sKB">0</div><div class="stat-l">KB</div></div>
+    <div class="stat-box"><div class="stat-n" id="sFuncs">0</div><div class="stat-l">Funções</div></div>
+    <div class="stat-box"><div class="stat-n" id="sJsons">0</div><div class="stat-l">JSONs</div></div>
+  </div>
+  <div id="tagsDet"></div>
+</div>
+
+<!-- AÇÕES -->
+<div class="card" id="cardAcoes" style="display:none">
+  <h2>🔧 4. Ações</h2>
+  <button class="verde" onclick="mostrarFuncoes()">📋 Ver Funções</button>
+  <button class="verde" onclick="extrairLS()">🧠 Extrair localStorage</button>
+  <button class="roxo" onclick="extrairJSON()">📦 Extrair JSONs</button>
+  <button class="roxo" onclick="extrairAPI()">🌐 Extrair Chamadas API/IA</button>
+  <button class="vermelho" onclick="detectarReplit()">🚨 Detectar Vínculos Replit</button>
+  <button class="amarelo" onclick="detectarBugs()">🐛 Detectar Bugs</button>
+  <button class="amarelo" onclick="detectarConflitos()">⚡ Detectar Conflitos</button>
+  <button class="laranja" onclick="organizarCodigo()">✨ Organizar/Beautify</button>
+  <button class="laranja" onclick="extrairHTML()">🖼️ Extrair HTML puro</button>
+  <button onclick="gerarManual()">📖 Gerar Manual</button>
+  <button class="ciano" onclick="salvarMemoria()">💾 Salvar na Memória</button>
+  <button class="rosa" onclick="abrirModal('modalNota')">📌 Anotar Triagem</button>
+  <button onclick="copiarTudo()">📤 Copiar Tudo</button>
+</div>
+
+<!-- MEMÓRIA -->
+<div class="card">
+  <h2>💾 5. Memória</h2>
+  <div id="listaMemoria"><div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhum arquivo salvo.</div></div>
+  <button class="vermelho" onclick="limparMemoria()" style="margin-top:7px;">🗑️ Limpar</button>
+  <button class="roxo" onclick="baixarMemoria()" style="margin-top:3px;">⬇️ Baixar Completa</button>
+</div>
+
+<!-- TRIAGEM -->
+<div class="card">
+  <h2>📌 6. Triagem</h2>
+  <div style="font-size:10px;color:#64748b;margin-bottom:7px;">Anote o que encontrar. Depois mande tudo para a IA analisar de uma vez.</div>
+  <div id="listaNotas"><div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhuma anotação.</div></div>
+  <button class="rosa" onclick="abrirModal('modalNota')" style="margin-top:7px;">📌 Nova nota</button>
+  <button class="ciano" onclick="analisarNotasIA()" style="margin-top:3px;">🤖 Analisar com IA</button>
+  <button class="vermelho" onclick="limparNotas()" style="margin-top:3px;">🗑️ Limpar</button>
+  <button class="roxo" onclick="baixarNotas()" style="margin-top:3px;">⬇️ Baixar</button>
+</div>
+
+<!-- IA -->
+<div class="card">
+  <h2>🤖 7. Consultar IA</h2>
+  <div class="ia-panel">
+    <label>Chave de API (auto-detecta o provedor)</label>
+    <div style="display:flex;gap:4px;">
+      <input type="password" id="iaKey" placeholder="gsk_... AIza... sk-... sk-or-... xai-... pplx-..." style="flex:1;margin:0;">
+      <button onclick="toggleChave()" style="width:38px;padding:7px;margin:0;font-size:14px;">👁️</button>
+    </div>
+    <div class="provider-info" id="iaProvider"></div>
+    <label style="margin-top:5px;">Pergunta:</label>
+    <textarea id="iaPergunta" rows="3" placeholder="O que esse código faz? Tem Replit? Como corrigir?"></textarea>
+    <button onclick="consultarIA()" id="btnIA">🤖 Consultar IA</button>
+    <button class="verde" onclick="limparReplitIA()">🚨 Pedir IA: Limpar Replit</button>
+    <button class="amarelo" onclick="corrigirBugsIA()">🔧 Pedir IA: Corrigir Bugs</button>
+    <button class="rosa" onclick="analisarJuridicoIA()">⚖️ Pedir IA: Análise Jurídica</button>
+    <div id="iaResp" class="ia-resp" style="display:none;"></div>
+  </div>
+</div>
+
+<!-- HISTÓRICO IA -->
+<div class="card">
+  <h2>📜 8. Histórico IA</h2>
+  <div id="listaHist" style="max-height:380px;overflow-y:auto;"><div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhuma consulta.</div></div>
+  <button class="vermelho" onclick="limparHist()" style="margin-top:7px;">🗑️ Limpar</button>
+  <button class="roxo" onclick="baixarHist()" style="margin-top:3px;">⬇️ Baixar</button>
+</div>
+
+</div><!-- /col esq -->
+
+<!-- ═══════════════ COL DIREITA ═══════════════ -->
+<div>
+
+<!-- EXPLORADOR ZIP -->
+<div class="card" id="cardExp" style="display:none">
+  <h2>📦 Explorador de Arquivos</h2>
+  <div style="display:flex;gap:5px;margin-bottom:7px;align-items:center;">
+    <input type="text" id="buscarArq" placeholder="Buscar arquivo..." style="flex:1;margin:0;" oninput="filtrarArqs()">
+    <span id="cntArqs" style="font-size:10px;color:#64748b;white-space:nowrap;"></span>
+  </div>
+  <div id="listaArqs" style="max-height:280px;overflow-y:auto;"></div>
+</div>
+
+<!-- VISUALIZAÇÃO PRINCIPAL -->
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;flex-wrap:wrap;gap:6px;">
+    <h2 class="titulo-viz" id="tituloViz" style="margin:0;border:none;padding:0;">👁️ Visualização</h2>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;">
+      <button onclick="copiarViz()" style="width:auto;padding:6px 11px;" class="verde">📋 Copiar</button>
+      <button onclick="baixarViz()" style="width:auto;padding:6px 11px;" class="roxo">💾 .txt</button>
+      <button onclick="analisarVizIA()" style="width:auto;padding:6px 11px;" class="ciano">🤖 IA</button>
+      <button onclick="vizComoNota()" style="width:auto;padding:6px 11px;" class="rosa">📌 Nota</button>
+      <button onclick="limparViz()" style="width:auto;padding:6px 11px;" class="vermelho">🗑️</button>
+    </div>
+  </div>
+  <div id="area-viz">Bem-vindo ao Cirurgião 4.0.
+
+MELHORIAS DESTA VERSÃO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ SEM LIMITE DE TAMANHO — abre qualquer arquivo completo
+✅ EXPLORADOR DE ARQUIVOS — clique para ver conteúdo inteiro
+✅ BUGS E REPLIT — clicar abre o arquivo no contexto correto
+✅ IA MULTI-PROVEDOR — Gemini, Groq, OpenAI, OpenRouter, Grok
+✅ HISTÓRICO COMPLETO — todas as respostas ficam salvas
+✅ TRIAGEM — anote e analise tudo de uma vez com a IA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Carregue um arquivo ou cole o código para começar.</div>
+</div>
+
+<!-- LISTA DE BLOCOS -->
+<div class="card" id="cardBlocos" style="display:none">
+  <h2 id="tituloBlocos">📋 Blocos</h2>
+  <div id="listaBlocos" style="max-height:500px;overflow-y:auto;"></div>
+</div>
+
+</div><!-- /col dir -->
+</div><!-- /grid -->
+
+<script>
+// ═══════════════════════════════════════════════════
+//  ESTADO GLOBAL
+// ═══════════════════════════════════════════════════
+let CODIGO = "";
+let NOME_ARQ = "";
+let ARQUIVOS_ZIP = [];
+let MEMORIA = JSON.parse(localStorage.getItem("cir4_mem") || "[]");
+let HISTORICO = JSON.parse(localStorage.getItem("cir4_hist") || "[]");
+let NOTAS = JSON.parse(localStorage.getItem("cir4_notas") || "[]");
+let _blocos = [];
+
+// ═══════════════════════════════════════════════════
+//  PROVEDORES DE IA
+// ═══════════════════════════════════════════════════
+const PROVS = [
+  {p:"gsk_",     url:"https://api.groq.com/openai/v1",                           m:"llama-3.3-70b-versatile", n:"Groq"},
+  {p:"AIza",     url:"https://generativelanguage.googleapis.com/v1beta/openai",   m:"gemini-2.0-flash",        n:"Google Gemini"},
+  {p:"sk-or-",   url:"https://openrouter.ai/api/v1",                              m:"openai/gpt-4o-mini",      n:"OpenRouter"},
+  {p:"pplx-",    url:"https://api.perplexity.ai",                                 m:"sonar-pro",               n:"Perplexity"},
+  {p:"xai-",     url:"https://api.x.ai/v1",                                       m:"grok-2-latest",           n:"xAI/Grok"},
+  {p:"sk-ant",   url:"https://api.anthropic.com/v1",                              m:"claude-3-5-haiku-20241022",n:"Anthropic"},
+  {p:"sk-",      url:"https://api.openai.com/v1",                                 m:"gpt-4o-mini",             n:"OpenAI"},
+];
+function getProv(k){ for(const p of PROVS) if((k||"").trim().startsWith(p.p)) return p; return null; }
+
+document.getElementById("iaKey").addEventListener("input", function(){
+  const p = getProv(this.value);
+  document.getElementById("iaProvider").textContent = p ? `✅ ${p.n} · ${p.m}` : (this.value?"❓ Não reconhecida":"");
+  if(this.value.trim()) localStorage.setItem("cir4_key", this.value.trim());
+});
+window.addEventListener("load", ()=>{
+  const k = localStorage.getItem("cir4_key");
+  if(k){ document.getElementById("iaKey").value=k; const p=getProv(k); if(p) document.getElementById("iaProvider").textContent=`✅ ${p.n} · ${p.m}`; }
+  renderMemoria(); renderHist(); renderNotas();
+});
+function toggleChave(){ const i=document.getElementById("iaKey"); i.type=i.type==="password"?"text":"password"; }
+
+// ═══════════════════════════════════════════════════
+//  MODAIS
+// ═══════════════════════════════════════════════════
+function abrirModal(id){ document.getElementById(id).classList.add("aberto"); }
+function fecharModal(id){ document.getElementById(id).classList.remove("aberto"); }
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") document.querySelectorAll(".modal-ov.aberto").forEach(m=>m.classList.remove("aberto")); });
+document.getElementById("txtColar").addEventListener("input", function(){ document.getElementById("cntColar").textContent=this.value.length.toLocaleString("pt-BR")+" caracteres"; });
+
+function confirmarColar(){
+  const t=document.getElementById("txtColar").value.trim();
+  if(!t){ alert("Cole algum código!"); return; }
+  CODIGO=t; NOME_ARQ="codigo-colado.txt"; ARQUIVOS_ZIP=[];
+  document.getElementById("cardExp").style.display="none";
+  fecharModal("modalColar");
+  document.getElementById("txtColar").value="";
+  document.getElementById("cntColar").textContent="0 caracteres";
+  processar("Código Colado ("+(t.length/1024).toFixed(1)+" KB)");
+}
+
+// ═══════════════════════════════════════════════════
+//  CARREGAR ARQUIVO
+// ═══════════════════════════════════════════════════
+function carregar(){
+  const inp=document.getElementById("arq"), f=inp.files[0];
+  if(!f){ alert("Selecione um arquivo!"); return; }
+  NOME_ARQ=f.name;
+  const ext=f.name.split(".").pop().toLowerCase();
+  if(ext==="zip"||ext==="apk"){ carregarZIP(f); return; }
+  const r=new FileReader();
+  // Lê o arquivo COMPLETO — sem limite
+  r.onload=e=>{ CODIGO=e.target.result; ARQUIVOS_ZIP=[]; document.getElementById("cardExp").style.display="none"; processar(f.name); };
+  r.readAsText(f,"UTF-8");
+}
+
+async function carregarZIP(file){
+  setStatus("⏳ Abrindo "+file.name+"...", "#38bdf8");
+  try{
+    const zip=await JSZip.loadAsync(file);
+    ARQUIVOS_ZIP=[];
+    const legExt=new Set(["js","ts","tsx","jsx","html","htm","css","json","txt","md","xml","yaml","yml","env","config","properties","kt","java","swift","py","php","cs","cjs","mjs","sh","bat"]);
+    const promises=[];
+    zip.forEach((cam,ent)=>{
+      if(!ent.dir){
+        const ext=cam.split(".").pop()?.toLowerCase()||"";
+        ARQUIVOS_ZIP.push({cam,ent,ext,leg:legExt.has(ext),tam:0,conteudo:null});
+      }
+    });
+    // Carrega TODOS os arquivos de texto — sem limite de tamanho
+    for(const arq of ARQUIVOS_ZIP){
+      if(arq.leg){
+        promises.push(arq.ent.async("text").then(t=>{ arq.conteudo=t; arq.tam=t.length; }).catch(()=>{
+          promises.push(arq.ent.async("uint8array").then(d=>arq.tam=d.length));
+        }));
+      } else {
+        promises.push(arq.ent.async("uint8array").then(d=>arq.tam=d.length));
+      }
+    }
+    await Promise.all(promises);
+    ARQUIVOS_ZIP.sort((a,b)=>{ if(a.leg&&!b.leg)return-1; if(!a.leg&&b.leg)return 1; return a.cam.localeCompare(b.cam); });
+    renderListaArqs(ARQUIVOS_ZIP);
+    document.getElementById("cardExp").style.display="block";
+    // Concatena TODOS os textos — sem limite
+    let total="", cnt=0;
+    for(const a of ARQUIVOS_ZIP){
+      if(a.conteudo!==null){ total+=`\n\n${"═".repeat(60)}\n📄 ARQUIVO: ${a.cam}\n${"═".repeat(60)}\n${a.conteudo}`; cnt++; }
+    }
+    CODIGO=total;
+    processar(`${file.name} (${cnt} arquivos legíveis de ${ARQUIVOS_ZIP.length} total)`);
+  }catch(e){ setStatus("❌ Erro: "+e.message,"#ef4444"); }
+}
+
+function renderListaArqs(lista){
+  const c=document.getElementById("listaArqs");
+  document.getElementById("cntArqs").textContent=lista.length+" arquivos";
+  if(!lista.length){ c.innerHTML='<div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhum arquivo</div>'; return; }
+  c.innerHTML=lista.map((a,i)=>{
+    const ico=a.leg?"📄":"🔒";
+    const ec=["js","ts","tsx","jsx","cjs","mjs"].includes(a.ext)?"ext-js":["html","htm"].includes(a.ext)?"ext-html":a.ext==="json"?"ext-json":["ts","tsx"].includes(a.ext)?"ext-ts":a.ext==="css"?"ext-css":["txt","md"].includes(a.ext)?"ext-txt":"ext-outro";
+    return `<div class="arquivo-item" id="arqitem-${i}" onclick="abrirArqZip(${i})" title="${a.cam}">
+      <span>${ico}</span><span class="ext ${ec}">.${a.ext}</span>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">${a.cam}</span>
+      <span style="color:#475569;font-size:9px;white-space:nowrap;">${(a.tam/1024).toFixed(1)}KB</span>
+    </div>`;
+  }).join("");
+}
+
+function filtrarArqs(){
+  const t=document.getElementById("buscarArq").value.toLowerCase();
+  renderListaArqs(ARQUIVOS_ZIP.filter(a=>a.cam.toLowerCase().includes(t)));
+}
+
+// Abre arquivo do ZIP COMPLETAMENTE — sem truncar
+function abrirArqZip(idx){
+  const a=ARQUIVOS_ZIP[idx];
+  if(!a) return;
+  document.querySelectorAll(".arquivo-item").forEach(el=>el.classList.remove("ativo"));
+  const el=document.getElementById("arqitem-"+idx); if(el)el.classList.add("ativo");
+  if(!a.leg||a.conteudo===null){
+    mostrarViz(`🔒 ${a.cam}`,`Arquivo binário — não pode ser lido como texto.\nTamanho: ${(a.tam/1024).toFixed(1)} KB`);
+    return;
+  }
+  // Arquivo completo — sem slice, sem limite
+  CODIGO=a.conteudo; NOME_ARQ=a.cam;
+  mostrarViz(`📄 ${a.cam} (${(a.conteudo.length/1024).toFixed(1)} KB · ${a.conteudo.split("\n").length} linhas)`, a.conteudo);
+  processar(a.cam);
+}
+
+// ═══════════════════════════════════════════════════
+//  PROCESSAR
+// ═══════════════════════════════════════════════════
+function processar(nome){
+  const linhas=CODIGO.split("\n").length;
+  const kb=(CODIGO.length/1024).toFixed(1);
+  const funcs=[...CODIGO.matchAll(/function\s+(\w+)\s*\(/g)].length + [...CODIGO.matchAll(/const\s+(\w+)\s*=\s*(?:async\s*)?\(/g)].length;
+  const jsons=(CODIGO.match(/\{[^{}]{10,}\}/g)||[]).length;
+  document.getElementById("sLinhas").textContent=linhas.toLocaleString();
+  document.getElementById("sKB").textContent=kb;
+  document.getElementById("sFuncs").textContent=funcs;
+  document.getElementById("sJsons").textContent=jsons;
+
+  let tags="";
+  if(CODIGO.includes("localStorage"))          tags+='<span class="tag tag-v">🧠 localStorage</span>';
+  if(/replit\.com|replit\.dev|REPL_ID|REPLIT/i.test(CODIGO)) tags+='<span class="tag tag-e">🚨 Replit</span>';
+  if(/gemini|generativelanguage/i.test(CODIGO)) tags+='<span class="tag tag-a">🤖 Gemini</span>';
+  if(/openai|gpt-/i.test(CODIGO))              tags+='<span class="tag tag-a">🤖 OpenAI</span>';
+  if(/groq\.com/i.test(CODIGO))                tags+='<span class="tag tag-a">🤖 Groq</span>';
+  if(CODIGO.includes("fetch("))                 tags+='<span class="tag tag-y">🌐 fetch</span>';
+  if(/<html|<!DOCTYPE/i.test(CODIGO))           tags+='<span class="tag tag-a">🖼️ HTML</span>';
+  if(/import |require\(/i.test(CODIGO))         tags+='<span class="tag tag-y">📦 Módulos</span>';
+  if(/class /i.test(CODIGO))                    tags+='<span class="tag tag-r">🏗️ Classes</span>';
+  if(/capacitor|ionic/i.test(CODIGO))           tags+='<span class="tag tag-y">📱 Capacitor</span>';
+  if(/electron/i.test(CODIGO))                  tags+='<span class="tag tag-r">🖥️ Electron</span>';
+  if(/processo|advogad|juridic|vara|cpf|cnpj/i.test(CODIGO)) tags+='<span class="tag tag-v">⚖️ Jurídico</span>';
+  document.getElementById("tagsDet").innerHTML=tags;
+
+  ["cardStats","cardAcoes","cardBusca"].forEach(id=>document.getElementById(id).style.display="block");
+  setStatus(`✅ <strong>${nome}</strong>`, "#4ade80");
+
+  const temReplit=/replit\.com|replit\.dev|REPL_ID|REPLIT/i.test(CODIGO);
+  mostrarViz("📊 ANÁLISE: "+nome,`ARQUIVO: ${nome}\nTAMANHO: ${kb} KB\nLINHAS: ${linhas.toLocaleString()}\nFUNÇÕES: ${funcs}\n\n${temReplit?"⚠️  REPLIT DETECTADO! Use 🚨 Detectar Vínculos Replit\n\n":""}PRÓXIMOS PASSOS:\n1. 🐛 Detectar Bugs\n2. 🚨 Detectar Replit\n3. 📋 Ver Funções\n4. 🧠 Extrair localStorage\n5. 🤖 Consultar IA`);
+}
+
+// ═══════════════════════════════════════════════════
+//  BUSCA MULTI-TERMO
+// ═══════════════════════════════════════════════════
+function buscar(){
+  const campo=document.getElementById("campoBusca").value.trim();
+  if(!campo) return;
+  if(!CODIGO){ alert("Carregue um arquivo!"); return; }
+  const termos=campo.split(",").map(t=>t.trim()).filter(Boolean);
+  const linhas=CODIGO.split("\n");
+  const res=[];
+  linhas.forEach((l,i)=>{ const ll=l.toLowerCase(); const enc=termos.filter(t=>ll.includes(t.toLowerCase())); if(enc.length) res.push({n:i+1,l:l.trim(),enc}); });
+  const c=document.getElementById("resBusca");
+  if(!res.length){ c.innerHTML=`<div class="aviso">Nenhum resultado para: ${termos.map(t=>`"${t}"`).join(", ")}</div>`; return; }
+  c.innerHTML=`<div class="aviso-v" style="margin-bottom:5px;">✅ ${res.length} linha(s): ${termos.map(t=>`"${t}"`).join(", ")}</div>
+  <div style="max-height:200px;overflow-y:auto;">${res.map(r=>{
+    let cont=r.l; const cores=["busca-hl","busca-hl2"];
+    r.enc.forEach((t,i)=>{ cont=cont.replace(new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"gi"),m=>`<span class="${cores[i%2]}">${m}</span>`); });
+    return `<div class="busca-res" onclick="irLinha(${r.n})"><div class="busca-linha">Linha ${r.n}</div><div>${cont}</div></div>`;
+  }).join("")}</div>`;
+}
+function buscarReplit(){ document.getElementById("campoBusca").value="replit.com, replit.dev, REPL_ID, REPLIT_DB, /api/code-assistant, /api/tts"; buscar(); }
+function buscarBugs(){ document.getElementById("campoBusca").value="undefined is not, cannot read, is not a function, syntax error, unexpected token"; buscar(); }
+
+function irLinha(n){
+  const ls=CODIGO.split("\n");
+  const ini=Math.max(0,n-5), fim=Math.min(ls.length,n+10);
+  const ctx=ls.slice(ini,fim).map((l,i)=>((ini+i+1===n)?">>> ":"    ")+`[${ini+i+1}] ${l}`).join("\n");
+  mostrarViz(`🔍 Contexto Linha ${n}`, ctx);
+}
+
+// ═══════════════════════════════════════════════════
+//  DETECTAR REPLIT — com abertura de arquivo
+// ═══════════════════════════════════════════════════
+function detectarReplit(){
+  if(!CODIGO) return alert("Carregue o arquivo!");
+  const ls=CODIGO.split("\n");
+  const padroes=[
+    {r:/replit\.com/gi,           t:"🌐 URL replit.com",          s:"Substituir pela URL do seu próprio servidor"},
+    {r:/replit\.dev/gi,           t:"🌐 URL replit.dev",          s:"Substituir pela URL do seu próprio servidor"},
+    {r:/REPL_ID/g,                t:"🔑 Variável REPL_ID",        s:"Remover ou substituir por variável própria"},
+    {r:/REPLIT_DB_URL/g,          t:"🗄️ Banco Replit DB",         s:"Substituir por localStorage ou Neon"},
+    {r:/\/api\/code-assistant/g,  t:"🔗 /api/code-assistant",    s:"Substituir por chamada direta à API de IA"},
+    {r:/\/api\/tts/g,             t:"🔗 /api/tts",               s:"Substituir por Web Speech API"},
+    {r:/@replit\//g,              t:"📦 Pacote @replit/",         s:"Remover ou substituir por alternativa"},
+    {r:/process\.env\./g,         t:"🔑 process.env",             s:"Usar campo de input para a chave"},
+  ];
+  const enc=[];
+  padroes.forEach(p=>{
+    ls.forEach((l,i)=>{ if(p.r.test(l)){ p.r.lastIndex=0; enc.push({n:i+1,t:p.t,c:l.trim(),s:p.s}); } });
+    p.r.lastIndex=0;
+  });
+  if(!enc.length){ mostrarViz("✅ REPLIT","Nenhum vínculo encontrado!"); return; }
+
+  let res=`🚨 ${enc.length} VÍNCULOS REPLIT\n${"═".repeat(60)}\n\n`;
+  const porTipo={};
+  enc.forEach(e=>{ if(!porTipo[e.t]) porTipo[e.t]=[]; porTipo[e.t].push(e); });
+  Object.entries(porTipo).forEach(([t,its])=>{
+    res+=`${t} (${its.length}x)\n💡 ${its[0].s}\n${"─".repeat(40)}\n`;
+    its.forEach(it=>res+=`  Linha ${it.n}: ${it.c.substring(0,80)}\n`);
+    res+="\n";
+  });
+  mostrarViz(`🚨 ${enc.length} VÍNCULOS REPLIT`, res);
+
+  document.getElementById("tituloBlocos").textContent=`🚨 ${enc.length} Vínculos Replit`;
+  document.getElementById("cardBlocos").style.display="block";
+  // Clicar abre o arquivo no contexto da linha
+  document.getElementById("listaBlocos").innerHTML=enc.map((e,i)=>`
+    <div class="replit-item" onclick="irLinha(${e.n})">
+      <div class="bug-tipo">${e.t}</div>
+      <div class="bug-linha">Linha ${e.n}</div>
+      <div class="bug-desc">${e.c.substring(0,90)}</div>
+      <div class="bug-sol">💡 ${e.s}</div>
+    </div>`).join("");
+}
+
+// ═══════════════════════════════════════════════════
+//  DETECTAR BUGS — com abertura de arquivo
+// ═══════════════════════════════════════════════════
+function detectarBugs(){
+  if(!CODIGO) return alert("Carregue o arquivo!");
+  const ls=CODIGO.split("\n");
+  const bugs=[];
+  const pats=[
+    {r:/=\s*undefined\b/,               t:"⚠️ Atribuição undefined",  s:"Variável recebe undefined — provavelmente erro"},
+    {r:/[^=!<>]==[^=]/,                 t:"⚠️ Comparação fraca (==)", s:"Use === em vez de =="},
+    {r:/http:\/\/localhost/,             t:"🌐 localhost no código",   s:"URL local não funciona em produção"},
+    {r:/http:\/\/127\.0\.0\.1/,         t:"🌐 127.0.0.1 no código",  s:"URL local não funciona em produção"},
+    {r:/eval\s*\(/,                      t:"🔴 eval() detectado",      s:"eval() é perigoso — evite usar"},
+    {r:/document\.write\s*\(/,          t:"⚠️ document.write",        s:"Substitua por innerHTML ou appendChild"},
+    {r:/XMLHttpRequest/,                 t:"🌐 XMLHttpRequest",        s:"Use fetch() que é mais moderno"},
+    {r:/catch\s*\(\s*\)\s*\{/,          t:"🐛 catch sem variável",    s:"Use catch(e) para capturar o erro"},
+    {r:/console\.log/,                   t:"ℹ️ console.log",           s:"Remova antes de produção"},
+    {r:/replit\.com|replit\.dev/gi,      t:"🚨 URL Replit",            s:"Substituir — para de funcionar sem pagar"},
+  ];
+  ls.forEach((l,i)=>{
+    const t=l.trim();
+    if(!t||t.startsWith("//")||t.startsWith("*")) return;
+    pats.forEach(p=>{ if(p.r.test(l)) bugs.push({n:i+1,t:p.t,c:t.substring(0,80),s:p.s}); p.r.lastIndex=0; });
+  });
+
+  // Verificar chaves
+  let ab=0,fe=0,pd=-1;
+  for(let i=0;i<ls.length;i++){ for(const c of ls[i]){ if(c==="{"){ab++;} if(c==="}"){ fe++; if(fe>ab&&pd<0) pd=i+1; } } }
+  if(ab!==fe) bugs.push({n:pd>0?pd:ls.length,t:`🔴 CHAVES DESBALANCEADAS (${ab} abertas × ${fe} fechadas)`,c:`Diferença: ${Math.abs(ab-fe)} chave(s)`,s:ab>fe?`Falta(m) ${ab-fe} chave(s) }`:`Sobra(m) ${fe-ab} chave(s) }`});
+
+  let pa=0,pf=0;
+  for(const l of ls){ for(const c of l){ if(c==="(")pa++; if(c===")")pf++; } }
+  if(pa!==pf) bugs.push({n:ls.length,t:`🔴 PARÊNTESES DESBALANCEADOS (${pa} × ${pf})`,c:`Diferença: ${Math.abs(pa-pf)}`,s:pa>pf?`Falta(m) ${pa-pf} )`:` Sobra(m) ${pf-pa} )`});
+
+  if(!bugs.length){ mostrarViz("✅ BUGS","Nenhum bug óbvio!\n\nUse '🔧 Pedir IA: Corrigir Bugs' para análise profunda."); return; }
+
+  let res=`🐛 ${bugs.length} PROBLEMA(S)\n${"═".repeat(60)}\n\n`;
+  bugs.forEach((b,i)=>{ res+=`${i+1}. ${b.t}\n   Linha ${b.n}: ${b.c}\n   💡 ${b.s}\n\n`; });
+  mostrarViz(`🐛 ${bugs.length} PROBLEMAS`,res);
+
+  document.getElementById("tituloBlocos").textContent=`🐛 ${bugs.length} Bugs`;
+  document.getElementById("cardBlocos").style.display="block";
+  // Clicar abre contexto da linha
+  document.getElementById("listaBlocos").innerHTML=bugs.map(b=>`
+    <div class="bug-item" onclick="irLinha(${b.n})">
+      <div class="bug-tipo">${b.t}</div>
+      <div class="bug-linha">Linha ${b.n}</div>
+      <div class="bug-desc">${b.c}</div>
+      <div class="bug-sol">💡 ${b.s}</div>
+    </div>`).join("");
+}
+
+// ═══════════════════════════════════════════════════
+//  DETECTAR CONFLITOS
+// ═══════════════════════════════════════════════════
+function detectarConflitos(){
+  if(!CODIGO) return alert("Carregue o arquivo!");
+  const conflitos=[];
+  const known=[
+    {libs:["jquery","react"],      d:"jQuery + React",        n:"Mistura causa conflitos de DOM"},
+    {libs:["moment","date-fns"],   d:"Duas libs de data",     n:"Escolha apenas uma"},
+    {libs:["lodash","underscore"], d:"Lodash + Underscore",   n:"Fazem a mesma coisa — use uma"},
+    {libs:["bootstrap","tailwind"],d:"Bootstrap + Tailwind",  n:"Duas libs CSS — podem conflitar"},
+    {libs:["webpack","vite"],      d:"Webpack + Vite",        n:"Dois bundlers — use apenas um"},
+    {libs:["axios","fetch"],       d:"Axios + fetch nativo",  n:"Mantenha apenas um padrão"},
+  ];
+  known.forEach(c=>{
+    const enc=c.libs.filter(lib=>new RegExp(`["']${lib}["']|from ['"]${lib}`,"i").test(CODIGO));
+    if(enc.length>=2) conflitos.push({t:`⚡ ${c.d}`,libs:enc,n:c.n});
+  });
+
+  const ls=CODIGO.split("\n");
+  const vars=[]; ls.forEach((l,i)=>{ const m=l.match(/^(?:const|let|var)\s+(\w+)\s*=/); if(m&&m[1].length>2) vars.push({nome:m[1],ln:i+1}); });
+  const nomes=vars.map(v=>v.nome); const dups=[...new Set(nomes.filter((v,i)=>nomes.indexOf(v)!==i))];
+  dups.slice(0,5).forEach(n=>{ const lns=vars.filter(v=>v.nome===n).map(v=>v.ln).join(", "); conflitos.push({t:`🔴 "${n}" declarada mais de uma vez`,libs:[n],n:`Linhas: ${lns}`}); });
+
+  if(!conflitos.length){ mostrarViz("✅ CONFLITOS","Nenhum conflito detectado!\n\nUse a IA para análise mais profunda."); return; }
+  let res=`⚡ ${conflitos.length} CONFLITO(S)\n${"═".repeat(60)}\n\n`;
+  conflitos.forEach((c,i)=>{ res+=`${i+1}. ${c.t}\n   ${c.libs.join(", ")}\n   ⚠️ ${c.n}\n\n`; });
+  mostrarViz(`⚡ ${conflitos.length} CONFLITOS`,res);
+}
+
+// ═══════════════════════════════════════════════════
+//  VER FUNÇÕES
+// ═══════════════════════════════════════════════════
+function mostrarFuncoes(){
+  if(!CODIGO) return alert("Carregue o arquivo!");
+  const ls=CODIGO.split("\n"); const bl=[];
+  ls.forEach((l,i)=>{
+    const t=l.trim();
+    const mF=t.match(/^(?:async\s+)?function\s+(\w+)\s*\(/); if(mF) bl.push({t:"function",n:mF[1],ln:i+1,p:t.substring(0,80)});
+    const mA=t.match(/^(?:export\s+)?(?:const|let)\s+(\w+)\s*=\s*(?:async\s*)?\(/); if(mA) bl.push({t:"arrow",n:mA[1],ln:i+1,p:t.substring(0,80)});
+    const mC=t.match(/^class\s+(\w+)/); if(mC) bl.push({t:"classe",n:mC[1],ln:i+1,p:t.substring(0,80)});
+    if(t.includes("localStorage")) bl.push({t:"local",n:"localStorage",ln:i+1,p:t.substring(0,80)});
+    if(t.includes("fetch(")||t.includes("apiKey")) bl.push({t:"api",n:"API/fetch",ln:i+1,p:t.substring(0,80)});
+  });
+  _blocos=bl;
+  document.getElementById("tituloBlocos").textContent=`📋 ${bl.length} Blocos`;
+  document.getElementById("cardBlocos").style.display="block";
+  document.getElementById("listaBlocos").innerHTML=bl.map((b,i)=>{
+    const cor=b.t==="local"?"local":b.t==="api"?"api":b.t==="classe"?"classe":"";
+    return `<div class="item-bloco ${cor}" onclick="extrairBloco(${i})">
+      <div class="nome-bloco">${b.n}</div>
+      <div class="desc-bloco">${b.p}</div>
+      <div class="linha-bloco">Linha ${b.ln} · ${b.t}</div>
+    </div>`;
+  }).join("");
+  mostrarViz(`⚡ ${bl.length} FUNÇÕES`, bl.map(b=>`[L${b.ln}] ${b.t.toUpperCase()}: ${b.n}\n  ${b.p}`).join("\n\n"));
+}
+
+function extrairBloco(i){
+  const b=_blocos[i]; if(!b) return;
+  const ls=CODIGO.split("\n"); let cod="",ab=0,ok=false;
+  for(let j=b.ln-1;j<Math.min(b.ln+200,ls.length);j++){
+    const l=ls[j]; cod+=l+"\n";
+    for(const c of l){ if(c==="{"){ab++;ok=true;} if(c==="}")ab--; }
+    if(ok&&ab<=0) break;
+  }
+  mostrarViz(`📋 ${b.n} (L${b.ln})`,cod);
+}
+
+// ═══════════════════════════════════════════════════
+//  OUTROS EXTRATORES
+// ═══════════════════════════════════════════════════
+function extrairLS(){
+  if(!CODIGO) return alert("Carregue!");
+  const ls=CODIGO.split("\n"); const enc=[];
+  ls.forEach((l,i)=>{ if(l.includes("localStorage")){ const ini=Math.max(0,i-2),fim=Math.min(ls.length,i+3); enc.push(`[L${i+1}]:\n${ls.slice(ini,fim).join("\n")}`); } });
+  if(!enc.length){ mostrarViz("🧠 localStorage","Não encontrado."); return; }
+  mostrarViz(`🧠 ${enc.length} usos localStorage`, enc.join("\n\n"+"─".repeat(60)+"\n\n"));
+}
+
+function extrairJSON(){
+  if(!CODIGO) return alert("Carregue!");
+  const ms=CODIGO.match(/\{(?:[^{}]|\{[^{}]*\})*\}/g)||[];
+  const ok=[]; ms.forEach(m=>{ if(m.length<20) return; try{ ok.push(JSON.stringify(JSON.parse(m),null,2)); }catch{ if(m.length>50) ok.push(m); } });
+  if(!ok.length){ mostrarViz("📦 JSONs","Nenhum encontrado."); return; }
+  mostrarViz(`📦 ${ok.length} JSONs`, ok.slice(0,20).map((j,i)=>`═══ JSON #${i+1} ═══\n${j}`).join("\n\n"));
+}
+
+function extrairAPI(){
+  if(!CODIGO) return alert("Carregue!");
+  const ls=CODIGO.split("\n"); const enc=[];
+  const kw=["fetch(","apiKey","api_key","Authorization","Bearer","gemini","openai","gpt-","claude","anthropic","generativelanguage","googleapis","groq","openrouter","xai"];
+  ls.forEach((l,i)=>{ const lb=l.toLowerCase(); if(kw.some(k=>lb.includes(k.toLowerCase()))){ const ini=Math.max(0,i-1),fim=Math.min(ls.length,i+4); enc.push(`[L${i+1}]:\n${ls.slice(ini,fim).join("\n")}`); } });
+  if(!enc.length){ mostrarViz("🌐 API","Nenhuma chamada encontrada."); return; }
+  mostrarViz(`🌐 ${enc.length} CHAMADAS API/IA`, enc.join("\n\n"+"─".repeat(60)+"\n\n"));
+}
+
+function organizarCodigo(){
+  if(!CODIGO) return alert("Carregue!");
+  let o=CODIGO.replace(/;(?!\n)/g,";\n").replace(/\{(?!\n)/g,"{\n").replace(/\}(?!\n)/g,"}\n").replace(/\n{3,}/g,"\n\n");
+  const ls=o.split("\n"); let nv=0;
+  const ind=ls.map(l=>{ const t=l.trim(); if(!t) return ""; if(t.startsWith("}")||t.startsWith("]")) nv=Math.max(0,nv-1); const r="  ".repeat(nv)+t; if(t.endsWith("{")||t.endsWith("[")) nv++; return r; });
+  mostrarViz("✨ CÓDIGO ORGANIZADO", ind.join("\n"));
+}
+
+function extrairHTML(){
+  if(!CODIGO) return alert("Carregue!");
+  const i=CODIGO.indexOf("<script");
+  mostrarViz("🖼️ HTML PURO", i===-1?CODIGO:CODIGO.substring(0,i));
+}
+
+function gerarManual(){
+  if(!CODIGO) return alert("Carregue!");
+  const tm=s=>new RegExp(s,"i").test(CODIGO);
+  let m="📖 MANUAL DO CÓDIGO\n"+"═".repeat(60)+"\n\n";
+  m+="O QUE FAZ:\n";
+  if(tm("localStorage"))  m+="✅ Salva dados no navegador\n";
+  if(tm("fetch\\("))      m+="✅ Faz chamadas para internet\n";
+  if(tm("gemini"))        m+="✅ Usa Google Gemini\n";
+  if(tm("openai|gpt-"))   m+="✅ Usa OpenAI\n";
+  if(tm("groq"))          m+="✅ Usa Groq\n";
+  if(tm("capacitor"))     m+="📱 Pode virar APK\n";
+  if(tm("electron"))      m+="🖥️ Pode virar app desktop\n";
+  if(tm("juridic|advogad")) m+="⚖️ Tem funcionalidades jurídicas\n";
+  if(tm("replit\\.com|REPL_ID")) m+="\n⚠️  TEM VÍNCULOS COM REPLIT!\n";
+  mostrarViz("📖 MANUAL", m);
+}
+
+// ═══════════════════════════════════════════════════
+//  MEMÓRIA
+// ═══════════════════════════════════════════════════
+function salvarMemoria(){
+  if(!CODIGO) return alert("Carregue um arquivo!");
+  const n=NOME_ARQ||"arquivo-"+Date.now();
+  const it={id:Date.now()+"",n,c:CODIGO,tam:(CODIGO.length/1024).toFixed(1),d:new Date().toLocaleString("pt-BR")};
+  const idx=MEMORIA.findIndex(m=>m.n===n);
+  if(idx>=0) MEMORIA[idx]=it; else MEMORIA.push(it);
+  localStorage.setItem("cir4_mem",JSON.stringify(MEMORIA));
+  renderMemoria();
+  mostrarViz("💾 SALVO",`"${n}" salvo!\n${it.tam} KB · ${it.d}\nTotal: ${MEMORIA.length} arquivo(s)`);
+}
+function renderMemoria(){
+  const c=document.getElementById("listaMemoria");
+  if(!MEMORIA.length){ c.innerHTML='<div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhum arquivo.</div>'; return; }
+  c.innerHTML=MEMORIA.map((m,i)=>`
+    <div class="mem-item">
+      <div style="display:flex;justify-content:space-between;align-items:start;gap:5px;">
+        <div style="flex:1;min-width:0;">
+          <div class="mem-nome" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${m.n}">${m.n}</div>
+          <div class="mem-info">${m.tam} KB · ${m.d}</div>
+        </div>
+        <div style="display:flex;gap:3px;flex-shrink:0;">
+          <button onclick="carregarMem(${i})" style="width:auto;padding:3px 7px;font-size:10px;margin:0;" class="verde">📂</button>
+          <button onclick="baixarMem(${i})"   style="width:auto;padding:3px 7px;font-size:10px;margin:0;" class="roxo">⬇️</button>
+          <button onclick="remMem(${i})"      style="width:auto;padding:3px 7px;font-size:10px;margin:0;" class="vermelho">✕</button>
+        </div>
+      </div>
+    </div>`).join("");
+}
+function carregarMem(i){ const m=MEMORIA[i]; if(!m) return; CODIGO=m.c; NOME_ARQ=m.n; processar(m.n); }
+function baixarMem(i){ const m=MEMORIA[i]; if(!m) return; baixar(m.c,m.n.replace(/[^a-z0-9._-]/gi,"_")); }
+function remMem(i){ if(!confirm("Remover?")) return; MEMORIA.splice(i,1); localStorage.setItem("cir4_mem",JSON.stringify(MEMORIA)); renderMemoria(); }
+function limparMemoria(){ if(!confirm("Limpar tudo?")) return; MEMORIA=[]; localStorage.setItem("cir4_mem","[]"); renderMemoria(); }
+function baixarMemoria(){
+  if(!MEMORIA.length) return alert("Nenhum arquivo.");
+  let c=`=== MEMÓRIA COMPLETA — CIRURGIÃO 4.0 ===\n${new Date().toLocaleString("pt-BR")}\n\n`;
+  MEMORIA.forEach((m,i)=>{ c+="═".repeat(70)+`\nARQUIVO ${i+1}: ${m.n}\n`+"═".repeat(70)+"\n"+m.c+"\n\n"; });
+  baixar(c,"memoria-cir4-"+Date.now()+".txt");
+}
+
+// ═══════════════════════════════════════════════════
+//  TRIAGEM / NOTAS
+// ═══════════════════════════════════════════════════
+function confirmarNota(){
+  const t=document.getElementById("txtNota").value.trim();
+  if(!t){ alert("Digite!"); return; }
+  const it={id:Date.now()+"",t,arq:NOME_ARQ||"sem arquivo",d:new Date().toLocaleString("pt-BR")};
+  NOTAS.push(it); localStorage.setItem("cir4_notas",JSON.stringify(NOTAS));
+  document.getElementById("txtNota").value="";
+  fecharModal("modalNota"); renderNotas();
+}
+function vizComoNota(){ const c=document.getElementById("area-viz").textContent; if(!c||c.includes("Bem-vindo")) return; document.getElementById("txtNota").value=c.substring(0,1000); abrirModal("modalNota"); }
+function renderNotas(){
+  const c=document.getElementById("listaNotas");
+  if(!NOTAS.length){ c.innerHTML='<div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhuma.</div>'; return; }
+  c.innerHTML=NOTAS.map((n,i)=>`
+    <div class="nota-item">
+      <div class="nota-txt">${n.t.substring(0,180)}${n.t.length>180?"...":""}</div>
+      <div class="nota-m">${n.arq} · ${n.d}</div>
+      <div style="display:flex;gap:3px;margin-top:5px;">
+        <button onclick="verNota(${i})"  style="width:auto;padding:2px 7px;font-size:10px;margin:0;" class="ciano">👁️</button>
+        <button onclick="remNota(${i})"  style="width:auto;padding:2px 7px;font-size:10px;margin:0;" class="vermelho">✕</button>
+      </div>
+    </div>`).join("");
+}
+function verNota(i){ const n=NOTAS[i]; mostrarViz("📌 Nota",`${n.arq} · ${n.d}\n\n${n.t}`); }
+function remNota(i){ NOTAS.splice(i,1); localStorage.setItem("cir4_notas",JSON.stringify(NOTAS)); renderNotas(); }
+function limparNotas(){ if(!confirm("Limpar?")) return; NOTAS=[]; localStorage.setItem("cir4_notas","[]"); renderNotas(); }
+function baixarNotas(){ if(!NOTAS.length) return; let c=`=== TRIAGEM ===\n${new Date().toLocaleString("pt-BR")}\n\n`; NOTAS.forEach((n,i)=>{ c+=`${"─".repeat(50)}\nNota ${i+1} · ${n.arq} · ${n.d}\n${n.t}\n\n`; }); baixar(c,"triagem-"+Date.now()+".txt"); }
+
+// ═══════════════════════════════════════════════════
+//  HISTÓRICO IA
+// ═══════════════════════════════════════════════════
+function salvarHist(pergunta,resp,prov){
+  const it={id:Date.now()+"",q:pergunta.substring(0,200),r:resp,prov,arq:NOME_ARQ||"sem arquivo",d:new Date().toLocaleString("pt-BR")};
+  HISTORICO.unshift(it); if(HISTORICO.length>60) HISTORICO=HISTORICO.slice(0,60);
+  localStorage.setItem("cir4_hist",JSON.stringify(HISTORICO)); renderHist();
+}
+function renderHist(){
+  const c=document.getElementById("listaHist");
+  if(!HISTORICO.length){ c.innerHTML='<div style="color:#64748b;font-size:11px;text-align:center;padding:10px;">Nenhuma consulta.</div>'; return; }
+  c.innerHTML=HISTORICO.map((h,i)=>`
+    <div class="hist-item" onclick="verHist(${i})">
+      <div class="hist-q">❓ ${h.q}</div>
+      <div class="hist-r">${h.r.substring(0,120)}...</div>
+      <div class="hist-m">🤖 ${h.prov} · ${h.arq} · ${h.d}</div>
+    </div>`).join("");
+}
+function verHist(i){ const h=HISTORICO[i]; if(!h) return; mostrarViz(`📜 IA (${h.d})`,`PROVEDOR: ${h.prov}\nARQUIVO: ${h.arq}\n\nPERGUNTA:\n${h.q}\n\n${"═".repeat(60)}\n\nRESPOSTA:\n${h.r}`); }
+function limparHist(){ if(!confirm("Limpar?")) return; HISTORICO=[]; localStorage.setItem("cir4_hist","[]"); renderHist(); }
+function baixarHist(){ if(!HISTORICO.length) return; let c=`=== HISTÓRICO IA ===\n${new Date().toLocaleString("pt-BR")}\n\n`; HISTORICO.forEach((h,i)=>{ c+=`${"═".repeat(60)}\n${i+1}. ${h.prov} · ${h.d}\n\nPERGUNTA:\n${h.q}\n\nRESPOSTA:\n${h.r}\n\n`; }); baixar(c,"historico-ia-"+Date.now()+".txt"); }
+
+// ═══════════════════════════════════════════════════
+//  IA INTEGRADA — multi-provedor, sem limite de contexto
+// ═══════════════════════════════════════════════════
+async function consultarIA(pergOverride){
+  const chave=document.getElementById("iaKey").value.trim();
+  if(!chave){ alert("Cole sua chave de API!"); return; }
+  const perg=pergOverride||document.getElementById("iaPergunta").value.trim();
+  if(!perg){ alert("Digite uma pergunta!"); return; }
+  const prov=getProv(chave);
+  if(!prov){ alert("Chave não reconhecida. Use: gsk_ (Groq), AIza (Gemini), sk- (OpenAI), sk-or- (OpenRouter), xai- (Grok)"); return; }
+
+  // Contexto COMPLETO — sem slice, sem limite
+  const ctx=CODIGO
+    ? `\n\nCÓDIGO COMPLETO (${NOME_ARQ||"sem nome"}, ${(CODIGO.length/1024).toFixed(1)}KB):\n\`\`\`\n${CODIGO}\n\`\`\``
+    : "";
+
+  const btn=document.getElementById("btnIA");
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Consultando...';
+  const el=document.getElementById("iaResp");
+  el.style.display="block"; el.textContent="⏳ Aguardando...";
+
+  try{
+    const r=await fetch(`${prov.url}/chat/completions`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":`Bearer ${chave}`},
+      body:JSON.stringify({
+        model:prov.m,
+        messages:[
+          {role:"system",content:"Você é especialista em análise de código. Responda em português brasileiro. Seja direto e prático."},
+          {role:"user",content:perg+ctx}
+        ],
+        max_tokens:4096,temperature:.3
+      })
+    });
+    if(!r.ok){ const e=await r.json().catch(()=>({}))); throw new Error(e?.error?.message||`Erro ${r.status}`); }
+    const d=await r.json();
+    const resp=d.choices?.[0]?.message?.content||"Sem resposta.";
+    el.textContent=resp;
+    mostrarViz(`🤖 RESPOSTA (${prov.n})`,resp);
+    salvarHist(perg,resp,prov.n);
+  }catch(e){
+    el.textContent=`❌ Erro: ${e.message}\n\nVerifique a chave e os créditos.`;
+  }finally{
+    btn.disabled=false; btn.innerHTML="🤖 Consultar IA";
+  }
+}
+
+function limparReplitIA(){ const p="Analise este código e:\n1. Liste TODOS os vínculos com Replit\n2. Para cada um, mostre EXATAMENTE como substituir\n3. Entregue o código COMPLETO já corrigido, sem depender da Replit"; document.getElementById("iaPergunta").value=p; consultarIA(p); }
+function corrigirBugsIA(){ const p="Analise este código:\n1. Liste todos os bugs\n2. Explique cada um em português simples\n3. Corrija todos\n4. Entregue o código completo corrigido"; document.getElementById("iaPergunta").value=p; consultarIA(p); }
+function analisarJuridicoIA(){ const p="Este é um projeto jurídico:\n1. Quais funcionalidades jurídicas estão implementadas?\n2. O que está quebrado?\n3. O que depende da Replit?\n4. Como corrigir os bugs mais críticos?"; document.getElementById("iaPergunta").value=p; consultarIA(p); }
+function analisarVizIA(){ const c=document.getElementById("area-viz").textContent; if(!c||c.includes("Bem-vindo")){ alert("Gere algum resultado primeiro."); return; } const p=`Analise este trecho:\n1. O que faz\n2. Problemas\n3. Como melhorar\n\n${c.substring(0,6000)}`; document.getElementById("iaPergunta").value=p; consultarIA(p); }
+function analisarNotasIA(){ if(!NOTAS.length){ alert("Adicione anotações primeiro."); return; } const todas=NOTAS.map((n,i)=>`Nota ${i+1} (${n.arq}):\n${n.t}`).join("\n\n"); const p=`Analise estas anotações:\n1. Problema mais crítico?\n2. Ordem de correção?\n3. O que corrigir sem Replit?\n4. O que refazer do zero?\n\nANOTAÇÕES:\n${todas}`; document.getElementById("iaPergunta").value=p; consultarIA(p); }
+
+// ═══════════════════════════════════════════════════
+//  UTILITÁRIOS
+// ═══════════════════════════════════════════════════
+function mostrarViz(titulo, conteudo){ document.getElementById("tituloViz").textContent=titulo; document.getElementById("area-viz").textContent=conteudo; }
+function limparViz(){ document.getElementById("area-viz").textContent="Área limpa."; document.getElementById("tituloViz").textContent="👁️ Visualização"; }
+function copiarViz(){ navigator.clipboard.writeText(document.getElementById("area-viz").textContent).then(()=>{ const b=event.target.closest("button"); b.textContent="✅"; setTimeout(()=>b.textContent="📋 Copiar",1500); }); }
+function baixarViz(){ const t=document.getElementById("area-viz").textContent; if(t) baixar(t,"cirurgiao4-"+Date.now()+".txt"); }
+function copiarTudo(){ if(!CODIGO) return alert("Carregue!"); navigator.clipboard.writeText(CODIGO).then(()=>alert("✅ Código copiado!")); }
+function setStatus(html,cor){ const e=document.getElementById("statusCarga"); e.innerHTML=html; e.style.color=cor; }
+function baixar(c,n){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([c],{type:"text/plain"})); a.download=n; a.click(); }
+function limparTudo(){
+  CODIGO=""; NOME_ARQ=""; ARQUIVOS_ZIP=[];
+  document.getElementById("arq").value="";
+  ["cardStats","cardAcoes","cardBlocos","cardBusca","cardExp"].forEach(id=>document.getElementById(id).style.display="none");
+  document.getElementById("resBusca").innerHTML="";
+  document.getElementById("iaResp").style.display="none";
+  setStatus("Nenhum arquivo","#64748b"); limparViz();
+}
+</script>
+</body>
+</html>
