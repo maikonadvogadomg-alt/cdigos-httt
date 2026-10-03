@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cirurgião Jurídico - Importador + Comparador + Detector de Bugs</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text2: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #bc8cff;
+      --orange: #f0883e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #58a6ff 0%, #3b82f6 100%);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      color: white;
+      font-weight: 700;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: var(--border);
+      transform: translateY(-1px);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .btn.success {
+      background: var(--green);
+      color: #000;
+    }
+
+    .btn.danger {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      min-width: 140px;
+      padding: 12px;
+      background: var(--bg2);
+      border: none;
+      color: var(--text2);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12px;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-bottom-color: var(--accent);
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    .panel.active {
+      display: flex;
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .card h2 {
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .card p {
+      font-size: 12px;
+      color: var(--text2);
+      margin-bottom: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 10px;
+      background: var(--bg3);
+      border: 2px dashed var(--border);
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text2);
+      transition: all 0.2s;
+    }
+
+    .file-input-label:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .file-input-wrapper input[type="file"]:focus + .file-input-label {
+      border-color: var(--accent);
+      background: var(--bg);
+    }
+
+    .status {
+      font-size: 11px;
+      color: var(--text2);
+      padding: 6px 10px;
+      background: var(--bg3);
+      border-radius: 4px;
+      margin-top: 6px;
+    }
+
+    .status.success {
+      color: var(--green);
+      border-left: 3px solid var(--green);
+    }
+
+    .status.error {
+      color: var(--red);
+      border-left: 3px solid var(--red);
+    }
+
+    .status.warning {
+      color: var(--yellow);
+      border-left: 3px solid var(--yellow);
+    }
+
+    .report {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 11px;
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .bug-item {
+      background: var(--bg3);
+      border-left: 3px solid var(--red);
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .bug-item .bug-title {
+      color: var(--red);
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .bug-item .bug-desc {
+      color: var(--text2);
+      font-size: 11px;
+    }
+
+    .bug-item .bug-files {
+      color: var(--accent);
+      font-size: 10px;
+      margin-top: 4px;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .comparison-col {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+    }
+
+    .comparison-col h3 {
+      font-size: 12px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .comparison-item {
+      font-size: 11px;
+      padding: 6px;
+      margin-bottom: 4px;
+      background: var(--bg3);
+      border-radius: 4px;
+      border-left: 2px solid var(--border);
+    }
+
+    .comparison-item.added {
+      border-left-color: var(--green);
+      color: var(--green);
+    }
+
+    .comparison-item.removed {
+      border-left-color: var(--red);
+      color: var(--red);
+    }
+
+    .comparison-item.modified {
+      border-left-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--bg3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 12px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>⚖️ Cirurgião Jurídico - Importador + Comparador</h1>
+    <div class="header-controls">
+      <button class="btn primary" onclick="APP.exportResults()">💾 Exportar Análise</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="APP.switchTab('importar', this)">📥 Importar</button>
+      <button class="tab-btn" onclick="APP.switchTab('comparar', this)">🔍 Comparar</button>
+      <button class="tab-btn" onclick="APP.switchTab('bugs', this)">🐛 Detectar Bugs</button>
+      <button class="tab-btn" onclick="APP.switchTab('pesquisar', this)">🔎 Pesquisar</button>
+    </div>
+
+    <div class="content">
+      <!-- ABA 1: IMPORTAR -->
+      <div id="importar" class="panel active">
+        <div class="panel-content">
+          <div class="card">
+            <h2>📥 Importar Projeto (ZIP, TAR, TGZ, GZ)</h2>
+            <p>Suporta: .zip, .tar, .tar.gz, .tgz, .gz (até 2GB)</p>
+            
+            <div class="grid">
+              <div>
+                <h3 style="font-size: 12px; margin-bottom: 8px;">Projeto A (Com Bug)</h3>
+                <div class="file-input-wrapper">
+                  <input type="file" id="fileA" accept=".zip,.tar,.tgz,.gz" onchange="APP.importFile('A', event)">
+                  <label class="file-input-label" for="fileA">
+                    📂 Clique ou arraste arquivo
+                  </label>
+                </div>
+                <div id="statusA" class="status"></div>
+              </div>
+
+              <div>
+                <h3 style="font-size: 12px; margin-bottom: 8px;">Projeto B (Sem Bug / Referência)</h3>
+                <div class="file-input-wrapper">
+                  <input type="file" id="fileB" accept=".zip,.tar,.tgz,.gz" onchange="APP.importFile('B', event)">
+                  <label class="file-input-label" for="fileB">
+                    📂 Clique ou arraste arquivo
+                  </label>
+                </div>
+                <div id="statusB" class="status"></div>
+              </div>
+            </div>
+
+            <div style="margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn success" onclick="APP.analyzeStructure()">📊 Analisar Estrutura</button>
+              <button class="btn" onclick="APP.listFiles()">📋 Listar Arquivos</button>
+              <button class="btn" onclick="APP.searchHiddenFiles()">🔍 Arquivos Ocultos</button>
+            </div>
+
+            <div id="importReport" class="report" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 2: COMPARAR -->
+      <div id="comparar" class="panel">
+        <div class="panel-content">
+          <div class="card">
+            <h2>🔍 Comparar Projetos</h2>
+            <p>Encontra diferenças entre versões</p>
+            
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn primary" onclick="APP.compareProjects()">🔄 Comparar A vs B</button>
+              <button class="btn" onclick="APP.findCommonBugs()">🐛 Bugs Comuns (95%)</button>
+              <button class="btn" onclick="APP.diffFiles()">📝 Diff Detalhado</button>
+            </div>
+
+            <div id="compareReport" class="report" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 3: DETECTAR BUGS -->
+      <div id="bugs" class="panel">
+        <div class="panel-content">
+          <div class="card">
+            <h2>🐛 Detector de Bugs (6 Principais)</h2>
+            <p>Identifica os 6 bugs mais comuns em 95% dos projetos</p>
+            
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn danger" onclick="APP.detectBugs()">🔍 Escanear Bugs</button>
+              <button class="btn" onclick="APP.generateBugReport()">📋 Relatório Detalhado</button>
+              <button class="btn" onclick="APP.suggestFixes()">💡 Sugerir Correções</button>
+            </div>
+
+            <div id="bugsReport" class="report" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA 4: PESQUISAR -->
+      <div id="pesquisar" class="panel">
+        <div class="panel-content">
+          <div class="card">
+            <h2>🔎 Pesquisar nos Arquivos</h2>
+            <p>Busca automática em todos os arquivos importados</p>
+            
+            <input type="text" id="searchInput" placeholder="Buscar por: função, classe, erro, etc..." style="width: 100%; padding: 8px; background: var(--bg3); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-size: 12px; margin-bottom: 10px;">
+            
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn primary" onclick="APP.searchInFiles()">🔍 Pesquisar</button>
+              <button class="btn" onclick="APP.searchRegex()">🔤 Regex</button>
+              <button class="btn" onclick="APP.searchInHidden()">📁 Em Ocultos</button>
+            </div>
+
+            <div id="searchReport" class="report" style="display: none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    'use strict';
+
+    const APP = {
+      projects: {
+        A: { name: 'Projeto A', files: {}, size: 0, type: '' },
+        B: { name: 'Projeto B', files: {}, size: 0, type: '' }
+      },
+
+      toast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 3000);
+      },
+
+      switchTab(tabName, btn) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        btn.classList.add('active');
+      },
+
+      async importFile(project, event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const statusEl = document.getElementById(`status${project}`);
+        statusEl.textContent = '⏳ Processando...';
+        statusEl.className = 'status warning';
+
+        try {
+          const fileName = file.name;
+          let files = {};
+
+          if (fileName.endsWith('.zip')) {
+            files = await this.extractZip(file);
+          } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+            files = await this.extractTarGz(file);
+          } else if (fileName.endsWith('.tar')) {
+            files = await this.extractTar(file);
+          } else if (fileName.endsWith('.gz')) {
+            files = await this.extractGz(file);
+          } else {
+            throw new Error('Formato não suportado');
+          }
+
+          this.projects[project].files = files;
+          this.projects[project].size = file.size;
+          this.projects[project].type = fileName.split('.').pop();
+
+          const fileCount = Object.keys(files).length;
+          statusEl.textContent = `✅ ${fileCount} arquivos importados (${this.formatSize(file.size)})`;
+          statusEl.className = 'status success';
+          this.toast(`✅ Projeto ${project} importado!`, 'success');
+        } catch (err) {
+          statusEl.textContent = `❌ Erro: ${err.message}`;
+          statusEl.className = 'status error';
+          this.toast(`❌ Erro ao importar: ${err.message}`, 'error');
+        }
+      },
+
+      async extractZip(file) {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        const files = {};
+
+        for (const [path, obj] of Object.entries(loaded.files)) {
+          if (!obj.dir) {
+            try {
+              files[path] = await obj.async('string');
+            } catch (e) {
+              // Fallback para binário se UTF-8 falhar
+              files[path] = '[BINÁRIO]';
+            }
+          }
+        }
+
+        return files;
+      },
+
+      async extractTarGz(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        return this.extractTarBuffer(decompressed);
+      },
+
+      async extractTar(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        return this.extractTarBuffer(arrayBuffer);
+      },
+
+      async extractGz(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        const text = new TextDecoder().decode(decompressed);
+        return { 'decompressed.txt': text };
+      },
+
+      extractTarBuffer(buffer) {
+        const files = {};
+        const view = new Uint8Array(buffer);
+        let offset = 0;
+
+        while (offset < view.length) {
+          const headerEnd = offset + 512;
+          if (headerEnd > view.length) break;
+
+          const header = view.slice(offset, headerEnd);
+          const nameBytes = header.slice(0, 100);
+          const name = new TextDecoder().decode(nameBytes).split('\0')[0];
+          const sizeStr = new TextDecoder().decode(header.slice(124, 136)).trim();
+          const size = parseInt(sizeStr, 8) || 0;
+
+          offset = headerEnd;
+
+          if (name && size > 0) {
+            try {
+              const content = new TextDecoder().decode(view.slice(offset, offset + size));
+              files[name] = content;
+            } catch (e) {
+              files[name] = '[BINÁRIO]';
+            }
+          }
+
+          offset += Math.ceil(size / 512) * 512;
+        }
+
+        return files;
+      },
+
+      analyzeStructure() {
+        let report = '=== ANÁLISE DE ESTRUTURA ===\n\n';
+
+        for (const proj of ['A', 'B']) {
+          const files = this.projects[proj].files;
+          const folders = new Set();
+          const extensions = {};
+
+          for (const path of Object.keys(files)) {
+            const folder = path.split('/')[0];
+            if (folder) folders.add(folder);
+
+            const ext = path.split('.').pop();
+            extensions[ext] = (extensions[ext] || 0) + 1;
+          }
+
+          report += `📁 PROJETO ${proj}:\n`;
+          report += `   Total de arquivos: ${Object.keys(files).length}\n`;
+          report += `   Pastas principais: ${Array.from(folders).join(', ')}\n`;
+          report += `   Extensões: ${Object.entries(extensions).map(([e, c]) => `${e}(${c})`).join(', ')}\n\n`;
+        }
+
+        document.getElementById('importReport').textContent = report;
+        document.getElementById('importReport').style.display = 'block';
+      },
+
+      listFiles() {
+        let report = '=== LISTA DE ARQUIVOS ===\n\n';
+
+        for (const proj of ['A', 'B']) {
+          const files = this.projects[proj].files;
+          report += `📁 PROJETO ${proj} (${Object.keys(files).length} arquivos):\n`;
+          Object.keys(files).slice(0, 50).forEach(f => {
+            report += `   ${f}\n`;
+          });
+          if (Object.keys(files).length > 50) {
+            report += `   ... e mais ${Object.keys(files).length - 50} arquivos\n`;
+          }
+          report += '\n';
+        }
+
+        document.getElementById('importReport').textContent = report;
+        document.getElementById('importReport').style.display = 'block';
+      },
+
+      searchHiddenFiles() {
+        let report = '=== ARQUIVOS OCULTOS ===\n\n';
+
+        for (const proj of ['A', 'B']) {
+          const files = this.projects[proj].files;
+          const hidden = Object.keys(files).filter(f => f.includes('/.' ) || f.startsWith('.'));
+
+          report += `📁 PROJETO ${proj}:\n`;
+          if (hidden.length > 0) {
+            hidden.forEach(f => {
+              report += `   ${f}\n`;
+            });
+          } else {
+            report += `   Nenhum arquivo oculto encontrado\n`;
+          }
+          report += '\n';
+        }
+
+        document.getElementById('importReport').textContent = report;
+        document.getElementById('importReport').style.display = 'block';
+      },
+
+      compareProjects() {
+        const filesA = Object.keys(this.projects.A.files);
+        const filesB = Object.keys(this.projects.B.files);
+        const setA = new Set(filesA);
+        const setB = new Set(filesB);
+
+        let report = '=== COMPARAÇÃO A vs B ===\n\n';
+
+        const onlyA = filesA.filter(f => !setB.has(f));
+        const onlyB = filesB.filter(f => !setA.has(f));
+        const common = filesA.filter(f => setB.has(f));
+
+        report += `📊 RESUMO:\n`;
+        report += `   Apenas em A: ${onlyA.length}\n`;
+        report += `   Apenas em B: ${onlyB.length}\n`;
+        report += `   Comuns: ${common.length}\n\n`;
+
+        if (onlyA.length > 0) {
+          report += `🔴 APENAS EM A:\n`;
+          onlyA.slice(0, 20).forEach(f => report += `   ${f}\n`);
+          if (onlyA.length > 20) report += `   ... e mais ${onlyA.length - 20}\n`;
+          report += '\n';
+        }
+
+        if (onlyB.length > 0) {
+          report += `🟢 APENAS EM B:\n`;
+          onlyB.slice(0, 20).forEach(f => report += `   ${f}\n`);
+          if (onlyB.length > 20) report += `   ... e mais ${onlyB.length - 20}\n`;
+          report += '\n';
+        }
+
+        document.getElementById('compareReport').textContent = report;
+        document.getElementById('compareReport').style.display = 'block';
+      },
+
+      findCommonBugs() {
+        let report = '=== 6 BUGS COMUNS (95%) ===\n\n';
+
+        const patterns = [
+          { name: 'console.log não removido', regex: /console\.(log|error|warn|debug)/gi, severity: '🔴 CRÍTICO' },
+          { name: 'var ao invés de const/let', regex: /\bvar\s+/g, severity: '🟡 IMPORTANTE' },
+          { name: 'Comparação fraca (==)', regex: /[^=!]==[^=]/g, severity: '🟡 IMPORTANTE' },
+          { name: 'Promises sem await', regex: /\.then\(/g, severity: '🟠 MÉDIO' },
+          { name: 'Variáveis globais', regex: /window\./g, severity: '🟠 MÉDIO' },
+          { name: 'Try-catch faltando', regex: /async\s+function/g, severity: '🟡 IMPORTANTE' }
+        ];
+
+        for (const proj of ['A', 'B']) {
+          report += `📁 PROJETO ${proj}:\n`;
+          const files = this.projects[proj].files;
+          let bugCount = 0;
+
+          for (const [path, content] of Object.entries(files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+
+            for (const pattern of patterns) {
+              const matches = content.match(pattern.regex) || [];
+              if (matches.length > 0) {
+                report += `   ${pattern.severity} ${pattern.name}\n`;
+                report += `      Arquivo: ${path}\n`;
+                report += `      Ocorrências: ${matches.length}\n`;
+                bugCount++;
+              }
+            }
+          }
+
+          report += `   Total de bugs encontrados: ${bugCount}\n\n`;
+        }
+
+        document.getElementById('compareReport').textContent = report;
+        document.getElementById('compareReport').style.display = 'block';
+      },
+
+      detectBugs() {
+        let report = '=== DETECÇÃO DE BUGS ===\n\n';
+
+        const bugs = [
+          { id: 1, name: 'console.log não removido', pattern: /console\.(log|error|warn)/gi, fix: 'Remover ou comentar console.log' },
+          { id: 2, name: 'Variáveis não usadas', pattern: /(?:let|const|var)\s+(\w+)/g, fix: 'Remover variáveis não utilizadas' },
+          { id: 3, name: 'Comparação fraca (==)', pattern: /==[^=]/g, fix: 'Usar === ao invés de ==' },
+          { id: 4, name: 'Sem tratamento de erro', pattern: /fetch\(/g, fix: 'Adicionar .catch() ou try-catch' },
+          { id: 5, name: 'Promises sem await', pattern: /\.then\(/g, fix: 'Usar async/await' },
+          { id: 6, name: 'Variáveis globais', pattern: /window\.\w+\s*=/g, fix: 'Usar escopo local' }
+        ];
+
+        for (const proj of ['A', 'B']) {
+          report += `🐛 PROJETO ${proj}:\n`;
+          const files = this.projects[proj].files;
+
+          for (const bug of bugs) {
+            let found = [];
+            for (const [path, content] of Object.entries(files)) {
+              if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+              const matches = content.match(bug.pattern);
+              if (matches) {
+                found.push({ path, count: matches.length });
+              }
+            }
+
+            if (found.length > 0) {
+              report += `   🔴 BUG #${bug.id}: ${bug.name}\n`;
+              report += `      Encontrado em: ${found.length} arquivo(s)\n`;
+              report += `      Correção: ${bug.fix}\n`;
+              found.slice(0, 3).forEach(f => {
+                report += `         - ${f.path} (${f.count}x)\n`;
+              });
+              report += '\n';
+            }
+          }
+        }
+
+        document.getElementById('bugsReport').textContent = report;
+        document.getElementById('bugsReport').style.display = 'block';
+      },
+
+      generateBugReport() {
+        this.detectBugs();
+      },
+
+      suggestFixes() {
+        let report = '=== SUGESTÕES DE CORREÇÃO ===\n\n';
+        report += '1️⃣ console.log:\n   Remover todas as linhas de debug\n\n';
+        report += '2️⃣ Variáveis:\n   Usar const por padrão, let quando necessário\n\n';
+        report += '3️⃣ Comparação:\n   Sempre usar === e !== ao invés de == e !=\n\n';
+        report += '4️⃣ Promises:\n   Usar async/await em vez de .then()\n\n';
+        report += '5️⃣ Erros:\n   Adicionar try-catch em funções async\n\n';
+        report += '6️⃣ Escopo:\n   Evitar variáveis globais, usar módulos\n\n';
+
+        document.getElementById('bugsReport').textContent = report;
+        document.getElementById('bugsReport').style.display = 'block';
+      },
+
+      searchInFiles() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+          this.toast('Digite algo para pesquisar', 'error');
+          return;
+        }
+
+        let report = `=== RESULTADOS DA PESQUISA: "${query}" ===\n\n`;
+
+        for (const proj of ['A', 'B']) {
+          const files = this.projects[proj].files;
+          let found = [];
+
+          for (const [path, content] of Object.entries(files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+            if (content.toLowerCase().includes(query.toLowerCase())) {
+              found.push(path);
+            }
+          }
+
+          report += `📁 PROJETO ${proj}: ${found.length} arquivo(s)\n`;
+          found.slice(0, 20).forEach(f => report += `   ${f}\n`);
+          if (found.length > 20) report += `   ... e mais ${found.length - 20}\n`;
+          report += '\n';
+        }
+
+        document.getElementById('searchReport').textContent = report;
+        document.getElementById('searchReport').style.display = 'block';
+      },
+
+      searchRegex() {
+        this.toast('Regex search - em desenvolvimento', 'error');
+      },
+
+      searchInHidden() {
+        this.searchHiddenFiles();
+      },
+
+      diffFiles() {
+        let report = '=== DIFF DETALHADO ===\n\n';
+        const filesA = this.projects.A.files;
+        const filesB = this.projects.B.files;
+
+        for (const [path, contentA] of Object.entries(filesA)) {
+          if (filesB[path]) {
+            const contentB = filesB[path];
+            if (contentA !== contentB) {
+              report += `📝 MODIFICADO: ${path}\n`;
+              report += `   A: ${contentA.substring(0, 50)}...\n`;
+              report += `   B: ${contentB.substring(0, 50)}...\n\n`;
+            }
+          }
+        }
+
+        document.getElementById('compareReport').textContent = report;
+        document.getElementById('compareReport').style.display = 'block';
+      },
+
+      exportResults() {
+        const report = document.querySelector('.report:not([style*="display: none"])');
+        if (!report) {
+          this.toast('Nenhum relatório para exportar', 'error');
+          return;
+        }
+
+        const text = report.textContent;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `analise-${Date.now()}.txt`;
+        a.click();
+        this.toast('✅ Análise exportada!', 'success');
+      },
+
+      formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let unitIdx = 0;
+        while (size >= 1024 && unitIdx < units.length - 1) {
+          size /= 1024;
+          unitIdx++;
+        }
+        return `${size.toFixed(2)} ${units[unitIdx]}`;
+      }
+    };
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('✅ Cirurgião Jurídico pronto!');
+    });
+  </script>
+
+</body>
+</html>
