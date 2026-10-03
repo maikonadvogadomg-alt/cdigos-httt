@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conversor de Código em Módulo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .input-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"],
+    select {
+      height: 40px;
+    }
+
+    textarea {
+      flex: 1;
+      resize: vertical;
+      min-height: 200px;
+    }
+
+    textarea:focus,
+    input[type="text"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-success {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #45a049;
+    }
+
+    .output-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output {
+      background: white;
+      padding: 15px;
+      border-radius: 5px;
+      flex: 1;
+      overflow-y: auto;
+      border: 2px solid #ddd;
+      margin-bottom: 10px;
+    }
+
+    .output pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.5;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🔄 Conversor de Código em Módulo</h1>
+      <p>Transforma seu código em um módulo reutilizável</p>
+    </header>
+
+    <div class="content">
+      <!-- COLUNA 1: INPUT -->
+      <div class="section">
+        <h2>📝 Seu Código</h2>
+
+        <div class="input-area">
+          <label>Nome do Módulo:</label>
+          <input type="text" id="nomeModulo" placeholder="Ex: storage, api, ui, voice">
+        </div>
+
+        <div class="input-area">
+          <label>Descrição:</label>
+          <input type="text" id="descricaoModulo" placeholder="O que este módulo faz?">
+        </div>
+
+        <div class="input-area">
+          <label>Tipo de Código:</label>
+          <select id="tipoCode">
+                        <option value="js">JavaScript</option>
+                        <option value="ts">TypeScript</option>
+                        <option value="html">HTML</option>
+                    </select>
+        </div>
+
+        <div class="input-area">
+          <label>Cole seu código aqui:</label>
+          <textarea id="codigoInput" placeholder="Cole o código que quer transformar em módulo..."></textarea>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-primary" onclick="converterParaModulo()">🔄 Converter</button>
+          <button class="btn-secondary" onclick="carregarExemplo()">📝 Exemplo</button>
+          <button class="btn-secondary" onclick="limparInput()">🗑️ Limpar</button>
+        </div>
+      </div>
+
+      <!-- COLUNA 2: OUTPUT -->
+      <div class="section">
+        <h2>✨ Módulo Pronto</h2>
+
+        <div id="statusContainer"></div>
+
+        <div class="output-area">
+          <div class="output" id="moduloOutput"></div>
+
+          <div class="button-group">
+            <button class="btn-success" onclick="copiarModulo()">📋 Copiar</button>
+            <button class="btn-success" onclick="downloadModulo()">⬇️ Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CONVERTER PARA MÓDULO
+        function converterParaModulo() {
+            const nome = document.getElementById('nomeModulo').value.trim();
+            const descricao = document.getElementById('descricaoModulo').value.trim();
+            const tipo = document.getElementById('tipoCode').value;
+            const codigo = document.getElementById('codigoInput').value.trim();
+            
+            if (!nome || !codigo) {
+                mostrarStatus('error', '❌ Preencha o nome e o código!');
+                return;
+            }
+            
+            mostrarStatus('info', '⏳ Convertendo...');
+            
+            setTimeout(() => {
+                try {
+                    const modulo = gerarModulo(nome, descricao, tipo, codigo);
+                    document.getElementById('moduloOutput').innerHTML = `<pre>${escaparHTML(modulo)}</pre>`;
+                    mostrarStatus('success', '✅ Módulo gerado com sucesso!');
+                } catch (erro) {
+                    mostrarStatus('error', `❌ Erro: ${erro.message}`);
+                }
+            }, 500);
+        }
+
+        // GERAR MÓDULO
+        function gerarModulo(nome, descricao, tipo, codigo) {
+            const nomeCapitalizado = nome.charAt(0).toUpperCase() + nome.slice(1);
+            const linhasSeparador = '='.repeat(50);
+            
+            let modulo = `// ${linhasSeparador}
+// MÓDULO: ${nomeCapitalizado}
+// ${linhasSeparador}
+// Descrição: ${descricao || 'Módulo ' + nome}
+// Criado em: ${new Date().toLocaleString()}
+// ${linhasSeparador}
+
+`;
+            
+            modulo += `// ====== DADOS PRIVADOS ======\n`;
+            modulo += `const ${nome}Data = {\n`;
+            modulo += `    // Dados que o módulo guarda\n`;
+            modulo += `};\n\n`;
+            
+            modulo += `// ====== CÓDIGO DO MÓDULO ======\n`;
+            modulo += codigo + '\n\n';
+            
+            modulo += `// ====== FUNÇÕES PÚBLICAS ======\n`;
+            modulo += `const ${nomeCapitalizado} = {\n`;
+            modulo += `    // Adicione aqui as funções que outros módulos podem usar\n`;
+            modulo += `    // Exemplo:\n`;
+            modulo += `    // funcao1: funcao1,\n`;
+            modulo += `    // funcao2: funcao2\n`;
+            modulo += `};\n\n`;
+            
+            modulo += `// ====== EXPORTAR ======\n`;
+            modulo += `// Se usar em HTML: <script src="${nome}.js"><\/script>\n`;
+            modulo += `// Se usar em Node.js: module.exports = ${nomeCapitalizado};\n`;
+            
+            return modulo;
+        }
+
+        // COPIAR MÓDULO
+        function copiarModulo() {
+            const modulo = document.getElementById('moduloOutput').innerText;
+            navigator.clipboard.writeText(modulo).then(() => {
+                mostrarStatus('success', '✅ Módulo copiado!');
+            });
+        }
+
+        // DOWNLOAD MÓDULO
+        function downloadModulo() {
+            const nome = document.getElementById('nomeModulo').value.trim();
+            const modulo = document.getElementById('moduloOutput').innerText;
+            
+            if (!modulo) {
+                mostrarStatus('error', '❌ Gere o módulo primeiro!');
+                return;
+            }
+            
+            const blob = new Blob([modulo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${nome}.js`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            mostrarStatus('success', `✅ ${nome}.js baixado!`);
+        }
+
+        // LIMPAR INPUT
+        function limparInput() {
+            document.getElementById('nomeModulo').value = '';
+            document.getElementById('descricaoModulo').value = '';
+            document.getElementById('codigoInput').value = '';
+        }
+
+        // MOSTRAR STATUS
+        function mostrarStatus(tipo, mensagem) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `<div class="status ${tipo}">${mensagem}</div>`;
+        }
+
+        // ESCAPAR HTML
+        function escaparHTML(texto) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return texto.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // CARREGAR EXEMPLO
+        function carregarExemplo() {
+            document.getElementById('nomeModulo').value = 'storage';
+            document.getElementById('descricaoModulo').value = 'Módulo para guardar e buscar dados';
+            document.getElementById('codigoInput').value = `// Função para salvar dados
+function salvarDados(chave, valor) {
+    console.log('Salvando:', chave, valor);
+    localStorage.setItem(chave, JSON.stringify(valor));
+}
+
+// Função para buscar dados
+function buscarDados(chave) {
+    const dados = localStorage.getItem(chave);
+    return dados ? JSON.parse(dados) : null;
+}
+
+// Função para limpar dados
+function limparDados() {
+    localStorage.clear();
+    console.log('Dados limpos');
+}`;
+            
+            mostrarStatus('info', '📝 Exemplo carregado!');
+        }
+  </script>
+</body>
+
+</html>
