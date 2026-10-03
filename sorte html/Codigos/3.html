@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Detector + Unificador de Dependências</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Courier New', monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff6b6b, #ff0000);
+      padding: 10px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 8px;
+      margin: 2px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      font-size: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: #58a6ff;
+      border-bottom-color: #58a6ff;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 8px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card h2 {
+      font-size: 10px;
+      color: #58a6ff;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .card p {
+      font-size: 8px;
+      color: #8b949e;
+      margin-bottom: 4px;
+    }
+
+    .file-input {
+      width: 100%;
+      padding: 6px;
+      background: #21262d;
+      border: 2px dashed #30363d;
+      border-radius: 3px;
+      color: #c9d1d9;
+      font-size: 9px;
+      cursor: pointer;
+      margin-bottom: 6px;
+    }
+
+    .input-text {
+      width: 100%;
+      padding: 4px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 2px;
+      color: #c9d1d9;
+      font-size: 9px;
+      margin-bottom: 4px;
+    }
+
+    .btn {
+      padding: 4px 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      border-radius: 2px;
+      font-size: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 2px 2px 2px 0;
+    }
+
+    .btn:active {
+      background: #30363d;
+    }
+
+    .btn.primary {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn.success {
+      background: #3fb950;
+      color: white;
+    }
+
+    .btn.danger {
+      background: #f85149;
+      color: white;
+    }
+
+    .progress {
+      width: 100%;
+      height: 2px;
+      background: #21262d;
+      border-radius: 1px;
+      overflow: hidden;
+      margin: 4px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #58a6ff;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    .status {
+      font-size: 8px;
+      color: #8b949e;
+      margin: 4px 0;
+      padding: 4px;
+      background: #0d1117;
+      border-radius: 2px;
+    }
+
+    .status.success {
+      color: #3fb950;
+      border-left: 2px solid #3fb950;
+    }
+
+    .status.error {
+      color: #f85149;
+      border-left: 2px solid #f85149;
+    }
+
+    .status.info {
+      color: #58a6ff;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .status.warning {
+      color: #d29922;
+      border-left: 2px solid #d29922;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px;
+      border-radius: 2px;
+      font-size: 8px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.error {
+      border-color: #f85149;
+      color: #f85149;
+    }
+
+    .toast.success {
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
+    .dep-item {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 2px;
+      padding: 6px;
+      margin-bottom: 4px;
+      font-size: 8px;
+    }
+
+    .dep-item.conflict {
+      border-left: 3px solid #f85149;
+    }
+
+    .dep-item.ok {
+      border-left: 3px solid #3fb950;
+    }
+
+    .dep-item.warning {
+      border-left: 3px solid #d29922;
+    }
+
+    .code-block {
+      background: #0d1117;
+      padding: 4px;
+      border-radius: 2px;
+      margin: 2px 0;
+      font-size: 7px;
+      overflow-x: auto;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .stats {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      font-size: 8px;
+      margin-bottom: 6px;
+    }
+
+    .stat-box {
+      background: #161b22;
+      padding: 4px 8px;
+      border-radius: 2px;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .stat-box.conflict {
+      border-left-color: #f85149;
+    }
+
+    .stat-box.warning {
+      border-left-color: #d29922;
+    }
+
+    .selector {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+
+    .selector-btn {
+      padding: 4px 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      border-radius: 2px;
+      font-size: 8px;
+      cursor: pointer;
+    }
+
+    .selector-btn.active {
+      background: #58a6ff;
+      color: white;
+      border-color: #58a6ff;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7px;
+      margin: 4px 0;
+    }
+
+    .table th,
+    .table td {
+      padding: 2px;
+      border: 1px solid #30363d;
+      text-align: left;
+    }
+
+    .table th {
+      background: #21262d;
+      color: #58a6ff;
+      font-weight: bold;
+    }
+
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>📦 Detector + Unificador de Dependências</h1>
+    <p>npm • pnpm • yarn • pip • poetry - Unifica Tudo!</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="APP.tab('upload')">📁 Upload</button>
+    <button class="tab-btn" onclick="APP.tab('detect')">🔍 Detectar</button>
+    <button class="tab-btn" onclick="APP.tab('unify')">🔗 Unificar</button>
+    <button class="tab-btn" onclick="APP.tab('convert')">🔄 Converter</button>
+    <button class="tab-btn" onclick="APP.tab('export')">💾 Exportar</button>
+  </div>
+
+  <div class="content">
+    <!-- TAB: UPLOAD -->
+    <div id="upload" class="panel active">
+      <div class="card">
+        <h2>📁 Carregar Projeto</h2>
+        <input type="file" id="fileInput" class="file-input" onchange="APP.loadFile(event)" accept=".zip,.tar,.tgz,.gz">
+        <div id="uploadProgress" class="progress" style="display: none;">
+          <div class="progress-bar"></div>
+        </div>
+        <div id="uploadStatus" class="status" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>📊 Informações</h2>
+        <div id="fileInfo" style="font-size: 8px; color: #8b949e;">Nenhum arquivo carregado</div>
+      </div>
+
+      <div class="card">
+        <button class="btn primary" onclick="APP.detectDependencies()">🔍 Detectar Dependências</button>
+        <button class="btn" onclick="APP.clearAll()">🗑️ Limpar</button>
+      </div>
+    </div>
+
+    <!-- TAB: DETECTAR -->
+    <div id="detect" class="panel">
+      <div class="card">
+        <h2>🔍 Dependências Encontradas</h2>
+        <div class="stats" id="detectionStats"></div>
+      </div>
+
+      <div id="detectionList" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: UNIFICAR -->
+    <div id="unify" class="panel">
+      <div class="card">
+        <h2>🔗 Unificar Dependências</h2>
+        <p>Resolve conflitos e cria package.json único:</p>
+
+        <button class="btn success" onclick="APP.unifyDependencies()">🔗 Unificar Agora</button>
+        <div id="unifyStatus" class="status" style="display: none;"></div>
+      </div>
+
+      <div id="unifyList" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: CONVERTER -->
+    <div id="convert" class="panel">
+      <div class="card">
+        <h2>🔄 Converter para Outro Gerenciador</h2>
+
+        <h3 style="font-size: 9px; color: #58a6ff; margin-bottom: 4px;">Formato de saída:</h3>
+        <div class="selector">
+          <button class="selector-btn active" onclick="APP.selectFormat('npm')">npm</button>
+          <button class="selector-btn" onclick="APP.selectFormat('pnpm')">pnpm</button>
+          <button class="selector-btn" onclick="APP.selectFormat('yarn')">yarn</button>
+          <button class="selector-btn" onclick="APP.selectFormat('pip')">pip</button>
+          <button class="selector-btn" onclick="APP.selectFormat('poetry')">poetry</button>
+        </div>
+
+        <button class="btn success" onclick="APP.convertFormat()">🔄 Converter</button>
+        <div id="convertStatus" class="status" style="display: none;"></div>
+      </div>
+
+      <div id="convertResult" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: EXPORTAR -->
+    <div id="export" class="panel">
+      <div class="card">
+        <h2>💾 Exportar Arquivos</h2>
+
+        <button class="btn success" onclick="APP.downloadPackageJson()">📦 package.json</button>
+        <button class="btn" onclick="APP.downloadInstallScript()">🔧 install.bat</button>
+        <button class="btn" onclick="APP.downloadInstallSh()">🐧 install.sh</button>
+        <button class="btn" onclick="APP.downloadRequirements()">🐍 requirements.txt</button>
+        <button class="btn" onclick="APP.downloadReport()">📋 Relatório</button>
+      </div>
+
+      <div class="card">
+        <h2>📋 Resumo</h2>
+        <textarea id="reportContent" style="width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 2px; padding: 4px; font-size: 7px; font-family: 'Courier New'; resize: none; overflow-y: auto;"></textarea>
+        <button class="btn btn-small" onclick="APP.copyReport()" style="margin-top: 4px;">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+  <script>
+    'use strict';
+
+    const APP = {
+      files: {},
+      dependencies: {
+        npm: {},
+        pip: {},
+        poetry: {},
+        yarn: {},
+        pnpm: {}
+      },
+      unified: {},
+      selectedFormat: 'npm',
+      detectedFiles: [],
+
+      toast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 3000);
+      },
+
+      tab(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        event.target.classList.add('active');
+      },
+
+      async loadFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const status = document.getElementById('uploadStatus');
+        const progress = document.getElementById('uploadProgress');
+        
+        status.style.display = 'block';
+        progress.style.display = 'block';
+        status.textContent = '⏳ Carregando...';
+        status.className = 'status info';
+
+        try {
+          const fileName = file.name;
+          let files = {};
+
+          if (fileName.endsWith('.zip')) {
+            files = await this.extractZip(file, progress);
+          } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+            files = await this.extractTarGz(file, progress);
+          } else if (fileName.endsWith('.tar')) {
+            files = await this.extractTar(file, progress);
+          }
+
+          this.files = files;
+          const count = Object.keys(files).length;
+          
+          status.textContent = `✅ ${count} arquivo(s) - ${this.formatSize(file.size)}`;
+          status.className = 'status success';
+          
+          document.getElementById('fileInfo').innerHTML = `
+            <strong>Arquivo:</strong> ${fileName}<br>
+            <strong>Tamanho:</strong> ${this.formatSize(file.size)}<br>
+            <strong>Arquivos:</strong> ${count}<br>
+            <strong>Status:</strong> ✅ Pronto
+          `;
+
+          this.toast(`✅ ${count} arquivo(s) carregado!`, 'success');
+        } catch (err) {
+          status.textContent = `❌ ${err.message}`;
+          status.className = 'status error';
+          this.toast(`❌ ${err.message}`, 'error');
+        }
+      },
+
+      async extractZip(file, progress) {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        const files = {};
+        const entries = Object.entries(loaded.files);
+        const total = entries.length;
+        let processed = 0;
+
+        for (const [path, obj] of entries) {
+          if (!obj.dir) {
+            try {
+              files[path] = await obj.async('string');
+            } catch (e) {
+              files[path] = '[BINÁRIO]';
+            }
+          }
+          processed++;
+          this.updateProgress(progress, processed, total);
+        }
+        return files;
+      },
+
+      async extractTarGz(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        return this.extractTarBuffer(decompressed, progress);
+      },
+
+      async extractTar(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        return this.extractTarBuffer(arrayBuffer, progress);
+      },
+
+      extractTarBuffer(buffer, progress) {
+        const files = {};
+        const view = new Uint8Array(buffer);
+        let offset = 0;
+        let processed = 0;
+        const total = Math.ceil(view.length / 512);
+
+        while (offset < view.length) {
+          const headerEnd = offset + 512;
+          if (headerEnd > view.length) break;
+
+          const header = view.slice(offset, headerEnd);
+          const nameBytes = header.slice(0, 100);
+          const name = new TextDecoder().decode(nameBytes).split('\0')[0];
+          const sizeStr = new TextDecoder().decode(header.slice(124, 136)).trim();
+          const size = parseInt(sizeStr, 8) || 0;
+
+          offset = headerEnd;
+
+          if (name && size > 0) {
+            try {
+              const content = new TextDecoder().decode(view.slice(offset, offset + size));
+              files[name] = content;
+            } catch (e) {
+              files[name] = '[BINÁRIO]';
+            }
+          }
+
+          offset += Math.ceil(size / 512) * 512;
+          processed++;
+          if (processed % 100 === 0) this.updateProgress(progress, processed, total);
+        }
+
+        return files;
+      },
+
+      updateProgress(progress, current, total) {
+        const percent = Math.min(100, Math.round((current / total) * 100));
+        progress.querySelector('.progress-bar').style.width = percent + '%';
+      },
+
+      detectDependencies() {
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        this.dependencies = { npm: {}, pip: {}, poetry: {}, yarn: {}, pnpm: {} };
+        this.detectedFiles = [];
+
+        // Detectar package.json (npm, pnpm, yarn)
+        for (const [path, content] of Object.entries(this.files)) {
+          if (path.includes('package.json') && typeof content === 'string') {
+            try {
+              const pkg = JSON.parse(content);
+              const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+              
+              this.detectedFiles.push({
+                type: 'npm',
+                file: path,
+                count: Object.keys(deps).length,
+                deps: deps
+              });
+
+              // Mescla com npm
+              this.dependencies.npm = { ...this.dependencies.npm, ...deps };
+            } catch (e) {}
+          }
+
+          // Detectar requirements.txt (pip)
+          if (path.includes('requirements.txt') && typeof content === 'string') {
+            const deps = {};
+            content.split('\n').forEach(line => {
+              line = line.trim();
+              if (line && !line.startsWith('#')) {
+                const match = line.match(/^([a-zA-Z0-9\-_]+)/);
+                if (match) {
+                  deps[match[1]] = line;
+                }
+              }
+            });
+
+            this.detectedFiles.push({
+              type: 'pip',
+              file: path,
+              count: Object.keys(deps).length,
+              deps: deps
+            });
+
+            this.dependencies.pip = { ...this.dependencies.pip, ...deps };
+          }
+
+          // Detectar pyproject.toml (poetry)
+          if (path.includes('pyproject.toml') && typeof content === 'string') {
+            const deps = {};
+            const lines = content.split('\n');
+            let inDeps = false;
+
+            lines.forEach(line => {
+              if (line.includes('[tool.poetry.dependencies]')) inDeps = true;
+              if (inDeps && line.startsWith('[') && !line.includes('[tool.poetry.dependencies]')) inDeps = false;
+              
+              if (inDeps && line.includes('=')) {
+                const match = line.match(/^([a-zA-Z0-9\-_]+)\s*=/);
+                if (match) {
+                  deps[match[1]] = line.trim();
+                }
+              }
+            });
+
+            this.detectedFiles.push({
+              type: 'poetry',
+              file: path,
+              count: Object.keys(deps).length,
+              deps: deps
+            });
+
+            this.dependencies.poetry = { ...this.dependencies.poetry, ...deps };
+          }
+
+          // Detectar Pipfile
+          if (path.includes('Pipfile') && typeof content === 'string') {
+            const deps = {};
+            const lines = content.split('\n');
+            let inDeps = false;
+
+            lines.forEach(line => {
+              if (line.includes('[packages]')) inDeps = true;
+              if (inDeps && line.startsWith('[') && !line.includes('[packages]')) inDeps = false;
+              
+              if (inDeps && line.includes('=')) {
+                const match = line.match(/^([a-zA-Z0-9\-_]+)\s*=/);
+                if (match) {
+                  deps[match[1]] = line.trim();
+                }
+              }
+            });
+
+            this.detectedFiles.push({
+              type: 'pip',
+              file: path,
+              count: Object.keys(deps).length,
+              deps: deps
+            });
+
+            this.dependencies.pip = { ...this.dependencies.pip, ...deps };
+          }
+        }
+
+        this.displayDetections();
+        this.tab('detect');
+        this.toast(`✅ ${this.detectedFiles.length} arquivo(s) de dependência encontrado!`, 'success');
+      },
+
+      displayDetections() {
+        const container = document.getElementById('detectionList');
+        container.innerHTML = '';
+
+        let html = '';
+
+        this.detectedFiles.forEach(file => {
+          const icon = {
+            npm: '📦',
+            pip: '🐍',
+            poetry: '📜',
+            yarn: '🧶',
+            pnpm: '⚡'
+          }[file.type] || '📦';
+
+          html += `
+            <div class="card">
+              <h2>${icon} ${file.type.toUpperCase()}</h2>
+              <div class="dep-item ok">
+                <strong>${file.file}</strong><br>
+                ${file.count} dependência(s)
+              </div>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Pacote</th>
+                    <th>Versão</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+
+          Object.entries(file.deps).slice(0, 5).forEach(([name, version]) => {
+            const ver = typeof version === 'string' ? version.substring(0, 30) : version;
+            html += `<tr><td>${name}</td><td>${ver}</td></tr>`;
+          });
+
+          if (Object.keys(file.deps).length > 5) {
+            html += `<tr><td colspan="2">... e mais ${Object.keys(file.deps).length - 5}</td></tr>`;
+          }
+
+          html += `
+                </tbody>
+              </table>
+            </div>
+          `;
+        });
+
+        container.innerHTML = html;
+
+        // Stats
+        const stats = document.getElementById('detectionStats');
+        const npmCount = Object.keys(this.dependencies.npm).length;
+        const pipCount = Object.keys(this.dependencies.pip).length;
+        const poetryCount = Object.keys(this.dependencies.poetry).length;
+
+        stats.innerHTML = `
+          <div class="stat-box">📦 npm: ${npmCount}</div>
+          <div class="stat-box">🐍 pip: ${pipCount}</div>
+          <div class="stat-box">📜 poetry: ${poetryCount}</div>
+          <div class="stat-box">📁 Arquivos: ${this.detectedFiles.length}</div>
+        `;
+      },
+
+      unifyDependencies() {
+        this.unified = {};
+
+        // Mescla npm
+        Object.assign(this.unified, this.dependencies.npm);
+
+        // Mescla pip (converte para npm format)
+        Object.entries(this.dependencies.pip).forEach(([name, version]) => {
+          if (!this.unified[name]) {
+            this.unified[name] = version;
+          }
+        });
+
+        // Mescla poetry
+        Object.entries(this.dependencies.poetry).forEach(([name, version]) => {
+          if (!this.unified[name]) {
+            this.unified[name] = version;
+          }
+        });
+
+        const container = document.getElementById('unifyList');
+        container.innerHTML = '';
+
+        let html = '<div class="card"><h2>🔗 Dependências Unificadas</h2>';
+        html += `<div class="dep-item ok">Total: ${Object.keys(this.unified).length} dependência(s)</div>`;
+
+        html += '<table class="table"><thead><tr><th>Pacote</th><th>Versão</th><th>Origem</th></tr></thead><tbody>';
+
+        Object.entries(this.unified).forEach(([name, version]) => {
+          let origin = 'npm';
+          if (this.dependencies.pip[name]) origin = 'pip';
+          if (this.dependencies.poetry[name]) origin = 'poetry';
+
+          html += `<tr><td>${name}</td><td>${String(version).substring(0, 20)}</td><td>${origin}</td></tr>`;
+        });
+
+        html += '</tbody></table></div>';
+        container.innerHTML = html;
+
+        const status = document.getElementById('unifyStatus');
+        status.style.display = 'block';
+        status.textContent = `✅ ${Object.keys(this.unified).length} dependência(s) unificada(s)!`;
+        status.className = 'status success';
+
+        this.toast(`✅ ${Object.keys(this.unified).length} dependências unificadas!`, 'success');
+      },
+
+      selectFormat(format) {
+        this.selectedFormat = format;
+        document.querySelectorAll('.selector-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+      },
+
+      convertFormat() {
+        if (Object.keys(this.unified).length === 0) {
+          this.toast('Unifique primeiro', 'error');
+          return;
+        }
+
+        const container = document.getElementById('convertResult');
+        container.innerHTML = '';
+
+        let result = '';
+
+        if (this.selectedFormat === 'npm') {
+          const pkg = {
+            name: 'projeto-unificado',
+            version: '1.0.0',
+            dependencies: this.unified
+          };
+          result = JSON.stringify(pkg, null, 2);
+        } else if (this.selectedFormat === 'pnpm') {
+          result = '# pnpm-lock.yaml\n';
+          Object.entries(this.unified).forEach(([name, version]) => {
+            result += `${name}: ${version}\n`;
+          });
+        } else if (this.selectedFormat === 'yarn') {
+          result = '# yarn.lock\n';
+          Object.entries(this.unified).forEach(([name, version]) => {
+            result += `"${name}@${version}":\n  version "${version}"\n`;
+          });
+        } else if (this.selectedFormat === 'pip') {
+          Object.entries(this.unified).forEach(([name, version]) => {
+            result += `${name}${typeof version === 'string' && version.includes('>=') ? version : ''}\n`;
+          });
+        } else if (this.selectedFormat === 'poetry') {
+          result = '[tool.poetry.dependencies]\n';
+          result += 'python = "^3.9"\n';
+          Object.entries(this.unified).forEach(([name, version]) => {
+            result += `${name} = "${version}"\n`;
+          });
+        }
+
+        const div = document.createElement('div');
+        div.className = 'card';
+        div.innerHTML = `
+          <h2>🔄 Convertido para ${this.selectedFormat.toUpperCase()}</h2>
+          <div class="code-block">${this.escapeHtml(result)}</div>
+          <button class="btn btn-small" onclick="navigator.clipboard.writeText(\`${result.replace(/`/g, '\\`')}\`); APP.toast('Copiado!', 'success');">📋 Copiar</button>
+        `;
+        container.appendChild(div);
+
+        const status = document.getElementById('convertStatus');
+        status.style.display = 'block';
+        status.textContent = `✅ Convertido para ${this.selectedFormat}!`;
+        status.className = 'status success';
+      },
+
+      downloadPackageJson() {
+        const pkg = {
+          name: 'projeto-unificado',
+          version: '1.0.0',
+          description: 'Projeto com dependências unificadas',
+          main: 'index.js',
+          scripts: {
+            start: 'node index.js',
+            dev: 'nodemon index.js'
+          },
+          dependencies: this.unified
+        };
+
+        const blob = new Blob([JSON.stringify(pkg, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'package.json';
+        a.click();
+        this.toast('📦 package.json baixado!', 'success');
+      },
+
+      downloadInstallScript() {
+        const script = `@echo off
+REM Script de instalação - Windows
+echo 📦 Instalando dependências...
+
+REM Tenta npm
+if exist package.json (
+  echo Usando npm...
+  npm install
+  goto :end
+)
+
+REM Tenta pnpm
+if exist pnpm-lock.yaml (
+  echo Usando pnpm...
+  pnpm install
+  goto :end
+)
+
+REM Tenta yarn
+if exist yarn.lock (
+  echo Usando yarn...
+  yarn install
+  goto :end
+)
+
+echo ❌ Nenhum gerenciador encontrado!
+
+:end
+echo ✅ Instalação completa!
+pause
+`;
+        const blob = new Blob([script], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'install.bat';
+        a.click();
+        this.toast('🔧 install.bat baixado!', 'success');
+      },
+
+      downloadInstallSh() {
+        const script = `#!/bin/bash
+# Script de instalação - Linux/Mac
+
+echo "📦 Instalando dependências..."
+
+# Tenta npm
+if [ -f "package.json" ]; then
+  echo "Usando npm..."
+  npm install
+  exit 0
+fi
+
+# Tenta pnpm
+if [ -f "pnpm-lock.yaml" ]; then
+  echo "Usando pnpm..."
+  pnpm install
+  exit 0
+fi
+
+# Tenta yarn
+if [ -f "yarn.lock" ]; then
+  echo "Usando yarn..."
+  yarn install
+  exit 0
+fi
+
+# Tenta pip
+if [ -f "requirements.txt" ]; then
+  echo "Usando pip..."
+  pip install -r requirements.txt
+  exit 0
+fi
+
+# Tenta poetry
+if [ -f "pyproject.toml" ]; then
+  echo "Usando poetry..."
+  poetry install
+  exit 0
+fi
+
+echo "❌ Nenhum gerenciador encontrado!"
+exit 1
+`;
+        const blob = new Blob([script], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'install.sh';
+        a.click();
+        this.toast('🐧 install.sh baixado!', 'success');
+      },
+
+      downloadRequirements() {
+        let content = '# requirements.txt - Dependências Python\n\n';
+        Object.entries(this.unified).forEach(([name, version]) => {
+          content += `${name}${typeof version === 'string' && version.includes('>=') ? version : ''}\n`;
+        });
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'requirements.txt';
+        a.click();
+        this.toast('🐍 requirements.txt baixado!', 'success');
+      },
+
+      downloadReport() {
+        const report = this.generateReport();
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dependencias-${Date.now()}.txt`;
+        a.click();
+        this.toast('📋 Relatório baixado!', 'success');
+      },
+
+      generateReport() {
+        let report = `=== RELATÓRIO DE DEPENDÊNCIAS ===\n\n`;
+        report += `Data: ${new Date().toLocaleString()}\n\n`;
+
+        report += `📁 ARQUIVOS DETECTADOS:\n`;
+        this.detectedFiles.forEach(file => {
+          report += `  - ${file.file} (${file.type}): ${file.count} deps\n`;
+        });
+
+        report += `\n📦 DEPENDÊNCIAS UNIFICADAS: ${Object.keys(this.unified).length}\n`;
+        Object.entries(this.unified).forEach(([name, version]) => {
+          report += `  - ${name}: ${version}\n`;
+        });
+
+        report += `\n🔧 SCRIPTS DE INSTALAÇÃO:\n`;
+        report += `  Windows: install.bat\n`;
+        report += `  Linux/Mac: install.sh\n`;
+
+        report += `\n✅ PRÓXIMOS PASSOS:\n`;
+        report += `1. Baixe package.json\n`;
+        report += `2. Baixe o script de instalação (install.bat ou install.sh)\n`;
+        report += `3. Execute o script\n`;
+
+        document.getElementById('reportContent').value = report;
+        return report;
+      },
+
+      copyReport() {
+        const report = document.getElementById('reportContent').value;
+        navigator.clipboard.writeText(report).then(() => {
+          this.toast('📋 Copiado!', 'success');
+        });
+      },
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+
+      formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let idx = 0;
+        while (size >= 1024 && idx < units.length - 1) {
+          size /= 1024;
+          idx++;
+        }
+        return `${size.toFixed(1)} ${units[idx]}`;
+      },
+
+      clearAll() {
+        this.files = {};
+        this.dependencies = { npm: {}, pip: {}, poetry: {}, yarn: {}, pnpm: {} };
+        this.unified = {};
+        this.detectedFiles = [];
+        document.getElementById('fileInput').value = '';
+        this.toast('✅ Limpo', 'success');
+      }
+    };
+  </script>
+
+</body>
+
+</html>
