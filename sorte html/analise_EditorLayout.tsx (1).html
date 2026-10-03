@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: EditorLayout.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 EditorLayout.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 07:40:07 • 48 elementos • 16 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import DatabasePanel from &quot;./DatabasePanel&quot;;</div><div class="idx-item">L3 [import] import DeployPanel from &quot;./DeployPanel&quot;;</div><div class="idx-item">L4 [import] import {</div><div class="idx-item">L15 [interface] Checkpoint</div><div class="idx-item">L23 [interface] Task</div><div class="idx-item">L31 [component] NameInputModal</div><div class="idx-item">L52 [function] submit →</div><div class="idx-item">L104 [import] import { VirtualFileSystem, getLanguageFromPath } from &quot;@/lib/virtual-fs&quot;;</div><div class="idx-item">L105 [import] import { cloneRepo } from &quot;@/lib/github-service&quot;;</div><div class="idx-item">L106 [import] import { templates } from &quot;@/lib/templates&quot;;</div><div class="idx-item">L107 [import] import FileTree from &quot;./FileTree&quot;;</div><div class="idx-item">L108 [import] import CodeEditor, { CodeEditorHandle } from &quot;./CodeEditor&quot;;</div><div class="idx-item">L109 [import] import WebContainerTerminal from &quot;./WebContainerTerminal&quot;;</div><div class="idx-item">L110 [import] import ElectronTerminal from &quot;./ElectronTerminal&quot;;</div><div class="idx-item">L111 [import] import Preview from &quot;./Preview&quot;;</div><div class="idx-item">L112 [import] import AIChat, { AIScope } from &quot;./AIChat&quot;;</div><div class="idx-item">L113 [import] import GitHubPanel from &quot;./GitHubPanel&quot;;</div><div class="idx-item">L114 [import] import PackageSearch from &quot;./PackageSearch&quot;;</div><div class="idx-item">L115 [import] import DriveBackupPanel from &quot;./DriveBackupPanel&quot;;</div><div class="idx-item">L116 [import] import Manual from &quot;./Manual&quot;;</div><div class="idx-item">L117 [import] import CombinarApps from &quot;./CombinarApps&quot;;</div><div class="idx-item">L118 [import] import SystemStatusPanel from &quot;./SystemStatusPanel&quot;;</div><div class="idx-item">L119 [import] import SiteExtractor from &quot;./SiteExtractor&quot;;</div><div class="idx-item">L120 [import] import BuildPanel from &quot;./BuildPanel&quot;;</div><div class="idx-item">L121 [import] import FileScanner from &quot;./FileScanner&quot;;</div><div class="idx-item">L122 [import] import { exportAsZip, importFromZip } from &quot;@/lib/zip-service&quot;;</div><div class="idx-item">L124 [interface] EditorLayoutProps</div><div class="idx-item">L134 [const] ENCODINGS</div><div class="idx-item">L135 [const] LANGUAGES</div><div class="idx-item">L143 [function] buildAsciiTree</div><div class="idx-item">L144 [interface] TNode</div><div class="idx-item">L152 [function] sortKeys</div><div class="idx-item">L162 [comment] // subtree = o nó atual; name = nome a exibir; prefix = linh</div><div class="idx-item">L163 [function] render</div><div class="idx-item">L180 [function] generateDocs</div><div class="idx-item">L183 [function] readSafe →</div><div class="idx-item">L286 [function] explainFile</div><div class="idx-item">L413 [function] explainFolder</div><div class="idx-item">L623 [function] generateSystemInfo</div><div class="idx-item">L725 [component] EditorLayout</div><div class="idx-item">L801 [comment] //    &quot;online&quot;  = usa servidor (Replit) — bash de verdade, m</div><div class="idx-item">L802 [comment] //    &quot;offline&quot; = JavaScript simulado — não precisa de nada,</div><div class="idx-item">L803 [comment] //    &quot;real&quot;    = WebContainer — Node.js de verdade rodando </div><div class="idx-item">L1391 [function] tryPersist →</div><div class="idx-item">L1450 [function] electronFS →</div><div class="idx-item">L2041 [function] tb →</div><div class="idx-item">L2103 [function] val →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L30</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;
+import DatabasePanel from &quot;./DatabasePanel&quot;;
+import DeployPanel from &quot;./DeployPanel&quot;;
+import {
+  Files, Terminal as TerminalIcon, Eye, GitBranch,
+  Menu, X, Plus, Download, Upload, FolderOpen, Save, FileCode,
+  Undo2, Redo2, Play, Package, ChevronDown, Trash2,
+  ChevronLeft, ChevronRight, BookOpen, Search, MoreHorizontal,
+  Bot, Settings2, FilePlus, FolderPlus, Scale, MessageSquare, Mic,
+  Camera, History, CheckSquare, RotateCcw, Clock, Maximize2, Globe, HardDrive,
+  RefreshCw,
+} from &quot;lucide-react&quot;;
+
+// ─── Tipos de Checkpoint e Taski ─────────────────────────────────────────────
+interface Checkpoint {
+  id: string;
+  label: string;
+  timestamp: number;
+  files: Record&lt;string, string&gt;;
+  fileCount: number;
+}
+
+interface Task {
+  id: string;
+  text: string;
+  done: boolean;
+  createdAt: number;
+}
+
+// ─── Modal de nome de arquivo/pasta ──────────────────────────────────────────</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>NameInputModal</span>
+    <div>
+      <small>L31–L51</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function NameInputModal({
+  title, placeholder, defaultValue, icon, confirmLabel = &quot;Criar&quot;, onConfirm, onCancel,
+}: {
+  title: string;
+  placeholder: string;
+  defaultValue: string;
+  icon: React.ReactNode;
+  confirmLabel?: string;
+  onConfirm: (value: string) =&gt; void;
+  onCancel: () =&gt; void;
+}) {
+  const [value, setValue] = useState(defaultValue);
+  const inputRef = useRef&lt;HTMLInputElement&gt;(null);
+  useEffect(() =&gt; {
+    const t = setTimeout(() =&gt; {
+      inputRef.current?.focus();
+      // Seleciona o texto existente (útil no renomear)
+      inputRef.current?.select();
+    }, 80);
+    return () =&gt; clearTimeout(t);
+  }, []);</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>submit →</span>
+    <div>
+      <small>L52–L142</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">  const submit = () =&gt; { const v = value.trim(); if (v) onConfirm(v); };
+  return (
+    &lt;&gt;
+      &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/60 backdrop-blur-sm&quot; onClick={onCancel} /&gt;
+      &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+        &lt;div className=&quot;bg-[#222e18] border-t border-gray-700/50 rounded-t-3xl shadow-2xl overflow-hidden&quot;&gt;
+          &lt;div className=&quot;flex items-center justify-center pt-3 pb-1&quot;&gt;
+            &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;flex items-center justify-between px-5 py-3 border-b border-gray-700/30&quot;&gt;
+            &lt;div className=&quot;flex items-center gap-2.5&quot;&gt;
+              {icon}
+              &lt;p className=&quot;text-base font-bold text-white&quot;&gt;{title}&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;button onClick={onCancel} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-600&quot;&gt;
+              &lt;X size={17} /&gt;
+            &lt;/button&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;px-5 pt-4 pb-6 space-y-4&quot;&gt;
+            &lt;input
+              ref={inputRef}
+              value={value}
+              onChange={e =&gt; setValue(e.target.value)}
+              onKeyDown={e =&gt; { if (e.key === &quot;Enter&quot;) submit(); if (e.key === &quot;Escape&quot;) onCancel(); }}
+              placeholder={placeholder}
+              autoComplete=&quot;off&quot;
+              autoCorrect=&quot;off&quot;
+              autoCapitalize=&quot;off&quot;
+              spellCheck={false}
+              className=&quot;w-full px-4 py-3.5 bg-[#0d0d0d] border border-gray-700/50 rounded-2xl text-[16px] text-gray-200 placeholder-gray-700 outline-none focus:border-green-500/60 focus:ring-1 focus:ring-green-500/20&quot;
+            /&gt;
+            &lt;div className=&quot;flex gap-3&quot;&gt;
+              &lt;button
+                onClick={onCancel}
+                className=&quot;flex-1 py-3 bg-white/5 border border-gray-700/40 text-gray-400 rounded-2xl text-[15px] font-semibold&quot;
+              &gt;
+                Cancelar
+              &lt;/button&gt;
+              &lt;button
+                onClick={submit}
+                disabled={!value.trim()}
+                className=&quot;flex-1 py-3 bg-green-600 disabled:opacity-40 text-white rounded-2xl text-[15px] font-bold hover:bg-green-500 transition-colors&quot;
+              &gt;
+                {confirmLabel}
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/&gt;
+  );
+}
+import { VirtualFileSystem, getLanguageFromPath } from &quot;@/lib/virtual-fs&quot;;
+import { cloneRepo } from &quot;@/lib/github-service&quot;;
+import { templates } from &quot;@/lib/templates&quot;;
+import FileTree from &quot;./FileTree&quot;;
+import CodeEditor, { CodeEditorHandle } from &quot;./CodeEditor&quot;;
+import WebContainerTerminal from &quot;./WebContainerTerminal&quot;;
+import ElectronTerminal from &quot;./ElectronTerminal&quot;;
+import Preview from &quot;./Preview&quot;;
+import AIChat, { AIScope } from &quot;./AIChat&quot;;
+import GitHubPanel from &quot;./GitHubPanel&quot;;
+import PackageSearch from &quot;./PackageSearch&quot;;
+import DriveBackupPanel from &quot;./DriveBackupPanel&quot;;
+import Manual from &quot;./Manual&quot;;
+import CombinarApps from &quot;./CombinarApps&quot;;
+import SystemStatusPanel from &quot;./SystemStatusPanel&quot;;
+import SiteExtractor from &quot;./SiteExtractor&quot;;
+import BuildPanel from &quot;./BuildPanel&quot;;
+import FileScanner from &quot;./FileScanner&quot;;
+import { exportAsZip, importFromZip } from &quot;@/lib/zip-service&quot;;
+
+interface EditorLayoutProps {
+  vfs: VirtualFileSystem;
+  projectName: string;
+  onNewProject: () =&gt; void;
+  onSaveProject?: (name: string) =&gt; void;
+  onOpenCampoLivre?: () =&gt; void;
+  onOpenAssistenteJuridico?: () =&gt; void;
+  onBackToProjects?: () =&gt; void;
+}
+
+const ENCODINGS = [&quot;UTF-8&quot;, &quot;UTF with BOM&quot;, &quot;UTF-16 LE&quot;, &quot;UTF-16 BE&quot;, &quot;Latin-1&quot;];
+const LANGUAGES = [
+  &quot;plaintext&quot;, &quot;javascript&quot;, &quot;typescript&quot;, &quot;html&quot;, &quot;css&quot;, &quot;json&quot;,
+  &quot;python&quot;, &quot;java&quot;, &quot;cpp&quot;, &quot;c&quot;, &quot;csharp&quot;, &quot;go&quot;, &quot;rust&quot;, &quot;ruby&quot;,
+  &quot;php&quot;, &quot;swift&quot;, &quot;kotlin&quot;, &quot;yaml&quot;, &quot;markdown&quot;, &quot;sql&quot;, &quot;graphql&quot;,
+  &quot;shell&quot;, &quot;dockerfile&quot;, &quot;xml&quot;, &quot;scss&quot;,
+];
+
+// ─── Gerador de árvore ASCII ──────────────────────────────────────────────────</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>buildAsciiTree</span>
+    <div>
+      <small>L143–L151</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">function buildAsciiTree(files: string[]): string {
+  type TNode = { [k: string]: TNode };
+  const root: TNode = {};
+  files.forEach(f =&gt; {
+    const parts = f.split(&quot;/&quot;);
+    let cur = root;
+    parts.forEach(p =&gt; { if (!cur[p]) cur[p] = {}; cur = cur[p]; });
+  });
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>sortKeys</span>
+    <div>
+      <small>L152–L162</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">  function sortKeys(subtree: TNode): string[] {
+    return Object.keys(subtree).sort((a, b) =&gt; {
+      const aDir = Object.keys(subtree[a]).length &gt; 0;
+      const bDir = Object.keys(subtree[b]).length &gt; 0;
+      if (aDir &amp;&amp; !bDir) return -1;
+      if (!aDir &amp;&amp; bDir) return 1;
+      return a.localeCompare(b);
+    });
+  }
+
+  // subtree = o nó atual; name = nome a exibir; prefix = linhas do pai; isLast = ultimo filho?</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>render</span>
+    <div>
+      <small>L163–L179</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">  function render(subtree: TNode, prefix: string, name: string, isLast: boolean): string {
+    const connector = isLast ? &quot;└── &quot; : &quot;├── &quot;;
+    const childKeys = sortKeys(subtree);
+    const isDir = childKeys.length &gt; 0;
+    let result = prefix + connector + name + (isDir ? &quot;/&quot; : &quot;&quot;) + &quot;\n&quot;;
+    childKeys.forEach((child, i) =&gt; {
+      const childIsLast = i === childKeys.length - 1;
+      result += render(subtree[child], prefix + (isLast ? &quot;    &quot; : &quot;│   &quot;), child, childIsLast);
+    });
+    return result;
+  }
+
+  const topKeys = sortKeys(root);
+  return topKeys.map((k, i) =&gt; render(root[k], &quot;&quot;, k, i === topKeys.length - 1).trimEnd()).join(&quot;\n&quot;);
+}
+
+// ─── Gerador principal de documentação/plano ─────────────────────────────────</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>generateDocs</span>
+    <div>
+      <small>L180–L182</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">function generateDocs(vfs: VirtualFileSystem, projectName: string): string {
+  const now = new Date().toLocaleString(&quot;pt-BR&quot;, { timeZone: &quot;America/Sao_Paulo&quot; });
+  const allFiles = vfs.listFiles();</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>readSafe →</span>
+    <div>
+      <small>L183–L285</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">  const readSafe = (path: string) =&gt; { try { return vfs.readFile(path) || &quot;&quot;; } catch { return &quot;&quot;; } };
+
+  // ── Detectar stack ──────────────────────────────────────────────────────────
+  const pkgRaw = readSafe(&quot;package.json&quot;);
+  let pkg: any = {};
+  try { pkg = JSON.parse(pkgRaw); } catch { /* ignora */ }
+  const deps: Record&lt;string, string&gt; = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+  const depNames = Object.keys(deps);
+
+  const hasReact     = depNames.includes(&quot;react&quot;) || allFiles.some(f =&gt; f.endsWith(&quot;.tsx&quot;) || f.endsWith(&quot;.jsx&quot;));
+  const hasVite      = depNames.includes(&quot;vite&quot;) || allFiles.some(f =&gt; f === &quot;vite.config.ts&quot; || f === &quot;vite.config.js&quot;);
+  const hasNextJs    = depNames.includes(&quot;next&quot;);
+  const hasExpress   = depNames.includes(&quot;express&quot;);
+  const hasFlask     = allFiles.some(f =&gt; f.endsWith(&quot;.py&quot;)) &amp;&amp; (readSafe(&quot;requirements.txt&quot;) + readSafe(&quot;app.py&quot;)).includes(&quot;flask&quot;);
+  const hasPython    = allFiles.some(f =&gt; f.endsWith(&quot;.py&quot;));
+  const hasTypeScript = depNames.includes(&quot;typescript&quot;) || allFiles.some(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.tsx&quot;));
+  const hasTailwind  = depNames.includes(&quot;tailwindcss&quot;);
+  const hasPrisma    = depNames.includes(&quot;prisma&quot;) || depNames.includes(&quot;@prisma/client&quot;);
+  const hasDrizzle   = depNames.includes(&quot;drizzle-orm&quot;);
+  const hasPostgres  = depNames.includes(&quot;pg&quot;) || depNames.includes(&quot;postgres&quot;) || depNames.includes(&quot;@neondatabase/serverless&quot;);
+  const hasMongo     = depNames.includes(&quot;mongoose&quot;) || depNames.includes(&quot;mongodb&quot;);
+  const hasSQLite    = depNames.includes(&quot;better-sqlite3&quot;) || depNames.includes(&quot;sqlite3&quot;);
+  const hasHTML      = allFiles.some(f =&gt; f.endsWith(&quot;.html&quot;));
+
+  // Stack label
+  const frontStack: string[] = [];
+  if (hasNextJs) frontStack.push(&quot;Next.js&quot;);
+  else if (hasReact) frontStack.push(&quot;React&quot; + (hasVite ? &quot; + Vite&quot; : &quot;&quot;));
+  if (hasTypeScript) frontStack.push(&quot;TypeScript&quot;);
+  if (hasTailwind) frontStack.push(&quot;Tailwind CSS&quot;);
+  if (hasPython &amp;&amp; hasFlask) frontStack.push(&quot;Python + Flask&quot;);
+  else if (hasPython) frontStack.push(&quot;Python&quot;);
+  if (hasHTML &amp;&amp; !hasReact &amp;&amp; !hasPython) frontStack.push(&quot;HTML + CSS + JavaScript&quot;);
+
+  const backStack: string[] = [];
+  if (hasExpress) backStack.push(&quot;Node.js + Express&quot;);
+  if (hasPostgres) backStack.push(&quot;PostgreSQL&quot; + (depNames.includes(&quot;@neondatabase/serverless&quot;) ? &quot; (Neon)&quot; : &quot;&quot;));
+  if (hasMongo) backStack.push(&quot;MongoDB&quot;);
+  if (hasSQLite) backStack.push(&quot;SQLite&quot;);
+  if (hasPrisma) backStack.push(&quot;Prisma ORM&quot;);
+  if (hasDrizzle) backStack.push(&quot;Drizzle ORM&quot;);
+
+  // Tipo do app
+  const appType = hasNextJs ? &quot;Aplicacao Web Full-Stack (Next.js)&quot;
+    : (hasReact &amp;&amp; hasExpress) ? &quot;Full-Stack (React + Express)&quot;
+    : hasReact ? &quot;Aplicacao Web Frontend (React)&quot;
+    : hasExpress ? &quot;Backend/API (Node.js + Express)&quot;
+    : hasFlask ? &quot;Backend/API (Python + Flask)&quot;
+    : hasHTML ? &quot;Site/Pagina Web (HTML/CSS/JS)&quot;
+    : hasPython ? &quot;Script / Aplicacao Python&quot;
+    : &quot;Projeto de Codigo&quot;;
+
+  // ── Detectar rotas da API ───────────────────────────────────────────────────
+  const apiRoutes: string[] = [];
+  const routeRegex = /(?:router|app)\.(get|post|put|patch|delete|use)\s*\(\s*[&quot;'`]([^&quot;'`]+)[&quot;'`]/gi;
+  allFiles.filter(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.js&quot;)).forEach(f =&gt; {
+    const content = readSafe(f);
+    let m: RegExpExecArray | null;
+    const re = new RegExp(routeRegex.source, &quot;gi&quot;);
+    while ((m = re.exec(content)) !== null) {
+      const method = m[1].toUpperCase().padEnd(6);
+      const path = m[2];
+      if (!path.includes(&quot;{{&quot;) &amp;&amp; path !== &quot;/&quot;) {
+        apiRoutes.push(`${method} ${path}  (em ${f})`);
+      }
+    }
+  });
+
+  // ── Detectar variáveis de ambiente ─────────────────────────────────────────
+  const envVars = new Set&lt;string&gt;();
+  const envRegex = /process\.env\.([A-Z_][A-Z0-9_]*)/g;
+  allFiles.filter(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.js&quot;) || f.endsWith(&quot;.py&quot;)).forEach(f =&gt; {
+    const content = readSafe(f);
+    let m: RegExpExecArray | null;
+    const re = new RegExp(envRegex.source, &quot;g&quot;);
+    while ((m = re.exec(content)) !== null) {
+      if (m[1] !== &quot;NODE_ENV&quot;) envVars.add(m[1]);
+    }
+  });
+  // .env files
+  [&quot;.env&quot;, &quot;.env.example&quot;, &quot;.env.local&quot;].forEach(ef =&gt; {
+    readSafe(ef).split(&quot;\n&quot;).forEach(line =&gt; {
+      const m = line.match(/^([A-Z_][A-Z0-9_]*)=/);
+      if (m) envVars.add(m[1]);
+    });
+  });
+
+  // ── Scripts npm ────────────────────────────────────────────────────────────
+  const scripts = pkg.scripts || {};
+
+  // ── Arquivos principais ────────────────────────────────────────────────────
+  const mainFiles = allFiles.filter(f =&gt;
+    [&quot;index.ts&quot;,&quot;index.js&quot;,&quot;main.ts&quot;,&quot;main.tsx&quot;,&quot;app.ts&quot;,&quot;app.js&quot;,&quot;app.py&quot;,&quot;main.py&quot;,
+     &quot;server.ts&quot;,&quot;server.js&quot;,&quot;App.tsx&quot;,&quot;App.jsx&quot;,&quot;index.tsx&quot;,&quot;index.html&quot;].includes(f.split(&quot;/&quot;).pop() || &quot;&quot;)
+  ).slice(0, 10);
+
+  // ── Contagem de linhas totais ──────────────────────────────────────────────
+  const totalLines = allFiles.reduce((sum, f) =&gt; sum + (readSafe(f).split(&quot;\n&quot;).length), 0);
+
+  // ── Arvore ASCII ───────────────────────────────────────────────────────────
+  const asciiTree = buildAsciiTree(allFiles);
+
+  // ── Função: explicar arquivo pelo nome/extensão ─────────────────────────</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>explainFile</span>
+    <div>
+      <small>L286–L412</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">  function explainFile(filePath: string): string {
+    const name = filePath.split(&quot;/&quot;).pop() || filePath;
+    const nameLower = name.toLowerCase();
+    const ext = name.split(&quot;.&quot;).pop()?.toLowerCase() || &quot;&quot;;
+    const base = name.replace(/\.[^.]+$/, &quot;&quot;).toLowerCase();
+    // Configurações e infra
+    if (name === &quot;package.json&quot;) return &quot;Registro de dependencias e scripts do projeto. Aqui ficam os comandos (npm run dev, npm start) e os pacotes instalados.&quot;;
+    if (name === &quot;tsconfig.json&quot;) return &quot;Configuracao do TypeScript. Diz para o computador como interpretar o codigo .ts e .tsx.&quot;;
+    if (name === &quot;vite.config.ts&quot; || name === &quot;vite.config.js&quot;) return &quot;Configuracao do Vite (servidor de desenvolvimento). Define a porta, alias de caminhos e plugins usados.&quot;;
+    if (name === &quot;tailwind.config.ts&quot; || name === &quot;tailwind.config.js&quot;) return &quot;Configuracao do Tailwind CSS — a biblioteca de estilos visuais usada no projeto.&quot;;
+    if (name === &quot;postcss.config.js&quot; || name === &quot;postcss.config.cjs&quot;) return &quot;Configuracao do PostCSS, necessaria para o Tailwind processar os estilos.&quot;;
+    if (name === &quot;.env&quot; || name === &quot;.env.local&quot; || name === &quot;.env.example&quot;) return &quot;Arquivo de variaveis secretas (senhas, chaves de API). NUNCA suba este arquivo para o GitHub.&quot;;
+    if (name === &quot;Dockerfile&quot;) return &quot;Instrucoes para criar um container Docker do projeto (para deploy em servidores).&quot;;
+    if (name === &quot;docker-compose.yml&quot;) return &quot;Define multiplos containers Docker que rodam juntos (ex: app + banco de dados).&quot;;
+    if (name === &quot;.gitignore&quot;) return &quot;Lista de arquivos/pastas que o Git deve IGNORAR (nao versionar). Ex: node_modules, .env&quot;;
+    if (name === &quot;README.md&quot;) return &quot;Documentacao principal do projeto. Explica o que o projeto faz e como rodar.&quot;;
+    if (name === &quot;PLANO.md&quot;) return &quot;Este documento! Gerado automaticamente pelo SK Code Editor com toda a estrutura do projeto.&quot;;
+    if (name === &quot;MANUAL.md&quot;) return &quot;Manual explicativo em linguagem simples, feito para entender o projeto sem precisar de conhecimento tecnico profundo.&quot;;
+    if (name === &quot;schema.prisma&quot;) return &quot;Esquema do banco de dados (tabelas, colunas, relacoes) escrito em linguagem Prisma.&quot;;
+    if (name === &quot;drizzle.config.ts&quot;) return &quot;Configuracao do Drizzle ORM — gerencia a conexao e migracao do banco de dados.&quot;;
+    if (name === &quot;index.html&quot;) return &quot;Pagina HTML raiz do projeto. E o ponto de entrada que o browser carrega primeiro.&quot;;
+    // Extensoes
+    if (ext === &quot;md&quot;) return &quot;Arquivo de documentacao em Markdown (texto formatado com #titulos, **negrito**, listas).&quot;;
+    if (ext === &quot;sql&quot;) return &quot;Script SQL — contem comandos para criar tabelas, inserir ou consultar dados no banco.&quot;;
+    if (ext === &quot;csv&quot;) return &quot;Planilha de dados em formato texto (valores separados por virgula).&quot;;
+    if (ext === &quot;json&quot;) {
+      if (base.includes(&quot;manifest&quot;)) return &quot;Manifesto do PWA — define nome, icone e configuracoes para instalar o app no celular.&quot;;
+      return &quot;Arquivo de dados ou configuracao no formato JSON (chave: valor).&quot;;
+    }
+    if (ext === &quot;css&quot; || ext === &quot;scss&quot; || ext === &quot;sass&quot;) return &quot;Arquivo de estilos visuais — cores, tamanhos, fontes, espacamentos da interface.&quot;;
+    if (ext === &quot;svg&quot;) return &quot;Imagem vetorial (icone ou ilustracao que nao perde qualidade ao ampliar).&quot;;
+    if (ext === &quot;png&quot; || ext === &quot;jpg&quot; || ext === &quot;jpeg&quot; || ext === &quot;webp&quot;) return &quot;Arquivo de imagem.&quot;;
+    if (ext === &quot;py&quot;) {
+      if (nameLower.includes(&quot;model&quot;)) return &quot;Modelos de dados Python (classes que representam entidades como Usuario, Produto...).&quot;;
+      if (nameLower.includes(&quot;route&quot;) || nameLower.includes(&quot;view&quot;)) return &quot;Rotas/views do backend Python — define quais URLs o servidor responde.&quot;;
+      if (nameLower.includes(&quot;test&quot;)) return &quot;Arquivo de testes automatizados em Python.&quot;;
+      if (nameLower.includes(&quot;config&quot;)) return &quot;Configuracoes do projeto Python.&quot;;
+      return &quot;Arquivo Python — codigo de logica ou script de automacao.&quot;;
+    }
+    // Componentes React
+    if (ext === &quot;tsx&quot; || ext === &quot;jsx&quot;) {
+      if (base === &quot;app&quot; || base === &quot;App&quot;) return &quot;Componente RAIZ do frontend — e o pai de todos os outros componentes. Aqui ficam as rotas principais.&quot;;
+      if (base === &quot;main&quot; || base === &quot;index&quot;) return &quot;Ponto de entrada do React — monta o componente App na pagina HTML.&quot;;
+      // Nomes especificos
+      if (base.toLowerCase().includes(&quot;layout&quot;)) return &quot;Componente de LAYOUT — define a estrutura visual da pagina (cabecalho, sidebar, rodape). Envolve outros componentes.&quot;;
+      if (base.toLowerCase().includes(&quot;card&quot;)) return &quot;Componente CARD (cartao) — exibe uma informacao em um bloco visual com borda e sombra. Muito usado para listas de items.&quot;;
+      if (base.toLowerCase().includes(&quot;modal&quot;)) return &quot;Componente MODAL — janela/popup que aparece sobre a tela pedindo uma acao ou mostrando uma informacao importante.&quot;;
+      if (base.toLowerCase().includes(&quot;button&quot;) || base.toLowerCase().includes(&quot;btn&quot;)) return &quot;Componente de BOTAO — elemento clicavel reutilizavel com estilo padrao do projeto.&quot;;
+      if (base.toLowerCase().includes(&quot;header&quot;) || base.toLowerCase().includes(&quot;navbar&quot;) || base.toLowerCase().includes(&quot;nav&quot;)) return &quot;Componente de NAVEGACAO/CABECALHO — barra superior com logo, menu e links de navegacao.&quot;;
+      if (base.toLowerCase().includes(&quot;footer&quot;)) return &quot;Componente de RODAPE — parte inferior da pagina com links, copyright e informacoes extras.&quot;;
+      if (base.toLowerCase().includes(&quot;sidebar&quot;)) return &quot;Componente de BARRA LATERAL — menu ou painel que aparece na lateral da tela.&quot;;
+      if (base.toLowerCase().includes(&quot;form&quot;)) return &quot;Componente de FORMULARIO — campos de entrada de dados (texto, selecao, etc.) com validacao.&quot;;
+      if (base.toLowerCase().includes(&quot;input&quot;)) return &quot;Componente de CAMPO DE ENTRADA — elemento de input com estilo personalizado.&quot;;
+      if (base.toLowerCase().includes(&quot;table&quot;)) return &quot;Componente de TABELA — exibe dados em linhas e colunas.&quot;;
+      if (base.toLowerCase().includes(&quot;list&quot;)) return &quot;Componente de LISTA — exibe uma colecao de items de forma organizada.&quot;;
+      if (base.toLowerCase().includes(&quot;item&quot;)) return &quot;Componente de ITEM — representa um elemento individual dentro de uma lista ou colecao.&quot;;
+      if (base.toLowerCase().includes(&quot;page&quot;) || base.toLowerCase().includes(&quot;screen&quot;) || base.toLowerCase().includes(&quot;view&quot;)) return &quot;Componente de PAGINA/TELA — representa uma tela completa navegavel no app.&quot;;
+      if (base.toLowerCase().includes(&quot;dashboard&quot;)) return &quot;Componente de PAINEL DE CONTROLE — tela principal com resumo de dados e acesso rapido as funcoes.&quot;;
+      if (base.toLowerCase().includes(&quot;chart&quot;) || base.toLowerCase().includes(&quot;graph&quot;)) return &quot;Componente de GRAFICO — visualizacao de dados em forma de grafico (barras, linhas, pizza...).&quot;;
+      if (base.toLowerCase().includes(&quot;login&quot;) || base.toLowerCase().includes(&quot;auth&quot;) || base.toLowerCase().includes(&quot;signin&quot;)) return &quot;Componente de LOGIN/AUTENTICACAO — tela de entrada com usuario e senha.&quot;;
+      if (base.toLowerCase().includes(&quot;register&quot;) || base.toLowerCase().includes(&quot;signup&quot;) || base.toLowerCase().includes(&quot;cadastro&quot;)) return &quot;Componente de CADASTRO — formulario para criar nova conta de usuario.&quot;;
+      if (base.toLowerCase().includes(&quot;profile&quot;) || base.toLowerCase().includes(&quot;perfil&quot;)) return &quot;Componente de PERFIL — exibe e edita informacoes do usuario logado.&quot;;
+      if (base.toLowerCase().includes(&quot;search&quot;) || base.toLowerCase().includes(&quot;busca&quot;)) return &quot;Componente de BUSCA — campo e logica para filtrar/encontrar conteudo.&quot;;
+      if (base.toLowerCase().includes(&quot;toast&quot;) || base.toLowerCase().includes(&quot;notification&quot;) || base.toLowerCase().includes(&quot;alert&quot;)) return &quot;Componente de NOTIFICACAO/ALERTA — mensagem temporaria que aparece na tela (ex: 'Salvo com sucesso!').&quot;;
+      if (base.toLowerCase().includes(&quot;loading&quot;) || base.toLowerCase().includes(&quot;spinner&quot;)) return &quot;Componente de CARREGAMENTO — animacao visual que aparece enquanto dados estao sendo buscados.&quot;;
+      if (base.toLowerCase().includes(&quot;empty&quot;) || base.toLowerCase().includes(&quot;placeholder&quot;)) return &quot;Componente de ESTADO VAZIO — exibido quando nao ha dados para mostrar (ex: 'Nenhum resultado encontrado').&quot;;
+      if (base.toLowerCase().includes(&quot;error&quot;) || base.toLowerCase().includes(&quot;erro&quot;)) return &quot;Componente de ERRO — exibido quando algo da errado, com mensagem explicativa.&quot;;
+      if (base.toLowerCase().includes(&quot;provider&quot;)) return &quot;Componente PROVIDER — 'fornece' dados/funcoes para todos os componentes filhos via Context API do React.&quot;;
+      if (base.toLowerCase().includes(&quot;context&quot;)) return &quot;CONTEXT do React — mecanismo para compartilhar dados entre componentes sem passar por props.&quot;;
+      if (base.toLowerCase().includes(&quot;icon&quot;)) return &quot;Componente de ICONE — imagem/simbolo visual pequeno reutilizavel.&quot;;
+      if (base.toLowerCase().includes(&quot;avatar&quot;)) return &quot;Componente AVATAR — foto ou iniciais do usuario em formato circular.&quot;;
+      if (base.toLowerCase().includes(&quot;badge&quot;)) return &quot;Componente BADGE (etiqueta) — pequeno indicador com numero ou status (ex: '3 novas mensagens').&quot;;
+      if (base.toLowerCase().includes(&quot;tag&quot;) || base.toLowerCase().includes(&quot;chip&quot;)) return &quot;Componente TAG/CHIP — rotulo pequeno para categorizar ou classificar um item.&quot;;
+      if (base.toLowerCase().includes(&quot;menu&quot;) || base.toLowerCase().includes(&quot;dropdown&quot;)) return &quot;Componente de MENU/DROPDOWN — lista de opcoes que aparece ao clicar em um botao.&quot;;
+      if (base.toLowerCase().includes(&quot;dialog&quot;)) return &quot;Componente DIALOG — caixa de dialogo que exige resposta do usuario (confirmar, cancelar...).&quot;;
+      if (base.toLowerCase().includes(&quot;tabs&quot;) || base.toLowerCase().includes(&quot;tab&quot;)) return &quot;Componente de ABAS — permite alternar entre diferentes secoes de conteudo com clique.&quot;;
+      if (base.toLowerCase().includes(&quot;accordion&quot;)) return &quot;Componente ACCORDION — secoes que abrem/fecham ao clicar, economizando espaco na tela.&quot;;
+      if (base.toLowerCase().includes(&quot;stepper&quot;) || base.toLowerCase().includes(&quot;wizard&quot;)) return &quot;Componente WIZARD/STEPPER — guia o usuario por multiplos passos em sequencia.&quot;;
+      if (base.toLowerCase().includes(&quot;map&quot;)) return &quot;Componente de MAPA — exibe mapa geografico (geralmente Google Maps ou Leaflet).&quot;;
+      if (base.toLowerCase().includes(&quot;editor&quot;)) return &quot;Componente EDITOR — area de edicao de texto, codigo ou conteudo rico.&quot;;
+      if (base.toLowerCase().includes(&quot;preview&quot;)) return &quot;Componente PREVIEW — exibe uma visualizacao de algo antes de salvar/publicar.&quot;;
+      if (base.toLowerCase().includes(&quot;upload&quot;)) return &quot;Componente UPLOAD — permite selecionar e enviar arquivos.&quot;;
+      if (base.toLowerCase().includes(&quot;settings&quot;) || base.toLowerCase().includes(&quot;config&quot;) || base.toLowerCase().includes(&quot;configuracao&quot;)) return &quot;Componente de CONFIGURACOES — tela onde o usuario ajusta preferencias do app.&quot;;
+      if (base.toLowerCase().includes(&quot;home&quot;) || base.toLowerCase().includes(&quot;inicio&quot;)) return &quot;Componente HOME — pagina/tela inicial do app.&quot;;
+      if (base.toLowerCase().includes(&quot;product&quot;) || base.toLowerCase().includes(&quot;produto&quot;)) return &quot;Componente de PRODUTO — exibe informacoes de um produto (nome, preco, imagem...).&quot;;
+      if (base.toLowerCase().includes(&quot;order&quot;) || base.toLowerCase().includes(&quot;pedido&quot;)) return &quot;Componente de PEDIDO — gerencia ou exibe informacoes de um pedido/compra.&quot;;
+      if (base.toLowerCase().includes(&quot;cart&quot;) || base.toLowerCase().includes(&quot;carrinho&quot;)) return &quot;Componente CARRINHO — lista de produtos selecionados para compra.&quot;;
+      if (base.toLowerCase().includes(&quot;payment&quot;) || base.toLowerCase().includes(&quot;checkout&quot;) || base.toLowerCase().includes(&quot;pagamento&quot;)) return &quot;Componente de PAGAMENTO/CHECKOUT — tela de finalizacao de compra.&quot;;
+      if (base.toLowerCase().includes(&quot;chat&quot;) || base.toLowerCase().includes(&quot;message&quot;) || base.toLowerCase().includes(&quot;mensagem&quot;)) return &quot;Componente de CHAT/MENSAGENS — interface de conversa em tempo real.&quot;;
+      if (base.toLowerCase().includes(&quot;comment&quot;) || base.toLowerCase().includes(&quot;comentario&quot;)) return &quot;Componente de COMENTARIOS — exibe e permite adicionar comentarios a um conteudo.&quot;;
+      if (base.toLowerCase().includes(&quot;calendar&quot;) || base.toLowerCase().includes(&quot;agenda&quot;)) return &quot;Componente CALENDARIO/AGENDA — visualizacao e selecao de datas e eventos.&quot;;
+      return &quot;Componente React — parte visual reutilizavel da interface do usuario.&quot;;
+    }
+    // Hooks React
+    if ((ext === &quot;ts&quot; || ext === &quot;tsx&quot;) &amp;&amp; (base.startsWith(&quot;use&quot;) || base.toLowerCase().startsWith(&quot;use&quot;))) {
+      const hookName = base.replace(/^use/i, &quot;&quot;);
+      if (hookName.toLowerCase().includes(&quot;auth&quot;)) return &quot;HOOK de autenticacao — gerencia o estado de login/logout do usuario.&quot;;
+      if (hookName.toLowerCase().includes(&quot;fetch&quot;) || hookName.toLowerCase().includes(&quot;api&quot;) || hookName.toLowerCase().includes(&quot;data&quot;)) return &quot;HOOK de dados — busca informacoes da API e gerencia estado de carregamento e erro.&quot;;
+      if (hookName.toLowerCase().includes(&quot;local&quot;) || hookName.toLowerCase().includes(&quot;storage&quot;)) return &quot;HOOK de armazenamento local — salva e recupera dados do localStorage do browser.&quot;;
+      if (hookName.toLowerCase().includes(&quot;theme&quot;) || hookName.toLowerCase().includes(&quot;dark&quot;)) return &quot;HOOK de tema — gerencia modo claro/escuro da interface.&quot;;
+      if (hookName.toLowerCase().includes(&quot;modal&quot;)) return &quot;HOOK de modal — controla abertura e fechamento de janelas modais.&quot;;
+      if (hookName.toLowerCase().includes(&quot;form&quot;)) return &quot;HOOK de formulario — gerencia valores, validacao e submissao de formularios.&quot;;
+      if (hookName.toLowerCase().includes(&quot;window&quot;) || hookName.toLowerCase().includes(&quot;resize&quot;) || hookName.toLowerCase().includes(&quot;screen&quot;)) return &quot;HOOK de tela — detecta o tamanho da janela para layouts responsivos.&quot;;
+      if (hookName.toLowerCase().includes(&quot;debounce&quot;)) return &quot;HOOK debounce — atrasa a execucao de uma funcao para evitar chamadas excessivas (ex: busca ao digitar).&quot;;
+      if (hookName.toLowerCase().includes(&quot;click&quot;) || hookName.toLowerCase().includes(&quot;outside&quot;)) return &quot;HOOK de clique externo — detecta quando o usuario clica fora de um elemento.&quot;;
+      return `HOOK React personalizado para gerenciar estado/comportamento de '${hookName || &quot;funcionalidade especifica&quot;}'.`;
+    }
+    // TS/JS puro
+    if (ext === &quot;ts&quot; || ext === &quot;js&quot;) {
+      if (base.toLowerCase().includes(&quot;util&quot;) || base.toLowerCase().includes(&quot;helper&quot;)) return &quot;Funcoes UTILITARIAS — ferramentas reutilizaveis de uso geral no projeto.&quot;;
+      if (base.toLowerCase().includes(&quot;api&quot;) || base.toLowerCase().includes(&quot;service&quot;) || base.toLowerCase().includes(&quot;client&quot;)) return &quot;Arquivo de SERVICO/API — funcoes para comunicar com o servidor ou API externa.&quot;;
+      if (base.toLowerCase().includes(&quot;route&quot;) || base.toLowerCase().includes(&quot;router&quot;)) return &quot;Arquivo de ROTAS — define as URLs/enderecos respondidos pelo servidor.&quot;;
+      if (base.toLowerCase().includes(&quot;middleware&quot;)) return &quot;MIDDLEWARE — funcao que processa requisicoes antes de chegar na rota final (ex: verificar login).&quot;;
+      if (base.toLowerCase().includes(&quot;model&quot;) || base.toLowerCase().includes(&quot;schema&quot;)) return &quot;Arquivo de MODELO — define a estrutura dos dados (tabelas, campos, tipos).&quot;;
+      if (base.toLowerCase().includes(&quot;controller&quot;)) return &quot;CONTROLLER — logica de negocio que processa as requisicoes e retorna respostas.&quot;;
+      if (base.toLowerCase().includes(&quot;store&quot;) || base.toLowerCase().includes(&quot;state&quot;)) return &quot;STORE de estado — gerencia o estado global do app (dados compartilhados entre telas).&quot;;
+      if (base.toLowerCase().includes(&quot;type&quot;) || base.toLowerCase().includes(&quot;interface&quot;) || base.toLowerCase().includes(&quot;dto&quot;)) return &quot;Arquivo de TIPOS — define as estruturas de dados (interfaces TypeScript) usadas no projeto.&quot;;
+      if (base.toLowerCase().includes(&quot;constant&quot;) || base.toLowerCase().includes(&quot;config&quot;)) return &quot;Arquivo de CONSTANTES/CONFIGURACAO — valores fixos usados em varios lugares do projeto.&quot;;
+      if (base.toLowerCase().includes(&quot;test&quot;) || base.toLowerCase().includes(&quot;spec&quot;)) return &quot;Arquivo de TESTES — verifica automaticamente se o codigo funciona corretamente.&quot;;
+      if (base.toLowerCase().includes(&quot;seed&quot;)) return &quot;Arquivo SEED — popula o banco de dados com dados iniciais/de teste.&quot;;
+      if (base.toLowerCase().includes(&quot;migration&quot;)) return &quot;MIGRACAO de banco de dados — altera a estrutura do banco (adiciona tabelas, colunas...).&quot;;
+      if (base === &quot;index&quot;) return &quot;Arquivo INDEX — ponto de entrada da pasta, exporta tudo que esta dentro.&quot;;
+      return &quot;Arquivo TypeScript/JavaScript — logica, funcoes ou modulo do projeto.&quot;;
+    }
+    return `Arquivo ${ext.toUpperCase()} — parte do projeto.`;
+  }
+</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>explainFolder</span>
+    <div>
+      <small>L413–L622</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">  function explainFolder(folder: string): string {
+    const f = folder.toLowerCase();
+    if (f === &quot;src&quot;) return &quot;Codigo-fonte principal do projeto. Nao apague esta pasta.&quot;;
+    if (f === &quot;components&quot;) return &quot;Pecas visuais reutilizaveis da interface (botoes, cards, formularios...).&quot;;
+    if (f === &quot;pages&quot; || f === &quot;screens&quot; || f === &quot;views&quot;) return &quot;Telas completas do app — cada arquivo aqui e uma pagina navegavel.&quot;;
+    if (f === &quot;routes&quot; || f === &quot;router&quot;) return &quot;Definicao das URLs e navegacao do app.&quot;;
+    if (f === &quot;hooks&quot;) return &quot;Hooks React customizados — logica reutilizavel de estado e efeitos.&quot;;
+    if (f === &quot;lib&quot; || f === &quot;utils&quot; || f === &quot;helpers&quot;) return &quot;Funcoes auxiliares reutilizaveis em varios lugares do projeto.&quot;;
+    if (f === &quot;api&quot; || f === &quot;services&quot;) return &quot;Comunicacao com servidor, banco de dados ou APIs externas.&quot;;
+    if (f === &quot;store&quot; || f === &quot;context&quot; || f === &quot;state&quot;) return &quot;Gerenciamento de estado global — dados compartilhados entre telas.&quot;;
+    if (f === &quot;types&quot; || f === &quot;interfaces&quot; || f === &quot;dto&quot;) return &quot;Definicoes de tipos TypeScript — contratos de dados.&quot;;
+    if (f === &quot;assets&quot; || f === &quot;public&quot; || f === &quot;static&quot;) return &quot;Arquivos estaticos: imagens, icones, fontes, arquivos publicos.&quot;;
+    if (f === &quot;styles&quot; || f === &quot;css&quot; || f === &quot;scss&quot;) return &quot;Arquivos de estilo visual — cores, fontes, layout.&quot;;
+    if (f === &quot;config&quot;) return &quot;Arquivos de configuracao do projeto.&quot;;
+    if (f === &quot;middleware&quot;) return &quot;Funcoes intermediarias que processam requisicoes antes das rotas.&quot;;
+    if (f === &quot;models&quot; || f === &quot;entities&quot;) return &quot;Modelos de dados — representacao das tabelas do banco de dados.&quot;;
+    if (f === &quot;controllers&quot;) return &quot;Controladores — logica de negocios para cada rota da API.&quot;;
+    if (f === &quot;tests&quot; || f === &quot;__tests__&quot; || f === &quot;test&quot;) return &quot;Testes automatizados — verificam se o codigo funciona corretamente.&quot;;
+    if (f === &quot;migrations&quot;) return &quot;Historico de alteracoes do banco de dados.&quot;;
+    if (f === &quot;seeds&quot;) return &quot;Dados iniciais para popular o banco em desenvolvimento.&quot;;
+    if (f === &quot;dist&quot; || f === &quot;build&quot; || f === &quot;out&quot;) return &quot;Codigo compilado/gerado automaticamente — NAO edite diretamente.&quot;;
+    if (f === &quot;node_modules&quot;) return &quot;Pacotes instalados pelo npm — NAO edite e NAO envie para o GitHub.&quot;;
+    if (f === &quot;prisma&quot;) return &quot;Arquivos do Prisma ORM: schema do banco e migracoes.&quot;;
+    if (f === &quot;drizzle&quot;) return &quot;Arquivos do Drizzle ORM: schema e migracoes do banco.&quot;;
+    if (f === &quot;ui&quot;) return &quot;Componentes de UI (interface) basicos e genericos.&quot;;
+    if (f === &quot;layouts&quot;) return &quot;Estruturas de layout — esqueletos de pagina com cabecalho, sidebar, etc.&quot;;
+    if (f === &quot;icons&quot;) return &quot;Icones do projeto.&quot;;
+    return `Pasta '${folder}' — agrupamento de arquivos relacionados.`;
+  }
+
+  // ── Construir guia de pastas e arquivos ────────────────────────────────────
+  const folderMap = new Map&lt;string, string[]&gt;();
+  allFiles.forEach(f =&gt; {
+    const parts = f.split(&quot;/&quot;);
+    const folder = parts.length &gt; 1 ? parts.slice(0, -1).join(&quot;/&quot;) : &quot;(raiz)&quot;;
+    if (!folderMap.has(folder)) folderMap.set(folder, []);
+    folderMap.get(folder)!.push(f);
+  });
+  // Ordena: raiz primeiro, depois pastas por profundidade
+  const sortedFolders = [...folderMap.keys()].sort((a, b) =&gt; {
+    if (a === &quot;(raiz)&quot;) return -1;
+    if (b === &quot;(raiz)&quot;) return 1;
+    return a.split(&quot;/&quot;).length - b.split(&quot;/&quot;).length || a.localeCompare(b);
+  });
+
+  // ── Montar documento ────────────────────────────────────────────────────────
+  const lines: string[] = [];
+  lines.push(`# PLANO DO PROJETO: ${projectName}`);
+  lines.push(&quot;&quot;);
+  lines.push(`&gt; Gerado automaticamente pelo SK Code Editor em ${now}`);
+  lines.push(`&gt; **${allFiles.length} arquivo(s)** | **~${totalLines.toLocaleString(&quot;pt-BR&quot;)} linhas de codigo**`);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;---&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;## RESUMO EXECUTIVO&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(`- **Tipo de aplicacao:** ${appType}`);
+  if (frontStack.length) lines.push(`- **Frontend / Stack principal:** ${frontStack.join(&quot;, &quot;)}`);
+  if (backStack.length) lines.push(`- **Backend / Dados:** ${backStack.join(&quot;, &quot;)}`);
+  if (pkg.version) lines.push(`- **Versao:** ${pkg.version}`);
+  if (pkg.description) lines.push(`- **Descricao:** ${pkg.description}`);
+  lines.push(&quot;&quot;);
+
+  // Comando para rodar
+  lines.push(&quot;**Para rodar o projeto:**&quot;);
+  lines.push(&quot;```bash&quot;);
+  if (scripts.dev)     lines.push(&quot;npm install &amp;&amp; npm run dev&quot;);
+  else if (scripts.start) lines.push(&quot;npm install &amp;&amp; npm start&quot;);
+  else if (hasPython)  lines.push(&quot;pip install -r requirements.txt &amp;&amp; python main.py&quot;);
+  else if (hasHTML)    lines.push(&quot;# Abra index.html no Preview (botao Play)&quot;);
+  else                 lines.push(&quot;npm install&quot;);
+  lines.push(&quot;```&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;---&quot;);
+  lines.push(&quot;&quot;);
+
+  // Arvore
+  lines.push(&quot;## ESTRUTURA DE ARQUIVOS&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;```&quot;);
+  lines.push(projectName + &quot;/&quot;);
+  lines.push(asciiTree);
+  lines.push(&quot;```&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;---&quot;);
+  lines.push(&quot;&quot;);
+
+  // Stack detalhado
+  lines.push(&quot;## STACK TECNOLOGICO DETECTADO&quot;);
+  lines.push(&quot;&quot;);
+  if (frontStack.length) lines.push(`- **Frontend:** ${frontStack.join(&quot;, &quot;)}`);
+  if (backStack.length)  lines.push(`- **Backend:** ${backStack.join(&quot;, &quot;)}`);
+  if (depNames.length) {
+    const allDepsStr = depNames.join(&quot;, &quot;);
+    lines.push(`- **Todos os pacotes (${depNames.length}):** ${allDepsStr}`);
+  }
+  lines.push(&quot;&quot;);
+  lines.push(&quot;---&quot;);
+  lines.push(&quot;&quot;);
+
+  // Rotas
+  if (apiRoutes.length &gt; 0) {
+    lines.push(&quot;## ROTAS DA API (endpoints detectados automaticamente)&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;```&quot;);
+    apiRoutes.forEach(r =&gt; lines.push(r));
+    lines.push(&quot;```&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;---&quot;);
+    lines.push(&quot;&quot;);
+  }
+
+  // Scripts
+  if (Object.keys(scripts).length &gt; 0) {
+    lines.push(&quot;## SCRIPTS DISPONIVEIS (package.json)&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;```bash&quot;);
+    Object.entries(scripts).forEach(([k, v]) =&gt; lines.push(`npm run ${k.padEnd(12)}  # ${v}`));
+    lines.push(&quot;```&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;---&quot;);
+    lines.push(&quot;&quot;);
+  }
+
+  // Variaveis de ambiente
+  if (envVars.size &gt; 0) {
+    lines.push(&quot;## VARIAVEIS DE AMBIENTE NECESSARIAS&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;Crie um arquivo `.env` na raiz com estas variaveis:&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;```env&quot;);
+    [...envVars].forEach(v =&gt; lines.push(`${v}=seu_valor_aqui`));
+    lines.push(&quot;```&quot;);
+    lines.push(&quot;&quot;);
+    lines.push(&quot;---&quot;);
+    lines.push(&quot;&quot;);
+  }
+
+  // Arquivos principais
+  if (mainFiles.length &gt; 0) {
+    lines.push(&quot;## ARQUIVOS PRINCIPAIS&quot;);
+    lines.push(&quot;&quot;);
+    mainFiles.forEach(f =&gt; {
+      const desc = f.includes(&quot;server&quot;) || f === &quot;app.ts&quot; || f === &quot;app.js&quot; ? &quot;Ponto de entrada do backend&quot;
+        : f.includes(&quot;App.tsx&quot;) || f.includes(&quot;App.jsx&quot;) ? &quot;Componente raiz do frontend&quot;
+        : f === &quot;index.html&quot; ? &quot;Pagina HTML principal&quot;
+        : f === &quot;main.py&quot; || f === &quot;app.py&quot; ? &quot;Aplicacao Python principal&quot;
+        : &quot;Arquivo principal&quot;;
+      lines.push(`- \`${f}\` — ${desc}`);
+    });
+    lines.push(&quot;&quot;);
+    lines.push(&quot;---&quot;);
+    lines.push(&quot;&quot;);
+  }
+
+  // ── GUIA COMPLETO — pasta por pasta, arquivo por arquivo ──────────────────
+  lines.push(&quot;## GUIA COMPLETO — O QUE CADA PARTE DO PROJETO FAZ&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;&gt; Esta secao explica, em linguagem simples, o que e para que serve cada pasta e cada arquivo.&quot;);
+  lines.push(&quot;&quot;);
+
+  sortedFolders.forEach(folder =&gt; {
+    const folderFiles = folderMap.get(folder)!;
+    // Titulo da pasta
+    if (folder === &quot;(raiz)&quot;) {
+      lines.push(&quot;### 📁 Raiz do Projeto (pasta principal)&quot;);
+      lines.push(&quot;&gt; Arquivos de configuracao e pontos de entrada ficam aqui.&quot;);
+    } else {
+      const folderLeaf = folder.split(&quot;/&quot;).pop() || folder;
+      lines.push(`### 📁 \`${folder}/\``);
+      lines.push(`&gt; ${explainFolder(folderLeaf)}`);
+    }
+    lines.push(&quot;&quot;);
+    // Listar arquivos com explicacao
+    folderFiles.forEach(filePath =&gt; {
+      const fileName = filePath.split(&quot;/&quot;).pop() || filePath;
+      const explanation = explainFile(filePath);
+      const lineCount = readSafe(filePath).split(&quot;\n&quot;).length;
+      lines.push(`**\`${fileName}\`** _(${lineCount} linha${lineCount !== 1 ? &quot;s&quot; : &quot;&quot;})_`);
+      lines.push(`${explanation}`);
+      lines.push(&quot;&quot;);
+    });
+    lines.push(&quot;---&quot;);
+    lines.push(&quot;&quot;);
+  });
+
+  // Contexto para IA
+  lines.push(&quot;## CONTEXTO PARA IA (copie e cole para continuar o projeto)&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;&gt; Use este bloco para explicar o projeto para qualquer IA ou desenvolvedor:&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;```&quot;);
+  lines.push(`Projeto: ${projectName}`);
+  lines.push(`Tipo: ${appType}`);
+  if (frontStack.length) lines.push(`Stack: ${[...frontStack, ...backStack].join(&quot;, &quot;)}`);
+  lines.push(`Arquivos: ${allFiles.length} | Linhas: ~${totalLines.toLocaleString(&quot;pt-BR&quot;)}`);
+  if (apiRoutes.length) lines.push(`Rotas API: ${apiRoutes.length} endpoint(s) detectado(s)`);
+  if (envVars.size) lines.push(`Variaveis de ambiente necessarias: ${[...envVars].join(&quot;, &quot;)}`);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;Estrutura principal:&quot;);
+  allFiles.forEach(f =&gt; lines.push(`  ${f}`));
+  lines.push(&quot;```&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(&quot;---&quot;);
+  lines.push(&quot;&quot;);
+  lines.push(`*Plano gerado pelo SK Code Editor — ${now}*`);
+
+  return lines.join(&quot;\n&quot;);
+}
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>generateSystemInfo</span>
+    <div>
+      <small>L623–L724</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">function generateSystemInfo(projectName: string, fileCount: number): string {
+  const now = new Date().toLocaleString(&quot;pt-BR&quot;);
+  return `# SK Code Editor — Informações do Sistema
+
+&gt; Gerado em: ${now}
+&gt; Projeto: **${projectName}** · ${fileCount} arquivo(s)
+
+---
+
+## Terminal
+
+O terminal executa JavaScript real no browser e simula comandos de sistema:
+
+### O que funciona:
+- \`node &lt;arquivo.js&gt;\` — executa JavaScript **real** (async/await suportado!)
+- \`fetch(&quot;https://api.exemplo.com&quot;)\` — **acesso à internet funcionando** para APIs com CORS
+- \`require('node-fetch')\` ou \`require('axios')\` → usa fetch nativo do browser automaticamente
+- \`require('fs')\` — lê e escreve arquivos do projeto virtual
+- \`npm install &lt;pacote&gt;\` — atualiza package.json do projeto
+- \`ls\`, \`cat\`, \`mkdir\`, \`touch\`, \`rm\`, \`cp\`, \`mv\` — operações de arquivo
+- \`echo\`, \`pwd\`, \`clear\`, \`env\` — utilitários
+- \`git status\`, \`git log\` — informações do projeto
+
+### Sobre acesso à internet:
+- ✅ APIs públicas com CORS habilitado: OpenAI, GitHub, JSONPlaceholder, etc.
+- ✅ \`fetch(&quot;https://api.github.com/users/nome&quot;)\` funciona direto
+- ⚠️  Algumas APIs bloqueiam chamadas do browser (CORS) — nesses casos use um backend real
+- ❌ WebSockets e streams em tempo real não funcionam no modo browser
+
+### Sobre Python:
+- \`python &lt;arquivo.py&gt;\` — **simulado** (mostra prints estáticos)
+- Para Python real: use Replit, Google Colab, ou instale localmente
+
+---
+
+## Assistente IA
+
+### Escopos de contexto:
+| Escopo | O que é enviado | Tokens estimados |
+|--------|----------------|-----------------|
+| Projeto | Até 60 arquivos (10k chars cada, total 80k) | ~40.000–200.000 |
+| Pasta | Arquivos da pasta atual (12k chars cada) | ~3.000–30.000 |
+| Arquivo | Só o arquivo ativo (40k chars) | ~500–10.000 |
+| Nenhum | Apenas sua mensagem | ~100–500 |
+
+### Limites por modelo (tokens de entrada):
+| Modelo | Limite entrada | Limite saída |
+|--------|--------------|-------------|
+| GPT-4o | 128.000 tokens | 16.384 tokens |
+| GPT-4o-mini | 128.000 tokens | 16.384 tokens |
+| GPT-3.5-turbo | 16.385 tokens | 4.096 tokens |
+| Claude 3.5 Sonnet | 200.000 tokens | 8.096 tokens |
+| Claude 3 Haiku | 200.000 tokens | 4.096 tokens |
+| Gemini 1.5 Pro | 1.000.000 tokens | 8.192 tokens |
+| Gemini 1.5 Flash | 1.000.000 tokens | 8.192 tokens |
+
+&gt; 1 token ≈ 4 caracteres em inglês / ≈ 3 caracteres em português
+
+### Comandos que a IA entende:
+- \`filepath:caminho/arquivo.ext\` — cria/atualiza arquivo no projeto
+- Blocos \`\`\`bash\`\`\` — exibe botão &quot;Executar no Terminal&quot;
+- Você pode pedir: &quot;crie&quot;, &quot;corrija&quot;, &quot;explique&quot;, &quot;refatore&quot;, &quot;adicione testes&quot;
+
+---
+
+## Atalhos do Editor
+
+| Ação | Atalho |
+|------|--------|
+| Salvar | Ctrl+S / ⌘S |
+| Desfazer | Ctrl+Z |
+| Refazer | Ctrl+Y / Ctrl+Shift+Z |
+| Buscar | Ctrl+F |
+| Substituir | Ctrl+H |
+| Ir para linha | Ctrl+G |
+| Formatar | Shift+Alt+F |
+| Comentar linha | Ctrl+/ |
+| Duplicar linha | Shift+Alt+↓ |
+| Mover linha | Alt+↑/↓ |
+| Selecionar tudo | Ctrl+A |
+
+---
+
+## Armazenamento
+
+- **Índice de projetos:** \`localStorage['sk-editor-projects']\` (apenas metadados)
+- **Arquivos de cada projeto:** \`localStorage['sk-proj-files-{id}']\` (chave separada por projeto)
+- **Projeto atual:** \`localStorage['sk-editor-current']\`
+- **Auto-save:** a cada 8 segundos e em cada mudança de arquivo
+- **Capacidade:** projetos grandes suportados — cada projeto tem sua própria cota de armazenamento
+- **Backup seguro:** use ☁️ Backup no Google Drive para projetos maiores que 5MB
+- **Exportar tudo:** Painel de Arquivos → ··· na raiz → Exportar como ZIP
+
+---
+
+## Versão
+
+SK Code Editor · Editor de código mobile-first em português  
+Monaco Editor + WebAssembly Terminal + IA integrada  
+`;
+}
+</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>EditorLayout</span>
+    <div>
+      <small>L725–L1390</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">export default function EditorLayout({ vfs, projectName, onNewProject, onSaveProject, onOpenCampoLivre, onOpenAssistenteJuridico, onBackToProjects }: EditorLayoutProps) {
+  const [openFiles, setOpenFiles] = useState&lt;string[]&gt;([]);
+  const [activeFile, setActiveFile] = useState&lt;string | null&gt;(null);
+  const [fileHistory, setFileHistory] = useState&lt;string[]&gt;([]);
+  const [fileHistoryIndex, setFileHistoryIndex] = useState(-1);
+
+  // Overlay panel states (mobile-first)
+  const [showFilePanel, setShowFilePanel] = useState(false);
+  const [showAIPanel, setShowAIPanel] = useState(false);
+  const [showGitHub, setShowGitHub] = useState(false);
+  const [githubDefaultView, setGithubDefaultView] = useState&lt;&quot;home&quot; | &quot;push-new&quot; | &quot;push-existing&quot; | &quot;clone&quot; | &quot;pages-deploy&quot; | undefined&gt;();
+  const [showBottomPanel, setShowBottomPanel] = useState(true);
+  const [bottomPanel, setBottomPanel] = useState&lt;&quot;terminal&quot; | &quot;preview&quot;&gt;(&quot;terminal&quot;);
+  const [terminalRunning, setTerminalRunning] = useState(false);
+  const [terminalRunningCmd, setTerminalRunningCmd] = useState&lt;string&gt;(&quot;&quot;);
+  const [serverInfo, setServerInfo] = useState&lt;{ running: boolean; port: number } | null&gt;(null);
+  const [previewBig, setPreviewBig] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showDrivePanel, setShowDrivePanel] = useState(false);
+  const [showPackages, setShowPackages] = useState(false);
+  const [showCheckpointPanel, setShowCheckpointPanel] = useState(false);
+  const [showTaskPanel, setShowTaskPanel] = useState(false);
+  const [checkpoints, setCheckpoints] = useState&lt;Checkpoint[]&gt;(() =&gt; {
+    try {
+      const raw = localStorage.getItem(&quot;sk-checkpoints&quot;) || &quot;[]&quot;;
+      const all: Checkpoint[] = JSON.parse(raw);
+      // Limita automaticamente a 5 checkpoints para proteger a cota
+      return Array.isArray(all) ? all.slice(0, 5) : [];
+    } catch { return []; }
+  });
+  const [tasks, setTasks] = useState&lt;Task[]&gt;(() =&gt; {
+    try { return JSON.parse(localStorage.getItem(&quot;sk-tasks&quot;) || &quot;[]&quot;); } catch { return []; }
+  });
+  const [newTaskText, setNewTaskText] = useState(&quot;&quot;);
+  const [showSearch, setShowSearch] = useState(false);
+  const [showEncoding, setShowEncoding] = useState(false);
+  const [showLang, setShowLang] = useState(false);
+  const [showPrefsPanel, setShowPrefsPanel] = useState(false);
+  const [triggerVoice, setTriggerVoice] = useState(false);
+  const [triggerPreviewFullscreen, setTriggerPreviewFullscreen] = useState(false);
+  const [showPreviewToast, setShowPreviewToast] = useState(false);
+  const [showNewAppWizard, setShowNewAppWizard] = useState(false);
+  const [showDBPanel, setShowDBPanel] = useState(false);
+  const [showDeployPanel, setShowDeployPanel] = useState(false);
+  const [showManualPanel, setShowManualPanel] = useState(false);
+  const [showCombinarAppsPanel, setShowCombinarAppsPanel] = useState(false);
+  const [showSystemStatus, setShowSystemStatus] = useState(false);
+  const [showSiteExtractor, setShowSiteExtractor] = useState(false);
+  const [showBuildPanel, setShowBuildPanel] = useState(false);
+  const [showFileScanner, setShowFileScanner] = useState(false);
+  const [dbConnectionString, setDbConnectionString] = useState&lt;string&gt;(() =&gt; localStorage.getItem(&quot;sk-db-url&quot;) || &quot;&quot;);
+  const [syncStatus, setSyncStatus] = useState&lt;&quot;idle&quot; | &quot;syncing&quot; | &quot;ok&quot; | &quot;error&quot;&gt;(&quot;idle&quot;);
+  const [dbSQLInput, setDbSQLInput] = useState(&quot;SELECT NOW();&quot;);
+  const [dbQueryResult, setDbQueryResult] = useState&lt;{ rows: any[]; rowCount: number; command: string; error?: string } | null&gt;(null);
+  const [dbLoading, setDbLoading] = useState(false);
+  const [newAppCreatedToast, setNewAppCreatedToast] = useState&lt;string | null&gt;(null);
+
+  const [tree, setTree] = useState(vfs.getTree());
+  const [fileContents, setFileContents] = useState&lt;Record&lt;string, string&gt;&gt;({});
+  const [packageInput, setPackageInput] = useState(&quot;&quot;);
+  const [packageType, setPackageType] = useState&lt;&quot;npm&quot; | &quot;pip&quot;&gt;(&quot;npm&quot;);
+  const [isDark, setIsDark] = useState(() =&gt; {
+    try { return localStorage.getItem(&quot;sk-theme&quot;) !== &quot;light&quot;; } catch { return true; }
+  });
+  const [pendingTermCmd, setPendingTermCmd] = useState&lt;string | undefined&gt;();
+  const [terminalTab, setTerminalTab] = useState&lt;1 | 2 | 3&gt;(1);
+  const [wcExternalCommand, setWcExternalCommand] = useState&lt;string | undefined&gt;();
+  const [useWebContainer, setUseWebContainer] = useState(() =&gt; {
+    try { return localStorage.getItem(&quot;sk-use-wc&quot;) === &quot;1&quot;; } catch { return false; }
+  });
+  const [externalAIMsg, setExternalAIMsg] = useState&lt;string | undefined&gt;();
+  // Captura output do terminal para enviar à IA como contexto
+  const [lastTermOutput, setLastTermOutput] = useState&lt;{ cmd: string; output: string; ok: boolean } | undefined&gt;();
+  const [terminalBuffer, setTerminalBuffer] = useState&lt;string&gt;(&quot;&quot;);
+  const [termHasError, setTermHasError] = useState(false);
+  // ── Modo do Terminal:
+  //    &quot;online&quot;  = usa servidor (Replit) — bash de verdade, mas precisa do server.
+  //    &quot;offline&quot; = JavaScript simulado — não precisa de nada, instala simulado.
+  //    &quot;real&quot;    = WebContainer — Node.js de verdade rodando no navegador, instala de verdade.
+  const [terminalMode, setTerminalMode] = useState&lt;&quot;online&quot; | &quot;offline&quot; | &quot;real&quot;&gt;(() =&gt; {
+    try {
+      const saved = localStorage.getItem(&quot;sk-terminal-mode&quot;);
+      if (saved === &quot;online&quot; || saved === &quot;offline&quot; || saved === &quot;real&quot;) return saved;
+    } catch {}
+    // Auto-detecta: se for PWA instalado (standalone) ou APK → tenta REAL primeiro (Node.js de verdade)
+    if (typeof window !== &quot;undefined&quot;) {
+      const isStandalone =
+        window.matchMedia?.(&quot;(display-mode: standalone)&quot;).matches ||
+        // @ts-expect-error iOS Safari
+        window.navigator.standalone === true ||
+        window.location.protocol === &quot;file:&quot;;
+      if (isStandalone) {
+        // Se o navegador suporta WebContainer (cross-origin isolated), usa real; senão cai no offline
+        const supportsReal = typeof SharedArrayBuffer !== &quot;undefined&quot; &amp;&amp; (window as any).crossOriginIsolated;
+        return supportsReal ? &quot;real&quot; : &quot;offline&quot;;
+      }
+    }
+    return &quot;online&quot;;
+  });
+  useEffect(() =&gt; {
+    try { localStorage.setItem(&quot;sk-terminal-mode&quot;, terminalMode); } catch {}
+  }, [terminalMode]);
+  const [encoding, setEncoding] = useState(&quot;UTF-8&quot;);
+  const [forcedLanguage, setForcedLanguage] = useState&lt;string | undefined&gt;();
+  const [expandedDirs, setExpandedDirs] = useState&lt;Set&lt;string&gt;&gt;(new Set([&quot;__root__&quot;]));
+  const [aiScope, setAiScope] = useState&lt;AIScope&gt;(&quot;project&quot;);
+  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+  const [, setTick] = useState(0);
+
+  const zipInputRef = useRef&lt;HTMLInputElement&gt;(null);
+  const editorRef = useRef&lt;CodeEditorHandle&gt;(null);
+
+  // Modal de nomear arquivo/pasta (substitui prompt() que não funciona bem no PWA)
+  const [nameModal, setNameModal] = useState&lt;{
+    title: string;
+    placeholder: string;
+    defaultValue: string;
+    icon: React.ReactNode;
+    confirmLabel?: string;
+    onConfirm: (value: string) =&gt; void;
+  } | null&gt;(null);
+
+  const openNameModal = useCallback((opts: {
+    title: string;
+    placeholder: string;
+    defaultValue?: string;
+    icon: React.ReactNode;
+    confirmLabel?: string;
+    onConfirm: (value: string) =&gt; void;
+  }) =&gt; {
+    setNameModal({ defaultValue: &quot;&quot;, ...opts });
+  }, []);
+
+  useEffect(() =&gt; {
+    const unsub = vfs.onChange(() =&gt; { setTree(vfs.getTree()); setTick(t =&gt; t + 1); });
+    return () =&gt; { unsub(); };
+  }, [vfs]);
+
+  const autoExpandPath = useCallback((filePath: string) =&gt; {
+    const parts = filePath.split(&quot;/&quot;);
+    if (parts.length &gt; 1) {
+      setExpandedDirs(prev =&gt; {
+        const next = new Set(prev);
+        let cur = &quot;&quot;;
+        for (let i = 0; i &lt; parts.length - 1; i++) {
+          cur = cur ? `${cur}/${parts[i]}` : parts[i];
+          next.add(cur);
+        }
+        return next;
+      });
+    }
+  }, []);
+
+  const toggleDir = useCallback((path: string) =&gt; {
+    setExpandedDirs(prev =&gt; {
+      const next = new Set(prev);
+      if (next.has(path)) next.delete(path); else next.add(path);
+      return next;
+    });
+  }, []);
+
+  const handleFileSelect = useCallback((path: string) =&gt; {
+    const content = vfs.readFile(path);
+    if (content === undefined) return;
+    if (!openFiles.includes(path)) {
+      // Limite de 3 abas — fecha a mais antiga ao abrir nova
+      setOpenFiles(prev =&gt; {
+        const next = [...prev, path];
+        return next.length &gt; 3 ? next.slice(-3) : next;
+      });
+    }
+    setActiveFile(path);
+    setFileContents(prev =&gt; ({ ...prev, [path]: content }));
+    setForcedLanguage(undefined);
+    autoExpandPath(path);
+    setShowFilePanel(false);
+
+    setFileHistory(prev =&gt; {
+      const trimmed = prev.slice(0, fileHistoryIndex + 1);
+      if (trimmed[trimmed.length - 1] === path) return prev;
+      return [...trimmed, path];
+    });
+    setFileHistoryIndex(prev =&gt; prev + 1);
+  }, [openFiles, vfs, autoExpandPath, fileHistoryIndex]);
+
+  const navigateBack = useCallback(() =&gt; {
+    if (fileHistoryIndex &gt; 0) {
+      const path = fileHistory[fileHistoryIndex - 1];
+      setFileHistoryIndex(prev =&gt; prev - 1);
+      const content = vfs.readFile(path);
+      if (content !== undefined) {
+        if (!openFiles.includes(path)) setOpenFiles(prev =&gt; [...prev, path]);
+        setActiveFile(path);
+        setFileContents(prev =&gt; ({ ...prev, [path]: content }));
+      }
+    }
+  }, [fileHistory, fileHistoryIndex, vfs, openFiles]);
+
+  const navigateForward = useCallback(() =&gt; {
+    if (fileHistoryIndex &lt; fileHistory.length - 1) {
+      const path = fileHistory[fileHistoryIndex + 1];
+      setFileHistoryIndex(prev =&gt; prev + 1);
+      const content = vfs.readFile(path);
+      if (content !== undefined) {
+        if (!openFiles.includes(path)) setOpenFiles(prev =&gt; [...prev, path]);
+        setActiveFile(path);
+        setFileContents(prev =&gt; ({ ...prev, [path]: content }));
+      }
+    }
+  }, [fileHistory, fileHistoryIndex, vfs, openFiles]);
+
+  const handleCloseFile = useCallback((path: string) =&gt; {
+    setOpenFiles(prev =&gt; prev.filter(f =&gt; f !== path));
+    if (activeFile === path) {
+      const remaining = openFiles.filter(f =&gt; f !== path);
+      setActiveFile(remaining.length &gt; 0 ? remaining[remaining.length - 1] : null);
+    }
+  }, [activeFile, openFiles]);
+
+  const handleEditorChange = useCallback((value: string) =&gt; {
+    if (!activeFile) return;
+    vfs.writeFile(activeFile, value);
+    setFileContents(prev =&gt; ({ ...prev, [activeFile]: value }));
+  }, [activeFile, vfs]);
+
+  const handleCreateFile = useCallback((parentPath: string) =&gt; {
+    openNameModal({
+      title: &quot;Novo Arquivo&quot;,
+      placeholder: &quot;ex: index.html, App.tsx, main.py&quot;,
+      icon: &lt;FilePlus size={18} className=&quot;text-blue-400&quot; /&gt;,
+      onConfirm: (name) =&gt; {
+        const path = parentPath ? `${parentPath}/${name}` : name;
+        vfs.writeFile(path, &quot;&quot;);
+        handleFileSelect(path);
+        setNameModal(null);
+      },
+    });
+  }, [vfs, handleFileSelect, openNameModal]);
+
+  const handleCreateFolder = useCallback((parentPath: string) =&gt; {
+    openNameModal({
+      title: &quot;Nova Pasta&quot;,
+      placeholder: &quot;ex: src, components, pages&quot;,
+      icon: &lt;FolderPlus size={18} className=&quot;text-amber-400&quot; /&gt;,
+      onConfirm: (name) =&gt; {
+        const path = parentPath ? `${parentPath}/${name}` : name;
+        vfs.writeFile(`${path}/.gitkeep`, &quot;&quot;);
+        setExpandedDirs(prev =&gt; new Set([...prev, path]));
+        setNameModal(null);
+      },
+    });
+  }, [vfs, openNameModal]);
+
+  const handleDeleteNode = useCallback((path: string) =&gt; {
+    if (!confirm(`Excluir &quot;${path}&quot;?`)) return;
+    vfs.deleteFile(path);
+    setOpenFiles(prev =&gt; prev.filter(f =&gt; !f.startsWith(path)));
+    if (activeFile?.startsWith(path)) setActiveFile(null);
+  }, [vfs, activeFile]);
+
+  const handleRenameNode = useCallback((path: string) =&gt; {
+    const parts = path.split(&quot;/&quot;);
+    const currentName = parts[parts.length - 1];
+    const isDir = !currentName.includes(&quot;.&quot;);
+    openNameModal({
+      title: &quot;Renomear&quot;,
+      placeholder: currentName,
+      defaultValue: currentName,
+      icon: isDir
+        ? &lt;FolderPlus size={18} className=&quot;text-amber-400&quot; /&gt;
+        : &lt;FilePlus size={18} className=&quot;text-blue-400&quot; /&gt;,
+      confirmLabel: &quot;Renomear&quot;,
+      onConfirm: (newName) =&gt; {
+        if (newName === currentName) { setNameModal(null); return; }
+        parts[parts.length - 1] = newName;
+        const newPath = parts.join(&quot;/&quot;);
+        vfs.renameFile(path, newPath);
+        setOpenFiles(prev =&gt; prev.map(f =&gt; f === path ? newPath : f));
+        if (activeFile === path) setActiveFile(newPath);
+        setNameModal(null);
+      },
+    });
+  }, [vfs, activeFile, openNameModal]);
+
+  const handleDuplicateNode = useCallback((path: string) =&gt; {
+    const content = vfs.readFile(path);
+    if (content === undefined) return;
+    const parts = path.split(&quot;/&quot;);
+    const name = parts[parts.length - 1];
+    const ext = name.includes(&quot;.&quot;) ? &quot;.&quot; + name.split(&quot;.&quot;).pop() : &quot;&quot;;
+    const base = ext ? name.slice(0, -ext.length) : name;
+    parts[parts.length - 1] = `${base}-copia${ext}`;
+    vfs.writeFile(parts.join(&quot;/&quot;), content);
+  }, [vfs]);
+
+  const getFileContent = useCallback((path: string) =&gt; vfs.readFile(path), [vfs]);
+  const getAllFilesUnder = useCallback((prefix: string) =&gt; {
+    return vfs.listFiles().filter(f =&gt; f === prefix || f.startsWith(prefix + &quot;/&quot;)).map(p =&gt; ({ path: p, content: vfs.readFile(p) || &quot;&quot; }));
+  }, [vfs]);
+
+  const handleRunInTerminal = useCallback((cmd: string) =&gt; {
+    // Abre o terminal MAS mantém Raquel aberta — Saulo precisa ver os dois ao mesmo tempo
+    setShowBottomPanel(true);
+    setBottomPanel(&quot;terminal&quot;);
+    setTimeout(() =&gt; setPendingTermCmd(cmd), 120);
+  }, []);
+
+  const handleAnalyzeWithAI = useCallback((path: string, isDir: boolean) =&gt; {
+    // Monta prompt com o conteúdo do arquivo ou pasta
+    let prompt = &quot;&quot;;
+    if (path === &quot;/&quot; || isDir) {
+      const prefix = path === &quot;/&quot; ? &quot;&quot; : path;
+      const files = vfs.listFiles().filter(f =&gt; prefix === &quot;&quot; || f === prefix || f.startsWith(prefix + &quot;/&quot;));
+      const contents = files.slice(0, 20).map(f =&gt; {
+        const c = vfs.readFile(f) || &quot;&quot;;
+        return `\n--- ${f} ---\n${c.slice(0, 8000)}`;
+      }).join(&quot;&quot;);
+      prompt = `Analise a ${path === &quot;/&quot; ? &quot;pasta raiz do projeto&quot; : `pasta &quot;${path}&quot;`} e dê um diagnóstico completo: estrutura, possíveis bugs, melhorias, e próximos passos recomendados.\n\nARQUIVOS:${contents}`;
+    } else {
+      const content = vfs.readFile(path) || &quot;&quot;;
+      prompt = `Analise o arquivo &quot;${path}&quot; detalhadamente: aponte bugs, problemas de lógica, boas práticas que faltam, sugestões de melhoria, e se necessário corrija o código.\n\n--- ${path} ---\n${content.slice(0, 40000)}`;
+    }
+    setShowAIPanel(true);
+    setShowFilePanel(false);
+    // Pequeno delay para garantir que o painel IA esteja montado
+    setTimeout(() =&gt; setExternalAIMsg(prompt), 200);
+  }, [vfs]);
+
+  // ── Sincroniza arquivos do editor → workspace do servidor ────────────────────
+  // Envia só o arquivo ativo para o servidor (leve, sem risco de 413)
+  const syncActiveFileToServer = useCallback(async (filePath: string): Promise&lt;boolean&gt; =&gt; {
+    try {
+      const content = vfs.readFile(filePath) || &quot;&quot;;
+      const resp = await fetch(&quot;/api/workspace/write&quot;, {
+        method: &quot;POST&quot;,
+        headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify({ path: filePath.replace(/^\//, &quot;&quot;), content }),
+      });
+      return resp.ok;
+    } catch {
+      return false;
+    }
+  }, [vfs]);
+
+  // Sync manual completo — exclui node_modules, .git e arquivos &gt; 500 KB
+  const syncFilesToServer = useCallback(async (): Promise&lt;boolean&gt; =&gt; {
+    setSyncStatus(&quot;syncing&quot;);
+    try {
+      const paths = vfs.listFiles();
+      const files = paths
+        .filter(p =&gt; {
+          if (p.includes(&quot;node_modules&quot;) || p.includes(&quot;/.git/&quot;)) return false;
+          const content = vfs.readFile(p) || &quot;&quot;;
+          return content.length &lt;= 500_000; // pula arquivos &gt; 500 KB
+        })
+        .map(p =&gt; ({ path: p.replace(/^\//, &quot;&quot;), content: vfs.readFile(p) || &quot;&quot; }));
+      const resp = await fetch(&quot;/api/workspace/sync&quot;, {
+        method: &quot;POST&quot;,
+        headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify({ files }),
+      });
+      setSyncStatus(resp.ok ? &quot;ok&quot; : &quot;error&quot;);
+      setTimeout(() =&gt; setSyncStatus(&quot;idle&quot;), 6000);
+      return resp.ok;
+    } catch {
+      setSyncStatus(&quot;error&quot;);
+      setTimeout(() =&gt; setSyncStatus(&quot;idle&quot;), 3000);
+      return false;
+    }
+  }, [vfs]);
+
+  const handleInstallPackage = useCallback(() =&gt; {
+    const pkg = packageInput.trim();
+    if (!pkg) return;
+    // No terminal (que agora começa no workspace), npm install funciona de verdade
+    if (packageType === &quot;npm&quot;) {
+      handleRunInTerminal(`npm install ${pkg}`);
+    } else {
+      handleRunInTerminal(`pip3 install ${pkg}`);
+    }
+    setPackageInput(&quot;&quot;);
+    setShowPackages(false);
+  }, [packageInput, packageType, handleRunInTerminal]);
+
+  const handleRun = useCallback(async () =&gt; {
+    if (!activeFile) return;
+    const ext = activeFile.split(&quot;.&quot;).pop()?.toLowerCase() ?? &quot;&quot;;
+    // Tipos que renderizam visualmente no Preview
+    const previewTypes = [&quot;html&quot;, &quot;htm&quot;, &quot;svg&quot;, &quot;json&quot;, &quot;md&quot;, &quot;markdown&quot;, &quot;css&quot;, &quot;scss&quot;, &quot;js&quot;, &quot;ts&quot;, &quot;mjs&quot;, &quot;cjs&quot;];
+    if (previewTypes.includes(ext)) {
+      setShowBottomPanel(true);
+      setBottomPanel(&quot;preview&quot;);
+      return;
+    }
+    // Envia só o arquivo ativo para o servidor ANTES de executar (evita 413)
+    setShowBottomPanel(true);
+    setBottomPanel(&quot;terminal&quot;);
+    // Terminal proxy/Termux não precisa de sync com servidor
+    // Agora o terminal está no workspace e encontra os arquivos
+    const filename = activeFile.replace(/^\//, &quot;&quot;);
+    let cmd = &quot;&quot;;
+    if (ext === &quot;py&quot;) cmd = `python3 &quot;${filename}&quot;`;
+    else if (ext === &quot;sh&quot;) cmd = `bash &quot;${filename}&quot;`;
+    else if ([&quot;js&quot;, &quot;mjs&quot;, &quot;cjs&quot;].includes(ext)) cmd = `node &quot;${filename}&quot;`;
+    else if (ext === &quot;ts&quot;) cmd = `node --experimental-strip-types &quot;${filename}&quot; 2&gt;/dev/null || npx ts-node &quot;${filename}&quot;`;
+    else { setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); return; }
+    handleRunInTerminal(cmd);
+  }, [activeFile, handleRunInTerminal, syncActiveFileToServer, terminalMode]);
+
+  const handleApplyCode = useCallback((path: string, content: string) =&gt; {
+    vfs.writeFile(path, content);
+    handleFileSelect(path);
+    autoExpandPath(path);
+    // Se aplicou um HTML, mostra toast de preview
+    if (path.endsWith(&quot;.html&quot;) || path === &quot;index.html&quot;) {
+      setBottomPanel(&quot;preview&quot;);
+      setShowBottomPanel(true);
+      setShowPreviewToast(true);
+      setTimeout(() =&gt; setShowPreviewToast(false), 5000);
+    }
+  }, [vfs, handleFileSelect, autoExpandPath]);
+
+  const handleImportFromGitHub = useCallback((files: Record&lt;string, string&gt;) =&gt; {
+    vfs.clear(); vfs.fromJSON(files);
+    setOpenFiles([]); setActiveFile(null); setFileContents({});
+    setShowGitHub(false);
+  }, [vfs]);
+
+  const handleGitClone = useCallback(async (owner: string, repo: string) =&gt; {
+    const imported = await cloneRepo({ token: &quot;&quot;, username: &quot;&quot; }, owner, repo);
+    if (Object.keys(imported).length === 0) throw new Error(&quot;Nenhum arquivo encontrado. O repositório é privado ou não existe.&quot;);
+    vfs.clear(); vfs.fromJSON(imported);
+    setOpenFiles([]); setActiveFile(null); setFileContents({});
+  }, [vfs]);
+
+  const handleGenerateDocs = useCallback(() =&gt; {
+    const content = generateDocs(vfs, projectName);
+    vfs.writeFile(&quot;PLANO.md&quot;, content);
+    handleFileSelect(&quot;PLANO.md&quot;);
+    setShowMoreMenu(false);
+  }, [vfs, projectName, handleFileSelect]);
+
+  const handleOpenRaquelPerfil = useCallback(() =&gt; {
+    const existing = vfs.readFile(&quot;.sk/perfil-raquel.md&quot;);
+    if (!existing) {
+      const now = new Date().toLocaleString(&quot;pt-BR&quot;, { timeZone: &quot;America/Sao_Paulo&quot; });
+      const initial = `# 🧠 Perfil de Aprendizado — Raquel
+&gt; Criado em: ${now}
+&gt; Este arquivo é mantido e atualizado pela própria Raquel conforme aprende sobre Saulo e o projeto.
+&gt; Você pode editar, corrigir ou adicionar informações aqui a qualquer momento.
+
+---
+
+## Sobre Você
+
+- **Profissão:** Advogado
+- **Limitação física:** Deficiência nos membros superiores — usa principalmente comandos de voz
+- **Estilo de comunicação:** Prefere respostas curtas e diretas, em português simples
+- **Como confirma ações:** Costuma dizer &quot;pode&quot;, &quot;pode continuar&quot;, &quot;ok&quot;, &quot;vai&quot;
+- **O que evitar:** Jargão técnico sem explicação, respostas muito longas para ler
+
+---
+
+## Preferências de Trabalho
+
+- Gosta de saber o que foi feito sem precisar ler tudo
+- Prefere que a conversa tenha continuidade natural
+- Aprecia quando a IA sugere o próximo passo
+- Usa o editor principalmente para projetos pessoais e jurídicos
+
+---
+
+## Sobre o Projeto Atual
+
+&gt; (Raquel vai preencher esta seção conforme aprende sobre o projeto)
+
+---
+
+## O que Raquel Aprendeu até Agora
+
+&gt; (Atualizado automaticamente pela Raquel ao longo das conversas)
+`;
+      // Garante que a pasta .sk existe criando o arquivo diretamente
+      vfs.writeFile(&quot;.sk/perfil-raquel.md&quot;, initial);
+    }
+    handleFileSelect(&quot;.sk/perfil-raquel.md&quot;);
+    setShowFilePanel(false);
+  }, [vfs, handleFileSelect]);
+
+  const handleGenerateManual = useCallback(() =&gt; {
+    const manual = `# 📖 Manual do Desenvolvedor — SK Code Editor
+&gt; Guia em linguagem simples para entender o que cada coisa significa.
+&gt; Sem jargão técnico. Feito para você, Saulo.
+
+---
+
+## 🗂️ O que significa cada pasta aqui no Replit
+
+### 📁 \`artifacts/\`
+É a pasta principal do projeto. Dentro dela ficam as duas partes do aplicativo:
+
+- **\`api-server/\`** → O **servidor** (o &quot;motor&quot; que roda por trás das cenas).
+  Ele é quem executa comandos no terminal, faz conexão com banco de dados, e responde as chamadas do app.
+  Pense nele como a **cozinha de um restaurante** — o cliente não vê, mas é ele que faz tudo funcionar.
+
+- **\`code-editor/\`** → A **interface visual** (o que você vê na tela).
+  É o editor de código, os painéis, os botões, a Raquel, o terminal, o preview.
+  Pense nele como o **salão do restaurante** — o que o cliente vê e usa.
+
+---
+
+### 📁 \`src/\` (dentro de cada artifact)
+Significa **&quot;source&quot;** = código-fonte. É onde fica o código que você escreve/edita.
+Nunca apague essa pasta — é o coração do projeto.
+
+---
+
+### 📁 \`src/components/\`
+São as **peças visuais** da tela. Cada arquivo aqui é um &quot;pedaço&quot; da interface:
+- \`EditorLayout.tsx\` → A tela principal do editor (organiza tudo)
+- \`AIChat.tsx\` → O painel da Raquel (assistente IA)
+- \`RealTerminal.tsx\` → O terminal (onde você roda comandos)
+- \`Preview.tsx\` → O painel de visualização do site/app
+- \`FileTree.tsx\` → A árvore de arquivos (painel esquerdo)
+- \`GitHubPanel.tsx\` → O painel de integração com o GitHub
+
+---
+
+### 📁 \`src/routes/\` (só no api-server)
+São os **endereços** que o servidor responde. Como as &quot;portas&quot; de entrada do servidor.
+Exemplos:
+- \`/api/exec\` → Roda um comando no terminal
+- \`/api/db/query\` → Faz uma consulta no banco de dados
+- \`/api/ai/chat\` → Conversa com a IA (Raquel)
+- \`/api/ws/terminal\` → Abre o terminal ao vivo
+
+---
+
+### 📁 \`src/lib/\`
+São **funções utilitárias** — ferramentas pequenas usadas em vários lugares do código.
+Exemplo: \`virtual-fs.ts\` é o sistema de arquivos virtual (salva seus arquivos na memória do browser).
+
+---
+
+### 📁 \`public/\`
+Arquivos **públicos** que o browser pode acessar diretamente:
+- \`manifest.json\` → Configuração do PWA (ícone, nome, cor do app)
+- \`icons/\` → Os ícones do app (aparecem na tela inicial do celular)
+- Imagens e arquivos estáticos
+
+---
+
+### 📁 \`node_modules/\`
+**NÃO MEXA AQUI.** São as bibliotecas externas instaladas automaticamente.
+É como a &quot;despensa&quot; do projeto — cheia de ingredientes prontos.
+Gerada automaticamente pelo \`npm install\` / \`pnpm install\`.
+
+---
+
+### 📁 \`dist/\`
+Versão **compilada** do código (gerada automaticamente ao fazer o build).
+Você não edita nada aqui — é criado pelo sistema na hora de publicar.
+
+---
+
+## 📄 O que significa cada tipo de arquivo
+
+| Arquivo | O que é |
+|---------|---------|
+| \`package.json\` | Lista de bibliotecas usadas e comandos disponíveis (npm start, npm run build, etc.) |
+| \`pnpm-workspace.yaml\` | Diz ao gerenciador de pacotes quais pastas fazem parte do projeto |
+| \`tsconfig.json\` | Configuração do TypeScript (linguagem que usamos) |
+| \`vite.config.ts\` | Configuração do servidor de desenvolvimento (serve o app no browser) |
+| \`.env\` | Variáveis secretas (senhas, chaves de API) — nunca compartilhe esse arquivo |
+| \`*.tsx\` | Código React (interface visual com TypeScript) |
+| \`*.ts\` | Código TypeScript puro (lógica, sem visual) |
+| \`*.yaml\` / \`*.yml\` | Arquivos de configuração (como uma lista de instruções formatada) |
+| \`*.md\` | Markdown — texto formatado (como este manual!) |
+| \`index.ts\` / \`index.tsx\` | **Ponto de entrada** — onde o programa começa a rodar |
+
+---
+
+## 🪝 O que são &quot;Hooks&quot; (\`use*.ts\` / \`use*.tsx\`)
+São funções especiais do React que **guardam estado** ou **executam ações**.
+Sempre começam com a palavra \`use\`.
+Exemplos:
+- \`useState\` → Guarda um valor que muda (ex: se o painel está aberto ou fechado)
+- \`useEffect\` → Executa algo quando a tela carrega ou um valor muda
+- \`useCallback\` → Otimiza uma função para não recriar desnecessariamente
+
+---
+
+## 🎛️ Painéis do SK Code Editor
+
+| Painel | Como abrir | O que faz |
+|--------|-----------|----------|
+| **Arquivos** | Botão 📁 no rodapé | Mostra todos os arquivos do projeto |
+| **Terminal** | Botão ⬛ no rodapé | Executa comandos (npm install, node server.js, etc.) |
+| **Preview** | Botão 🌐 no rodapé | Mostra o site/app rodando ao vivo |
+| **Raquel (IA)** | Botão 🤖 no rodapé | Assistente de código com IA |
+| **GitHub** | Menu ··· | Importa/exporta projetos do GitHub |
+| **Banco de Dados** | Menu ··· | Conecta ao PostgreSQL/Neon e roda SQL |
+| **Taski** | Menu ··· | Lista de tarefas do projeto |
+| **Checkpoints** | Menu ··· | Histórico de versões salvas manualmente |
+
+---
+
+## 🧩 Glossário Rápido
+
+| Termo | Significado simples |
+|-------|-------------------|
+| **API** | &quot;Porta de comunicação&quot; entre o app e o servidor |
+| **WebSocket** | Conexão ao vivo (sem precisar ficar atualizando a página) |
+| **PTY / Terminal** | Janela de linha de comando (como o Prompt do Windows, mas no Linux) |
+| **VFS** | Sistema de arquivos virtual — os arquivos ficam na memória do browser |
+| **PWA** | &quot;Aplicativo instalável&quot; — site que funciona como app no celular |
+| **Build** | Processo de &quot;empacotar&quot; o código para publicar |
+| **Deploy** | Publicar o app na internet |
+| **Frontend** | A parte visual (o que o usuário vê) |
+| **Backend** | A parte do servidor (o &quot;motor&quot; escondido) |
+| **npm / pnpm** | Gerenciadores de pacotes — instalam bibliotecas externas |
+| **Import** | Usar uma função/componente de outro arquivo |
+| **Props** | Dados passados de um componente pai para um filho |
+| **Estado (State)** | Valor que pode mudar e atualiza a tela automaticamente |
+| **Render** | O processo de mostrar/atualizar a tela |
+
+---
+
+## 🔑 O que é o Replit (a plataforma)
+
+O **Replit** é o ambiente onde o app roda durante o desenvolvimento. Ele fornece:
+- Servidor Linux online (sem precisar de computador próprio)
+- Editor de código no browser
+- Gerenciamento de segredos (variáveis de ambiente)
+- Publicação do app com um clique (Publish/Deploy)
+- Checkpoints automáticos do código
+
+---
+
+*Manual gerado em ${new Date().toLocaleDateString(&quot;pt-BR&quot;, { day: &quot;2-digit&quot;, month: &quot;long&quot;, year: &quot;numeric&quot; })} — SK Code Editor*
+`;
+    vfs.writeFile(&quot;MANUAL.md&quot;, manual);
+    handleFileSelect(&quot;MANUAL.md&quot;);
+    setShowMoreMenu(false);
+    setShowFilePanel(false);
+  }, [vfs, handleFileSelect]);
+
+  const currentContent = activeFile ? (fileContents[activeFile] ?? vfs.readFile(activeFile) ?? &quot;&quot;) : &quot;&quot;;
+  const currentLang = forcedLanguage || (activeFile ? getLanguageFromPath(activeFile) : &quot;plaintext&quot;);
+  const canBack = fileHistoryIndex &gt; 0;
+  const canForward = fileHistoryIndex &lt; fileHistory.length - 1;
+
+  // ── Checkpoint: salva snapshot completo do VFS ──────────────────────────────
+  const saveCheckpoint = useCallback((labelOverride?: string) =&gt; {
+    const files = vfs.toJSON() as Record&lt;string, string&gt;;
+    const cp: Checkpoint = {
+      id: Date.now().toString(),
+      label: labelOverride || `Checkpoint ${new Date().toLocaleTimeString(&quot;pt-BR&quot;)}`,
+      timestamp: Date.now(),
+      files,
+      fileCount: Object.keys(files).length,
+    };
+    const updated = [cp, ...checkpoints].slice(0, 5); // máx 5 para não estourar localStorage
+    setCheckpoints(updated);
+
+    // Salva com fallback progressivo caso a cota do localStorage estoure</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>tryPersist →</span>
+    <div>
+      <small>L1391–L1449</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">    const tryPersist = (list: Checkpoint[]) =&gt; {
+      try {
+        localStorage.setItem(&quot;sk-checkpoints&quot;, JSON.stringify(list));
+      } catch {
+        if (list.length &gt; 1) {
+          tryPersist(list.slice(0, Math.floor(list.length / 2))); // reduz pela metade
+        } else {
+          // Último recurso: salva só metadados sem conteúdo de arquivo
+          try {
+            const slim = list.map(c =&gt; ({ ...c, files: {} }));
+            localStorage.setItem(&quot;sk-checkpoints&quot;, JSON.stringify(slim));
+          } catch { /* sem espaço nenhum — ignora silenciosamente */ }
+        }
+      }
+    };
+    tryPersist(updated);
+    return cp;
+  }, [vfs, checkpoints]);
+
+  const restoreCheckpoint = useCallback((cp: Checkpoint) =&gt; {
+    if (!confirm(`Restaurar checkpoint &quot;${cp.label}&quot;?\nIsso vai substituir todos os arquivos atuais.`)) return;
+    vfs.clear();
+    Object.entries(cp.files).forEach(([path, content]) =&gt; vfs.writeFile(path, content));
+    setOpenFiles([]);
+    setActiveFile(null);
+    setFileContents({});
+    setTree(vfs.getTree());
+    setShowCheckpointPanel(false);
+  }, [vfs]);
+
+  const deleteCheckpoint = useCallback((id: string) =&gt; {
+    const updated = checkpoints.filter(c =&gt; c.id !== id);
+    setCheckpoints(updated);
+    try { localStorage.setItem(&quot;sk-checkpoints&quot;, JSON.stringify(updated)); } catch { /* cota cheia */ }
+  }, [checkpoints]);
+
+  // ── Taski: gerencia lista de tarefas ─────────────────────────────────────────
+  const addTask = useCallback((text: string) =&gt; {
+    if (!text.trim()) return;
+    const t: Task = { id: Date.now().toString(), text: text.trim(), done: false, createdAt: Date.now() };
+    const updated = [...tasks, t];
+    setTasks(updated);
+    localStorage.setItem(&quot;sk-tasks&quot;, JSON.stringify(updated));
+    setNewTaskText(&quot;&quot;);
+  }, [tasks]);
+
+  const toggleTask = useCallback((id: string) =&gt; {
+    const updated = tasks.map(t =&gt; t.id === id ? { ...t, done: !t.done } : t);
+    setTasks(updated);
+    localStorage.setItem(&quot;sk-tasks&quot;, JSON.stringify(updated));
+  }, [tasks]);
+
+  const deleteTask = useCallback((id: string) =&gt; {
+    const updated = tasks.filter(t =&gt; t.id !== id);
+    setTasks(updated);
+    localStorage.setItem(&quot;sk-tasks&quot;, JSON.stringify(updated));
+  }, [tasks]);
+
+  // ── Auto-save no disco via Electron ──────────────────────────────────────────</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>electronFS →</span>
+    <div>
+      <small>L1450–L2040</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">  const electronFS = (window as any).electronAPI?.fs;
+  const isElectron = !!(window as any).electronAPI?.isElectron;
+
+  useEffect(() =&gt; {
+    if (!isElectron || !electronFS) return;
+    const autoSaveOn = localStorage.getItem(&quot;sk-autosave-disk&quot;) === &quot;1&quot;;
+    if (!autoSaveOn) return;
+    // Auto-save debounced a cada 15s quando há mudanças
+    const timer = setInterval(() =&gt; {
+      const files = vfs.toJSON() as Record&lt;string, string&gt;;
+      if (Object.keys(files).length === 0) return;
+      electronFS.saveProject(projectName, files).catch(() =&gt; {});
+    }, 15000);
+    return () =&gt; clearInterval(timer);
+  }, [isElectron, electronFS, vfs, projectName]);
+
+  // ── Executar SQL no banco via API ─────────────────────────────────────────────
+  const runDBQuery = useCallback(async (sql?: string) =&gt; {
+    const s = sql || dbSQLInput;
+    if (!dbConnectionString.trim()) { setDbQueryResult({ rows: [], rowCount: 0, command: &quot;&quot;, error: &quot;Configure a URL de conexão primeiro.&quot; }); return; }
+    if (!s.trim()) return;
+    setDbLoading(true); setDbQueryResult(null);
+    try {
+      const r = await fetch(&quot;/api/db/query&quot;, {
+        method: &quot;POST&quot;,
+        headers: { &quot;Content-Type&quot;: &quot;application/json&quot; },
+        body: JSON.stringify({ connectionString: dbConnectionString.trim(), sql: s }),
+      });
+      const data = await r.json();
+      if (!r.ok) setDbQueryResult({ rows: [], rowCount: 0, command: &quot;&quot;, error: data.error || &quot;Erro desconhecido&quot; });
+      else setDbQueryResult(data);
+    } catch (e: any) {
+      setDbQueryResult({ rows: [], rowCount: 0, command: &quot;&quot;, error: e.message });
+    } finally { setDbLoading(false); }
+  }, [dbConnectionString, dbSQLInput]);
+
+  // ── Aplicar template ao VFS ────────────────────────────────────────────────
+  const applyTemplate = useCallback((templateId: string) =&gt; {
+    const tmpl = templates.find(t =&gt; t.id === templateId);
+    if (!tmpl) return;
+    vfs.clear();
+    Object.entries(tmpl.files).forEach(([p, c]) =&gt; vfs.writeFile(p, c));
+    setOpenFiles([]);
+    setActiveFile(null);
+    setFileContents({});
+    const firstFile = Object.keys(tmpl.files)[0];
+    if (firstFile) setTimeout(() =&gt; handleFileSelect(firstFile), 100);
+    setShowNewAppWizard(false);
+    setNewAppCreatedToast(tmpl.name);
+    setTimeout(() =&gt; setNewAppCreatedToast(null), 3500);
+  }, [vfs]);
+
+  const anyOverlay = showFilePanel || showGitHub || showMoreMenu;
+
+  return (
+    &lt;div className={`h-[100dvh] flex flex-col bg-[#0d0d0d] text-white overflow-hidden${isDark ? &quot;&quot; : &quot; sk-light-theme&quot;}`}&gt;
+      &lt;input ref={zipInputRef} type=&quot;file&quot; accept=&quot;.zip,.tar,.tar.gz,.tgz,.apk,.aab,.ipa,.jar&quot; onChange={async e =&gt; {
+        const f = e.target.files?.[0]; if (!f) return;
+        try {
+          const imp = await importFromZip(f);
+          vfs.clear(); vfs.fromJSON(imp); setOpenFiles([]); setActiveFile(null); setFileContents({});
+          if (f.name.endsWith(&quot;.apk&quot;) || f.name.endsWith(&quot;.aab&quot;) || f.name.endsWith(&quot;.ipa&quot;)) {
+            const fileCount = Object.keys(imp).length;
+            const mainFiles = Object.keys(imp).filter(p =&gt; p.endsWith(&quot;.js&quot;) || p.endsWith(&quot;.ts&quot;) || p.endsWith(&quot;.html&quot;) || p.endsWith(&quot;.xml&quot;)).slice(0, 3).join(&quot;, &quot;);
+            alert(`✅ ${f.name} importado!\n${fileCount} arquivo(s) extraído(s).\n\nArquivos principais: ${mainFiles || &quot;—&quot;}\n\nUse o painel de Arquivos para explorar e a IA para analisar o código.`);
+          }
+        } catch (err: any) { alert(err.message); }
+        e.target.value = &quot;&quot;;
+      }} className=&quot;hidden&quot; /&gt;
+
+      {/* ═══ TOP BAR ═══ */}
+      &lt;div className=&quot;h-11 flex items-center gap-1 px-2 bg-[#141414] border-b border-gray-700/40 shrink-0&quot;&gt;
+        {/* Left: menu + nav */}
+        &lt;button onClick={() =&gt; setShowFilePanel(true)} className=&quot;p-2 rounded-lg hover:bg-white/5 text-gray-400&quot;&gt;
+          &lt;Menu size={18} /&gt;
+        &lt;/button&gt;
+        {onBackToProjects &amp;&amp; (
+          &lt;button
+            onClick={onBackToProjects}
+            className=&quot;flex items-center gap-1 px-2 py-1 rounded-lg bg-green-700/30 hover:bg-green-700/50 border border-green-600/30 text-green-400 text-[11px] font-bold shrink-0&quot;
+            title=&quot;Voltar à lista de projetos&quot;
+          &gt;
+            &lt;FolderOpen size={13} /&gt;
+            &lt;span&gt;Projetos&lt;/span&gt;
+          &lt;/button&gt;
+        )}
+        &lt;button onClick={navigateBack} disabled={!canBack} className=&quot;p-1.5 rounded-lg disabled:opacity-25 text-gray-500 hover:bg-white/5 hover:text-gray-300&quot;&gt;
+          &lt;ChevronLeft size={17} /&gt;
+        &lt;/button&gt;
+        &lt;button onClick={navigateForward} disabled={!canForward} className=&quot;p-1.5 rounded-lg disabled:opacity-25 text-gray-500 hover:bg-white/5 hover:text-gray-300&quot;&gt;
+          &lt;ChevronRight size={17} /&gt;
+        &lt;/button&gt;
+
+        {/* File indicator */}
+        &lt;div className=&quot;flex items-center gap-1.5 flex-1 min-w-0 px-1&quot;&gt;
+          {activeFile &amp;&amp; &lt;FileCode size={13} className=&quot;text-blue-400 shrink-0&quot; /&gt;}
+          &lt;span className=&quot;text-sm font-medium text-gray-300 truncate&quot;&gt;
+            {activeFile ? activeFile.split(&quot;/&quot;).pop() : projectName}
+          &lt;/span&gt;
+        &lt;/div&gt;
+
+        {/* Right: server indicator + search + run + more */}
+        {serverInfo?.running &amp;&amp; (
+          &lt;button
+            onClick={() =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); }}
+            className=&quot;flex items-center gap-1.5 px-2 py-1 bg-green-600/20 border border-green-500/40 rounded-lg shrink-0 group&quot;
+            title=&quot;Servidor rodando — clique para abrir Preview&quot;
+          &gt;
+            &lt;span className=&quot;relative flex h-2 w-2&quot;&gt;
+              &lt;span className=&quot;animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75&quot; /&gt;
+              &lt;span className=&quot;relative inline-flex rounded-full h-2 w-2 bg-green-500&quot; /&gt;
+            &lt;/span&gt;
+            &lt;span className=&quot;text-green-400 text-[11px] font-bold&quot;&gt;:{serverInfo.port}&lt;/span&gt;
+          &lt;/button&gt;
+        )}
+        &lt;button onClick={() =&gt; setShowSearch(!showSearch)} className=&quot;p-2 rounded-lg hover:bg-white/5 text-gray-500&quot;&gt;
+          &lt;Search size={17} /&gt;
+        &lt;/button&gt;
+        {activeFile &amp;&amp; (
+          &lt;button onClick={() =&gt; void handleRun()} className=&quot;flex items-center gap-1 px-2.5 py-1.5 bg-green-600 hover:bg-green-500 text-white rounded-lg text-[12px] font-bold transition-all&quot;&gt;
+            &lt;Play size={13} /&gt; Rodar
+          &lt;/button&gt;
+        )}
+        {/* Botão Visualizar (Preview tela cheia) */}
+        &lt;button
+          onClick={() =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); setTriggerPreviewFullscreen(true); }}
+          className=&quot;flex items-center gap-1 px-2.5 py-1.5 bg-blue-600/80 hover:bg-blue-500 text-white rounded-lg text-[12px] font-bold transition-all shrink-0&quot;
+          title=&quot;Abrir Preview — visualizar o projeto em tela cheia&quot;
+        &gt;
+          &lt;Eye size={13} /&gt; Visualizar
+        &lt;/button&gt;
+        {/* Toggle tema claro/escuro */}
+        &lt;button
+          onClick={() =&gt; {
+            const next = !isDark;
+            setIsDark(next);
+            try { localStorage.setItem(&quot;sk-theme&quot;, next ? &quot;dark&quot; : &quot;light&quot;); } catch {}
+          }}
+          className=&quot;p-1.5 rounded-lg hover:bg-white/5 text-gray-500 hover:text-gray-300 transition-colors shrink-0&quot;
+          title={isDark ? &quot;Modo claro&quot; : &quot;Modo escuro&quot;}
+        &gt;
+          {isDark ? &quot;☀️&quot; : &quot;🌑&quot;}
+        &lt;/button&gt;
+        &lt;button onClick={() =&gt; { setShowMoreMenu(!showMoreMenu); }} className=&quot;p-2 rounded-lg hover:bg-white/5 text-gray-500&quot;&gt;
+          &lt;MoreHorizontal size={18} /&gt;
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* ═══ TAB BAR (máx 3 abas) ═══ */}
+      {openFiles.length &gt; 0 &amp;&amp; (
+        &lt;div className=&quot;h-9 flex items-center bg-[#141414] border-b border-gray-700/30 shrink-0&quot;&gt;
+          &lt;div className=&quot;flex-1 flex items-center overflow-x-auto scrollbar-none h-full&quot;&gt;
+            {openFiles.map(file =&gt; (
+              &lt;div key={file}
+                className={`flex items-center gap-2 px-3 h-full text-[11px] cursor-pointer border-r border-gray-700/20 shrink-0 transition-colors select-none ${file === activeFile ? &quot;bg-[#0d0d0d] text-gray-200 border-t-2 border-t-blue-500&quot; : &quot;text-gray-500 hover:text-gray-300 hover:bg-white/5&quot;}`}
+                onClick={() =&gt; handleFileSelect(file)}&gt;
+                &lt;span className=&quot;max-w-[90px] truncate font-medium&quot;&gt;{file.split(&quot;/&quot;).pop()}&lt;/span&gt;
+                {/* X bem visível para fechar */}
+                &lt;button
+                  onClick={e =&gt; { e.stopPropagation(); handleCloseFile(file); }}
+                  title=&quot;Fechar arquivo&quot;
+                  className=&quot;w-5 h-5 flex items-center justify-center rounded hover:bg-red-500/20 text-gray-600 hover:text-red-400 transition-all shrink-0&quot;&gt;
+                  &lt;X size={11} /&gt;
+                &lt;/button&gt;
+              &lt;/div&gt;
+            ))}
+          &lt;/div&gt;
+          {/* Fechar todos */}
+          {openFiles.length &gt; 1 &amp;&amp; (
+            &lt;button
+              onClick={() =&gt; { setOpenFiles([]); setActiveFile(null); }}
+              title=&quot;Fechar todos os arquivos&quot;
+              className=&quot;px-3 h-full text-[10px] text-gray-600 hover:text-red-400 hover:bg-red-900/10 border-l border-gray-700/30 shrink-0 transition-colors whitespace-nowrap font-medium&quot;&gt;
+              Fechar todos
+            &lt;/button&gt;
+          )}
+        &lt;/div&gt;
+      )}
+
+      {/* ═══ SPLIT WRAPPER: Editor (esquerda) + IA (direita) ═══ */}
+      &lt;div className=&quot;flex-1 flex flex-row overflow-hidden min-h-0&quot;&gt;
+
+      {/* ── COLUNA ESQUERDA: Editor + Terminal + Barras ── */}
+      &lt;div className=&quot;flex-1 flex flex-col overflow-hidden min-h-0&quot;&gt;
+
+      {/* ═══ MAIN: Editor + Bottom Panel ═══ */}
+      &lt;div className=&quot;flex-1 flex flex-col overflow-hidden min-h-0&quot;&gt;
+        {/* Code Editor */}
+        &lt;div className={!showBottomPanel ? &quot;flex-1&quot; : previewBig ? &quot;h-[20%]&quot; : &quot;h-[50%]&quot;}&gt;
+          {activeFile ? (
+            &lt;CodeEditor ref={editorRef} filePath={activeFile} content={currentContent} onChange={handleEditorChange} language={forcedLanguage}
+              onCursorChange={(line, col) =&gt; setCursorPos({ line, col })} /&gt;
+          ) : (
+            &lt;div className=&quot;h-full flex flex-col items-center justify-center text-center p-6 gap-4&quot;&gt;
+              {/* Botão principal Iniciar Projeto */}
+              &lt;button
+                onClick={() =&gt; {
+                  const files = vfs.listFiles();
+                  const hasPkg = files.some(f =&gt; f === &quot;package.json&quot; || f.endsWith(&quot;/package.json&quot;));
+                  const hasHtml = files.some(f =&gt; f === &quot;index.html&quot; || f.endsWith(&quot;/index.html&quot;));
+                  if (hasHtml &amp;&amp; !hasPkg) {
+                    // Projeto HTML estático — abre preview imediatamente
+                    setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); setPreviewBig(true);
+                  } else if (hasPkg) {
+                    // Projeto npm — usa WebContainer Terminal
+                    const pkg = vfs.readFile(&quot;package.json&quot;) || &quot;&quot;;
+                    const cmd = pkg.includes('&quot;dev&quot;') ? &quot;npm install &amp;&amp; npm run dev&quot;
+                      : pkg.includes('&quot;start&quot;') ? &quot;npm install &amp;&amp; npm start&quot;
+                      : &quot;npm install&quot;;
+                    setUseWebContainer(true);
+                    try { localStorage.setItem(&quot;sk-use-wc&quot;, &quot;1&quot;); } catch {}
+                    setShowBottomPanel(true); setBottomPanel(&quot;terminal&quot;);
+                    setTimeout(() =&gt; setWcExternalCommand(cmd), 300);
+                  } else {
+                    // Sem projeto — abre preview vazio com dica
+                    setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); setPreviewBig(true);
+                  }
+                }}
+                className=&quot;flex flex-col items-center gap-3 px-8 py-6 bg-gradient-to-b from-amber-500/20 to-amber-600/10 border-2 border-amber-500/60 rounded-2xl hover:border-amber-400/80 hover:bg-amber-500/25 transition-all active:scale-[0.98] shadow-lg shadow-amber-900/20&quot;
+              &gt;
+                &lt;div className=&quot;w-14 h-14 bg-amber-500/20 border border-amber-500/40 rounded-xl flex items-center justify-center&quot;&gt;
+                  &lt;Play size={28} className=&quot;text-amber-400 ml-1&quot; /&gt;
+                &lt;/div&gt;
+                &lt;div&gt;
+                  &lt;p className=&quot;text-[16px] font-bold text-amber-300&quot;&gt;▶ Iniciar Projeto&lt;/p&gt;
+                  &lt;p className=&quot;text-[11px] text-amber-500/80 mt-0.5&quot;&gt;npm install + rodar servidor + preview&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/button&gt;
+
+              &lt;div className=&quot;flex gap-2&quot;&gt;
+                &lt;button onClick={() =&gt; setShowFilePanel(true)}
+                  className=&quot;flex items-center gap-1.5 px-3 py-2 bg-[#141414] border border-gray-700/40 rounded-xl text-[12px] text-gray-300 hover:bg-white/5&quot;&gt;
+                  &lt;Files size={13} /&gt; Arquivos
+                &lt;/button&gt;
+                &lt;button onClick={() =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); setTriggerPreviewFullscreen(true); }}
+                  className=&quot;flex items-center gap-1.5 px-3 py-2 bg-blue-600/20 border border-blue-500/30 rounded-xl text-[12px] text-blue-300 hover:bg-blue-600/30&quot;&gt;
+                  &lt;Eye size={13} /&gt; Visualizar
+                &lt;/button&gt;
+                &lt;button onClick={() =&gt; setShowAIPanel(true)}
+                  className=&quot;flex items-center gap-1.5 px-3 py-2 bg-purple-600/20 border border-purple-500/30 rounded-xl text-[12px] text-purple-300 hover:bg-purple-600/30&quot;&gt;
+                  &lt;Bot size={13} /&gt; IA
+                &lt;/button&gt;
+              &lt;/div&gt;
+
+              &lt;p className=&quot;text-[10px] text-gray-700 max-w-[240px] leading-relaxed&quot;&gt;
+                Abra um arquivo para editar, ou clique em &lt;strong className=&quot;text-gray-600&quot;&gt;▶ Iniciar Projeto&lt;/strong&gt; para rodar o servidor e ver o preview.
+              &lt;/p&gt;
+            &lt;/div&gt;
+          )}
+        &lt;/div&gt;
+
+        {/* Bottom Panel (Terminal/Preview) */}
+        {showBottomPanel &amp;&amp; (
+          &lt;div className=&quot;flex-1 flex flex-col border-t border-gray-700/40 min-h-0&quot;&gt;
+            &lt;div className=&quot;h-9 flex items-center gap-1 bg-[#141414] border-b border-gray-700/30 shrink-0 px-2&quot;&gt;
+              {([&quot;terminal&quot;, &quot;preview&quot;] as const).map(p =&gt; (
+                &lt;button key={p} onClick={() =&gt; { setBottomPanel(p); if (p === &quot;terminal&quot;) setPreviewBig(false); }}
+                  className={`px-3 py-1 rounded text-[11px] font-semibold transition-all ${bottomPanel === p ? &quot;bg-[#0d0d0d] text-gray-200&quot; : &quot;text-gray-600 hover:text-gray-400&quot;}`}&gt;
+                  {p === &quot;terminal&quot; ? &quot;⬛ Terminal&quot; : &quot;🌐 Preview&quot;}
+                &lt;/button&gt;
+              ))}
+              {bottomPanel === &quot;preview&quot; &amp;&amp; (
+                &lt;button
+                  onClick={() =&gt; setPreviewBig(v =&gt; !v)}
+                  className=&quot;px-2 py-0.5 rounded text-[11px] text-gray-500 hover:text-gray-300 border border-gray-700/30 hover:border-gray-600/50 transition-all&quot;
+                  title={previewBig ? &quot;Reduzir preview&quot; : &quot;Ampliar preview&quot;}
+                &gt;
+                  {previewBig ? &quot;⬇ Reduzir&quot; : &quot;⬆ Ampliar&quot;}
+                &lt;/button&gt;
+              )}
+              &lt;div className=&quot;flex-1&quot; /&gt;
+              {/* Botão Compilar */}
+              &lt;button
+                onPointerDown={() =&gt; {
+                  const files = vfs.listFiles();
+                  const hasPkg = files.some(f =&gt; f === &quot;package.json&quot; || f.endsWith(&quot;/package.json&quot;));
+                  const hasPy  = files.some(f =&gt; f.endsWith(&quot;.py&quot;));
+                  const hasTs  = files.some(f =&gt; f.endsWith(&quot;.ts&quot;) || f.endsWith(&quot;.tsx&quot;));
+                  let cmd = &quot;&quot;;
+                  if (hasPkg) {
+                    const pkg = vfs.readFile(&quot;package.json&quot;) || &quot;&quot;;
+                    if (pkg.includes('&quot;build&quot;'))      cmd = &quot;npm run build&quot;;
+                    else if (pkg.includes('&quot;compile&quot;')) cmd = &quot;npm run compile&quot;;
+                    else if (hasTs)                    cmd = &quot;npx tsc --noEmit&quot;;
+                    else                               cmd = &quot;npm run build 2&gt;&amp;1 || echo 'Sem script de build'&quot;;
+                  } else if (hasPy) {
+                    cmd = &quot;python -m py_compile $(find . -name '*.py' | head -5 | tr '\\n' ' ') &amp;&amp; echo '✅ Python OK'&quot;;
+                  } else if (hasTs) {
+                    cmd = &quot;npx tsc --noEmit&quot;;
+                  } else {
+                    cmd = &quot;echo 'Nenhum projeto detectado para compilar'&quot;;
+                  }
+                  setBottomPanel(&quot;terminal&quot;);
+                  setTimeout(() =&gt; setPendingTermCmd(cmd), 80);
+                }}
+                className=&quot;flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-600/20 border border-blue-500/30 text-blue-400 text-[11px] font-bold hover:bg-blue-600/30 transition-all shrink-0&quot;
+                title=&quot;Compila/verifica o projeto e reporta erros&quot;
+              &gt;
+                &lt;span className=&quot;text-[10px]&quot;&gt;🔨&lt;/span&gt;
+                Compilar
+              &lt;/button&gt;
+              {/* Botão Rodar */}
+              &lt;button
+                onPointerDown={() =&gt; {
+                  const files = vfs.listFiles();
+                  const hasPkg = files.some(f =&gt; f === &quot;package.json&quot; || f.endsWith(&quot;/package.json&quot;));
+                  const hasPy  = files.some(f =&gt; f.endsWith(&quot;.py&quot;));
+                  let cmd = &quot;npm start&quot;;
+                  if (hasPkg) {
+                    const pkg = vfs.readFile(&quot;package.json&quot;) || &quot;&quot;;
+                    if (pkg.includes('&quot;dev&quot;'))         cmd = &quot;npm run dev&quot;;
+                    else if (pkg.includes('&quot;start&quot;'))  cmd = &quot;npm start&quot;;
+                    else if (pkg.includes('&quot;build&quot;'))  cmd = &quot;npm run build&quot;;
+                    else                               cmd = &quot;node index.js&quot;;
+                  } else if (hasPy) {
+                    const py = files.find(f =&gt; f === &quot;app.py&quot; || f === &quot;main.py&quot; || f.endsWith(&quot;/app.py&quot;));
+                    cmd = py ? `python ${py}` : &quot;python main.py&quot;;
+                  } else {
+                    cmd = &quot;ls -la&quot;;
+                  }
+                  setBottomPanel(&quot;terminal&quot;);
+                  setTimeout(() =&gt; setPendingTermCmd(cmd), 80);
+                }}
+                className=&quot;flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-600/20 border border-green-500/30 text-green-400 text-[11px] font-bold hover:bg-green-600/30 transition-all shrink-0&quot;
+                title=&quot;Detecta automaticamente o melhor comando para rodar seu projeto&quot;
+              &gt;
+                &lt;Play size={11} /&gt;
+                Rodar
+              &lt;/button&gt;
+              {/* Botão Preview */}
+              &lt;button
+                onPointerDown={() =&gt; setBottomPanel(&quot;preview&quot;)}
+                className=&quot;flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-600/20 border border-purple-500/30 text-purple-400 text-[11px] font-bold hover:bg-purple-600/30 transition-all shrink-0&quot;
+                title=&quot;Abre o preview do projeto&quot;
+              &gt;
+                &lt;span className=&quot;text-[10px]&quot;&gt;🌐&lt;/span&gt;
+                Preview
+              &lt;/button&gt;
+              {/* Botão Limpar Terminal */}
+              {bottomPanel === &quot;terminal&quot; &amp;&amp; (
+                &lt;button
+                  onPointerDown={() =&gt; setPendingTermCmd(&quot;clear&quot;)}
+                  className=&quot;flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-700/30 border border-gray-600/30 text-gray-500 text-[11px] hover:text-red-400 hover:border-red-500/30 hover:bg-red-900/10 transition-all shrink-0&quot;
+                  title=&quot;Limpar terminal (Ctrl+L)&quot;
+                &gt;
+                  🗑 Limpar
+                &lt;/button&gt;
+              )}
+              {/* Botão Pedir Raquel — aparece quando tem erro ou quando clicado */}
+              {bottomPanel === &quot;terminal&quot; &amp;&amp; terminalBuffer &amp;&amp; (
+                &lt;button
+                  onPointerDown={() =&gt; {
+                    setShowAIPanel(true);
+                    const msg = termHasError
+                      ? `❌ Erro no terminal — por favor analise e me diga o que aconteceu:\n\n\`\`\`\n${terminalBuffer.slice(-3000)}\n\`\`\`\n\nExplique o erro em linguagem simples e diga o que preciso fazer para corrigir.`
+                      : `📋 Saída recente do terminal:\n\n\`\`\`\n${terminalBuffer.slice(-3000)}\n\`\`\`\n\nAnalise e me diga se está tudo certo ou se tem algo para melhorar.`;
+                    setExternalAIMsg(msg);
+                  }}
+                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold transition-all shrink-0 ${termHasError ? &quot;bg-red-600/30 border border-red-500/50 text-red-300 animate-pulse&quot; : &quot;bg-purple-600/20 border border-purple-500/30 text-purple-400 hover:bg-purple-600/30&quot;}`}
+                  title={termHasError ? &quot;Erro detectado — pedir Raquel para analisar&quot; : &quot;Enviar terminal para Raquel analisar&quot;}
+                &gt;
+                  {termHasError ? &quot;❌ Pedir Raquel&quot; : &quot;🤖 Analisar&quot;}
+                &lt;/button&gt;
+              )}
+              {/* Botão ▶ Iniciar no cabeçalho do terminal */}
+              {bottomPanel === &quot;terminal&quot; &amp;&amp; (
+                &lt;button
+                  onClick={() =&gt; {
+                    const files = vfs.listFiles();
+                    const hasPkg = files.some(f =&gt; f === &quot;package.json&quot; || f.endsWith(&quot;/package.json&quot;));
+                    const hasHtml = files.some(f =&gt; f === &quot;index.html&quot; || f.endsWith(&quot;/index.html&quot;));
+                    if (hasHtml &amp;&amp; !hasPkg) {
+                      setBottomPanel(&quot;preview&quot;); setPreviewBig(true);
+                    } else {
+                      const pkg = hasPkg ? (vfs.readFile(&quot;package.json&quot;) || &quot;&quot;) : &quot;&quot;;
+                      const cmd = pkg.includes('&quot;dev&quot;') ? &quot;npm install &amp;&amp; npm run dev&quot;
+                        : pkg.includes('&quot;start&quot;') ? &quot;npm install &amp;&amp; npm start&quot;
+                        : &quot;npm install&quot;;
+                      setUseWebContainer(true);
+                      try { localStorage.setItem(&quot;sk-use-wc&quot;, &quot;1&quot;); } catch {}
+                      setTimeout(() =&gt; setWcExternalCommand(cmd), 100);
+                    }
+                  }}
+                  className=&quot;flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] font-bold bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30 transition-all shrink-0&quot;
+                  title=&quot;npm install + npm run dev → abre preview&quot;
+                &gt;
+                  ▶ Iniciar
+                &lt;/button&gt;
+              )}
+              {/* Toggle WebContainer / SK Terminal */}
+              {bottomPanel === &quot;terminal&quot; &amp;&amp; (
+                &lt;button
+                  onClick={() =&gt; {
+                    const next = !useWebContainer;
+                    setUseWebContainer(next);
+                    try { localStorage.setItem(&quot;sk-use-wc&quot;, next ? &quot;1&quot; : &quot;0&quot;); } catch {}
+                  }}
+                  className=&quot;flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border transition-all shrink-0 ml-auto&quot;
+                  style={{ background: useWebContainer ? &quot;rgba(34,197,94,0.12)&quot; : &quot;rgba(255,255,255,0.04)&quot;, borderColor: useWebContainer ? &quot;rgba(34,197,94,0.35)&quot; : &quot;rgba(255,255,255,0.1)&quot;, color: useWebContainer ? &quot;#4ade80&quot; : &quot;#6b7280&quot; }}
+                  title={useWebContainer ? &quot;Terminal real (WebContainer) — clique para voltar ao modo proxy&quot; : &quot;Terminal proxy — clique para ativar terminal real (WebContainer)&quot;}
+                &gt;
+                  {useWebContainer ? &quot;🟢 Real&quot; : &quot;⬛ Proxy&quot;}
+                &lt;/button&gt;
+              )}
+              &lt;button onClick={() =&gt; setShowBottomPanel(false)} className=&quot;p-0.5 rounded hover:bg-white/5 text-gray-600 ml-1&quot;&gt;
+                &lt;X size={13} /&gt;
+              &lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div className=&quot;flex-1 overflow-hidden flex flex-col min-h-0 relative&quot;&gt;
+              {/* ── Terminal — WebContainer (real) ou SK (proxy) ── */}
+              &lt;div
+                style={{ display: bottomPanel === &quot;terminal&quot; ? &quot;flex&quot; : &quot;none&quot; }}
+                className=&quot;absolute inset-0 flex flex-col&quot;
+              &gt;
+                {/* ── Sub-abas de terminal (Term 1 / 2 / 3) ── */}
+                &lt;div className=&quot;flex items-center gap-0.5 px-2 h-7 bg-[#0d1117] border-b border-gray-700/30 shrink-0&quot;&gt;
+                  {([1, 2, 3] as const).map(t =&gt; (
+                    &lt;button
+                      key={t}
+                      onClick={() =&gt; setTerminalTab(t)}
+                      className=&quot;px-2.5 py-0.5 rounded text-[10px] font-mono transition-all&quot;
+                      style={{
+                        background: terminalTab === t ? &quot;rgba(34,197,94,0.15)&quot; : &quot;transparent&quot;,
+                        color: terminalTab === t ? &quot;#4ade80&quot; : &quot;#4b5563&quot;,
+                        border: terminalTab === t ? &quot;1px solid rgba(34,197,94,0.35)&quot; : &quot;1px solid transparent&quot;,
+                      }}
+                    &gt;
+                      ▪ Term {t}
+                    &lt;/button&gt;
+                  ))}
+                &lt;/div&gt;
+                {/* ── Instâncias de terminal ── */}
+                {isElectron ? (
+                  /* Electron: 3 terminais reais, cada um com seu próprio projectKey */
+                  ([1, 2, 3] as const).map(t =&gt; (
+                    &lt;div key={t} style={{ display: terminalTab === t ? &quot;flex&quot; : &quot;none&quot; }} className=&quot;flex-1 min-h-0&quot;&gt;
+                      &lt;ElectronTerminal
+                        cwd={undefined}
+                        projectKey={`${projectName || &quot;default&quot;}-t${t}`}
+                        externalCommand={terminalTab === t ? wcExternalCommand : undefined}
+                        onCmdConsumed={() =&gt; setWcExternalCommand(undefined)}
+                        onServerDetected={(port) =&gt; {
+                          setServerInfo({ running: true, port });
+                          setBottomPanel(&quot;preview&quot;);
+                          setPreviewBig(true);
+                          setShowPreviewToast(true);
+                          setTimeout(() =&gt; setShowPreviewToast(false), 6000);
+                          setWcExternalCommand(undefined);
+                        }}
+                        onCommandDone={() =&gt; setWcExternalCommand(undefined)}
+                      /&gt;
+                    &lt;/div&gt;
+                  ))
+                ) : (
+                  /* Browser: Tab 1 = WebContainer, Tabs 2 e 3 = Terminal real (server.cjs) */
+                  ([1, 2, 3] as const).map(t =&gt; (
+                    &lt;div key={t} style={{ display: terminalTab === t ? &quot;flex&quot; : &quot;none&quot; }} className=&quot;flex-1 min-h-0&quot;&gt;
+                      {t === 1 ? (
+                        &lt;WebContainerTerminal
+                          vfs={vfs}
+                          externalCommand={terminalTab === 1 ? wcExternalCommand : undefined}
+                          onCommandExecuted={() =&gt; setWcExternalCommand(undefined)}
+                          onServerToggle={(running, port) =&gt; {
+                            setServerInfo(running &amp;&amp; port ? { running, port } : null);
+                            if (running &amp;&amp; port) {
+                              setBottomPanel(&quot;preview&quot;);
+                              setPreviewBig(true);
+                              setShowPreviewToast(true);
+                              setTimeout(() =&gt; setShowPreviewToast(false), 6000);
+                            }
+                          }}
+                        /&gt;
+                      ) : (
+                        &lt;ElectronTerminal
+                          projectKey={`browser-t${t}`}
+                          externalCommand={terminalTab === t ? wcExternalCommand : undefined}
+                          onCmdConsumed={() =&gt; setWcExternalCommand(undefined)}
+                          onServerDetected={(port) =&gt; {
+                            setServerInfo({ running: true, port });
+                            setBottomPanel(&quot;preview&quot;);
+                          }}
+                          onCommandDone={() =&gt; setWcExternalCommand(undefined)}
+                        /&gt;
+                      )}
+                    &lt;/div&gt;
+                  ))
+                )}
+              &lt;/div&gt;
+              {/* ── Preview — sempre montado, só escondido por CSS ── */}
+              &lt;div
+                style={{ display: bottomPanel === &quot;preview&quot; ? &quot;flex&quot; : &quot;none&quot; }}
+                className=&quot;absolute inset-0 flex flex-col&quot;
+              &gt;
+                &lt;Preview
+                  vfs={vfs}
+                  activeFile={activeFile}
+                  openFullscreen={triggerPreviewFullscreen}
+                  onFullscreenOpened={() =&gt; setTriggerPreviewFullscreen(false)}
+                  serverUrl={serverInfo?.running ? `/api/proxy/${serverInfo.port}/` : undefined}
+                  serverPort={serverInfo?.port}
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        )}
+      &lt;/div&gt;
+
+      {/* ═══ STATUS BAR ═══ */}
+      &lt;div className=&quot;h-8 flex items-center bg-[#141414] border-t border-gray-700/30 px-3 gap-2 shrink-0 overflow-x-auto scrollbar-none&quot;&gt;
+        {/* Cursor pos */}
+        &lt;span className=&quot;text-[11px] text-gray-500 shrink-0 font-mono&quot;&gt;
+          Ln {cursorPos.line}, Col {cursorPos.col}
+        &lt;/span&gt;
+        &lt;div className=&quot;w-px h-3.5 bg-gray-700/50&quot; /&gt;
+        &lt;span className=&quot;text-[11px] text-gray-600 shrink-0&quot;&gt;Sp: 2&lt;/span&gt;
+        &lt;div className=&quot;flex-1&quot; /&gt;
+        {/* Language — opens bottom sheet */}
+        &lt;button
+          onClick={() =&gt; { setShowLang(true); setShowEncoding(false); }}
+          className=&quot;flex items-center gap-1 text-[11px] text-gray-400 hover:text-gray-200 hover:bg-white/8 px-2.5 py-1 rounded-md transition-colors font-medium&quot;
+        &gt;
+          {currentLang.toUpperCase()}
+          &lt;ChevronDown size={10} className=&quot;text-gray-600&quot; /&gt;
+        &lt;/button&gt;
+        &lt;div className=&quot;w-px h-3.5 bg-gray-700/50&quot; /&gt;
+        &lt;span className=&quot;text-[11px] text-gray-600 shrink-0 px-1&quot;&gt;LF&lt;/span&gt;
+        &lt;div className=&quot;w-px h-3.5 bg-gray-700/50&quot; /&gt;
+        {/* Encoding — opens bottom sheet */}
+        &lt;button
+          onClick={() =&gt; { setShowEncoding(true); setShowLang(false); }}
+          className=&quot;text-[11px] text-gray-400 hover:text-gray-200 hover:bg-white/8 px-2.5 py-1 rounded-md transition-colors font-medium&quot;
+        &gt;
+          {encoding}
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      {/* Language picker bottom sheet */}
+      {showLang &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9980]&quot; onClick={() =&gt; setShowLang(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9990] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#141414] border-t border-gray-700/50 rounded-t-3xl shadow-2xl overflow-hidden&quot;&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-gray-700/30&quot;&gt;
+                &lt;p className=&quot;text-sm font-bold text-white&quot;&gt;Linguagem do Arquivo&lt;/p&gt;
+                &lt;button onClick={() =&gt; setShowLang(false)} className=&quot;p-1 rounded-lg hover:bg-white/10 text-gray-600&quot;&gt;&lt;X size={16} /&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;grid grid-cols-3 gap-1 p-3 max-h-64 overflow-y-auto pb-6&quot;&gt;
+                {LANGUAGES.map(lang =&gt; (
+                  &lt;button key={lang} onClick={() =&gt; { setForcedLanguage(lang === &quot;auto&quot; ? undefined : lang); setShowLang(false); }}
+                    className={`px-2 py-2.5 rounded-xl text-[12px] font-medium text-center transition-all ${currentLang === lang ? &quot;bg-blue-600/30 border border-blue-500/50 text-blue-300&quot; : &quot;bg-white/5 text-gray-400 hover:bg-white/10 hover:text-gray-200&quot;}`}&gt;
+                    {lang}
+                  &lt;/button&gt;
+                ))}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* Encoding picker bottom sheet */}
+      {showEncoding &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9980]&quot; onClick={() =&gt; setShowEncoding(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9990] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#141414] border-t border-gray-700/50 rounded-t-3xl shadow-2xl overflow-hidden&quot;&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-gray-700/30&quot;&gt;
+                &lt;p className=&quot;text-sm font-bold text-white&quot;&gt;Codificação (Encoding)&lt;/p&gt;
+                &lt;button onClick={() =&gt; setShowEncoding(false)} className=&quot;p-1 rounded-lg hover:bg-white/10 text-gray-600&quot;&gt;&lt;X size={16} /&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;divide-y divide-gray-800/40 pb-8&quot;&gt;
+                {ENCODINGS.map(e =&gt; (
+                  &lt;button key={e} onClick={() =&gt; { setEncoding(e); setShowEncoding(false); }}
+                    className={`w-full flex items-center justify-between px-5 py-4 hover:bg-white/5 text-left transition-colors ${encoding === e ? &quot;text-blue-400&quot; : &quot;text-gray-300&quot;}`}&gt;
+                    &lt;span className=&quot;text-[15px]&quot;&gt;{e}&lt;/span&gt;
+                    {encoding === e &amp;&amp; &lt;span className=&quot;text-xs text-blue-500 font-semibold&quot;&gt;✓ Ativo&lt;/span&gt;}
+                  &lt;/button&gt;
+                ))}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* ═══ BOTTOM TOOLBAR ═══ */}
+      {(() =&gt; {</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>tb →</span>
+    <div>
+      <small>L2041–L2102</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">        const tb = (action: () =&gt; void) =&gt; ({
+          onPointerDown: (e: React.PointerEvent) =&gt; { e.preventDefault(); action(); },
+        });
+        return (
+          &lt;div className=&quot;flex flex-col bg-[#141414] border-t border-gray-700/50 shrink-0&quot;&gt;
+            {/* Linha 1 — teclas rápidas + botões de painel */}
+            &lt;div className=&quot;h-11 flex items-center px-1 gap-0.5&quot;&gt;
+              {/* Tab */}
+              &lt;button {...tb(() =&gt; editorRef.current?.insertText(&quot;  &quot;))}
+                className=&quot;px-3 py-2 rounded-lg active:bg-white/10 text-gray-500 active:text-gray-200 text-[13px] font-mono shrink-0 select-none&quot;&gt;⇥&lt;/button&gt;
+              &lt;div className=&quot;w-px h-6 bg-gray-700/50 mx-0.5 shrink-0&quot; /&gt;
+              {/* Setas */}
+              {([[&quot;↑&quot;,&quot;up&quot;],[&quot;↓&quot;,&quot;down&quot;],[&quot;←&quot;,&quot;left&quot;],[&quot;→&quot;,&quot;right&quot;]] as [string,&quot;up&quot;|&quot;down&quot;|&quot;left&quot;|&quot;right&quot;][]).map(([label,dir]) =&gt; (
+                &lt;button key={dir} {...tb(() =&gt; editorRef.current?.moveCursor(dir))}
+                  className=&quot;w-10 h-9 rounded-lg active:bg-white/10 text-gray-400 active:text-white text-[17px] font-bold flex items-center justify-center shrink-0 select-none&quot;&gt;
+                  {label}
+                &lt;/button&gt;
+              ))}
+              &lt;div className=&quot;flex-1&quot; /&gt;
+              {/* Terminal */}
+              &lt;button onPointerDown={() =&gt; { setShowBottomPanel(p =&gt; bottomPanel===&quot;terminal&quot;?!p:true); setBottomPanel(&quot;terminal&quot;); }}
+                className={`px-3 py-2 rounded-lg shrink-0 relative ${showBottomPanel&amp;&amp;bottomPanel===&quot;terminal&quot;?&quot;bg-green-500/20 text-green-400&quot;:&quot;text-gray-600 hover:bg-white/5&quot;}`}
+                title={terminalRunning ? `Rodando: ${terminalRunningCmd || &quot;comando&quot;}` : &quot;Terminal&quot;}&gt;
+                &lt;TerminalIcon size={17} /&gt;
+                {terminalRunning &amp;&amp; (
+                  &lt;span className=&quot;absolute top-1 right-1 w-2 h-2 rounded-full bg-green-400 animate-pulse&quot; /&gt;
+                )}
+              &lt;/button&gt;
+              {/* Preview */}
+              &lt;button onPointerDown={() =&gt; { setShowBottomPanel(p =&gt; bottomPanel===&quot;preview&quot;?!p:true); setBottomPanel(&quot;preview&quot;); }}
+                className={`px-3 py-2 rounded-lg shrink-0 ${showBottomPanel&amp;&amp;bottomPanel===&quot;preview&quot;?&quot;bg-blue-500/20 text-blue-400&quot;:&quot;text-gray-600 hover:bg-white/5&quot;}`}
+                title=&quot;Preview&quot;&gt;
+                &lt;Eye size={17} /&gt;
+              &lt;/button&gt;
+              {/* Tela cheia preview */}
+              &lt;button onPointerDown={() =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); setTriggerPreviewFullscreen(true); }}
+                className=&quot;px-2 py-2 rounded-lg text-blue-500/60 hover:text-blue-400 shrink-0&quot; title=&quot;Preview tela cheia&quot;&gt;
+                &lt;Maximize2 size={15} /&gt;
+              &lt;/button&gt;
+              &lt;div className=&quot;w-px h-6 bg-gray-700/50 mx-0.5 shrink-0&quot; /&gt;
+              {/* Mic */}
+              &lt;button onPointerDown={() =&gt; { setShowAIPanel(true); setTriggerVoice(true); }}
+                className=&quot;w-9 h-9 flex items-center justify-center rounded-lg bg-red-600/20 border border-red-500/30 text-red-400 shrink-0&quot;
+                title=&quot;Falar com a Raquel&quot;&gt;
+                &lt;Mic size={16} /&gt;
+              &lt;/button&gt;
+              {/* Raquel */}
+              &lt;button onPointerDown={() =&gt; setShowAIPanel(p =&gt; !p)}
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[13px] font-bold shrink-0 transition-all ${showAIPanel?&quot;bg-purple-600 text-white shadow-lg shadow-purple-900/50&quot;:&quot;bg-gradient-to-r from-purple-600/30 to-blue-600/20 border border-purple-500/50 text-purple-300&quot;}`}&gt;
+                &lt;Bot size={15} /&gt;
+                &lt;span&gt;Raquel&lt;/span&gt;
+              &lt;/button&gt;
+            &lt;/div&gt;
+            {/* Linha 2 — campo livre de comando */}
+            &lt;div className=&quot;h-10 flex items-center px-2 gap-1.5 border-t border-gray-700/30&quot;&gt;
+              &lt;TerminalIcon size={13} className=&quot;text-gray-600 shrink-0&quot; /&gt;
+              &lt;input
+                type=&quot;text&quot;
+                placeholder=&quot;Digite um comando e pressione Enter…&quot;
+                className=&quot;flex-1 bg-transparent text-[12px] font-mono text-gray-300 placeholder-gray-600 outline-none&quot;
+                onKeyDown={e =&gt; {
+                  if (e.key === &quot;Enter&quot;) {</pre>
+</div>
+<div class="block" id="b15">
+  <div class="block-h">
+    <span>val →</span>
+    <div>
+      <small>L2103–L2849</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre15').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre15">                    const val = (e.target as HTMLInputElement).value.trim();
+                    if (!val) return;
+                    setShowBottomPanel(true);
+                    setBottomPanel(&quot;terminal&quot;);
+                    setTimeout(() =&gt; setPendingTermCmd(val), 80);
+                    (e.target as HTMLInputElement).value = &quot;&quot;;
+                  }
+                }}
+              /&gt;
+              &lt;span className=&quot;text-[10px] text-gray-700 shrink-0&quot;&gt;↵&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        );
+      })()}
+
+      &lt;/div&gt; {/* fecha coluna esquerda */}
+
+      {/* ── COLUNA DIREITA: IA Chat inline — sempre montada, só esconde visualmente ── */}
+      &lt;div className={`flex flex-col border-l border-gray-700/50 bg-[#0d0d0d] shrink-0 transition-all duration-200 ${showAIPanel ? &quot;w-[52%] max-w-[360px] min-w-[260px] md:w-[42%] md:max-w-[640px] md:min-w-[440px] lg:w-[40%] lg:max-w-[760px]&quot; : &quot;w-0 border-l-0 overflow-hidden&quot;}`}&gt;
+        &lt;div className=&quot;flex items-center justify-between px-3 py-2 bg-[#141414] border-b border-gray-700/40 shrink-0 min-w-[200px]&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+            &lt;div className=&quot;w-6 h-6 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center&quot;&gt;
+              &lt;Bot size={13} className=&quot;text-white&quot; /&gt;
+            &lt;/div&gt;
+            &lt;span className=&quot;text-[12px] font-bold text-gray-300&quot;&gt;Raquel&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;button onClick={() =&gt; setShowAIPanel(false)} className=&quot;p-1.5 rounded-lg hover:bg-white/5 text-gray-600&quot;&gt;
+            &lt;X size={15} /&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;flex-1 overflow-hidden min-w-[200px]&quot;&gt;
+          &lt;AIChat
+            vfs={vfs}
+            activeFile={activeFile}
+            onApplyCode={handleApplyCode}
+            onRunInTerminal={(cmd) =&gt; { handleRunInTerminal(cmd); }}
+            scope={aiScope}
+            onScopeChange={setAiScope}
+            autoVoice={triggerVoice}
+            onAutoVoiceConsumed={() =&gt; setTriggerVoice(false)}
+            externalMessage={externalAIMsg}
+            onExternalMessageConsumed={() =&gt; setExternalAIMsg(undefined)}
+            lastTermOutput={lastTermOutput}
+            onTermOutputConsumed={() =&gt; setLastTermOutput(undefined)}
+            terminalBuffer={terminalBuffer}
+            terminalHasError={termHasError}
+            dbConnectionString={dbConnectionString || undefined}
+          /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;/div&gt; {/* fecha split wrapper */}
+
+      {/* ═══ TOAST: Preview Pronto ═══ */}
+      {showPreviewToast &amp;&amp; (
+        &lt;div
+          className=&quot;fixed bottom-24 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3.5 rounded-2xl shadow-2xl border border-green-500/40 bg-[#141414]&quot;
+          style={{ boxShadow: &quot;0 0 30px rgba(74,222,128,0.25)&quot; }}
+        &gt;
+          &lt;Globe size={18} className=&quot;text-green-400 shrink-0&quot; /&gt;
+          &lt;div&gt;
+            &lt;p className=&quot;text-[13px] font-bold text-green-300&quot;&gt;Preview pronto!&lt;/p&gt;
+            &lt;p className=&quot;text-[11px] text-gray-400&quot;&gt;Painel inferior → aba Preview&lt;/p&gt;
+          &lt;/div&gt;
+          &lt;button
+            onClick={() =&gt; { setShowPreviewToast(false); setBottomPanel(&quot;preview&quot;); setShowBottomPanel(true); }}
+            className=&quot;ml-2 px-3 py-1.5 rounded-xl bg-green-600 text-white text-[12px] font-bold active:scale-95 transition-all&quot;
+          &gt;
+            Ver →
+          &lt;/button&gt;
+          &lt;button onClick={() =&gt; setShowPreviewToast(false)} className=&quot;p-1 text-gray-600 hover:text-gray-400&quot;&gt;
+            &lt;X size={14} /&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* ═══ TOAST: Rodando em segundo plano ═══ */}
+      {terminalRunning &amp;&amp; (!showBottomPanel || bottomPanel !== &quot;terminal&quot;) &amp;&amp; (
+        &lt;div
+          className=&quot;fixed bottom-24 left-1/2 -translate-x-1/2 z-[9998] flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border border-yellow-600/40 bg-[#1e1a0d] max-w-[90vw]&quot;
+          style={{ boxShadow: &quot;0 0 24px rgba(202,138,4,0.2)&quot; }}
+        &gt;
+          &lt;span className=&quot;w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse shrink-0&quot; /&gt;
+          &lt;div className=&quot;min-w-0&quot;&gt;
+            &lt;p className=&quot;text-[12px] font-bold text-yellow-300&quot;&gt;Rodando em segundo plano&lt;/p&gt;
+            &lt;p className=&quot;text-[11px] text-gray-400 truncate max-w-[200px]&quot;&gt;{terminalRunningCmd || &quot;comando em execução&quot;}&lt;/p&gt;
+          &lt;/div&gt;
+          &lt;button
+            onClick={() =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;terminal&quot;); }}
+            className=&quot;ml-1 px-3 py-1.5 rounded-xl bg-yellow-700/40 border border-yellow-600/40 text-yellow-300 text-[11px] font-bold active:scale-95 transition-all shrink-0&quot;
+          &gt;
+            Ver →
+          &lt;/button&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* ═══ OVERLAYS ═══ */}
+
+      {/* Backdrop */}
+      {anyOverlay &amp;&amp; (
+        &lt;div className=&quot;fixed inset-0 z-40 bg-black/60 backdrop-blur-sm&quot;
+          onClick={() =&gt; { setShowFilePanel(false); setShowAIPanel(false); setShowGitHub(false); setShowMoreMenu(false); }} /&gt;
+      )}
+
+      {/* FILE PANEL — slides from left */}
+      &lt;div className={`fixed top-0 left-0 bottom-0 z-50 w-[80vw] max-w-xs bg-[#0d0d0d] border-r-2 border-gray-600/60 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${showFilePanel ? &quot;translate-x-0&quot; : &quot;-translate-x-full&quot;}`}&gt;
+        &lt;div className=&quot;flex items-center justify-between px-4 py-3 border-b border-gray-700/40 bg-[#141414] shrink-0&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+            &lt;Files size={15} className=&quot;text-gray-400&quot; /&gt;
+            &lt;span className=&quot;text-xs font-bold text-gray-400 uppercase tracking-widest&quot;&gt;Arquivos&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;flex items-center gap-1&quot;&gt;
+            &lt;button onClick={() =&gt; handleCreateFile(&quot;&quot;)} className=&quot;p-1.5 rounded-lg hover:bg-white/5&quot; title=&quot;Novo arquivo&quot;&gt;
+              &lt;Plus size={15} className=&quot;text-gray-500&quot; /&gt;
+            &lt;/button&gt;
+            &lt;button onClick={() =&gt; handleCreateFolder(&quot;&quot;)} className=&quot;p-1.5 rounded-lg hover:bg-white/5&quot; title=&quot;Nova pasta&quot;&gt;
+              &lt;FolderOpen size={15} className=&quot;text-gray-500&quot; /&gt;
+            &lt;/button&gt;
+            &lt;button onClick={() =&gt; { setShowPackages(true); }} className=&quot;p-1.5 rounded-lg hover:bg-white/5&quot; title=&quot;Bibliotecas&quot;&gt;
+              &lt;Package size={15} className=&quot;text-gray-500&quot; /&gt;
+            &lt;/button&gt;
+            &lt;button onClick={() =&gt; setShowFilePanel(false)} className=&quot;p-1.5 rounded-lg hover:bg-white/5 text-gray-600&quot;&gt;
+              &lt;X size={15} /&gt;
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;flex-1 overflow-y-auto&quot;&gt;
+          &lt;FileTree
+            tree={tree}
+            activeFile={activeFile}
+            onFileSelect={handleFileSelect}
+            onCreateFile={handleCreateFile}
+            onCreateFolder={handleCreateFolder}
+            onDeleteNode={handleDeleteNode}
+            onRenameNode={handleRenameNode}
+            onDuplicateNode={handleDuplicateNode}
+            getFileContent={getFileContent}
+            getAllFilesUnder={getAllFilesUnder}
+            expandedDirs={expandedDirs}
+            toggleDir={toggleDir}
+            projectName={projectName}
+            onExportZip={async () =&gt; { await exportAsZip(vfs.toJSON(), projectName.replace(/\s+/g, &quot;-&quot;).toLowerCase()); }}
+            onAnalyzeWithAI={handleAnalyzeWithAI}
+          /&gt;
+        &lt;/div&gt;
+
+        {/* ── MENU COMPLETO DE AÇÕES (rolável, fica na parte inferior do painel) ── */}
+        &lt;div className=&quot;shrink-0 border-t-2 border-gray-800/50 bg-[#0d0d0d] flex flex-col&quot; style={{ maxHeight: &quot;52vh&quot; }}&gt;
+          {/* Cabeçalho fixo */}
+          &lt;div className=&quot;flex items-center justify-between px-4 py-2 bg-[#1a2413] border-b border-gray-700/30 shrink-0&quot;&gt;
+            &lt;span className=&quot;text-[11px] font-bold text-green-500 uppercase tracking-widest&quot;&gt;⚡ Menu Completo&lt;/span&gt;
+            &lt;span className=&quot;text-[9px] text-gray-600&quot;&gt;role para ver mais ↕&lt;/span&gt;
+          &lt;/div&gt;
+          {/* Lista rolável */}
+          &lt;div className=&quot;overflow-y-auto divide-y divide-gray-800/40 pb-2&quot;&gt;
+            {[
+              { icon: &lt;Plus size={16} className=&quot;text-green-300&quot; /&gt;,       label: &quot;🆕 Criar Novo App&quot;,               sub: &quot;Wizard com modelos prontos&quot;,       action: () =&gt; { setShowNewAppWizard(true); setShowFilePanel(false); } },
+              { icon: &lt;Upload size={16} className=&quot;text-yellow-400&quot; /&gt;,    label: &quot;📥 Importar ZIP&quot;,                  sub: &quot;Abrir arquivo .zip do dispositivo&quot;,  action: () =&gt; { zipInputRef.current?.click(); } },
+              { icon: &lt;Upload size={16} className=&quot;text-orange-400&quot; /&gt;,    label: &quot;📥 Importar TAR.GZ&quot;,               sub: &quot;Abrir arquivo .tar.gz&quot;,              action: () =&gt; { zipInputRef.current?.click(); } },
+              { icon: &lt;Download size={16} className=&quot;text-green-400&quot; /&gt;,   label: &quot;📤 Exportar ZIP&quot;,                  sub: &quot;Baixar projeto como .zip&quot;,           action: async () =&gt; { await exportAsZip(vfs.toJSON(), projectName.replace(/\s+/g, &quot;-&quot;).toLowerCase()); } },
+              { icon: &lt;Bot size={16} className=&quot;text-purple-400&quot; /&gt;,       label: &quot;🤖 Assistente IA — Raquel&quot;,       sub: &quot;Converse, peça código, debug...&quot;,    action: () =&gt; { setShowAIPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;GitBranch size={16} className=&quot;text-green-400&quot; /&gt;,  label: &quot;🔗 GitHub — Clonar / Enviar&quot;,     sub: &quot;Importar ou exportar para GitHub&quot;,   action: () =&gt; { setGithubDefaultView(undefined); setShowGitHub(true); setShowFilePanel(false); } },
+              { icon: &lt;Globe size={16} className=&quot;text-blue-400&quot; /&gt;,       label: &quot;🌐 Publicar no GitHub Pages&quot;,      sub: &quot;Publica este editor online — grátis para sempre&quot;, action: () =&gt; { setGithubDefaultView(&quot;pages-deploy&quot;); setShowGitHub(true); setShowFilePanel(false); } },
+              { icon: &lt;GitBranch size={16} className=&quot;text-purple-400&quot; /&gt;, label: &quot;🔗 Importar via Link Público&quot;,     sub: &quot;Clonar qualquer repositório público sem token&quot;, action: async () =&gt; { const url = window.prompt(&quot;Cole o link do repositório GitHub (ex: https://github.com/usuario/repo):&quot;); if (!url?.trim()) return; const m = url.trim().replace(/\.git$/,&quot;&quot;).match(/github\.com\/([^/]+)\/([^/?\s]+)/); if (!m) { alert(&quot;Link inválido. Use: https://github.com/usuario/repositorio&quot;); return; } const [,owner,repo] = m; try { const { cloneRepo } = await import(&quot;@/lib/github-service&quot;); const imported = await cloneRepo({ token: &quot;&quot;, username: &quot;&quot; }, owner, repo); handleImportFromGitHub(imported); setShowFilePanel(false); alert(`✅ Importado com sucesso! ${Object.keys(imported).length} arquivos.`); } catch(e:any) { alert(&quot;Erro ao importar: &quot; + (e.message || String(e))); } } },
+              { icon: &lt;Globe size={16} className=&quot;text-cyan-400&quot; /&gt;,       label: &quot;💻 Abrir no VSCode Web&quot;,           sub: &quot;Editar no vscode.dev direto pelo navegador&quot;,   action: () =&gt; { window.open(&quot;https://vscode.dev&quot;, &quot;_blank&quot;); setShowFilePanel(false); } },
+              { icon: &lt;Package size={16} className=&quot;text-orange-400&quot; /&gt;,   label: &quot;📦 Instalar Biblioteca&quot;,          sub: &quot;npm install, pip install...&quot;,        action: () =&gt; { setShowPackages(true); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;🗄️&lt;/span&gt;,             label: &quot;🗄️ Banco de Dados (Neon/Postgres)&quot;,sub: &quot;Conectar e rodar SQL&quot;,              action: () =&gt; { setShowDBPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;Camera size={16} className=&quot;text-pink-400&quot; /&gt;,      label: &quot;📸 Salvar Checkpoint&quot;,            sub: &quot;Criar ponto de restauração&quot;,         action: () =&gt; { saveCheckpoint(); setShowFilePanel(false); alert(&quot;✅ Checkpoint salvo!&quot;); } },
+              { icon: &lt;History size={16} className=&quot;text-purple-300&quot; /&gt;,   label: &quot;🕐 Histórico de Checkpoints&quot;,     sub: &quot;Ver e restaurar versões salvas&quot;,     action: () =&gt; { setShowCheckpointPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;CheckSquare size={16} className=&quot;text-cyan-400&quot; /&gt;, label: &quot;📋 Lista de Tarefas — Taski&quot;,     sub: &quot;Organizar to-dos do projeto&quot;,        action: () =&gt; { setShowTaskPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;🧠&lt;/span&gt;,             label: &quot;🧠 Memória da Raquel&quot;,            sub: &quot;O que ela sabe sobre você e o projeto&quot;, action: () =&gt; { handleOpenRaquelPerfil(); } },
+              { icon: &lt;BookOpen size={16} className=&quot;text-yellow-300&quot; /&gt;,  label: &quot;📐 Gerar Plano do Projeto&quot;,       sub: &quot;Gera PLANO.md com estrutura e stack&quot;,action: () =&gt; { handleGenerateDocs(); setShowFilePanel(false); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;📖&lt;/span&gt;,             label: &quot;📖 Manual do SK Code Editor&quot;,sub: &quot;Guia completo em português&quot;,           action: () =&gt; { setShowManualPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;🔗&lt;/span&gt;,             label: &quot;🔗 Combinar Apps&quot;,              sub: &quot;Une vários apps num único projeto&quot;,    action: () =&gt; { setShowCombinarAppsPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;🌐&lt;/span&gt;,             label: &quot;🌐 Extrator de Site&quot;,            sub: &quot;Baixar HTML/CSS/JS de qualquer site&quot;,  action: () =&gt; { setShowSiteExtractor(true); setShowFilePanel(false); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;🚀&lt;/span&gt;,             label: &quot;🚀 Deploy &amp; Backup&quot;,             sub: &quot;GitHub Pages, Vercel, Netlify, ZIP...&quot;, action: () =&gt; { setShowDeployPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;📦&lt;/span&gt;,             label: &quot;📦 Build &amp; Deploy&quot;,              sub: &quot;APK, GitHub Pages, PWA, Electron...&quot;, action: () =&gt; { setShowBuildPanel(true); setShowFilePanel(false); } },
+              { icon: &lt;Upload size={16} className=&quot;text-purple-400&quot; /&gt;,    label: &quot;📥 Importar APK&quot;,                 sub: &quot;Importar APK como ZIP explorado&quot;,     action: () =&gt; { zipInputRef.current?.click(); } },
+              { icon: &lt;span className=&quot;text-[14px]&quot;&gt;🩺&lt;/span&gt;,             label: &quot;🩺 Status do Sistema (ao vivo)&quot;,  sub: &quot;Ver se tudo tá funcionando — clique pra atualizar&quot;, action: () =&gt; { setShowSystemStatus(true); setShowFilePanel(false); } },
+              { icon: &lt;Settings2 size={16} className=&quot;text-blue-300&quot; /&gt;,   label: &quot;📄 Gerar SISTEMA.md&quot;,             sub: &quot;Cria documentação técnica do sistema&quot;, action: () =&gt; { const c = generateSystemInfo(projectName, vfs.listFiles().length); vfs.writeFile(&quot;SISTEMA.md&quot;, c); handleFileSelect(&quot;SISTEMA.md&quot;); setShowFilePanel(false); } },
+              { icon: &lt;Save size={16} className=&quot;text-blue-400&quot; /&gt;,        label: &quot;💾 Salvar Projeto&quot;,               sub: &quot;Salvar estado atual&quot;,                action: () =&gt; { onSaveProject?.(projectName); setShowFilePanel(false); } },
+              { icon: &lt;Globe size={16} className=&quot;text-green-300&quot; /&gt;,      label: &quot;🌐 Abrir Preview&quot;,                sub: &quot;Visualizar site/app rodando&quot;,        action: () =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;preview&quot;); setShowFilePanel(false); } },
+              { icon: &lt;TerminalIcon size={16} className=&quot;text-green-500&quot; /&gt;,label: &quot;⬛ Abrir Terminal&quot;,              sub: &quot;Rodar comandos bash&quot;,                action: () =&gt; { setShowBottomPanel(true); setBottomPanel(&quot;terminal&quot;); setShowFilePanel(false); } },
+              ...(onOpenAssistenteJuridico ? [{ icon: &lt;Scale size={16} className=&quot;text-amber-400&quot; /&gt;, label: &quot;⚖️ Assistente Jurídico&quot;, sub: &quot;Consulta jurídica com IA&quot;, action: () =&gt; { setShowFilePanel(false); onOpenAssistenteJuridico!(); } }] : []),
+              ...(onOpenCampoLivre ? [{ icon: &lt;MessageSquare size={16} className=&quot;text-green-400&quot; /&gt;, label: &quot;💬 Campo Livre&quot;, sub: &quot;Chat sem restrições&quot;, action: () =&gt; { setShowFilePanel(false); onOpenCampoLivre!(); } }] : []),
+            ].map(({ icon, label, sub, action }) =&gt; (
+              &lt;button key={label} onClick={action}
+                className=&quot;w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 active:bg-white/10 text-left transition-colors&quot;&gt;
+                &lt;div className=&quot;w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center shrink-0&quot;&gt;{icon}&lt;/div&gt;
+                &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                  &lt;p className=&quot;text-[12px] font-semibold text-gray-200 leading-tight&quot;&gt;{label}&lt;/p&gt;
+                  &lt;p className=&quot;text-[10px] text-gray-600 leading-tight mt-0.5&quot;&gt;{sub}&lt;/p&gt;
+                &lt;/div&gt;
+              &lt;/button&gt;
+            ))}
+            {/* Limpar projeto — destructive */}
+            &lt;button
+              onClick={() =&gt; { if (confirm(&quot;Limpar todos os arquivos e voltar ao início?&quot;)) { vfs.clear(); setOpenFiles([]); setActiveFile(null); onNewProject(); } setShowFilePanel(false); }}
+              className=&quot;w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-500/10 active:bg-red-500/20 text-left transition-colors&quot;&gt;
+              &lt;div className=&quot;w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0&quot;&gt;
+                &lt;Trash2 size={16} className=&quot;text-red-400&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                &lt;p className=&quot;text-[12px] font-semibold text-red-400 leading-tight&quot;&gt;🗑️ Limpar Projeto&lt;/p&gt;
+                &lt;p className=&quot;text-[10px] text-gray-600 leading-tight mt-0.5&quot;&gt;Apaga todos os arquivos e volta ao início&lt;/p&gt;
+              &lt;/div&gt;
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      {/* GITHUB PANEL — slides from right */}
+      &lt;div className={`fixed top-0 right-0 bottom-0 z-50 w-[88vw] max-w-sm bg-[#0d0d0d] border-l border-gray-700/50 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${showGitHub ? &quot;translate-x-0&quot; : &quot;translate-x-full&quot;}`}&gt;
+        &lt;div className=&quot;flex items-center justify-between px-3 py-2 bg-[#141414] border-b border-gray-700/40 shrink-0&quot;&gt;
+          &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+            &lt;GitBranch size={14} className=&quot;text-green-400&quot; /&gt;
+            &lt;span className=&quot;text-xs font-bold text-gray-400 uppercase tracking-widest&quot;&gt;GitHub&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;button onClick={() =&gt; { setShowGitHub(false); setGithubDefaultView(undefined); }} className=&quot;p-1.5 rounded-lg hover:bg-white/5 text-gray-600&quot;&gt;
+            &lt;X size={15} /&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+          &lt;GitHubPanel files={vfs.toJSON()} onImport={handleImportFromGitHub} projectName={projectName} defaultView={githubDefaultView} /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      {/* MORE MENU — bottom sheet */}
+      {showMoreMenu &amp;&amp; (
+        &lt;div className=&quot;fixed inset-x-0 bottom-0 z-50 pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+          &lt;div className=&quot;bg-[#222e18] border-t border-gray-700/50 rounded-t-3xl shadow-2xl overflow-hidden&quot;&gt;
+            &lt;div className=&quot;flex items-center justify-center pt-3 pb-1&quot;&gt;
+              &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+            &lt;/div&gt;
+            &lt;div className=&quot;pb-8 divide-y divide-gray-800/40&quot;&gt;
+              {[
+                { icon: &lt;Plus size={18} className=&quot;text-green-300&quot; /&gt;, label: &quot;🆕 Criar Novo App&quot;, action: () =&gt; { setShowNewAppWizard(true); setShowMoreMenu(false); } },
+                { icon: &lt;span className=&quot;text-[16px]&quot;&gt;🗄️&lt;/span&gt;, label: &quot;Banco de Dados (Neon / PostgreSQL)&quot;, action: () =&gt; { setShowDBPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;Files size={18} className=&quot;text-blue-400&quot; /&gt;, label: &quot;Arquivos&quot;, action: () =&gt; { setShowFilePanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;Bot size={18} className=&quot;text-purple-400&quot; /&gt;, label: &quot;Assistente IA&quot;, action: () =&gt; { setShowAIPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;GitBranch size={18} className=&quot;text-green-400&quot; /&gt;, label: &quot;GitHub / Clone&quot;, action: () =&gt; { setGithubDefaultView(undefined); setShowGitHub(true); setShowMoreMenu(false); } },
+                { icon: &lt;Globe size={18} className=&quot;text-blue-400&quot; /&gt;, label: &quot;🌐 Publicar no GitHub Pages — Grátis&quot;, action: () =&gt; { setGithubDefaultView(&quot;pages-deploy&quot;); setShowGitHub(true); setShowMoreMenu(false); } },
+                { icon: &lt;span className=&quot;text-[18px]&quot;&gt;🚀&lt;/span&gt;, label: &quot;🚀 Deploy &amp; Backup (Vercel, Netlify, ZIP...)&quot;, action: () =&gt; { setShowDeployPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;Package size={18} className=&quot;text-orange-400&quot; /&gt;, label: &quot;Instalar Biblioteca&quot;, action: () =&gt; { setShowPackages(true); setShowMoreMenu(false); } },
+                { icon: &lt;Upload size={18} className=&quot;text-yellow-400&quot; /&gt;, label: &quot;Importar (.zip / .tar.gz)&quot;, action: () =&gt; { zipInputRef.current?.click(); setShowMoreMenu(false); } },
+                { icon: &lt;Download size={18} className=&quot;text-green-400&quot; /&gt;, label: &quot;Exportar ZIP&quot;, action: async () =&gt; { await exportAsZip(vfs.toJSON(), projectName.replace(/\s+/g, &quot;-&quot;)); setShowMoreMenu(false); } },
+                { icon: &lt;HardDrive size={18} className=&quot;text-blue-400&quot; /&gt;, label: &quot;☁️ Backup no Google Drive&quot;, action: () =&gt; { setShowDrivePanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;Camera size={18} className=&quot;text-pink-400&quot; /&gt;, label: &quot;📸 Salvar Checkpoint&quot;, action: () =&gt; { saveCheckpoint(); setShowMoreMenu(false); alert(&quot;✅ Checkpoint salvo! Acesse o histórico para restaurar.&quot;); } },
+                { icon: &lt;History size={18} className=&quot;text-purple-400&quot; /&gt;, label: &quot;🕐 Histórico de Checkpoints&quot;, action: () =&gt; { setShowCheckpointPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;CheckSquare size={18} className=&quot;text-cyan-400&quot; /&gt;, label: &quot;📋 Lista de Tarefas (Taski)&quot;, action: () =&gt; { setShowTaskPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;BookOpen size={18} className=&quot;text-yellow-400&quot; /&gt;, label: &quot;📐 Plano do Projeto&quot;, action: handleGenerateDocs },
+                { icon: &lt;span className=&quot;text-[16px]&quot;&gt;📖&lt;/span&gt;, label: &quot;📖 Manual do SK Code Editor&quot;, action: () =&gt; { setShowManualPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;span className=&quot;text-[16px]&quot;&gt;🔗&lt;/span&gt;, label: &quot;🔗 Combinar Apps&quot;, action: () =&gt; { setShowCombinarAppsPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;span className=&quot;text-[16px]&quot;&gt;🌐&lt;/span&gt;, label: &quot;🌐 Extrator de Site&quot;, action: () =&gt; { setShowSiteExtractor(true); setShowMoreMenu(false); } },
+                { icon: &lt;span className=&quot;text-[16px]&quot;&gt;📦&lt;/span&gt;, label: &quot;📦 Build &amp; Deploy (APK, PWA, Pages...)&quot;, action: () =&gt; { setShowBuildPanel(true); setShowMoreMenu(false); } },
+                { icon: &lt;span className=&quot;text-[16px]&quot;&gt;🔍&lt;/span&gt;, label: &quot;🔍 Scanner (VFS, APK/ZIP, Web, IA)&quot;, action: () =&gt; { setShowFileScanner(true); setShowMoreMenu(false); } },
+                { icon: &lt;Settings2 size={18} className=&quot;text-blue-300&quot; /&gt;, label: &quot;Info do Sistema&quot;, action: () =&gt; {
+                  const content = generateSystemInfo(projectName, vfs.listFiles().length);
+                  vfs.writeFile(&quot;SISTEMA.md&quot;, content);
+                  handleFileSelect(&quot;SISTEMA.md&quot;);
+                  setShowMoreMenu(false);
+                }},
+                { icon: &lt;Save size={18} className=&quot;text-blue-400&quot; /&gt;, label: &quot;Salvar Projeto&quot;, action: () =&gt; { onSaveProject?.(projectName); setShowMoreMenu(false); } },
+                ...(onOpenAssistenteJuridico ? [{ icon: &lt;Scale size={18} className=&quot;text-amber-400&quot; /&gt;, label: &quot;Assistente Jurídico&quot;, action: () =&gt; { setShowMoreMenu(false); onOpenAssistenteJuridico(); } }] : []),
+                ...(onOpenCampoLivre ? [{ icon: &lt;MessageSquare size={18} className=&quot;text-green-400&quot; /&gt;, label: &quot;Campo Livre&quot;, action: () =&gt; { setShowMoreMenu(false); onOpenCampoLivre(); } }] : []),
+              ].map(({ icon, label, action }) =&gt; (
+                &lt;button key={label} onClick={action} className=&quot;w-full flex items-center gap-4 px-6 py-3.5 hover:bg-white/5 text-left&quot;&gt;
+                  {icon}
+                  &lt;span className=&quot;text-[15px] text-gray-200&quot;&gt;{label}&lt;/span&gt;
+                &lt;/button&gt;
+              ))}
+              {/* Chave Global de IA */}
+              &lt;div className=&quot;px-6 py-3&quot;&gt;
+                &lt;p className=&quot;text-[11px] text-gray-500 mb-1.5 font-semibold uppercase tracking-wider&quot;&gt;🔑 Chave Global de IA (Gemini recomendado)&lt;/p&gt;
+                &lt;div className=&quot;flex gap-2&quot;&gt;
+                  &lt;input
+                    type=&quot;password&quot;
+                    defaultValue={(() =&gt; { try { return localStorage.getItem(&quot;sk_global_key&quot;) || &quot;&quot;; } catch { return &quot;&quot;; } })()}
+                    placeholder=&quot;Cole AIza... (Gemini) ou qualquer chave&quot;
+                    className=&quot;flex-1 px-3 py-2 bg-black/40 border border-gray-700/50 rounded-xl text-[12px] text-gray-200 placeholder-gray-600 outline-none focus:border-green-500/60&quot;
+                    id=&quot;sk-global-key-input&quot;
+                  /&gt;
+                  &lt;button
+                    onClick={() =&gt; {
+                      const inp = document.getElementById(&quot;sk-global-key-input&quot;) as HTMLInputElement;
+                      const val = inp?.value?.trim() || &quot;&quot;;
+                      try {
+                        if (val) localStorage.setItem(&quot;sk_global_key&quot;, val);
+                        else localStorage.removeItem(&quot;sk_global_key&quot;);
+                      } catch {}
+                      setShowMoreMenu(false);
+                    }}
+                    className=&quot;px-3 py-2 rounded-xl bg-green-700/40 hover:bg-green-700/60 text-green-300 text-[12px] font-bold border border-green-700/40 shrink-0&quot;
+                  &gt;
+                    Salvar
+                  &lt;/button&gt;
+                &lt;/div&gt;
+                &lt;p className=&quot;text-[10px] text-gray-600 mt-1&quot;&gt;Usada como padrão no Campo Livre e Assistente Jurídico&lt;/p&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;mx-6 h-px bg-gray-700/50 my-1&quot; /&gt;
+              &lt;button onClick={() =&gt; { if (confirm(&quot;Limpar projeto e voltar ao início?&quot;)) { vfs.clear(); setOpenFiles([]); setActiveFile(null); onNewProject(); } setShowMoreMenu(false); }}
+                className=&quot;w-full flex items-center gap-4 px-6 py-3.5 hover:bg-red-500/5 text-left&quot;&gt;
+                &lt;Trash2 size={18} className=&quot;text-red-400&quot; /&gt;
+                &lt;span className=&quot;text-[15px] text-red-400&quot;&gt;Voltar ao Início&lt;/span&gt;
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* ═══ TOAST: App Criado ═══ */}
+      {newAppCreatedToast &amp;&amp; (
+        &lt;div className=&quot;fixed bottom-28 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl border border-green-500/40 bg-[#141414]&quot;&gt;
+          &lt;span className=&quot;text-green-400 text-xl&quot;&gt;✅&lt;/span&gt;
+          &lt;div&gt;
+            &lt;p className=&quot;text-[13px] font-bold text-green-300&quot;&gt;App criado: {newAppCreatedToast}&lt;/p&gt;
+            &lt;p className=&quot;text-[11px] text-gray-400&quot;&gt;Peça para a Raquel instalar e rodar!&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* ═══ WIZARD: Criar Novo App ═══ */}
+      {showNewAppWizard &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/70 backdrop-blur-sm&quot; onClick={() =&gt; setShowNewAppWizard(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#1a2413] border-t border-gray-700/50 rounded-t-3xl shadow-2xl flex flex-col max-h-[90vh]&quot;&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-gray-700/40 shrink-0&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                  &lt;Plus size={18} className=&quot;text-green-400&quot; /&gt;
+                  &lt;p className=&quot;text-[16px] font-bold text-white&quot;&gt;Criar Novo App&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;button onClick={() =&gt; setShowNewAppWizard(false)} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-500&quot;&gt;&lt;X size={17} /&gt;&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-y-auto px-4 py-4 pb-8 space-y-3&quot;&gt;
+                &lt;p className=&quot;text-[12px] text-gray-500 px-1 mb-2&quot;&gt;Escolha o tipo de app. Os arquivos serão criados automaticamente — depois peça para a Raquel instalar e rodar.&lt;/p&gt;
+                {[
+                  {
+                    id: &quot;html-css-js&quot;, icon: &quot;🌐&quot;, title: &quot;HTML + CSS + JS&quot;,
+                    desc: &quot;O mais simples. Preview funciona imediatamente, sem instalar nada. Ideal para páginas, animações e prototipagem rápida.&quot;,
+                    badge: &quot;⚡ Preview imediato&quot;, badgeColor: &quot;text-green-400 bg-gray-800/30 border-green-700/40&quot;,
+                  },
+                  {
+                    id: &quot;landing-page&quot;, icon: &quot;📱&quot;, title: &quot;Landing Page&quot;,
+                    desc: &quot;Página de apresentação profissional com design moderno. Ideal para mostrar serviços, produtos ou portfólio.&quot;,
+                    badge: &quot;⚡ Preview imediato&quot;, badgeColor: &quot;text-green-400 bg-gray-800/30 border-green-700/40&quot;,
+                  },
+                  {
+                    id: &quot;pwa-app&quot;, icon: &quot;📲&quot;, title: &quot;PWA Instalável&quot;,
+                    desc: &quot;Aplicativo que pode ser instalado no celular e funciona offline. HTML + manifest + service worker.&quot;,
+                    badge: &quot;⚡ Preview imediato&quot;, badgeColor: &quot;text-green-400 bg-gray-800/30 border-green-700/40&quot;,
+                  },
+                  {
+                    id: &quot;react-app&quot;, icon: &quot;⚛️&quot;, title: &quot;React App&quot;,
+                    desc: &quot;Interface moderna e interativa com componentes React. Precisa rodar: npm install e npm start no terminal.&quot;,
+                    badge: &quot;npm install&quot;, badgeColor: &quot;text-blue-400 bg-blue-900/30 border-blue-700/40&quot;,
+                  },
+                  {
+                    id: &quot;node-api&quot;, icon: &quot;🟢&quot;, title: &quot;Node.js / Express&quot;,
+                    desc: &quot;Backend com API REST. Ideal para criar rotas, salvar dados, integrar com banco. Precisa: npm install e npm start.&quot;,
+                    badge: &quot;npm install&quot;, badgeColor: &quot;text-blue-400 bg-blue-900/30 border-blue-700/40&quot;,
+                  },
+                  {
+                    id: &quot;typescript-node&quot;, icon: &quot;🔷&quot;, title: &quot;TypeScript + Node.js&quot;,
+                    desc: &quot;JavaScript com tipos — mais seguro e organizado. Ideal para projetos maiores.&quot;,
+                    badge: &quot;npm install&quot;, badgeColor: &quot;text-blue-400 bg-blue-900/30 border-blue-700/40&quot;,
+                  },
+                  {
+                    id: &quot;_raquel&quot;, icon: &quot;🤖&quot;, title: &quot;Deixar a Raquel criar&quot;,
+                    desc: &quot;Descreva o que você quer e a Raquel cria toda a estrutura do zero para você — arquivos, dependências e instruções.&quot;,
+                    badge: &quot;IA cria tudo&quot;, badgeColor: &quot;text-purple-400 bg-purple-900/30 border-purple-700/40&quot;,
+                  },
+                ].map(({ id, icon, title, desc, badge, badgeColor }) =&gt; (
+                  &lt;button
+                    key={id}
+                    onClick={() =&gt; {
+                      if (id === &quot;_raquel&quot;) {
+                        setShowNewAppWizard(false);
+                        setShowAIPanel(true);
+                        setExternalAIMsg(&quot;🚀 Vou criar um aplicativo do zero. Me faça essas perguntas UMA A UMA e aguarde minha resposta antes de ir para a próxima:\n\n1) Qual é o objetivo do app?\n2) É um site (HTML/React) ou um backend (Node.js)?\n3) Vai ter banco de dados?\n4) Tem alguma API ou serviço externo?\n\nCom base nas respostas, crie TODA a estrutura: arquivos, pastas, package.json e instruções para rodar. Comece fazendo a PRIMEIRA pergunta agora.&quot;);
+                      } else {
+                        applyTemplate(id);
+                      }
+                    }}
+                    className=&quot;w-full flex items-start gap-4 p-4 rounded-2xl bg-[#0d0d0d] border border-gray-700/40 hover:border-gray-600/60 hover:bg-[#141414] text-left transition-all active:scale-[0.98]&quot;
+                  &gt;
+                    &lt;span className=&quot;text-3xl shrink-0 mt-0.5&quot;&gt;{icon}&lt;/span&gt;
+                    &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                      &lt;div className=&quot;flex items-center gap-2 flex-wrap&quot;&gt;
+                        &lt;span className=&quot;text-[15px] font-bold text-white&quot;&gt;{title}&lt;/span&gt;
+                        &lt;span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeColor}`}&gt;{badge}&lt;/span&gt;
+                      &lt;/div&gt;
+                      &lt;p className=&quot;text-[12px] text-gray-400 mt-1 leading-relaxed&quot;&gt;{desc}&lt;/p&gt;
+                    &lt;/div&gt;
+                    &lt;ChevronRight size={16} className=&quot;text-gray-600 shrink-0 mt-1&quot; /&gt;
+                  &lt;/button&gt;
+                ))}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {showDBPanel &amp;&amp; (
+        &lt;DatabasePanel
+          onClose={() =&gt; setShowDBPanel(false)}
+          connectionString={dbConnectionString}
+          onUpdateConnection={str =&gt; { setDbConnectionString(str); localStorage.setItem(&quot;sk-db-url&quot;, str); }}
+          onSendToAI={msg =&gt; { setShowDBPanel(false); setShowAIPanel(true); setExternalAIMsg(msg); }}
+        /&gt;
+      )}
+
+      {showDeployPanel &amp;&amp; (
+        &lt;DeployPanel
+          onClose={() =&gt; setShowDeployPanel(false)}
+          projectName={projectName}
+          files={vfs.toJSON() as Record&lt;string, string&gt;}
+        /&gt;
+      )}
+
+            {/* MODAL DE NOME (arquivo/pasta/renomear) */}
+      {nameModal &amp;&amp; (
+        &lt;NameInputModal
+          title={nameModal.title}
+          placeholder={nameModal.placeholder}
+          defaultValue={nameModal.defaultValue}
+          icon={nameModal.icon}
+          confirmLabel={nameModal.confirmLabel}
+          onConfirm={nameModal.onConfirm}
+          onCancel={() =&gt; setNameModal(null)}
+        /&gt;
+      )}
+
+      {/* PACKAGE SEARCH — componente dedicado com busca real no npm */}
+      {showPackages &amp;&amp; (
+        &lt;PackageSearch
+          onInstall={(cmd) =&gt; { handleRunInTerminal(cmd); }}
+          onClose={() =&gt; setShowPackages(false)}
+        /&gt;
+      )}
+
+      {/* ── PAINEL DE BACKUP NO DRIVE ──────────────────────────────────────── */}
+      {showDrivePanel &amp;&amp; (
+        &lt;DriveBackupPanel
+          onClose={() =&gt; setShowDrivePanel(false)}
+          files={vfs.toJSON() as Record&lt;string, string&gt;}
+          projectName={projectName}
+        /&gt;
+      )}
+
+      {/* ── PAINEL STATUS DO SISTEMA AO VIVO ───────────────────────────────── */}
+      &lt;SystemStatusPanel
+        open={showSystemStatus}
+        onClose={() =&gt; setShowSystemStatus(false)}
+        vfs={vfs}
+        projectName={projectName}
+        terminalMode={terminalMode}
+      /&gt;
+
+      {/* ── PAINEL DO MANUAL ──────────────────────────────────────────────── */}
+      {showManualPanel &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/70&quot; onClick={() =&gt; setShowManualPanel(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#0d0d0d] border-t border-[#2d4a1e] rounded-t-3xl shadow-2xl flex flex-col&quot; style={{ height: &quot;88vh&quot; }}&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-[#3d6e2a] rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-[#2d4a1e] shrink-0&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                  &lt;span className=&quot;text-lg&quot;&gt;📖&lt;/span&gt;
+                  &lt;p className=&quot;text-[15px] font-bold text-[#7ec87a]&quot;&gt;Manual do SK Code Editor&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;button onClick={() =&gt; setShowManualPanel(false)} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-500&quot;&gt;
+                  &lt;X size={17} /&gt;
+                &lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+                &lt;Manual vfs={vfs} projectName={projectName} /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* ── PAINEL COMBINAR APPS ──────────────────────────────────────────── */}
+      {showCombinarAppsPanel &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/70&quot; onClick={() =&gt; setShowCombinarAppsPanel(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#0d0d0d] border-t border-[#2d4a1e] rounded-t-3xl shadow-2xl flex flex-col&quot; style={{ height: &quot;88vh&quot; }}&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-[#3d6e2a] rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-[#2d4a1e] shrink-0&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                  &lt;span className=&quot;text-lg&quot;&gt;🔗&lt;/span&gt;
+                  &lt;p className=&quot;text-[15px] font-bold text-[#7ec87a]&quot;&gt;Combinar Apps&lt;/p&gt;
+                &lt;/div&gt;
+                &lt;button onClick={() =&gt; setShowCombinarAppsPanel(false)} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-500&quot;&gt;
+                  &lt;X size={17} /&gt;
+                &lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+                &lt;CombinarApps
+                  onSendToRaquel={(prompt) =&gt; {
+                    setShowCombinarAppsPanel(false);
+                    setExternalAIMsg(prompt);
+                    setTimeout(() =&gt; setShowAIPanel(true), 100);
+                  }}
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* ── PAINEL EXTRATOR DE SITE ───────────────────────────────────────── */}
+      {showSiteExtractor &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/70&quot; onClick={() =&gt; setShowSiteExtractor(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#0d0d0d] border-t border-gray-700/50 rounded-t-3xl shadow-2xl flex flex-col&quot; style={{ height: &quot;90vh&quot; }}&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+                &lt;SiteExtractor
+                  onClose={() =&gt; setShowSiteExtractor(false)}
+                  onSaveToVFS={(files) =&gt; {
+                    Object.entries(files).forEach(([path, content]) =&gt; vfs.writeFile(path, content));
+                    setShowSiteExtractor(false);
+                    const count = Object.keys(files).length;
+                    const first = Object.keys(files)[0];
+                    if (first) setTimeout(() =&gt; handleFileSelect(first), 100);
+                    alert(`✅ ${count} arquivo(s) salvos no projeto!`);
+                  }}
+                  onAnalyzeWithAI={(content) =&gt; {
+                    setExternalAIMsg(content);
+                    setTimeout(() =&gt; setShowAIPanel(true), 100);
+                  }}
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* ── PAINEL BUILD &amp; DEPLOY ──────────────────────────────────────────── */}
+      {showBuildPanel &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/70&quot; onClick={() =&gt; setShowBuildPanel(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#0d0d0d] border-t border-gray-700/50 rounded-t-3xl shadow-2xl flex flex-col&quot; style={{ height: &quot;90vh&quot; }}&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-hidden&quot;&gt;
+                &lt;BuildPanel
+                  vfs={{
+                    listFiles: () =&gt; vfs.listFiles(),
+                    readFile: (p) =&gt; vfs.readFile(p) ?? null,
+                    writeFile: (p, c) =&gt; vfs.writeFile(p, c),
+                  }}
+                  projectName={projectName}
+                  onClose={() =&gt; setShowBuildPanel(false)}
+                  onRunCommand={(cmd) =&gt; {
+                    setShowBuildPanel(false);
+                    setShowBottomPanel(true);
+                    setBottomPanel(&quot;terminal&quot;);
+                    setTimeout(() =&gt; setPendingTermCmd(cmd), 200);
+                  }}
+                /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* ── SCANNER ─────────────────────────────────────────────────────── */}
+      {showFileScanner &amp;&amp; (
+        &lt;FileScanner
+          vfs={{
+            listFiles: () =&gt; vfs.listFiles(),
+            readFile: (p) =&gt; vfs.readFile(p) ?? null,
+          }}
+          onClose={() =&gt; setShowFileScanner(false)}
+          aiConfig={(() =&gt; {
+            try { const s = JSON.parse(localStorage.getItem(&quot;sk-ai-config&quot;) || &quot;{}&quot;); return { apiKey: s.key || &quot;&quot;, apiUrl: s.url || &quot;&quot;, apiModel: s.model || &quot;&quot; }; } catch { return { apiKey: &quot;&quot;, apiUrl: &quot;&quot;, apiModel: &quot;&quot; }; }
+          })()}
+        /&gt;
+      )}
+
+      {/* ── PAINEL DE CHECKPOINTS ─────────────────────────────────────────── */}
+      {showCheckpointPanel &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/60&quot; onClick={() =&gt; setShowCheckpointPanel(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#1a2413] border-t border-gray-700/60 rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh]&quot;&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-gray-700/40 shrink-0&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                  &lt;History size={16} className=&quot;text-purple-400&quot; /&gt;
+                  &lt;p className=&quot;text-[15px] font-bold text-white&quot;&gt;Histórico de Checkpoints&lt;/p&gt;
+                  &lt;span className=&quot;text-[10px] text-gray-600 bg-gray-800/50 px-2 py-0.5 rounded-full&quot;&gt;{checkpoints.length}/5&lt;/span&gt;
+                &lt;/div&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                  &lt;button
+                    onClick={() =&gt; { saveCheckpoint(); }}
+                    className=&quot;flex items-center gap-1.5 px-3 py-1.5 bg-pink-600/20 border border-pink-500/40 rounded-xl text-[12px] text-pink-300 font-bold hover:bg-pink-600/30&quot;
+                  &gt;
+                    &lt;Camera size={13} /&gt; Salvar agora
+                  &lt;/button&gt;
+                  &lt;button onClick={() =&gt; setShowCheckpointPanel(false)} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-500&quot;&gt;
+                    &lt;X size={17} /&gt;
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-y-auto px-4 py-3 space-y-2&quot;&gt;
+                {checkpoints.length === 0 ? (
+                  &lt;div className=&quot;py-10 text-center&quot;&gt;
+                    &lt;Camera size={28} className=&quot;text-gray-700 mx-auto mb-2&quot; /&gt;
+                    &lt;p className=&quot;text-[13px] text-gray-500&quot;&gt;Nenhum checkpoint salvo ainda&lt;/p&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-700 mt-1&quot;&gt;Clique em &quot;Salvar agora&quot; para criar um ponto de restauração&lt;/p&gt;
+                  &lt;/div&gt;
+                ) : (
+                  checkpoints.map((cp) =&gt; (
+                    &lt;div key={cp.id} className=&quot;flex items-center gap-3 p-3 bg-[#0d0d0d] border border-gray-700/40 rounded-xl&quot;&gt;
+                      &lt;Clock size={14} className=&quot;text-purple-400 shrink-0&quot; /&gt;
+                      &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                        &lt;p className=&quot;text-[13px] text-gray-200 font-semibold truncate&quot;&gt;{cp.label}&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-600&quot;&gt;
+                          {new Date(cp.timestamp).toLocaleString(&quot;pt-BR&quot;)} • {cp.fileCount} arquivo{cp.fileCount !== 1 ? &quot;s&quot; : &quot;&quot;}
+                        &lt;/p&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;flex items-center gap-1.5 shrink-0&quot;&gt;
+                        &lt;button
+                          onClick={() =&gt; restoreCheckpoint(cp)}
+                          className=&quot;flex items-center gap-1 px-2.5 py-1.5 bg-green-600/20 border border-green-500/30 rounded-lg text-[11px] text-green-400 font-bold hover:bg-green-600/30&quot;
+                        &gt;
+                          &lt;RotateCcw size={11} /&gt; Restaurar
+                        &lt;/button&gt;
+                        &lt;button
+                          onClick={() =&gt; deleteCheckpoint(cp.id)}
+                          className=&quot;p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-900/20&quot;
+                        &gt;
+                          &lt;X size={13} /&gt;
+                        &lt;/button&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  ))
+                )}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+
+      {/* ── PAINEL TASKI (lista de tarefas) ──────────────────────────────────── */}
+      {showTaskPanel &amp;&amp; (
+        &lt;&gt;
+          &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/60&quot; onClick={() =&gt; setShowTaskPanel(false)} /&gt;
+          &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+            &lt;div className=&quot;bg-[#1a2413] border-t border-gray-700/60 rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh]&quot;&gt;
+              &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+                &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex items-center justify-between px-5 py-2.5 border-b border-gray-700/40 shrink-0&quot;&gt;
+                &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                  &lt;CheckSquare size={16} className=&quot;text-cyan-400&quot; /&gt;
+                  &lt;p className=&quot;text-[15px] font-bold text-white&quot;&gt;Taski — Lista de Tarefas&lt;/p&gt;
+                  &lt;span className=&quot;text-[10px] text-gray-600 bg-gray-800/50 px-2 py-0.5 rounded-full&quot;&gt;
+                    {tasks.filter(t =&gt; t.done).length}/{tasks.length} feitas
+                  &lt;/span&gt;
+                &lt;/div&gt;
+                &lt;button onClick={() =&gt; setShowTaskPanel(false)} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-500&quot;&gt;
+                  &lt;X size={17} /&gt;
+                &lt;/button&gt;
+              &lt;/div&gt;
+              {/* Input nova tarefa */}
+              &lt;div className=&quot;px-4 py-3 border-b border-gray-700/30 shrink-0&quot;&gt;
+                &lt;div className=&quot;flex gap-2&quot;&gt;
+                  &lt;input
+                    value={newTaskText}
+                    onChange={e =&gt; setNewTaskText(e.target.value)}
+                    onKeyDown={e =&gt; { if (e.key === &quot;Enter&quot;) addTask(newTaskText); }}
+                    placeholder=&quot;Nova tarefa... (Enter para adicionar)&quot;
+                    className=&quot;flex-1 px-3 py-2 bg-[#0d1409] border border-gray-700/50 rounded-xl text-[13px] text-gray-200 placeholder-gray-700 outline-none focus:border-cyan-600/60&quot;
+                  /&gt;
+                  &lt;button
+                    onClick={() =&gt; addTask(newTaskText)}
+                    className=&quot;px-3 py-2 bg-cyan-600/20 border border-cyan-500/40 rounded-xl text-[12px] text-cyan-300 font-bold hover:bg-cyan-600/30&quot;
+                  &gt;
+                    &lt;Plus size={15} /&gt;
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+              &lt;div className=&quot;flex-1 overflow-y-auto px-4 py-3 space-y-1.5&quot;&gt;
+                {tasks.length === 0 ? (
+                  &lt;div className=&quot;py-10 text-center&quot;&gt;
+                    &lt;CheckSquare size={28} className=&quot;text-gray-700 mx-auto mb-2&quot; /&gt;
+                    &lt;p className=&quot;text-[13px] text-gray-500&quot;&gt;Nenhuma tarefa ainda&lt;/p&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-700 mt-1&quot;&gt;Adicione tarefas para organizar o seu projeto&lt;/p&gt;
+                  &lt;/div&gt;
+                ) : (
+                  &lt;&gt;
+                    {tasks.filter(t =&gt; !t.done).map(t =&gt; (
+                      &lt;div key={t.id} className=&quot;flex items-start gap-3 p-3 bg-[#0d0d0d] border border-gray-700/30 rounded-xl&quot;&gt;
+                        &lt;button onClick={() =&gt; toggleTask(t.id)} className=&quot;w-5 h-5 rounded border-2 border-gray-600 hover:border-cyan-400 shrink-0 mt-0.5 flex items-center justify-center transition-colors&quot; /&gt;
+                        &lt;span className=&quot;flex-1 text-[13px] text-gray-200 leading-relaxed&quot;&gt;{t.text}&lt;/span&gt;
+                        &lt;button onClick={() =&gt; deleteTask(t.id)} className=&quot;p-1 rounded text-gray-700 hover:text-red-400 shrink-0&quot;&gt;
+                          &lt;X size={12} /&gt;
+                        &lt;/button&gt;
+                      &lt;/div&gt;
+                    ))}
+                    {tasks.filter(t =&gt; t.done).length &gt; 0 &amp;&amp; (
+                      &lt;&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-700 font-bold uppercase tracking-widest px-1 pt-2&quot;&gt;Concluídas&lt;/p&gt;
+                        {tasks.filter(t =&gt; t.done).map(t =&gt; (
+                          &lt;div key={t.id} className=&quot;flex items-start gap-3 p-3 bg-[#0d1409] border border-gray-800/30 rounded-xl opacity-60&quot;&gt;
+                            &lt;button onClick={() =&gt; toggleTask(t.id)} className=&quot;w-5 h-5 rounded border-2 border-cyan-500 bg-cyan-600/20 shrink-0 mt-0.5 flex items-center justify-center&quot;&gt;
+                              &lt;span className=&quot;text-cyan-400 text-[10px] font-bold&quot;&gt;✓&lt;/span&gt;
+                            &lt;/button&gt;
+                            &lt;span className=&quot;flex-1 text-[13px] text-gray-500 leading-relaxed line-through&quot;&gt;{t.text}&lt;/span&gt;
+                            &lt;button onClick={() =&gt; deleteTask(t.id)} className=&quot;p-1 rounded text-gray-700 hover:text-red-400 shrink-0&quot;&gt;
+                              &lt;X size={12} /&gt;
+                            &lt;/button&gt;
+                          &lt;/div&gt;
+                        ))}
+                      &lt;/&gt;
+                    )}
+                  &lt;/&gt;
+                )}
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/&gt;
+      )}
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
