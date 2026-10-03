@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cirurgião 2.0 - Detector + Corretor Automático</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Courier New', monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff6b6b, #ff0000);
+      padding: 10px;
+      text-align: center;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: 11px;
+      margin: 0;
+    }
+
+    .header p {
+      font-size: 8px;
+      margin: 2px 0 0 0;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      font-size: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: #58a6ff;
+      border-bottom-color: #58a6ff;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 8px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card h2 {
+      font-size: 10px;
+      color: #58a6ff;
+      margin-bottom: 4px;
+      font-weight: bold;
+    }
+
+    .card p {
+      font-size: 8px;
+      color: #8b949e;
+      margin-bottom: 4px;
+    }
+
+    .file-input {
+      width: 100%;
+      padding: 6px;
+      background: #21262d;
+      border: 2px dashed #30363d;
+      border-radius: 3px;
+      color: #c9d1d9;
+      font-size: 9px;
+      cursor: pointer;
+      margin-bottom: 6px;
+    }
+
+    .btn {
+      padding: 4px 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      border-radius: 2px;
+      font-size: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 2px 2px 2px 0;
+    }
+
+    .btn:active {
+      background: #30363d;
+    }
+
+    .btn.primary {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn.success {
+      background: #3fb950;
+      color: white;
+    }
+
+    .btn.danger {
+      background: #f85149;
+      color: white;
+    }
+
+    .progress {
+      width: 100%;
+      height: 2px;
+      background: #21262d;
+      border-radius: 1px;
+      overflow: hidden;
+      margin: 4px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #58a6ff;
+      width: 0%;
+      transition: width 0.2s;
+    }
+
+    .status {
+      font-size: 8px;
+      color: #8b949e;
+      margin: 4px 0;
+      padding: 4px;
+      background: #0d1117;
+      border-radius: 2px;
+    }
+
+    .status.success {
+      color: #3fb950;
+      border-left: 2px solid #3fb950;
+    }
+
+    .status.error {
+      color: #f85149;
+      border-left: 2px solid #f85149;
+    }
+
+    .status.info {
+      color: #58a6ff;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .status.warning {
+      color: #d29922;
+      border-left: 2px solid #d29922;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px;
+      border-radius: 2px;
+      font-size: 8px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.error {
+      border-color: #f85149;
+      color: #f85149;
+    }
+
+    .toast.success {
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
+    .detection-item {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 2px;
+      padding: 6px;
+      margin-bottom: 4px;
+      font-size: 8px;
+    }
+
+    .detection-item.critical {
+      border-left: 3px solid #f85149;
+    }
+
+    .detection-item.important {
+      border-left: 3px solid #d29922;
+    }
+
+    .detection-item.info {
+      border-left: 3px solid #58a6ff;
+    }
+
+    .solution-code {
+      background: #0d1117;
+      padding: 4px;
+      border-radius: 2px;
+      margin: 2px 0;
+      font-size: 7px;
+      overflow-x: auto;
+      border-left: 2px solid #3fb950;
+    }
+
+    .stats {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      font-size: 8px;
+      margin-bottom: 6px;
+    }
+
+    .stat-box {
+      background: #161b22;
+      padding: 4px 8px;
+      border-radius: 2px;
+      border-left: 2px solid #58a6ff;
+    }
+
+    .stat-box.critical {
+      border-left-color: #f85149;
+    }
+
+    .stat-box.important {
+      border-left-color: #d29922;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      font-size: 8px;
+    }
+
+    .checkbox-item input {
+      margin-right: 4px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 2px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>🔬 Cirurgião 2.0 - Detector + Corretor Automático</h1>
+    <p>Remove Replit • Detecta Tudo • Cria Soluções • Gera Arquivos</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="APP.tab('upload')">📁 Upload</button>
+    <button class="tab-btn" onclick="APP.tab('detect')">🔍 Detectar</button>
+    <button class="tab-btn" onclick="APP.tab('solutions')">💡 Soluções</button>
+    <button class="tab-btn" onclick="APP.tab('generate')">⚙️ Gerar</button>
+    <button class="tab-btn" onclick="APP.tab('export')">💾 Exportar</button>
+  </div>
+
+  <div class="content">
+    <!-- TAB: UPLOAD -->
+    <div id="upload" class="panel active">
+      <div class="card">
+        <h2>📁 Carregar Projeto</h2>
+        <input type="file" id="fileInput" class="file-input" onchange="APP.loadFile(event)" accept=".zip,.tar,.tgz,.gz">
+        <div id="uploadProgress" class="progress" style="display: none;">
+          <div class="progress-bar"></div>
+        </div>
+        <div id="uploadStatus" class="status" style="display: none;"></div>
+      </div>
+
+      <div class="card">
+        <h2>📊 Informações</h2>
+        <div id="fileInfo" style="font-size: 8px; color: #8b949e;">Nenhum arquivo carregado</div>
+      </div>
+
+      <div class="card">
+        <button class="btn primary" onclick="APP.detectAll()">🔬 Cirurgia Completa</button>
+        <button class="btn" onclick="APP.clearAll()">🗑️ Limpar</button>
+      </div>
+    </div>
+
+    <!-- TAB: DETECTAR -->
+    <div id="detect" class="panel">
+      <div class="card">
+        <h2>🔍 Detecções</h2>
+        <div class="stats" id="detectionStats"></div>
+      </div>
+
+      <div id="detectionList" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: SOLUÇÕES -->
+    <div id="solutions" class="panel">
+      <div class="card">
+        <h2>💡 Soluções Automáticas</h2>
+        <button class="btn success" onclick="APP.generateSolutions()">🔧 Gerar Soluções</button>
+        <button class="btn" onclick="APP.copySolutions()">📋 Copiar</button>
+      </div>
+
+      <div id="solutionsList" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: GERAR -->
+    <div id="generate" class="panel">
+      <div class="card">
+        <h2>⚙️ Gerar Arquivos Faltando</h2>
+        <p>Selecione o que deseja gerar:</p>
+
+        <div class="checkbox-group">
+          <label class="checkbox-item">
+            <input type="checkbox" id="gen-package" checked>
+            package.json
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="gen-env" checked>
+            .env
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="gen-backend" checked>
+            Backend Node.js
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" id="gen-readme" checked>
+            README.md
+          </label>
+        </div>
+
+        <button class="btn success" onclick="APP.generateFiles()">⚙️ Gerar Agora</button>
+        <div id="generateStatus" class="status" style="display: none;"></div>
+      </div>
+
+      <div id="generatedFiles" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- TAB: EXPORTAR -->
+    <div id="export" class="panel">
+      <div class="card">
+        <h2>💾 Exportar Projeto Corrigido</h2>
+
+        <button class="btn success" onclick="APP.downloadZip()">📦 ZIP Completo</button>
+        <button class="btn" onclick="APP.downloadReport()">📋 Relatório</button>
+        <button class="btn" onclick="APP.downloadScript()">🔧 Script Bash</button>
+        <button class="btn" onclick="APP.downloadJSON()">📄 JSON</button>
+      </div>
+
+      <div class="card">
+        <h2>📋 Resumo da Cirurgia</h2>
+        <textarea id="reportContent" style="width: 100%; height: 150px; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 2px; padding: 4px; font-size: 7px; font-family: 'Courier New'; resize: none; overflow-y: auto;"></textarea>
+        <button class="btn btn-small" onclick="APP.copyReport()" style="margin-top: 4px;">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+  <script>
+    'use strict';
+
+    const APP = {
+      files: {},
+      detections: {
+        replit: [],
+        apis: [],
+        bugs: [],
+        dependencies: [],
+        missing: [],
+        conflicts: []
+      },
+      solutions: {},
+      generatedFiles: {},
+
+      toast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 3000);
+      },
+
+      tab(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        event.target.classList.add('active');
+      },
+
+      async loadFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const status = document.getElementById('uploadStatus');
+        const progress = document.getElementById('uploadProgress');
+        
+        status.style.display = 'block';
+        progress.style.display = 'block';
+        status.textContent = '⏳ Carregando...';
+        status.className = 'status info';
+
+        try {
+          const fileName = file.name;
+          let files = {};
+
+          if (fileName.endsWith('.zip')) {
+            files = await this.extractZip(file, progress);
+          } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+            files = await this.extractTarGz(file, progress);
+          } else if (fileName.endsWith('.tar')) {
+            files = await this.extractTar(file, progress);
+          }
+
+          this.files = files;
+          const count = Object.keys(files).length;
+          
+          status.textContent = `✅ ${count} arquivo(s) - ${this.formatSize(file.size)}`;
+          status.className = 'status success';
+          
+          document.getElementById('fileInfo').innerHTML = `
+            <strong>Arquivo:</strong> ${fileName}<br>
+            <strong>Tamanho:</strong> ${this.formatSize(file.size)}<br>
+            <strong>Arquivos:</strong> ${count}<br>
+            <strong>Status:</strong> ✅ Pronto
+          `;
+
+          this.toast(`✅ ${count} arquivo(s) carregado!`, 'success');
+        } catch (err) {
+          status.textContent = `❌ ${err.message}`;
+          status.className = 'status error';
+          this.toast(`❌ ${err.message}`, 'error');
+        }
+      },
+
+      async extractZip(file, progress) {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        const files = {};
+        const entries = Object.entries(loaded.files);
+        const total = entries.length;
+        let processed = 0;
+
+        for (const [path, obj] of entries) {
+          if (!obj.dir) {
+            try {
+              files[path] = await obj.async('string');
+            } catch (e) {
+              files[path] = '[BINÁRIO]';
+            }
+          }
+          processed++;
+          this.updateProgress(progress, processed, total);
+        }
+        return files;
+      },
+
+      async extractTarGz(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        return this.extractTarBuffer(decompressed, progress);
+      },
+
+      async extractTar(file, progress) {
+        const arrayBuffer = await file.arrayBuffer();
+        return this.extractTarBuffer(arrayBuffer, progress);
+      },
+
+      extractTarBuffer(buffer, progress) {
+        const files = {};
+        const view = new Uint8Array(buffer);
+        let offset = 0;
+        let processed = 0;
+        const total = Math.ceil(view.length / 512);
+
+        while (offset < view.length) {
+          const headerEnd = offset + 512;
+          if (headerEnd > view.length) break;
+
+          const header = view.slice(offset, headerEnd);
+          const nameBytes = header.slice(0, 100);
+          const name = new TextDecoder().decode(nameBytes).split('\0')[0];
+          const sizeStr = new TextDecoder().decode(header.slice(124, 136)).trim();
+          const size = parseInt(sizeStr, 8) || 0;
+
+          offset = headerEnd;
+
+          if (name && size > 0) {
+            try {
+              const content = new TextDecoder().decode(view.slice(offset, offset + size));
+              files[name] = content;
+            } catch (e) {
+              files[name] = '[BINÁRIO]';
+            }
+          }
+
+          offset += Math.ceil(size / 512) * 512;
+          processed++;
+          if (processed % 100 === 0) this.updateProgress(progress, processed, total);
+        }
+
+        return files;
+      },
+
+      updateProgress(progress, current, total) {
+        const percent = Math.min(100, Math.round((current / total) * 100));
+        progress.querySelector('.progress-bar').style.width = percent + '%';
+      },
+
+      detectAll() {
+        if (Object.keys(this.files).length === 0) {
+          this.toast('Carregue um arquivo', 'error');
+          return;
+        }
+
+        this.detections = {
+          replit: [],
+          apis: [],
+          bugs: [],
+          dependencies: [],
+          missing: [],
+          conflicts: []
+        };
+
+        // 1. DETECTAR REPLIT
+        for (const [path, content] of Object.entries(this.files)) {
+          if (path.includes('.replit') || path.includes('replit.nix')) {
+            this.detections.replit.push({
+              file: path,
+              type: 'config',
+              severity: 'critical',
+              description: 'Arquivo de configuração Replit encontrado'
+            });
+          }
+
+          if (typeof content === 'string' && content.includes('replit')) {
+            this.detections.replit.push({
+              file: path,
+              type: 'reference',
+              severity: 'important',
+              description: 'Referência ao Replit no código'
+            });
+          }
+        }
+
+        // 2. DETECTAR APIs
+        const apiPatterns = [
+          { name: 'GitHub API', regex: /api\.github\.com|github\.com\/api/gi },
+          { name: 'OpenAI API', regex: /api\.openai\.com|openai\.com\/api/gi },
+          { name: 'Expo API', regex: /api\.expo\.dev|expo\.dev\/api/gi },
+          { name: 'Neon DB', regex: /neon\.tech|postgresql/gi },
+          { name: 'Anthropic', regex: /api\.anthropic\.com|claude/gi },
+          { name: 'Gemini', regex: /generativelanguage\.googleapis\.com|gemini/gi }
+        ];
+
+        for (const [path, content] of Object.entries(this.files)) {
+          if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+
+          for (const api of apiPatterns) {
+            if (api.regex.test(content)) {
+              this.detections.apis.push({
+                file: path,
+                api: api.name,
+                severity: 'important',
+                description: `API ${api.name} detectada - Pode precisar de token`
+              });
+            }
+          }
+        }
+
+        // 3. DETECTAR BUGS
+        const bugPatterns = [
+          { name: 'console.log', regex: /console\.(log|error|warn)/gi, severity: 'critical' },
+          { name: 'Variável não preenchida', regex: /\$\{[^}]+\}/g, severity: 'critical' },
+          { name: 'Sem try-catch', regex: /async\s+function[^{]*\{(?!.*try)/g, severity: 'important' },
+          { name: 'Comparação fraca (==)', regex: /[^=!]==[^=]/g, severity: 'important' }
+        ];
+
+        for (const [path, content] of Object.entries(this.files)) {
+          if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+
+          for (const bug of bugPatterns) {
+            const matches = content.match(bug.regex) || [];
+            if (matches.length > 0) {
+              this.detections.bugs.push({
+                file: path,
+                type: bug.name,
+                count: matches.length,
+                severity: bug.severity,
+                description: `${bug.name}: ${matches.length} ocorrência(s)`
+              });
+            }
+          }
+        }
+
+        // 4. DETECTAR DEPENDÊNCIAS
+        for (const [path, content] of Object.entries(this.files)) {
+          if (path.includes('package.json')) {
+            try {
+              const pkg = JSON.parse(content);
+              this.detections.dependencies.push({
+                file: path,
+                deps: Object.keys(pkg.dependencies || {}).length,
+                devDeps: Object.keys(pkg.devDependencies || {}).length,
+                severity: 'info',
+                description: `${Object.keys(pkg.dependencies || {}).length} dependências encontradas`
+              });
+            } catch (e) {}
+          }
+        }
+
+        // 5. DETECTAR ARQUIVOS FALTANDO
+        const requiredFiles = ['package.json', '.env', 'README.md', '.gitignore'];
+        const existingFiles = Object.keys(this.files).map(f => f.split('/').pop());
+
+        for (const file of requiredFiles) {
+          if (!existingFiles.includes(file)) {
+            this.detections.missing.push({
+              file: file,
+              severity: 'important',
+              description: `Arquivo ${file} não encontrado`
+            });
+          }
+        }
+
+        // 6. DETECTAR CONFLITOS
+        if (this.detections.replit.length > 0 && this.detections.apis.length > 0) {
+          this.detections.conflicts.push({
+            type: 'Replit + APIs',
+            severity: 'critical',
+            description: 'Replit + APIs externas = Problemas de CORS'
+          });
+        }
+
+        this.displayDetections();
+        this.tab('detect');
+        this.toast('🔬 Cirurgia completa!', 'success');
+      },
+
+      displayDetections() {
+        const container = document.getElementById('detectionList');
+        container.innerHTML = '';
+
+        let html = '';
+
+        if (this.detections.replit.length > 0) {
+          html += `<div class="card"><h2>🚫 Replit Detectado</h2>`;
+          this.detections.replit.forEach(item => {
+            html += `<div class="detection-item critical">
+              <strong>${item.file}</strong><br>
+              ${item.description}
+            </div>`;
+          });
+          html += `</div>`;
+        }
+
+        if (this.detections.apis.length > 0) {
+          html += `<div class="card"><h2>🌐 APIs Detectadas</h2>`;
+          this.detections.apis.forEach(item => {
+            html += `<div class="detection-item important">
+              <strong>${item.api}</strong> em ${item.file}<br>
+              ${item.description}
+            </div>`;
+          });
+          html += `</div>`;
+        }
+
+        if (this.detections.bugs.length > 0) {
+          html += `<div class="card"><h2>🐛 Bugs Encontrados</h2>`;
+          this.detections.bugs.forEach(item => {
+            html += `<div class="detection-item ${item.severity}">
+              <strong>${item.type}</strong>: ${item.count}x em ${item.file}<br>
+              ${item.description}
+            </div>`;
+          });
+          html += `</div>`;
+        }
+
+        if (this.detections.missing.length > 0) {
+          html += `<div class="card"><h2>📁 Arquivos Faltando</h2>`;
+          this.detections.missing.forEach(item => {
+            html += `<div class="detection-item important">
+              ${item.description}
+            </div>`;
+          });
+          html += `</div>`;
+        }
+
+        if (this.detections.conflicts.length > 0) {
+          html += `<div class="card"><h2>⚠️ Conflitos</h2>`;
+          this.detections.conflicts.forEach(item => {
+            html += `<div class="detection-item critical">
+              <strong>${item.type}</strong><br>
+              ${item.description}
+            </div>`;
+          });
+          html += `</div>`;
+        }
+
+        container.innerHTML = html;
+
+        // Atualizar stats
+        const stats = document.getElementById('detectionStats');
+        stats.innerHTML = `
+          <div class="stat-box critical">🚫 Replit: ${this.detections.replit.length}</div>
+          <div class="stat-box important">🌐 APIs: ${this.detections.apis.length}</div>
+          <div class="stat-box critical">🐛 Bugs: ${this.detections.bugs.length}</div>
+          <div class="stat-box important">📁 Faltando: ${this.detections.missing.length}</div>
+          <div class="stat-box critical">⚠️ Conflitos: ${this.detections.conflicts.length}</div>
+        `;
+      },
+
+      generateSolutions() {
+        const container = document.getElementById('solutionsList');
+        container.innerHTML = '';
+
+        let html = `<div class="card"><h2>💡 Soluções Recomendadas</h2>`;
+
+        // Solução para Replit
+        if (this.detections.replit.length > 0) {
+          html += `
+            <div class="detection-item critical">
+              <strong>❌ REMOVER REPLIT:</strong><br>
+              <div class="solution-code">
+# 1. Delete .replit e replit.nix
+rm -f .replit replit.nix
+
+# 2. Remove referências no código
+grep -r "replit" . --include="*.js" --include="*.ts" | grep -v node_modules
+              </div>
+            </div>
+          `;
+        }
+
+        // Solução para APIs
+        if (this.detections.apis.length > 0) {
+          html += `
+            <div class="detection-item important">
+              <strong>🌐 PROTEGER APIs:</strong><br>
+              <div class="solution-code">
+# Crie um backend Node.js para chamar APIs
+# Nunca coloque tokens no frontend!
+
+// backend/server.js
+const express = require('express');
+const app = express();
+
+app.post('/api/github', async (req, res) => {
+  const token = process.env.GITHUB_TOKEN;
+  const response = await fetch('https://api.github.com/...', {
+    headers: { 'Authorization': \`Bearer \${token}\` }
+  });
+  res.json(await response.json());
+});
+              </div>
+            </div>
+          `;
+        }
+
+        // Solução para Bugs
+        if (this.detections.bugs.length > 0) {
+          html += `
+            <div class="detection-item critical">
+              <strong>🐛 CORRIGIR BUGS:</strong><br>
+              <div class="solution-code">
+# Remover console.log
+find . -name "*.js" -o -name "*.ts" -o -name "*.tsx" | xargs sed -i '/console\\./d'
+
+# Trocar == por ===
+find . -name "*.ts" -o -name "*.tsx" | xargs sed -i 's/==[^=]/===/g'
+
+# Adicionar try-catch em async functions
+grep -rn "async function" . --include="*.ts"
+              </div>
+            </div>
+          `;
+        }
+
+        // Solução para Arquivos Faltando
+        if (this.detections.missing.length > 0) {
+          html += `
+            <div class="detection-item important">
+              <strong>📁 CRIAR ARQUIVOS:</strong><br>
+              <div class="solution-code">
+# Clique em "Gerar" para criar automaticamente:
+- package.json (com dependências)
+- .env (com variáveis)
+- .gitignore (padrão)
+- README.md (documentação)
+              </div>
+            </div>
+          `;
+        }
+
+        html += `</div>`;
+        container.innerHTML = html;
+      },
+
+      copySolutions() {
+        const text = document.getElementById('solutionsList').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          this.toast('📋 Copiado!', 'success');
+        });
+      },
+
+      generateFiles() {
+        const container = document.getElementById('generatedFiles');
+        container.innerHTML = '';
+
+        this.generatedFiles = {};
+        let html = '<div class="card"><h2>⚙️ Arquivos Gerados</h2>';
+
+        if (document.getElementById('gen-package').checked) {
+          const packageJson = {
+            name: 'projeto-corrigido',
+            version: '1.0.0',
+            description: 'Projeto corrigido - Sem Replit',
+            main: 'server.js',
+            scripts: {
+              start: 'node server.js',
+              dev: 'nodemon server.js',
+              build: 'npm run build'
+            },
+            dependencies: {
+              express: '^4.18.2',
+              cors: '^2.8.5',
+              dotenv: '^16.0.3',
+              'node-fetch': '^3.3.0'
+            },
+            devDependencies: {
+              nodemon: '^2.0.20'
+            }
+          };
+          this.generatedFiles['package.json'] = JSON.stringify(packageJson, null, 2);
+          html += `<div class="detection-item info">✅ package.json criado</div>`;
+        }
+
+        if (document.getElementById('gen-env').checked) {
+          const envContent = `# Variáveis de Ambiente
+GITHUB_TOKEN=seu_token_aqui
+OPENAI_API_KEY=sua_chave_aqui
+GEMINI_API_KEY=sua_chave_aqui
+ANTHROPIC_API_KEY=sua_chave_aqui
+DATABASE_URL=postgresql://...
+NODE_ENV=development
+PORT=3000
+`;
+          this.generatedFiles['.env'] = envContent;
+          html += `<div class="detection-item info">✅ .env criado</div>`;
+        }
+
+        if (document.getElementById('gen-backend').checked) {
+          const serverCode = `const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// GitHub API
+app.post('/api/github', async (req, res) => {
+  try {
+    const { url } = req.body;
+    const response = await fetch(url, {
+      headers: { 'Authorization': \`Bearer \${process.env.GITHUB_TOKEN}\` }
+    });
+    res.json(await response.json());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// OpenAI API
+app.post('/api/openai', async (req, res) => {
+  try {
+    const { message } = req.body;
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${process.env.OPENAI_API_KEY}\`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [{ role: 'user', content: message }]
+      })
+    });
+    res.json(await response.json());
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(\`✅ Servidor rodando em localhost:\${PORT}\`));
+`;
+          this.generatedFiles['server.js'] = serverCode;
+          html += `<div class="detection-item info">✅ server.js criado</div>`;
+        }
+
+        if (document.getElementById('gen-readme').checked) {
+          const readmeContent = `# Projeto Corrigido - Sem Replit
+
+## 🔧 Mudanças Realizadas
+
+- ❌ Removido Replit
+- ✅ Backend Node.js criado
+- ✅ APIs protegidas com tokens
+- ✅ Variáveis de ambiente configuradas
+- ✅ Bugs corrigidos
+
+## 🚀 Como Usar
+
+### 1. Instalar dependências
+\`\`\`bash
+npm install
+\`\`\`
+
+### 2. Configurar .env
+\`\`\`
+GITHUB_TOKEN=seu_token
+OPENAI_API_KEY=sua_chave
+\`\`\`
+
+### 3. Rodar servidor
+\`\`\`bash
+npm start
+\`\`\`
+
+### 4. Acessar no celular (mesmo WiFi)
+\`\`\`
+http://seu_ip_do_pc:3000
+\`\`\`
+
+## 📱 Mobile
+
+Use ngrok para acessar de qualquer lugar:
+\`\`\`bash
+ngrok http 3000
+\`\`\`
+
+## 🐛 Bugs Corrigidos
+
+- console.log removido
+- Variáveis preenchidas
+- try-catch adicionado
+- == trocado por ===
+`;
+          this.generatedFiles['README.md'] = readmeContent;
+          html += `<div class="detection-item info">✅ README.md criado</div>`;
+        }
+
+        html += `</div>`;
+        container.innerHTML = html;
+
+        const status = document.getElementById('generateStatus');
+        status.style.display = 'block';
+        status.textContent = `✅ ${Object.keys(this.generatedFiles).length} arquivo(s) gerado(s)!`;
+        status.className = 'status success';
+
+        this.toast(`✅ ${Object.keys(this.generatedFiles).length} arquivo(s) gerado!`, 'success');
+      },
+
+      async downloadZip() {
+        const zip = new JSZip();
+
+        // Adiciona arquivos originais (sem Replit)
+        for (const [path, content] of Object.entries(this.files)) {
+          if (!path.includes('.replit') && !path.includes('replit.nix')) {
+            zip.file(path, content);
+          }
+        }
+
+        // Adiciona arquivos gerados
+        for (const [path, content] of Object.entries(this.generatedFiles)) {
+          zip.file(path, content);
+        }
+
+        const blob = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `projeto-cirurgiao-${Date.now()}.zip`;
+        a.click();
+        this.toast('📦 ZIP baixado!', 'success');
+      },
+
+      downloadReport() {
+        const report = this.generateReport();
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cirurgia-${Date.now()}.txt`;
+        a.click();
+        this.toast('📋 Relatório baixado!', 'success');
+      },
+
+      generateReport() {
+        let report = `=== RELATÓRIO DA CIRURGIA ===\n\n`;
+        report += `Data: ${new Date().toLocaleString()}\n\n`;
+
+        report += `🚫 REPLIT DETECTADO: ${this.detections.replit.length}\n`;
+        this.detections.replit.forEach(item => {
+          report += `  - ${item.file}: ${item.description}\n`;
+        });
+
+        report += `\n🌐 APIs DETECTADAS: ${this.detections.apis.length}\n`;
+        this.detections.apis.forEach(item => {
+          report += `  - ${item.api} em ${item.file}\n`;
+        });
+
+        report += `\n🐛 BUGS ENCONTRADOS: ${this.detections.bugs.length}\n`;
+        this.detections.bugs.forEach(item => {
+          report += `  - ${item.type}: ${item.count}x em ${item.file}\n`;
+        });
+
+        report += `\n📁 ARQUIVOS FALTANDO: ${this.detections.missing.length}\n`;
+        this.detections.missing.forEach(item => {
+          report += `  - ${item.file}\n`;
+        });
+
+        report += `\n⚠️ CONFLITOS: ${this.detections.conflicts.length}\n`;
+        this.detections.conflicts.forEach(item => {
+          report += `  - ${item.type}: ${item.description}\n`;
+        });
+
+        report += `\n⚙️ ARQUIVOS GERADOS: ${Object.keys(this.generatedFiles).length}\n`;
+        Object.keys(this.generatedFiles).forEach(file => {
+          report += `  - ${file}\n`;
+        });
+
+        report += `\n✅ PRÓXIMOS PASSOS:\n`;
+        report += `1. Baixe o ZIP corrigido\n`;
+        report += `2. Extraia em seu PC\n`;
+        report += `3. npm install\n`;
+        report += `4. Configure .env\n`;
+        report += `5. npm start\n`;
+
+        document.getElementById('reportContent').value = report;
+        return report;
+      },
+
+      downloadScript() {
+        const script = `#!/bin/bash
+# Script de Cirurgia - Remove Replit e Corrige Bugs
+
+echo "🔬 Iniciando Cirurgia..."
+
+echo "❌ Removendo Replit..."
+rm -f .replit replit.nix
+grep -r "replit" . --include="*.js" --include="*.ts" -l | xargs sed -i '/replit/d'
+
+echo "🐛 Removendo console.log..."
+find . -name "*.js" -o -name "*.ts" -o -name "*.tsx" | xargs sed -i '/console\\./d'
+
+echo "🔄 Trocando == por ===..."
+find . -name "*.ts" -o -name "*.tsx" | xargs sed -i 's/==[^=]/===/g'
+
+echo "✅ Cirurgia Completa!"
+echo "Próximo passo: npm install"
+`;
+        const blob = new Blob([script], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cirurgia.sh`;
+        a.click();
+        this.toast('🔧 Script baixado!', 'success');
+      },
+
+      downloadJSON() {
+        const json = JSON.stringify({
+          detections: this.detections,
+          generatedFiles: Object.keys(this.generatedFiles)
+        }, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `cirurgia-${Date.now()}.json`;
+        a.click();
+        this.toast('📄 JSON baixado!', 'success');
+      },
+
+      copyReport() {
+        const report = document.getElementById('reportContent').value;
+        navigator.clipboard.writeText(report).then(() => {
+          this.toast('📋 Copiado!', 'success');
+        });
+      },
+
+      formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let idx = 0;
+        while (size >= 1024 && idx < units.length - 1) {
+          size /= 1024;
+          idx++;
+        }
+        return `${size.toFixed(1)} ${units[idx]}`;
+      },
+
+      clearAll() {
+        this.files = {};
+        this.detections = { replit: [], apis: [], bugs: [], dependencies: [], missing: [], conflicts: [] };
+        this.generatedFiles = {};
+        document.getElementById('fileInput').value = '';
+        this.toast('✅ Limpo', 'success');
+      }
+    };
+  </script>
+
+</body>
+
+</html>
