@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: DeployPanel.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 DeployPanel.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 08:39:03 • 23 elementos • 12 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import React, { useState, useCallback } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import {</div><div class="idx-item">L9 [interface] DeployPanelProps</div><div class="idx-item">L17 [function] copyText</div><div class="idx-item">L21 [component] CodeBlock</div><div class="idx-item">L41 [interface] Platform</div><div class="idx-item">L43 [interface] PlatformConfig</div><div class="idx-item">L190 [function] uint32LE</div><div class="idx-item">L193 [function] uint16LE</div><div class="idx-item">L197 [function] crc32</div><div class="idx-item">L209 [function] buildZip</div><div class="idx-item">L278 [function] buildZipBlob</div><div class="idx-item">L281 [const] SKIP</div><div class="idx-item">L303 [component] DeployPanel</div><div class="idx-item">L320 [function] electronFS →</div><div class="idx-item">L324 [function] addLog →</div><div class="idx-item">L378 [function] downloadBlob</div><div class="idx-item">L467 [function] toggle →</div><div class="idx-item">L468 [function] Section →</div><div class="idx-item">L479 [function] Step →</div><div class="idx-item">L485 [function] Tip →</div><div class="idx-item">L491 [function] Warn →</div><div class="idx-item">L497 [function] Link →</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L45</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import React, { useState, useCallback } from &quot;react&quot;;
+import {
+  X, Globe, GitBranch, Download, CheckCircle, AlertCircle,
+  ExternalLink, Copy, RefreshCw, Folder, FolderOpen, Rocket,
+  HardDrive, Package, FileCode, Info, BookOpen, Eye, Server,
+  Layers, CreditCard, ChevronDown, ChevronRight,
+} from &quot;lucide-react&quot;;
+
+interface DeployPanelProps {
+  onClose: () =&gt; void;
+  projectName: string;
+  files: Record&lt;string, string&gt;;
+}
+
+// ─── Utilitários ─────────────────────────────────────────────────────────────
+
+function copyText(text: string) {
+  navigator.clipboard?.writeText(text).catch(() =&gt; {});
+}
+
+function CodeBlock({ code, label }: { code: string; label?: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    &lt;div className=&quot;relative&quot;&gt;
+      {label &amp;&amp; &lt;p className=&quot;text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1&quot;&gt;{label}&lt;/p&gt;}
+      &lt;div className=&quot;relative bg-[#070d04] border border-gray-800/60 rounded-xl overflow-hidden&quot;&gt;
+        &lt;pre className=&quot;text-[11px] font-mono text-green-300 px-3 py-2.5 overflow-x-auto whitespace-pre-wrap break-all leading-relaxed&quot;&gt;{code}&lt;/pre&gt;
+        &lt;button
+          onClick={() =&gt; { copyText(code); setCopied(true); setTimeout(() =&gt; setCopied(false), 1800); }}
+          className=&quot;absolute top-1.5 right-1.5 p-1.5 rounded-lg bg-gray-800/80 hover:bg-gray-700/80 text-gray-400 hover:text-gray-200 transition-all&quot;
+        &gt;
+          {copied ? &lt;CheckCircle size={11} className=&quot;text-green-400&quot; /&gt; : &lt;Copy size={11} /&gt;}
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+
+// ─── Gerador de ZIPs ─────────────────────────────────────────────────────────
+
+type Platform = &quot;github-pages&quot; | &quot;vercel&quot; | &quot;netlify&quot; | &quot;vps&quot; | &quot;backup&quot;;
+
+interface PlatformConfig {
+  id: Platform;
+  label: string;</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>loadSavedConnections</span>
+    <div>
+      <small>L46–L48</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">  icon: string;
+  color: string;
+  desc: string;</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>saveSavedConnections</span>
+    <div>
+      <small>L49–L52</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">  extraFiles: (files: Record&lt;string, string&gt;, name: string) =&gt; Record&lt;string, string&gt;;
+  instructions: string[];
+  deployUrl?: string;
+  terminalCmds?: string[];</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>neonErrorMsg</span>
+    <div>
+      <small>L53–L64</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">}
+
+const PLATFORMS: PlatformConfig[] = [
+  {
+    id: &quot;github-pages&quot;,
+    label: &quot;GitHub Pages&quot;,
+    icon: &quot;🐙&quot;,
+    color: &quot;gray&quot;,
+    desc: &quot;Hospedagem gratuita para sites estáticos direto do repositório GitHub&quot;,
+    extraFiles: (files, name) =&gt; {
+      const hasIndex = Object.keys(files).some(f =&gt; f === &quot;index.html&quot; || f.endsWith(&quot;/index.html&quot;));
+      const extra: Record&lt;string, string&gt; = {};</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>runNeonQuery</span>
+    <div>
+      <small>L65–L79</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">      extra[&quot;.nojekyll&quot;] = &quot;&quot;;
+      if (!hasIndex) {
+        extra[&quot;index.html&quot;] = `&lt;!DOCTYPE html&gt;&lt;html lang=&quot;pt-BR&quot;&gt;&lt;head&gt;&lt;meta charset=&quot;UTF-8&quot;&gt;&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot;&gt;&lt;title&gt;${name}&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;${name}&lt;/h1&gt;&lt;p&gt;Projeto em construção.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;`;
+      }
+      extra[&quot;.github/workflows/pages.yml&quot;] = `name: Deploy GitHub Pages\non:\n  push:\n    branches: [main]\npermissions:\n  contents: read\n  pages: write\n  id-token: write\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    environment:\n      name: github-pages\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/configure-pages@v4\n      - uses: actions/upload-pages-artifact@v3\n        with:\n          path: .\n      - uses: actions/deploy-pages@v4\n`;
+      return extra;
+    },
+    instructions: [
+      &quot;Extraia o ZIP numa pasta no PC&quot;,
+      &quot;Abra o terminal nessa pasta: git init &amp;&amp; git add . &amp;&amp; git commit -m 'inicial'&quot;,
+      &quot;Crie um repositório no github.com (pode ser privado ou público)&quot;,
+      &quot;git remote add origin https://github.com/SEU_USUARIO/SEU_REPO.git&quot;,
+      &quot;git push -u origin main&quot;,
+      &quot;No GitHub: Settings → Pages → Source: GitHub Actions&quot;,
+      &quot;Aguarde 2 min — seu site estará em: https://SEU_USUARIO.github.io/SEU_REPO&quot;,</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>CodeBlock</span>
+    <div>
+      <small>L80–L92</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">    ],
+    deployUrl: &quot;https://github.com/new&quot;,
+    terminalCmds: [
+      &quot;git init&quot;,
+      &quot;git add .&quot;,
+      'git commit -m &quot;deploy inicial&quot;',
+      &quot;git remote add origin https://github.com/SEU_USUARIO/SEU_REPO.git&quot;,
+      &quot;git push -u origin main&quot;,
+    ],
+  },
+  {
+    id: &quot;vercel&quot;,
+    label: &quot;Vercel&quot;,</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>QueryResultTable</span>
+    <div>
+      <small>L93–L131</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">    icon: &quot;▲&quot;,
+    color: &quot;blue&quot;,
+    desc: &quot;Deploy instantâneo com URL pública — ideal para apps React, Next.js e sites estáticos&quot;,
+    extraFiles: (_files, name) =&gt; ({
+      &quot;vercel.json&quot;: JSON.stringify({
+        name: name.toLowerCase().replace(/\s+/g, &quot;-&quot;),
+        version: 2,
+        builds: [{ src: &quot;**/*&quot;, use: &quot;@vercel/static&quot; }],
+        routes: [{ src: &quot;/(.*)&quot;, dest: &quot;/$1&quot; }],
+      }, null, 2),
+    }),
+    instructions: [
+      &quot;Extraia o ZIP numa pasta no PC&quot;,
+      &quot;Instale a CLI da Vercel: npm install -g vercel&quot;,
+      &quot;Na pasta do projeto: vercel login&quot;,
+      &quot;Execute: vercel --prod&quot;,
+      &quot;Siga as perguntas (nome do projeto, diretório raiz: ./)&quot;,
+      &quot;Seu site estará online em segundos com URL https://SEU_PROJETO.vercel.app&quot;,
+    ],
+    deployUrl: &quot;https://vercel.com/new&quot;,
+    terminalCmds: [
+      &quot;npm install -g vercel&quot;,
+      &quot;vercel login&quot;,
+      &quot;vercel --prod&quot;,
+    ],
+  },
+  {
+    id: &quot;netlify&quot;,
+    label: &quot;Netlify&quot;,
+    icon: &quot;🔷&quot;,
+    color: &quot;teal&quot;,
+    desc: &quot;Drag-and-drop ou CLI — sem configuração, funciona com qualquer site estático&quot;,
+    extraFiles: (_files, name) =&gt; ({
+      &quot;netlify.toml&quot;: `[build]\n  publish = &quot;.&quot;\n\n[[redirects]]\n  from = &quot;/*&quot;\n  to = &quot;/index.html&quot;\n  status = 200\n`,
+      &quot;_redirects&quot;: &quot;/*    /index.html    200&quot;,
+    }),
+    instructions: [
+      &quot;Extraia o ZIP numa pasta no PC&quot;,
+      &quot;OPÇÃO 1 — Arrasta e solta: acesse app.netlify.com → 'Add new site' → 'Deploy manually' → arraste a pasta&quot;,</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>NeonTab</span>
+    <div>
+      <small>L132–L473</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">      &quot;OPÇÃO 2 — CLI: npm install -g netlify-cli&quot;,
+      &quot;netlify login&quot;,
+      &quot;netlify deploy --prod --dir .&quot;,
+      &quot;Seu site estará em https://NOME_ALEATORIO.netlify.app&quot;,
+    ],
+    deployUrl: &quot;https://app.netlify.com/drop&quot;,
+    terminalCmds: [
+      &quot;npm install -g netlify-cli&quot;,
+      &quot;netlify login&quot;,
+      &quot;netlify deploy --prod --dir .&quot;,
+    ],
+  },
+  {
+    id: &quot;vps&quot;,
+    label: &quot;VPS / Servidor&quot;,
+    icon: &quot;🖥️&quot;,
+    color: &quot;amber&quot;,
+    desc: &quot;Para rodar em servidor Linux próprio (DigitalOcean, AWS, Oracle Free Tier, etc.)&quot;,
+    extraFiles: (_files, name) =&gt; ({
+      &quot;start.sh&quot;: `#!/bin/bash\n# Servidor local para ${name}\necho &quot;Iniciando ${name}...&quot;\n\n# Opção 1: Python (sempre disponível no Linux)\npython3 -m http.server 3000\n\n# Opção 2: Node.js (descomente se preferir)\n# npx serve . -p 3000\n\n# Opção 3: Nginx (descomente se tiver nginx instalado)\n# nginx -c nginx.conf\n`,
+      &quot;nginx.conf&quot;: `server {\n    listen 80;\n    root /var/www/${name.toLowerCase().replace(/\s+/g, &quot;-&quot;)};\n    index index.html;\n    location / {\n        try_files $uri $uri/ /index.html;\n    }\n}\n`,
+      &quot;Dockerfile&quot;: `FROM nginx:alpine\nCOPY . /usr/share/nginx/html\nEXPOSE 80\nCMD [&quot;nginx&quot;, &quot;-g&quot;, &quot;daemon off;&quot;]\n`,
+      &quot;docker-compose.yml&quot;: `version: '3'\nservices:\n  web:\n    build: .\n    ports:\n      - &quot;80:80&quot;\n    restart: unless-stopped\n`,
+    }),
+    instructions: [
+      &quot;Envie a pasta para o servidor via: scp -r . usuario@IP:/var/www/meu-site&quot;,
+      &quot;Ou use rsync: rsync -avz ./ usuario@IP:/var/www/meu-site/&quot;,
+      &quot;OPÇÃO RÁPIDA: docker-compose up -d (precisa de Docker instalado)&quot;,
+      &quot;OPÇÃO PYTHON: python3 -m http.server 3000 (roda na porta 3000)&quot;,
+      &quot;OPÇÃO NGINX: copie nginx.conf para /etc/nginx/sites-available/ e reinicie o nginx&quot;,
+      &quot;Abra a porta 80 ou 3000 no firewall do servidor&quot;,
+    ],
+    terminalCmds: [
+      &quot;# Enviar para servidor\nscp -r . usuario@SEU_IP:/var/www/meu-site&quot;,
+      &quot;# OU usar Docker\ndocker-compose up -d&quot;,
+      &quot;# OU rodar localmente\npython3 -m http.server 3000&quot;,
+    ],
+  },
+  {
+    id: &quot;backup&quot;,
+    label: &quot;Backup Limpo&quot;,
+    icon: &quot;💾&quot;,
+    color: &quot;purple&quot;,
+    desc: &quot;ZIP limpo só com os arquivos do projeto — sem node_modules, sem .git&quot;,
+    extraFiles: (_files, name) =&gt; ({
+      &quot;LEIA-ME.txt&quot;: `Projeto: ${name}\nData do backup: ${new Date().toLocaleString(&quot;pt-BR&quot;)}\n\nEste ZIP contém todos os arquivos do projeto.\nPara restaurar:\n1. Extraia o ZIP numa pasta\n2. Abra o terminal na pasta\n3. Se tiver package.json: npm install\n4. Para rodar: npm start (ou node index.js, ou python3 app.py)\n\nPara importar de volta no SK Editor:\n1. Abra o SK Editor\n2. Painel de Arquivos → ··· → Importar ZIP\n3. Selecione este arquivo\n`,
+    }),
+    instructions: [
+      &quot;Este é um backup completo do seu projeto&quot;,
+      &quot;Guarde em local seguro (HD externo, Google Drive, etc.)&quot;,
+      &quot;Para restaurar: importe o ZIP no SK Editor (Painel de Arquivos → ···)&quot;,
+      &quot;Ou extraia manualmente e use em qualquer editor (VS Code, etc.)&quot;,
+    ],
+  },
+];
+
+// ─── Gerador de ZIP puro em JavaScript (sem dependências externas) ────────────
+
+function uint32LE(n: number): number[] {
+  return [n &amp; 0xff, (n &gt;&gt; 8) &amp; 0xff, (n &gt;&gt; 16) &amp; 0xff, (n &gt;&gt; 24) &amp; 0xff];
+}
+function uint16LE(n: number): number[] {
+  return [n &amp; 0xff, (n &gt;&gt; 8) &amp; 0xff];
+}
+
+function crc32(data: Uint8Array): number {
+  const table: number[] = [];
+  for (let i = 0; i &lt; 256; i++) {
+    let c = i;
+    for (let j = 0; j &lt; 8; j++) c = c &amp; 1 ? 0xedb88320 ^ (c &gt;&gt;&gt; 1) : c &gt;&gt;&gt; 1;
+    table[i] = c;
+  }
+  let crc = 0xffffffff;
+  for (let i = 0; i &lt; data.length; i++) crc = table[(crc ^ data[i]) &amp; 0xff] ^ (crc &gt;&gt;&gt; 8);
+  return (crc ^ 0xffffffff) &gt;&gt;&gt; 0;
+}
+
+function buildZip(entries: { name: string; data: Uint8Array }[]): Uint8Array {
+  const enc = new TextEncoder();
+  const localHeaders: Uint8Array[] = [];
+  const centralDirs: Uint8Array[] = [];
+  const offsets: number[] = [];
+  let offset = 0;
+
+  for (const entry of entries) {
+    const nameBytes = enc.encode(entry.name);
+    const crc = crc32(entry.data);
+    const local = new Uint8Array([
+      0x50, 0x4b, 0x03, 0x04,
+      ...uint16LE(20),
+      ...uint16LE(0),
+      ...uint16LE(0),
+      ...uint16LE(0), ...uint16LE(0),
+      ...uint32LE(crc),
+      ...uint32LE(entry.data.length),
+      ...uint32LE(entry.data.length),
+      ...uint16LE(nameBytes.length),
+      ...uint16LE(0),
+      ...nameBytes,
+      ...entry.data,
+    ]);
+    offsets.push(offset);
+    localHeaders.push(local);
+    offset += local.length;
+  }
+
+  for (let i = 0; i &lt; entries.length; i++) {
+    const entry = entries[i];
+    const nameBytes = enc.encode(entry.name);
+    const crc = crc32(entry.data);
+    const cd = new Uint8Array([
+      0x50, 0x4b, 0x01, 0x02,
+      ...uint16LE(20), ...uint16LE(20),
+      ...uint16LE(0), ...uint16LE(0), ...uint16LE(0),
+      ...uint16LE(0), ...uint16LE(0),
+      ...uint32LE(crc),
+      ...uint32LE(entry.data.length),
+      ...uint32LE(entry.data.length),
+      ...uint16LE(nameBytes.length),
+      ...uint16LE(0), ...uint16LE(0), ...uint16LE(0), ...uint16LE(0),
+      ...uint32LE(0),
+      ...uint32LE(offsets[i]),
+      ...nameBytes,
+    ]);
+    centralDirs.push(cd);
+  }
+
+  const centralDirOffset = offset;
+  const centralDirSize = centralDirs.reduce((s, b) =&gt; s + b.length, 0);
+  const eocd = new Uint8Array([
+    0x50, 0x4b, 0x05, 0x06,
+    ...uint16LE(0), ...uint16LE(0),
+    ...uint16LE(entries.length), ...uint16LE(entries.length),
+    ...uint32LE(centralDirSize),
+    ...uint32LE(centralDirOffset),
+    ...uint16LE(0),
+  ]);
+
+  const parts = [...localHeaders, ...centralDirs, eocd];
+  const total = parts.reduce((s, b) =&gt; s + b.length, 0);
+  const out = new Uint8Array(total);
+  let pos = 0;
+  for (const p of parts) { out.set(p, pos); pos += p.length; }
+  return out;
+}
+
+function buildZipBlob(files: Record&lt;string, string&gt;, extraFiles: Record&lt;string, string&gt;): { blob: Blob; base64: string } {
+  const enc = new TextEncoder();
+  const allFiles = { ...files, ...extraFiles };
+  const SKIP = [&quot;node_modules&quot;, &quot;.git/&quot;, &quot;.DS_Store&quot;, &quot;Thumbs.db&quot;];
+
+  const entries: { name: string; data: Uint8Array }[] = [];
+  for (const [name, content] of Object.entries(allFiles)) {
+    if (SKIP.some(s =&gt; name.includes(s))) continue;
+    if (!content &amp;&amp; content !== &quot;&quot;) continue;
+    entries.push({ name, data: enc.encode(content) });
+  }
+
+  const zipBytes = buildZip(entries);
+  const blob = new Blob([zipBytes], { type: &quot;application/zip&quot; });
+  
+  // Converter para base64 para enviar ao Electron
+  let binary = &quot;&quot;;
+  zipBytes.forEach(b =&gt; binary += String.fromCharCode(b));
+  const base64 = btoa(binary);
+  
+  return { blob, base64 };
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
+
+export default function DeployPanel({ onClose, projectName, files }: DeployPanelProps) {
+  const [selected, setSelected] = useState&lt;Platform&gt;(&quot;github-pages&quot;);
+  const [status, setStatus] = useState&lt;&quot;idle&quot; | &quot;building&quot; | &quot;done&quot; | &quot;error&quot;&gt;(&quot;idle&quot;);
+  const [log, setLog] = useState&lt;string[]&gt;([]);
+  const [savedPath, setSavedPath] = useState&lt;string | null&gt;(null);
+  const [tab, setTab] = useState&lt;&quot;deploy&quot; | &quot;disk&quot; | &quot;git&quot; | &quot;guia&quot;&gt;(&quot;guia&quot;);
+  const [guiaOpen, setGuiaOpen] = useState&lt;Record&lt;string, boolean&gt;&gt;({
+    preview: true, servidor: false, deploy_url: false, saas: false,
+  });
+  const [diskProjects, setDiskProjects] = useState&lt;{ name: string; updatedAt: number; fileCount: number; filePath: string }[]&gt;([]);
+  const [diskLoading, setDiskLoading] = useState(false);
+  const [diskStatus, setDiskStatus] = useState&lt;string | null&gt;(null);
+  const [autoSaveOn, setAutoSaveOn] = useState(() =&gt; {
+    try { return localStorage.getItem(&quot;sk-autosave-disk&quot;) === &quot;1&quot;; } catch { return false; }
+  });
+
+  const isElectron = !!(window as any).electronAPI?.isElectron;
+  const electronFS = (window as any).electronAPI?.fs;
+
+  const platform = PLATFORMS.find(p =&gt; p.id === selected)!;
+
+  const addLog = (msg: string) =&gt; setLog(prev =&gt; [...prev, msg]);
+
+  // ─── Build e Download do ZIP ────────────────────────────────────────────────
+
+  const handleBuild = useCallback(async () =&gt; {
+    setStatus(&quot;building&quot;);
+    setLog([]);
+    setSavedPath(null);
+    addLog(`🔨 Gerando ZIP para ${platform.label}...`);
+
+    try {
+      const fileCount = Object.keys(files).filter(f =&gt; !f.includes(&quot;node_modules&quot;) &amp;&amp; !f.includes(&quot;.git/&quot;)).length;
+      addLog(`📁 ${fileCount} arquivo(s) encontrado(s)`);
+
+      const extraFiles = platform.extraFiles(files, projectName);
+      const extraCount = Object.keys(extraFiles).length;
+      if (extraCount &gt; 0) addLog(`➕ Adicionando ${extraCount} arquivo(s) de configuração para ${platform.label}`);
+
+      addLog(&quot;🗜️ Compactando...&quot;);
+      const { blob, base64 } = buildZipBlob(files, extraFiles);
+      addLog(`✅ ZIP gerado — ${(blob.size / 1024).toFixed(1)} KB`);
+
+      // Se Electron: oferecer salvar no disco via diálogo nativo
+      if (isElectron &amp;&amp; electronFS) {
+        addLog(&quot;💾 Abrindo diálogo para salvar no PC...&quot;);
+        const result = await electronFS.exportZip(projectName, base64, platform.id);
+        if (result.ok) {
+          setSavedPath(result.path);
+          addLog(`✅ Salvo em: ${result.path}`);
+          setStatus(&quot;done&quot;);
+        } else if (result.canceled) {
+          addLog(&quot;⚠️ Cancelado pelo usuário&quot;);
+          // Oferece baixar pelo navegador mesmo assim
+          downloadBlob(blob);
+          addLog(&quot;⬇️ Download iniciado pelo navegador&quot;);
+          setStatus(&quot;done&quot;);
+        } else {
+          addLog(`❌ Erro ao salvar: ${result.error}`);
+          downloadBlob(blob);
+          addLog(&quot;⬇️ Fallback: download pelo navegador&quot;);
+          setStatus(&quot;done&quot;);
+        }
+      } else {
+        // Web: baixar direto
+        downloadBlob(blob);
+        addLog(&quot;⬇️ Download iniciado&quot;);
+        setStatus(&quot;done&quot;);
+      }
+    } catch (e: any) {
+      addLog(`❌ Erro: ${e.message}`);
+      setStatus(&quot;error&quot;);
+    }
+  }, [files, projectName, platform, isElectron, electronFS]);
+
+  function downloadBlob(blob: Blob) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement(&quot;a&quot;);
+    const safeName = projectName.replace(/[^a-zA-Z0-9_\-]/g, &quot;_&quot;);
+    a.href = url;
+    a.download = `${safeName}-${selected}.zip`;
+    a.click();
+    setTimeout(() =&gt; URL.revokeObjectURL(url), 5000);
+  }
+
+  // ─── Aba Disco — Salvar/Carregar projetos no PC ─────────────────────────────
+
+  const loadDiskProjects = useCallback(async () =&gt; {
+    if (!electronFS) return;
+    setDiskLoading(true);
+    const result = await electronFS.listProjects();
+    setDiskProjects(result.projects || []);
+    setDiskLoading(false);
+  }, [electronFS]);
+
+  const handleSaveToDisk = useCallback(async () =&gt; {
+    if (!electronFS) return;
+    setDiskStatus(&quot;Salvando...&quot;);
+    const result = await electronFS.saveProject(projectName, files);
+    if (result.ok) {
+      setDiskStatus(`✅ Salvo em: ${result.path}`);
+      loadDiskProjects();
+    } else {
+      setDiskStatus(`❌ Erro: ${result.error}`);
+    }
+  }, [electronFS, projectName, files, loadDiskProjects]);
+
+  const toggleAutoSave = useCallback(() =&gt; {
+    const next = !autoSaveOn;
+    setAutoSaveOn(next);
+    try { localStorage.setItem(&quot;sk-autosave-disk&quot;, next ? &quot;1&quot; : &quot;0&quot;); } catch {}
+  }, [autoSaveOn]);
+
+  const colorMap: Record&lt;string, string&gt; = {
+    gray: &quot;border-gray-500/40 bg-gray-800/20 text-gray-300&quot;,
+    blue: &quot;border-blue-500/40 bg-blue-900/20 text-blue-300&quot;,
+    teal: &quot;border-teal-500/40 bg-teal-900/20 text-teal-300&quot;,
+    amber: &quot;border-amber-500/40 bg-amber-900/20 text-amber-300&quot;,
+    purple: &quot;border-purple-500/40 bg-purple-900/20 text-purple-300&quot;,
+  };
+
+  const activeColor = colorMap[platform.color] || colorMap.gray;
+
+  return (
+    &lt;&gt;
+      &lt;div className=&quot;fixed inset-0 z-[9990] bg-black/60 backdrop-blur-sm&quot; onClick={onClose} /&gt;
+      &lt;div className=&quot;fixed inset-x-0 bottom-0 z-[9999] pb-safe flex flex-col max-h-[92vh]&quot; onClick={e =&gt; e.stopPropagation()}&gt;
+        &lt;div className=&quot;bg-[#0d0d0d] border-t-2 border-green-700/40 rounded-t-3xl shadow-2xl flex flex-col overflow-hidden max-h-[92vh]&quot;&gt;
+
+          {/* Header */}
+          &lt;div className=&quot;flex items-center justify-center pt-3 pb-1 shrink-0&quot;&gt;
+            &lt;div className=&quot;w-10 h-1 bg-gray-600 rounded-full&quot; /&gt;
+          &lt;/div&gt;
+          &lt;div className=&quot;flex items-center justify-between px-5 py-3 border-b border-gray-700/30 shrink-0&quot;&gt;
+            &lt;div className=&quot;flex items-center gap-2.5&quot;&gt;
+              &lt;Rocket size={16} className=&quot;text-green-400&quot; /&gt;
+              &lt;p className=&quot;text-[15px] font-bold text-white&quot;&gt;Deploy &amp; Backup&lt;/p&gt;
+              &lt;span className=&quot;text-[10px] text-gray-600 bg-gray-800/50 px-2 py-0.5 rounded-full&quot;&gt;{projectName}&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;button onClick={onClose} className=&quot;p-1.5 rounded-xl hover:bg-white/10 text-gray-600&quot;&gt;&lt;X size={17} /&gt;&lt;/button&gt;
+          &lt;/div&gt;
+
+          {/* Tabs */}
+          &lt;div className=&quot;flex border-b border-gray-700/30 shrink-0 overflow-x-auto&quot;&gt;
+            {[
+              { id: &quot;guia&quot;, label: &quot;📖 Guia&quot;, icon: &lt;BookOpen size={13} /&gt; },
+              { id: &quot;deploy&quot;, label: &quot;🚀 Deploy&quot;, icon: &lt;Globe size={13} /&gt; },
+              { id: &quot;disk&quot;, label: &quot;💾 Disco&quot;, icon: &lt;HardDrive size={13} /&gt;, onlyElectron: true },
+              { id: &quot;git&quot;, label: &quot;🐙 Git&quot;, icon: &lt;GitBranch size={13} /&gt; },
+            ].map(t =&gt; (
+              (!t.onlyElectron || isElectron) &amp;&amp; (
+                &lt;button key={t.id} onClick={() =&gt; setTab(t.id as any)}
+                  className={`flex items-center gap-1.5 px-3 py-2.5 text-[12px] font-bold border-b-2 transition-all whitespace-nowrap ${tab === t.id ? &quot;border-green-500 text-green-300&quot; : &quot;border-transparent text-gray-500 hover:text-gray-300&quot;}`}
+                &gt;
+                  {t.icon}{t.label}
+                &lt;/button&gt;
+              )
+            ))}
+          &lt;/div&gt;
+
+          &lt;div className=&quot;flex-1 overflow-y-auto&quot;&gt;
+
+            {/* ═══ ABA GUIA COMPLETO ══════════════════════════════════════════════ */}
+            {tab === &quot;guia&quot; &amp;&amp; (() =&gt; {
+              const toggle = (k: string) =&gt; setGuiaOpen(prev =&gt; ({ ...prev, [k]: !prev[k] }));
+              const Section = ({ id, icon, title, badge, children }: { id: string; icon: React.ReactNode; title: string; badge?: string; children: React.ReactNode }) =&gt; (
+                &lt;div className=&quot;border border-gray-700/40 rounded-xl overflow-hidden&quot;&gt;
+                  &lt;button onClick={() =&gt; toggle(id)} className=&quot;w-full flex items-center gap-2 px-4 py-3 bg-[#0d1309] hover:bg-[#111f0a] transition-colors text-left&quot;&gt;
+                    &lt;span className=&quot;text-green-400 shrink-0&quot;&gt;{icon}&lt;/span&gt;
+                    &lt;span className=&quot;flex-1 text-[13px] font-bold text-gray-200&quot;&gt;{title}&lt;/span&gt;
+                    {badge &amp;&amp; &lt;span className=&quot;text-[9px] px-2 py-0.5 rounded-full bg-green-700/30 text-green-400 font-bold border border-green-600/30&quot;&gt;{badge}&lt;/span&gt;}</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>SQLiteTab</span>
+    <div>
+      <small>L474–L658</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">                    {guiaOpen[id] ? &lt;ChevronDown size={14} className=&quot;text-gray-500 shrink-0&quot; /&gt; : &lt;ChevronRight size={14} className=&quot;text-gray-500 shrink-0&quot; /&gt;}
+                  &lt;/button&gt;
+                  {guiaOpen[id] &amp;&amp; &lt;div className=&quot;px-4 pb-4 pt-2 bg-[#0a1007] space-y-3&quot;&gt;{children}&lt;/div&gt;}
+                &lt;/div&gt;
+              );
+              const Step = ({ n, children }: { n: number; children: React.ReactNode }) =&gt; (
+                &lt;div className=&quot;flex gap-2.5 text-[11px] text-gray-300 leading-relaxed&quot;&gt;
+                  &lt;span className=&quot;w-5 h-5 rounded-full bg-green-700/40 border border-green-600/30 text-green-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5&quot;&gt;{n}&lt;/span&gt;
+                  &lt;span className=&quot;flex-1&quot;&gt;{children}&lt;/span&gt;
+                &lt;/div&gt;
+              );
+              const Tip = ({ children }: { children: React.ReactNode }) =&gt; (
+                &lt;div className=&quot;flex gap-2 bg-blue-950/30 border border-blue-700/30 rounded-lg px-3 py-2&quot;&gt;
+                  &lt;span className=&quot;text-blue-400 text-[11px] shrink-0&quot;&gt;💡&lt;/span&gt;
+                  &lt;p className=&quot;text-[10px] text-gray-400 leading-relaxed&quot;&gt;{children}&lt;/p&gt;
+                &lt;/div&gt;
+              );
+              const Warn = ({ children }: { children: React.ReactNode }) =&gt; (
+                &lt;div className=&quot;flex gap-2 bg-amber-950/20 border border-amber-700/30 rounded-lg px-3 py-2&quot;&gt;
+                  &lt;span className=&quot;text-amber-400 text-[11px] shrink-0&quot;&gt;⚠️&lt;/span&gt;
+                  &lt;p className=&quot;text-[10px] text-gray-400 leading-relaxed&quot;&gt;{children}&lt;/p&gt;
+                &lt;/div&gt;
+              );
+              const Link = ({ href, label }: { href: string; label: string }) =&gt; (
+                &lt;a href={href} target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot; className=&quot;inline-flex items-center gap-1 text-[10px] text-blue-400 underline hover:text-blue-300&quot;&gt;
+                  &lt;ExternalLink size={10} /&gt; {label}
+                &lt;/a&gt;
+              );
+              return (
+                &lt;div className=&quot;p-4 space-y-3&quot;&gt;
+                  {/* Cabeçalho */}
+                  &lt;div className=&quot;bg-gradient-to-r from-gray-800/30 to-blue-900/20 border border-green-700/30 rounded-xl p-4&quot;&gt;
+                    &lt;p className=&quot;text-[15px] font-bold text-white mb-1&quot;&gt;📖 Guia Completo de Ponta a Ponta&lt;/p&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-400&quot;&gt;Tudo que você precisa saber: preview, servidor, deploy com URL e versão SaaS. Clique em cada seção para expandir.&lt;/p&gt;
+                  &lt;/div&gt;
+
+                  {/* 1. PREVIEW */}
+                  &lt;Section id=&quot;preview&quot; icon={&lt;Eye size={15} /&gt;} title=&quot;1. Como visualizar / fazer preview do app&quot; badge=&quot;Comece aqui&quot;&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-400 leading-relaxed&quot;&gt;
+                      Existem 3 formas de ver o app rodando antes de publicar:
+                    &lt;/p&gt;
+                    &lt;div className=&quot;space-y-3&quot;&gt;
+                      &lt;div className=&quot;bg-[#111f0a] border border-green-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-green-300 mb-1.5&quot;&gt;🖥️ Opção A — Rodar pelo terminal (mais fácil)&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Ideal para quem tem Node.js instalado no PC. Extraia o ZIP do projeto e:&lt;/p&gt;
+                        &lt;CodeBlock label=&quot;Terminal na pasta do projeto&quot; code={`npm install\nnpm run dev\n# O terminal vai mostrar: http://localhost:5173\n# Abra esse endereço no navegador`} /&gt;
+                        &lt;div className=&quot;mt-2 space-y-1.5&quot;&gt;
+                          &lt;Tip&gt;Se não tiver Node.js: baixe em &lt;Link href=&quot;https://nodejs.org&quot; label=&quot;nodejs.org&quot; /&gt; — versão LTS.&lt;/Tip&gt;
+                        &lt;/div&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#0d0d1f] border border-blue-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-blue-300 mb-1.5&quot;&gt;🌐 Opção B — Deploy de teste gratuito (Vercel)&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Coloca o app online em 2 minutos para você ver e compartilhar:&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Crie conta grátis em &lt;Link href=&quot;https://vercel.com&quot; label=&quot;vercel.com&quot; /&gt;&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Clique em &quot;Add New Project&quot; → &quot;Import from GitHub&quot;&lt;/Step&gt;
+                          &lt;Step n={3}&gt;Conecte seu GitHub e selecione o repositório&lt;/Step&gt;
+                          &lt;Step n={4}&gt;Clique em Deploy — pronto, URL gerada em ~1 min&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;Tip&gt;Vercel gera uma URL tipo &lt;strong&gt;seu-projeto.vercel.app&lt;/strong&gt; — funciona de verdade, pode compartilhar.&lt;/Tip&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#1a1008] border border-amber-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-amber-300 mb-1.5&quot;&gt;📱 Opção C — App Desktop (Electron)&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400&quot;&gt;Baixe o executável na aba Downloads. O próprio app abre e você vê tudo funcionando sem instalar nada extra. O Terminal dentro do app tem acesso real ao PC.&lt;/p&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/Section&gt;
+
+                  {/* 2. SERVIDOR/BACKEND */}
+                  &lt;Section id=&quot;servidor&quot; icon={&lt;Server size={15} /&gt;} title=&quot;2. Como conectar a um servidor / banco de dados&quot; badge=&quot;Backend&quot;&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-400 leading-relaxed&quot;&gt;
+                      O app que você cria aqui é o &lt;strong className=&quot;text-gray-200&quot;&gt;frontend&lt;/strong&gt; (o que o usuário vê). Para salvar dados, fazer login, etc., você precisa de um &lt;strong className=&quot;text-gray-200&quot;&gt;backend/servidor&lt;/strong&gt;.
+                    &lt;/p&gt;
+                    &lt;div className=&quot;space-y-3&quot;&gt;
+                      &lt;div className=&quot;bg-[#0d1a0d] border border-green-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-green-300 mb-2&quot;&gt;🗄️ Banco de Dados — Neon (PostgreSQL gratuito)&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Crie conta grátis em &lt;Link href=&quot;https://neon.tech&quot; label=&quot;neon.tech&quot; /&gt;&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Crie um banco e copie a &quot;Connection String&quot;&lt;/Step&gt;
+                          &lt;Step n={3}&gt;Cole a string no painel &quot;Banco de Dados&quot; do SK Editor&lt;/Step&gt;
+                          &lt;Step n={4}&gt;Execute SQL direto pelo painel — sem precisar de servidor&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;Tip&gt;O SK Editor tem um painel de banco de dados integrado. Clique no ícone 🗄️ na barra lateral.&lt;/Tip&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#0d0d1f] border border-purple-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-purple-300 mb-2&quot;&gt;⚡ API própria — Servidor Node.js/Express&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Para fazer um backend completo com suas regras de negócio:&lt;/p&gt;
+                        &lt;CodeBlock label=&quot;Instale e crie o servidor&quot; code={`npm install express cors dotenv\n# Crie o arquivo server.js na raiz do projeto`} /&gt;
+                        &lt;CodeBlock label=&quot;server.js básico&quot; code={`const express = require('express');\nconst cors = require('cors');\nconst app = express();\n\napp.use(cors());\napp.use(express.json());\n\n// Sua rota de API\napp.get('/api/dados', (req, res) =&gt; {\n  res.json({ mensagem: 'Servidor funcionando!' });\n});\n\napp.listen(3001, () =&gt; console.log('Servidor na porta 3001'));`} /&gt;
+                        &lt;CodeBlock label=&quot;No seu React, chamar a API&quot; code={`const resposta = await fetch('http://localhost:3001/api/dados');\nconst dados = await resposta.json();\nconsole.log(dados.mensagem);`} /&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#1a0d0d] border border-red-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-red-300 mb-2&quot;&gt;🔴 Supabase — banco + autenticação + storage tudo junto&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Crie conta em &lt;Link href=&quot;https://supabase.com&quot; label=&quot;supabase.com&quot; /&gt; — grátis&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Crie um projeto, copie a URL e a chave anon&lt;/Step&gt;
+                          &lt;Step n={3}&gt;&lt;code className=&quot;text-[10px] bg-black/30 px-1 rounded&quot;&gt;npm install @supabase/supabase-js&lt;/code&gt;&lt;/Step&gt;
+                          &lt;Step n={4}&gt;Configure no seu app e use login, banco e arquivos prontos&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;CodeBlock label=&quot;Configurar Supabase no React&quot; code={`import { createClient } from '@supabase/supabase-js';\n\nconst supabase = createClient(\n  'https://XXXX.supabase.co',\n  'sua-chave-anon'\n);\n\n// Buscar dados\nconst { data } = await supabase\n  .from('tabela')\n  .select('*');`} /&gt;
+                        &lt;Tip&gt;Supabase é a opção mais rápida para ter login + banco funcionando em menos de 30 min.&lt;/Tip&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/Section&gt;
+
+                  {/* 3. DEPLOY COM URL PRÓPRIA */}
+                  &lt;Section id=&quot;deploy_url&quot; icon={&lt;Globe size={15} /&gt;} title=&quot;3. Publicar com URL própria (domínio real)&quot; badge=&quot;Online&quot;&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-400 leading-relaxed&quot;&gt;
+                      Para ter seu app em &lt;strong className=&quot;text-gray-200&quot;&gt;seusite.com.br&lt;/strong&gt; ou similar, você precisa de hospedagem + domínio.
+                    &lt;/p&gt;
+                    &lt;div className=&quot;space-y-3&quot;&gt;
+                      &lt;div className=&quot;bg-[#0d1a0d] border border-green-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-green-300 mb-2&quot;&gt;✅ Caminho Recomendado — Vercel + Registro.br&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Compre um domínio .com.br em &lt;Link href=&quot;https://registro.br&quot; label=&quot;registro.br&quot; /&gt; (≈ R$ 40/ano) ou .com em &lt;Link href=&quot;https://namecheap.com&quot; label=&quot;namecheap.com&quot; /&gt; (≈ R$ 50/ano)&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Faça deploy do seu app na Vercel (gratuito)&lt;/Step&gt;
+                          &lt;Step n={3}&gt;Na Vercel: Settings → Domains → Add → digite seu domínio&lt;/Step&gt;
+                          &lt;Step n={4}&gt;No painel do registro.br: adicione um registro DNS tipo CNAME apontando para &lt;code className=&quot;text-[10px] bg-black/30 px-1 rounded&quot;&gt;cname.vercel-dns.com&lt;/code&gt;&lt;/Step&gt;
+                          &lt;Step n={5}&gt;Aguarde até 24h para o DNS propagar — seu site vai estar no ar com HTTPS automático&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;Tip&gt;Vercel dá HTTPS (cadeado) grátis e automático. Você só paga o domínio.&lt;/Tip&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#0d0d1f] border border-blue-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-blue-300 mb-2&quot;&gt;🌐 Netlify — alternativa à Vercel (também gratuita)&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Crie conta em &lt;Link href=&quot;https://netlify.com&quot; label=&quot;netlify.com&quot; /&gt;&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Arraste a pasta do projeto para o site do Netlify (drag &amp; drop)&lt;/Step&gt;
+                          &lt;Step n={3}&gt;URL gerada em segundos. Clique em &quot;Domain settings&quot; para adicionar domínio próprio&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;Tip&gt;Netlify aceita arrastar e soltar a pasta — nem precisa de GitHub.&lt;/Tip&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#1a0d1a] border border-pink-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-pink-300 mb-2&quot;&gt;🖥️ VPS — para apps com backend (servidor próprio)&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Se você tem um servidor Node.js/Express que precisa rodar 24h:&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Contrate VPS na &lt;Link href=&quot;https://hostinger.com.br&quot; label=&quot;Hostinger&quot; /&gt; (≈ R$ 20/mês) ou &lt;Link href=&quot;https://digitalocean.com&quot; label=&quot;DigitalOcean&quot; /&gt; (US$ 4/mês)&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Suba o código via Git: &lt;code className=&quot;text-[10px] bg-black/30 px-1 rounded&quot;&gt;git clone&lt;/code&gt; no servidor&lt;/Step&gt;
+                          &lt;Step n={3}&gt;Instale PM2 para manter o servidor rodando: &lt;code className=&quot;text-[10px] bg-black/30 px-1 rounded&quot;&gt;npm install -g pm2 &amp;&amp; pm2 start server.js&lt;/code&gt;&lt;/Step&gt;
+                          &lt;Step n={4}&gt;Configure Nginx como proxy reverso e o certbot para HTTPS&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;Warn&gt;VPS exige conhecimento de Linux. Para iniciantes, prefira Vercel/Netlify.&lt;/Warn&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/Section&gt;
+
+                  {/* 4. SAAS */}
+                  &lt;Section id=&quot;saas&quot; icon={&lt;CreditCard size={15} /&gt;} title=&quot;4. Transformar em SaaS — login + planos pagos&quot; badge=&quot;Netflix-style&quot;&gt;
+                    &lt;p className=&quot;text-[11px] text-gray-400 leading-relaxed&quot;&gt;
+                      SaaS (Software as a Service) é um app como Netflix: usuários pagam mensalidade e acessam pela web. Veja como montar isso:
+                    &lt;/p&gt;
+                    &lt;div className=&quot;space-y-3&quot;&gt;
+                      &lt;div className=&quot;bg-[#0d1a0d] border border-green-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-green-300 mb-2&quot;&gt;🔐 Passo 1 — Sistema de Login (Autenticação)&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Use Supabase Auth — já vem pronto, suporta email+senha, Google, GitHub:&lt;/p&gt;
+                        &lt;CodeBlock label=&quot;Login com Supabase&quot; code={`// Cadastro\nawait supabase.auth.signUp({\n  email: 'usuario@email.com',\n  password: 'senha123'\n});\n\n// Login\nawait supabase.auth.signInWithPassword({\n  email: 'usuario@email.com',\n  password: 'senha123'\n});\n\n// Verificar se está logado\nconst { data: { user } } = await supabase.auth.getUser();`} /&gt;
+                        &lt;Tip&gt;Supabase Auth é gratuito para até 50.000 usuários.&lt;/Tip&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#0d0d1f] border border-blue-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-blue-300 mb-2&quot;&gt;💳 Passo 2 — Pagamentos (Stripe)&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Stripe é o padrão global para cobrar em BRL. Funciona com cartão, boleto e Pix:&lt;/p&gt;
+                        &lt;div className=&quot;space-y-1.5&quot;&gt;
+                          &lt;Step n={1}&gt;Crie conta em &lt;Link href=&quot;https://stripe.com/br&quot; label=&quot;stripe.com/br&quot; /&gt; — grátis, paga 3,5% por transação&lt;/Step&gt;
+                          &lt;Step n={2}&gt;Crie um produto e um plano (ex: R$ 29/mês)&lt;/Step&gt;
+                          &lt;Step n={3}&gt;Instale no seu backend: &lt;code className=&quot;text-[10px] bg-black/30 px-1 rounded&quot;&gt;npm install stripe&lt;/code&gt;&lt;/Step&gt;
+                          &lt;Step n={4}&gt;Crie uma rota &lt;code className=&quot;text-[10px] bg-black/30 px-1 rounded&quot;&gt;/api/criar-checkout&lt;/code&gt; que gera o link de pagamento&lt;/Step&gt;
+                          &lt;Step n={5}&gt;Após o pagamento, o Stripe envia um webhook confirmando — libere o acesso&lt;/Step&gt;
+                        &lt;/div&gt;
+                        &lt;CodeBlock label=&quot;Backend — criar sessão de pagamento&quot; code={`const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);\n\napp.post('/api/criar-checkout', async (req, res) =&gt; {\n  const session = await stripe.checkout.sessions.create({\n    mode: 'subscription',\n    payment_method_types: ['card'],\n    line_items: [{ price: 'price_ID_DO_PLANO', quantity: 1 }],\n    success_url: 'https://seusite.com/sucesso',\n    cancel_url: 'https://seusite.com/cancelado',\n  });\n  res.json({ url: session.url });\n});`} /&gt;
+                        &lt;CodeBlock label=&quot;Frontend — redirecionar para pagar&quot; code={`const res = await fetch('/api/criar-checkout', { method: 'POST' });\nconst { url } = await res.json();\nwindow.location.href = url; // Redireciona para o Stripe`} /&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#1a0d0d] border border-red-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-red-300 mb-2&quot;&gt;🔒 Passo 3 — Proteger conteúdo por plano&lt;/p&gt;
+                        &lt;CodeBlock label=&quot;Verificar assinatura antes de liberar&quot; code={`// No backend: middleware que verifica se o usuário tem plano ativo\nasync function verificarAssinatura(req, res, next) {\n  const usuario = await buscarUsuario(req.headers.authorization);\n  if (!usuario.assinaturaAtiva) {\n    return res.status(403).json({ erro: 'Assine um plano para acessar' });\n  }\n  next();\n}\n\n// Rota protegida\napp.get('/api/conteudo-premium', verificarAssinatura, (req, res) =&gt; {\n  res.json({ conteudo: 'Acesso exclusivo para assinantes!' });\n});`} /&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-[#0d1a10] border border-teal-700/20 rounded-lg p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-teal-300 mb-2&quot;&gt;📦 Stack completa recomendada para SaaS&lt;/p&gt;
+                        &lt;div className=&quot;grid grid-cols-2 gap-2&quot;&gt;
+                          {[
+                            { label: &quot;Frontend&quot;, value: &quot;React + Vite (esse app)&quot; },
+                            { label: &quot;Backend/API&quot;, value: &quot;Node.js + Express&quot; },
+                            { label: &quot;Banco de dados&quot;, value: &quot;Supabase (PostgreSQL)&quot; },
+                            { label: &quot;Autenticação&quot;, value: &quot;Supabase Auth&quot; },
+                            { label: &quot;Pagamentos&quot;, value: &quot;Stripe&quot; },
+                            { label: &quot;Hospedagem&quot;, value: &quot;Vercel (frontend) + Railway/Render (backend)&quot; },
+                            { label: &quot;Domínio&quot;, value: &quot;Registro.br ou Namecheap&quot; },</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>GuiasTab</span>
+    <div>
+      <small>L659–L850</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">                            { label: &quot;Email&quot;, value: &quot;Resend ou SendGrid (grátis)&quot; },
+                          ].map(item =&gt; (
+                            &lt;div key={item.label} className=&quot;bg-black/20 rounded-lg px-2 py-1.5&quot;&gt;
+                              &lt;p className=&quot;text-[9px] text-gray-600 font-bold uppercase&quot;&gt;{item.label}&lt;/p&gt;
+                              &lt;p className=&quot;text-[10px] text-gray-300&quot;&gt;{item.value}&lt;/p&gt;
+                            &lt;/div&gt;
+                          ))}
+                        &lt;/div&gt;
+                        &lt;div className=&quot;mt-2 space-y-1&quot;&gt;
+                          &lt;Link href=&quot;https://railway.app&quot; label=&quot;Railway — hospedar backend Node.js (US$ 5/mês)&quot; /&gt;
+                          &lt;br /&gt;
+                          &lt;Link href=&quot;https://render.com&quot; label=&quot;Render — alternativa gratuita para backend&quot; /&gt;
+                          &lt;br /&gt;
+                          &lt;Link href=&quot;https://resend.com&quot; label=&quot;Resend — enviar emails transacionais (grátis)&quot; /&gt;
+                        &lt;/div&gt;
+                      &lt;/div&gt;
+                      &lt;div className=&quot;bg-gradient-to-r from-green-950/40 to-blue-950/20 border border-green-700/30 rounded-xl p-3&quot;&gt;
+                        &lt;p className=&quot;text-[11px] font-bold text-white mb-1&quot;&gt;💬 Peça para a IA montar o SaaS por você&lt;/p&gt;
+                        &lt;p className=&quot;text-[10px] text-gray-400 mb-2&quot;&gt;Copie e cole esse prompt no chat da IA do SK Editor:&lt;/p&gt;
+                        &lt;CodeBlock code={`&quot;Quero transformar este app em um SaaS.\nCrie:\n1. Páginas de login e cadastro com Supabase Auth\n2. Página de planos com botão de assinar\n3. Integração com Stripe para cobrança mensal\n4. Middleware que verifica assinatura antes de liberar o conteúdo\n5. Dashboard do usuário após login\nUse React + Supabase + Stripe. Backend em Node.js/Express.\nExplique cada arquivo criado.&quot;`} /&gt;
+                      &lt;/div&gt;
+                    &lt;/div&gt;
+                  &lt;/Section&gt;
+
+                  {/* Resumo rápido */}
+                  &lt;div className=&quot;bg-[#0d1309] border border-gray-700/30 rounded-xl p-4&quot;&gt;
+                    &lt;p className=&quot;text-[12px] font-bold text-gray-200 mb-2&quot;&gt;⚡ Resumo Rápido&lt;/p&gt;
+                    &lt;div className=&quot;space-y-1.5&quot;&gt;
+                      {[
+                        { q: &quot;Ver o app rodando&quot;, a: &quot;npm run dev → localhost:5173&quot; },
+                        { q: &quot;Banco de dados grátis&quot;, a: &quot;Neon.tech (PostgreSQL) ou Supabase&quot; },
+                        { q: &quot;Colocar online grátis&quot;, a: &quot;Vercel ou Netlify&quot; },
+                        { q: &quot;Domínio .com.br&quot;, a: &quot;registro.br ≈ R$ 40/ano&quot; },
+                        { q: &quot;Login de usuários&quot;, a: &quot;Supabase Auth (grátis até 50k users)&quot; },
+                        { q: &quot;Cobrar mensalidade&quot;, a: &quot;Stripe (3,5% por transação)&quot; },
+                        { q: &quot;Backend/servidor&quot;, a: &quot;Railway ou Render (gratuito no início)&quot; },
+                      ].map(item =&gt; (
+                        &lt;div key={item.q} className=&quot;flex gap-2 text-[10px]&quot;&gt;
+                          &lt;span className=&quot;text-gray-500 shrink-0&quot;&gt;→&lt;/span&gt;
+                          &lt;span className=&quot;text-gray-400 w-40 shrink-0&quot;&gt;{item.q}:&lt;/span&gt;
+                          &lt;span className=&quot;text-gray-200 font-medium&quot;&gt;{item.a}&lt;/span&gt;
+                        &lt;/div&gt;
+                      ))}
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              );
+            })()}
+
+            {/* ═══ ABA DEPLOY ════════════════════════════════════════════════════ */}
+            {tab === &quot;deploy&quot; &amp;&amp; (
+              &lt;div className=&quot;p-4 space-y-4&quot;&gt;
+
+                {/* Seletor de plataforma */}
+                &lt;div&gt;
+                  &lt;p className=&quot;text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-2&quot;&gt;Plataforma de Destino&lt;/p&gt;
+                  &lt;div className=&quot;grid grid-cols-2 gap-1.5 sm:grid-cols-3&quot;&gt;
+                    {PLATFORMS.map(p =&gt; (
+                      &lt;button key={p.id} onClick={() =&gt; { setSelected(p.id); setStatus(&quot;idle&quot;); setLog([]); setSavedPath(null); }}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left transition-all ${selected === p.id ? colorMap[p.color] + &quot; border-opacity-100&quot; : &quot;border-gray-700/40 bg-[#0d1309] text-gray-500 hover:text-gray-300&quot;}`}
+                      &gt;
+                        &lt;span className=&quot;text-base shrink-0&quot;&gt;{p.icon}&lt;/span&gt;
+                        &lt;span className=&quot;text-[11px] font-bold leading-tight&quot;&gt;{p.label}&lt;/span&gt;
+                      &lt;/button&gt;
+                    ))}
+                  &lt;/div&gt;
+                &lt;/div&gt;
+
+                {/* Info da plataforma */}
+                &lt;div className={`border rounded-xl p-3 space-y-3 ${activeColor}`}&gt;
+                  &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+                    &lt;span className=&quot;text-xl shrink-0&quot;&gt;{platform.icon}&lt;/span&gt;
+                    &lt;div&gt;
+                      &lt;p className=&quot;text-[13px] font-bold text-gray-200&quot;&gt;{platform.label}&lt;/p&gt;
+                      &lt;p className=&quot;text-[11px] text-gray-400 mt-0.5&quot;&gt;{platform.desc}&lt;/p&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;
+
+                  &lt;div&gt;
+                    &lt;p className=&quot;text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1.5&quot;&gt;Passo a Passo após o Download&lt;/p&gt;
+                    &lt;ol className=&quot;space-y-1&quot;&gt;
+                      {platform.instructions.map((step, i) =&gt; (
+                        &lt;li key={i} className=&quot;flex gap-2 text-[11px] text-gray-300&quot;&gt;
+                          &lt;span className=&quot;w-4 h-4 bg-white/10 text-gray-400 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 mt-0.5&quot;&gt;{i + 1}&lt;/span&gt;
+                          &lt;span className=&quot;flex-1 leading-relaxed&quot;&gt;{step}&lt;/span&gt;
+                        &lt;/li&gt;
+                      ))}
+                    &lt;/ol&gt;
+                  &lt;/div&gt;
+
+                  {platform.terminalCmds &amp;&amp; (
+                    &lt;CodeBlock
+                      label=&quot;Comandos do Terminal (copie e cole)&quot;
+                      code={platform.terminalCmds.join(&quot;\n&quot;)}
+                    /&gt;
+                  )}
+
+                  {platform.deployUrl &amp;&amp; (
+                    &lt;a href={platform.deployUrl} target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;
+                      className=&quot;flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 underline&quot;&gt;
+                      &lt;ExternalLink size={11} /&gt; Abrir {platform.label} no navegador
+                    &lt;/a&gt;
+                  )}
+                &lt;/div&gt;
+
+                {/* Botão Build */}
+                &lt;button
+                  onClick={handleBuild}
+                  disabled={status === &quot;building&quot;}
+                  className={`w-full py-3.5 rounded-xl text-[14px] font-bold flex items-center justify-center gap-2 transition-all ${status === &quot;building&quot; ? &quot;bg-gray-700/40 text-gray-500&quot; : &quot;bg-green-600/30 border border-green-500/50 text-green-300 hover:bg-green-600/40 active:scale-[0.98]&quot;}`}
+                &gt;
+                  {status === &quot;building&quot; ? (
+                    &lt;&gt;&lt;RefreshCw size={15} className=&quot;animate-spin&quot; /&gt; Gerando ZIP...&lt;/&gt;
+                  ) : (
+                    &lt;&gt;&lt;Download size={15} /&gt; Gerar ZIP para {platform.label}&lt;/&gt;
+                  )}
+                &lt;/button&gt;
+
+                {/* Log */}
+                {log.length &gt; 0 &amp;&amp; (
+                  &lt;div className=&quot;bg-[#070d04] border border-gray-800/60 rounded-xl p-3 space-y-0.5&quot;&gt;
+                    {log.map((line, i) =&gt; (
+                      &lt;p key={i} className=&quot;text-[11px] font-mono text-gray-400 leading-relaxed&quot;&gt;{line}&lt;/p&gt;
+                    ))}
+                    {status === &quot;done&quot; &amp;&amp; (
+                      &lt;p className=&quot;text-[12px] font-bold text-green-400 mt-1.5&quot;&gt;
+                        {savedPath ? `📂 Arquivo salvo no PC — siga os passos acima` : `📦 ZIP baixado — extraia e siga os passos acima`}
+                      &lt;/p&gt;
+                    )}
+                  &lt;/div&gt;
+                )}
+
+                {/* Revelar no explorador */}
+                {savedPath &amp;&amp; isElectron &amp;&amp; electronFS &amp;&amp; (
+                  &lt;button onClick={() =&gt; electronFS.revealInExplorer(savedPath)}
+                    className=&quot;flex items-center gap-2 text-[11px] text-blue-400 underline hover:text-blue-300&quot;&gt;
+                    &lt;FolderOpen size={13} /&gt; Mostrar arquivo no Explorador
+                  &lt;/button&gt;
+                )}
+
+                {/* Info extra */}
+                &lt;div className=&quot;bg-amber-950/20 border border-amber-700/30 rounded-xl p-3&quot;&gt;
+                  &lt;div className=&quot;flex items-start gap-2&quot;&gt;
+                    &lt;Info size={13} className=&quot;text-amber-400 shrink-0 mt-0.5&quot; /&gt;
+                    &lt;p className=&quot;text-[10px] text-gray-400&quot;&gt;
+                      O ZIP gerado contém &lt;strong className=&quot;text-gray-200&quot;&gt;apenas os arquivos do seu projeto&lt;/strong&gt;, sem node_modules nem .git. Arquivos de configuração para a plataforma são adicionados automaticamente.
+                      {isElectron &amp;&amp; &quot; No aplicativo desktop, você escolhe onde salvar no seu PC.&quot;}
+                    &lt;/p&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+
+            {/* ═══ ABA DISCO ══════════════════════════════════════════════════════ */}
+            {tab === &quot;disk&quot; &amp;&amp; isElectron &amp;&amp; (
+              &lt;div className=&quot;p-4 space-y-4&quot;&gt;
+                &lt;div className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-xl p-4&quot;&gt;
+                  &lt;p className=&quot;text-[13px] font-bold text-gray-200 mb-1&quot;&gt;💾 Salvar Projeto no Disco do PC&lt;/p&gt;
+                  &lt;p className=&quot;text-[11px] text-gray-500 mb-3&quot;&gt;
+                    Projetos salvos no disco sobrevivem ao fechar o app — ficam em{&quot; &quot;}
+                    &lt;span className=&quot;font-mono text-gray-400&quot;&gt;~/MaikonJuridicoPro/projetos/&lt;/span&gt;
+                  &lt;/p&gt;
+
+                  &lt;div className=&quot;flex gap-2 mb-3&quot;&gt;
+                    &lt;button onClick={handleSaveToDisk}
+                      className=&quot;flex-1 py-2.5 bg-green-600/30 border border-green-500/40 rounded-xl text-[12px] text-green-300 font-bold hover:bg-green-600/40 flex items-center justify-center gap-1.5&quot;&gt;
+                      &lt;HardDrive size={13} /&gt; Salvar Projeto Agora
+                    &lt;/button&gt;
+                    {electronFS &amp;&amp; (
+                      &lt;button onClick={() =&gt; electronFS.openProjectsDir()}
+                        className=&quot;px-3 py-2.5 bg-blue-700/20 border border-blue-600/30 rounded-xl text-[11px] text-blue-300 hover:bg-blue-700/30 flex items-center gap-1&quot;&gt;
+                        &lt;FolderOpen size={13} /&gt; Abrir Pasta
+                      &lt;/button&gt;
+                    )}
+                  &lt;/div&gt;
+
+                  {diskStatus &amp;&amp; (
+                    &lt;p className={`text-[11px] font-mono mb-2 ${diskStatus.startsWith(&quot;✅&quot;) ? &quot;text-green-400&quot; : diskStatus.startsWith(&quot;❌&quot;) ? &quot;text-red-400&quot; : &quot;text-gray-400&quot;}`}&gt;
+                      {diskStatus}
+                    &lt;/p&gt;
+                  )}
+
+                  &lt;div className=&quot;flex items-center gap-2 p-2 bg-[#0d0d0d] border border-gray-700/30 rounded-xl&quot;&gt;
+                    &lt;button onClick={toggleAutoSave}
+                      className={`w-9 h-5 rounded-full transition-all ${autoSaveOn ? &quot;bg-green-500&quot; : &quot;bg-gray-700&quot;} relative shrink-0`}&gt;
+                      &lt;span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all ${autoSaveOn ? &quot;left-4&quot; : &quot;left-0.5&quot;}`} /&gt;
+                    &lt;/button&gt;
+                    &lt;div&gt;
+                      &lt;p className=&quot;text-[11px] text-gray-300 font-bold&quot;&gt;Auto-save no disco&lt;/p&gt;
+                      &lt;p className=&quot;text-[10px] text-gray-600&quot;&gt;Salva automaticamente a cada alteração&lt;/p&gt;
+                    &lt;/div&gt;
+                  &lt;/div&gt;</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>CredenciaisTab</span>
+    <div>
+      <small>L851–L935</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">                &lt;/div&gt;
+
+                {/* Lista de projetos salvos */}
+                &lt;div&gt;
+                  &lt;div className=&quot;flex items-center justify-between mb-2&quot;&gt;
+                    &lt;p className=&quot;text-[11px] font-bold text-gray-400 uppercase tracking-wider&quot;&gt;Projetos no Disco&lt;/p&gt;
+                    &lt;button onClick={loadDiskProjects} className=&quot;text-[10px] text-blue-400 underline flex items-center gap-1&quot;&gt;
+                      {diskLoading ? &lt;RefreshCw size={10} className=&quot;animate-spin&quot; /&gt; : &lt;RefreshCw size={10} /&gt;} Atualizar
+                    &lt;/button&gt;
+                  &lt;/div&gt;
+
+                  {diskProjects.length === 0 ? (
+                    &lt;div className=&quot;py-6 text-center&quot;&gt;
+                      &lt;HardDrive size={24} className=&quot;text-gray-700 mx-auto mb-2&quot; /&gt;
+                      &lt;p className=&quot;text-[12px] text-gray-600&quot;&gt;Nenhum projeto salvo ainda&lt;/p&gt;
+                      &lt;p className=&quot;text-[10px] text-gray-700 mt-1&quot;&gt;Clique em &quot;Salvar Projeto Agora&quot; acima&lt;/p&gt;
+                    &lt;/div&gt;
+                  ) : (
+                    &lt;div className=&quot;space-y-1.5&quot;&gt;
+                      {diskProjects.map(proj =&gt; (
+                        &lt;div key={proj.filePath} className=&quot;flex items-center gap-3 p-3 bg-[#0d1309] border border-gray-700/30 rounded-xl&quot;&gt;
+                          &lt;FileCode size={14} className=&quot;text-green-400 shrink-0&quot; /&gt;
+                          &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                            &lt;p className=&quot;text-[12px] text-gray-200 font-semibold truncate&quot;&gt;{proj.name}&lt;/p&gt;
+                            &lt;p className=&quot;text-[10px] text-gray-600&quot;&gt;
+                              {new Date(proj.updatedAt).toLocaleString(&quot;pt-BR&quot;)} · {proj.fileCount} arquivo(s)
+                            &lt;/p&gt;
+                          &lt;/div&gt;
+                          &lt;button onClick={() =&gt; electronFS?.revealInExplorer(proj.filePath)}
+                            className=&quot;p-1.5 rounded-lg text-gray-600 hover:text-blue-400 hover:bg-blue-900/20&quot;&gt;
+                            &lt;Folder size={13} /&gt;
+                          &lt;/button&gt;
+                        &lt;/div&gt;
+                      ))}
+                    &lt;/div&gt;
+                  )}
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+
+            {/* ═══ ABA GIT ══════════════════════════════════════════════════════ */}
+            {tab === &quot;git&quot; &amp;&amp; (
+              &lt;div className=&quot;p-4 space-y-4&quot;&gt;
+                &lt;div className=&quot;bg-[#0d1309] border border-[#2d4a1e] rounded-xl p-4&quot;&gt;
+                  &lt;p className=&quot;text-[13px] font-bold text-gray-200 mb-1&quot;&gt;🐙 Git via Terminal do PC&lt;/p&gt;
+                  &lt;p className=&quot;text-[11px] text-gray-500 mb-3&quot;&gt;
+                    {isElectron
+                      ? &quot;Com o app desktop, você tem acesso total ao git real do computador. Use o Terminal (🖥️) para executar os comandos abaixo.&quot;
+                      : &quot;Para usar git, baixe o ZIP do projeto, extraia numa pasta e execute os comandos no terminal do seu PC.&quot;}
+                  &lt;/p&gt;
+                &lt;/div&gt;
+
+                {[
+                  {
+                    title: &quot;🆕 Novo Repositório (do zero)&quot;,
+                    cmds: [
+                      &quot;git init&quot;,
+                      &quot;git add .&quot;,
+                      'git commit -m &quot;primeiro commit&quot;',
+                      &quot;git branch -M main&quot;,
+                      &quot;git remote add origin https://github.com/SEU_USUARIO/SEU_REPO.git&quot;,
+                      &quot;git push -u origin main&quot;,
+                    ],
+                  },
+                  {
+                    title: &quot;🔄 Atualizar Repositório Existente&quot;,
+                    cmds: [
+                      &quot;git add .&quot;,
+                      'git commit -m &quot;atualização&quot;',
+                      &quot;git push&quot;,
+                    ],
+                  },
+                  {
+                    title: &quot;📥 Clonar / Baixar Repositório Existente&quot;,
+                    cmds: [
+                      &quot;git clone https://github.com/SEU_USUARIO/SEU_REPO.git&quot;,
+                      &quot;cd SEU_REPO&quot;,
+                      &quot;npm install&quot;,
+                      &quot;npm start&quot;,
+                    ],
+                  },
+                  {
+                    title: &quot;🌐 Publicar no GitHub Pages&quot;,
+                    cmds: [
+                      &quot;git add .&quot;,</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>DatabasePanel</span>
+    <div>
+      <small>L936–L981</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">                      'git commit -m &quot;deploy&quot;',
+                      &quot;git push origin main&quot;,
+                      &quot;# Então: GitHub → Settings → Pages → Source: main branch&quot;,
+                    ],
+                  },
+                  {
+                    title: &quot;🔐 Configurar Token de Acesso (necessário uma vez)&quot;,
+                    cmds: [
+                      &quot;# 1. Crie um token em: github.com → Settings → Developer Settings → Personal Access Tokens&quot;,
+                      &quot;# 2. Ao fazer git push, use o TOKEN como senha:&quot;,
+                      &quot;git remote set-url origin https://SEU_USUARIO:SEU_TOKEN@github.com/SEU_USUARIO/SEU_REPO.git&quot;,
+                      &quot;# Agora o push funciona sem pedir senha toda hora:&quot;,
+                      &quot;git push&quot;,
+                    ],
+                  },
+                ].map(section =&gt; (
+                  &lt;CodeBlock key={section.title} label={section.title} code={section.cmds.join(&quot;\n&quot;)} /&gt;
+                ))}
+
+                &lt;div className=&quot;bg-blue-950/20 border border-blue-700/30 rounded-xl p-3&quot;&gt;
+                  &lt;p className=&quot;text-[11px] font-bold text-blue-300 mb-1&quot;&gt;💡 Dica para o Terminal do SK Editor&lt;/p&gt;
+                  &lt;p className=&quot;text-[10px] text-gray-400&quot;&gt;
+                    {isElectron
+                      ? &quot;O terminal do app tem acesso total ao git instalado no seu PC. Se git não estiver instalado, baixe em git-scm.com e instale — depois reinicie o app.&quot;
+                      : &quot;No app desktop (Electron), o terminal 🖥️ tem acesso real ao git do seu computador. Baixe o executável na aba Downloads.&quot;}
+                  &lt;/p&gt;
+                  &lt;a href=&quot;https://git-scm.com/downloads&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;
+                    className=&quot;flex items-center gap-1 text-[10px] text-blue-400 underline mt-1.5&quot;&gt;
+                    &lt;ExternalLink size={10} /&gt; Baixar Git — git-scm.com
+                  &lt;/a&gt;
+                &lt;/div&gt;
+
+                &lt;div className=&quot;bg-amber-950/20 border border-amber-700/30 rounded-xl p-3&quot;&gt;
+                  &lt;p className=&quot;text-[11px] font-bold text-amber-300 mb-1&quot;&gt;🤖 Peça para a IA fazer&lt;/p&gt;
+                  &lt;CodeBlock code={`&quot;Configure meu projeto para git.\nCrie o .gitignore correto,\nfaça o commit inicial e me dê os comandos\npara publicar no GitHub Pages.&quot;`} /&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            )}
+
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
