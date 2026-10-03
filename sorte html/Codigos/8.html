@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cirurgião Jurídico - Correto</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #58a6ff, #3b82f6);
+      padding: 12px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      color: white;
+      margin: 0;
+    }
+
+    .tabs {
+      display: flex;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+
+    .tab-btn {
+      flex: 0 0 auto;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: #58a6ff;
+      border-bottom-color: #58a6ff;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 12px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .card h2 {
+      font-size: 13px;
+      color: #58a6ff;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .card p {
+      font-size: 11px;
+      color: #8b949e;
+      margin-bottom: 10px;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      display: none;
+    }
+
+    .file-input-label {
+      display: block;
+      padding: 14px;
+      background: #21262d;
+      border: 2px dashed #30363d;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 12px;
+      color: #8b949e;
+    }
+
+    .file-input-label:active {
+      border-color: #58a6ff;
+      background: #0d1117;
+      color: #58a6ff;
+    }
+
+    .file-input-label.loaded {
+      border-color: #3fb950;
+      background: #0d1117;
+      color: #3fb950;
+    }
+
+    .status {
+      font-size: 11px;
+      padding: 8px 10px;
+      background: #21262d;
+      border-radius: 4px;
+      margin-top: 6px;
+      border-left: 3px solid #30363d;
+    }
+
+    .status.success {
+      color: #3fb950;
+      border-left-color: #3fb950;
+    }
+
+    .status.error {
+      color: #f85149;
+      border-left-color: #f85149;
+    }
+
+    .status.warning {
+      color: #d29922;
+      border-left-color: #d29922;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 12px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 4px 4px 4px 0;
+      white-space: nowrap;
+    }
+
+    .btn:active {
+      background: #30363d;
+      transform: scale(0.95);
+    }
+
+    .btn.primary {
+      background: #58a6ff;
+      color: #000;
+    }
+
+    .btn.success {
+      background: #3fb950;
+      color: #000;
+    }
+
+    .btn.danger {
+      background: #f85149;
+      color: #fff;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .report {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      color: #c9d1d9;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .report.hidden {
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success {
+      border-color: #3fb950;
+      color: #3fb950;
+    }
+
+    .toast.error {
+      border-color: #f85149;
+      color: #f85149;
+    }
+
+    .info {
+      font-size: 11px;
+      color: #8b949e;
+      padding: 8px;
+      background: #21262d;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .info.loaded {
+      color: #3fb950;
+      border-left: 3px solid #3fb950;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #30363d;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>⚖️ Cirurgião Jurídico - Correto</h1>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="APP.tab('import')">📥 Importar</button>
+    <button class="tab-btn" onclick="APP.tab('bugs')">🐛 Bugs</button>
+    <button class="tab-btn" onclick="APP.tab('compare')">🔍 Comparar</button>
+    <button class="tab-btn" onclick="APP.tab('search')">🔎 Pesquisar</button>
+  </div>
+
+  <div class="content">
+    <!-- TAB: IMPORTAR -->
+    <div id="import" class="panel active">
+      <div class="card">
+        <h2>📥 Importar Projetos</h2>
+        <p>ZIP, TAR, TGZ - Salva permanente</p>
+
+        <h3 style="font-size: 12px; margin: 10px 0 6px; color: #58a6ff;">Projeto A</h3>
+        <div class="file-input-wrapper">
+          <input type="file" id="fileA" accept=".zip,.tar,.tgz,.gz" onchange="APP.importFile('A', event)">
+          <label class="file-input-label" id="labelA" for="fileA">📂 Selecionar arquivo</label>
+        </div>
+        <div id="statusA" class="status hidden"></div>
+        <div id="infoA" class="info hidden"></div>
+
+        <h3 style="font-size: 12px; margin: 10px 0 6px; color: #58a6ff;">Projeto B</h3>
+        <div class="file-input-wrapper">
+          <input type="file" id="fileB" accept=".zip,.tar,.tgz,.gz" onchange="APP.importFile('B', event)">
+          <label class="file-input-label" id="labelB" for="fileB">📂 Selecionar arquivo</label>
+        </div>
+        <div id="statusB" class="status hidden"></div>
+        <div id="infoB" class="info hidden"></div>
+
+        <div style="margin-top: 12px;">
+          <button class="btn success" onclick="APP.analyzeStructure()">📊 Estrutura</button>
+          <button class="btn" onclick="APP.listAllFiles()">📋 Arquivos</button>
+          <button class="btn" onclick="APP.searchHiddenFiles()">🔍 Ocultos</button>
+          <button class="btn danger" onclick="APP.clearAll()">🗑️ Limpar Tudo</button>
+        </div>
+
+        <div id="importReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: BUGS -->
+    <div id="bugs" class="panel">
+      <div class="card">
+        <h2>🐛 Detectar Bugs (Projeto A)</h2>
+        <p>Funciona SOZINHO - Não precisa do B</p>
+
+        <div style="margin-bottom: 10px;">
+          <button class="btn danger" onclick="APP.detectBugsA()">🔍 Escanear TUDO</button>
+          <button class="btn" onclick="APP.suggestFixes()">💡 Soluções</button>
+          <button class="btn" onclick="APP.exportReport('bugs')">💾 Exportar</button>
+        </div>
+
+        <div id="bugsReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: COMPARAR -->
+    <div id="compare" class="panel">
+      <div class="card">
+        <h2>🔍 Comparar A vs B</h2>
+        <p>Precisa dos DOIS importados</p>
+
+        <div style="margin-bottom: 10px;">
+          <button class="btn primary" onclick="APP.compareProjects()">🔄 Comparar TUDO</button>
+          <button class="btn" onclick="APP.findCommonBugs()">🐛 Bugs Comuns</button>
+          <button class="btn" onclick="APP.exportReport('compare')">💾 Exportar</button>
+        </div>
+
+        <div id="compareReport" class="report hidden"></div>
+      </div>
+    </div>
+
+    <!-- TAB: PESQUISAR -->
+    <div id="search" class="panel">
+      <div class="card">
+        <h2>🔎 Pesquisar (TUDO)</h2>
+        <p>Busca em todos os arquivos</p>
+
+        <input type="text" id="searchInput" placeholder="Buscar..." style="width: 100%; padding: 8px; background: #21262d; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px; font-size: 12px; margin-bottom: 10px;">
+
+        <div style="margin-bottom: 10px;">
+          <button class="btn primary" onclick="APP.searchInAllFiles()">🔍 Pesquisar</button>
+          <button class="btn" onclick="APP.searchInHidden()">📁 Ocultos</button>
+        </div>
+
+        <div id="searchReport" class="report hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    'use strict';
+
+    const APP = {
+      // Dados em memória (rápido)
+      projects: {
+        A: null,
+        B: null
+      },
+
+      // localStorage para persistência
+      storage: {
+        save(id, data) {
+          try {
+            localStorage.setItem(`cirurgiao_${id}`, JSON.stringify(data));
+            return true;
+          } catch (e) {
+            console.error('Erro ao salvar:', e);
+            return false;
+          }
+        },
+
+        load(id) {
+          try {
+            const data = localStorage.getItem(`cirurgiao_${id}`);
+            return data ? JSON.parse(data) : null;
+          } catch (e) {
+            return null;
+          }
+        },
+
+        clear(id) {
+          try {
+            localStorage.removeItem(`cirurgiao_${id}`);
+            return true;
+          } catch (e) {
+            return false;
+          }
+        }
+      },
+
+      // Inicializar - CARREGAR PROJETOS SALVOS
+      init() {
+        for (const proj of ['A', 'B']) {
+          const data = this.storage.load(proj);
+          if (data) {
+            this.projects[proj] = data;
+            this.updateProjectUI(proj);
+          }
+        }
+        console.log('✅ Projetos carregados');
+      },
+
+      // Atualizar UI quando projeto já está salvo
+      updateProjectUI(proj) {
+        const label = document.getElementById(`label${proj}`);
+        const info = document.getElementById(`info${proj}`);
+        const status = document.getElementById(`status${proj}`);
+
+        const data = this.projects[proj];
+        if (data) {
+          label.classList.add('loaded');
+          label.textContent = `✅ ${data.name} (${data.fileCount} arquivos)`;
+          
+          info.classList.remove('hidden');
+          info.classList.add('loaded');
+          info.textContent = `💾 Carregado! ${this.formatSize(data.size)} - ${data.importedAt}`;
+          
+          status.classList.add('hidden');
+        }
+      },
+
+      toast(msg, type = 'success') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 2500);
+      },
+
+      tab(name) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        event.target.classList.add('active');
+      },
+
+      async importFile(project, event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const statusEl = document.getElementById(`status${project}`);
+        const label = document.getElementById(`label${project}`);
+        
+        statusEl.classList.remove('hidden');
+        statusEl.textContent = '⏳ Importando...';
+        statusEl.className = 'status warning';
+
+        try {
+          const fileName = file.name;
+          let files = {};
+
+          // Extrair arquivo
+          if (fileName.endsWith('.zip')) {
+            files = await this.extractZip(file);
+          } else if (fileName.endsWith('.tar.gz') || fileName.endsWith('.tgz')) {
+            files = await this.extractTarGz(file);
+          } else if (fileName.endsWith('.tar')) {
+            files = await this.extractTar(file);
+          } else if (fileName.endsWith('.gz')) {
+            files = await this.extractGz(file);
+          } else {
+            throw new Error('Formato não suportado');
+          }
+
+          // Salvar dados
+          const projectData = {
+            name: fileName,
+            size: file.size,
+            fileCount: Object.keys(files).length,
+            importedAt: new Date().toLocaleString(),
+            files: files
+          };
+
+          // Salvar em localStorage (PERMANENTE)
+          this.storage.save(project, projectData);
+          
+          // Salvar em memória (RÁPIDO)
+          this.projects[project] = projectData;
+
+          const fileCount = Object.keys(files).length;
+          statusEl.textContent = `✅ ${fileCount} arquivos salvos`;
+          statusEl.className = 'status success';
+
+          // Atualizar label
+          label.classList.add('loaded');
+          label.textContent = `✅ ${fileName} (${fileCount} arquivos)`;
+
+          this.updateProjectUI(project);
+          this.toast(`✅ Projeto ${project} importado!`, 'success');
+        } catch (err) {
+          statusEl.textContent = `❌ ${err.message}`;
+          statusEl.className = 'status error';
+          this.toast(`❌ Erro: ${err.message}`, 'error');
+        }
+      },
+
+      async extractZip(file) {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+        const files = {};
+
+        for (const [path, obj] of Object.entries(loaded.files)) {
+          if (!obj.dir) {
+            try {
+              files[path] = await obj.async('string');
+            } catch (e) {
+              files[path] = '[BINÁRIO]';
+            }
+          }
+        }
+        return files;
+      },
+
+      async extractTarGz(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        return this.extractTarBuffer(decompressed);
+      },
+
+      async extractTar(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        return this.extractTarBuffer(arrayBuffer);
+      },
+
+      async extractGz(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const decompressed = pako.ungzip(arrayBuffer);
+        const text = new TextDecoder().decode(decompressed);
+        return { 'decompressed.txt': text };
+      },
+
+      extractTarBuffer(buffer) {
+        const files = {};
+        const view = new Uint8Array(buffer);
+        let offset = 0;
+
+        while (offset < view.length) {
+          const headerEnd = offset + 512;
+          if (headerEnd > view.length) break;
+
+          const header = view.slice(offset, headerEnd);
+          const nameBytes = header.slice(0, 100);
+          const name = new TextDecoder().decode(nameBytes).split('\0')[0];
+          const sizeStr = new TextDecoder().decode(header.slice(124, 136)).trim();
+          const size = parseInt(sizeStr, 8) || 0;
+
+          offset = headerEnd;
+
+          if (name && size > 0) {
+            try {
+              const content = new TextDecoder().decode(view.slice(offset, offset + size));
+              files[name] = content;
+            } catch (e) {
+              files[name] = '[BINÁRIO]';
+            }
+          }
+
+          offset += Math.ceil(size / 512) * 512;
+        }
+
+        return files;
+      },
+
+      analyzeStructure() {
+        let report = '=== ANÁLISE DE ESTRUTURA ===\n\n';
+
+        for (const proj of ['A', 'B']) {
+          const data = this.projects[proj];
+          if (!data) {
+            report += `Projeto ${proj}: Não importado\n\n`;
+            continue;
+          }
+
+          const files = data.files;
+          const folders = new Set();
+          const extensions = {};
+
+          for (const path of Object.keys(files)) {
+            const folder = path.split('/')[0];
+            if (folder) folders.add(folder);
+            const ext = path.split('.').pop();
+            extensions[ext] = (extensions[ext] || 0) + 1;
+          }
+
+          report += `📁 PROJETO ${proj}:\n`;
+          report += `Arquivos: ${Object.keys(files).length}\n`;
+          report += `Pastas: ${Array.from(folders).join(', ') || 'N/A'}\n`;
+          report += `Extensões: ${Object.entries(extensions).map(([e, c]) => `${e}(${c})`).join(', ')}\n\n`;
+        }
+
+        this.showReport('importReport', report);
+      },
+
+      listAllFiles() {
+        let report = '=== LISTA COMPLETA (SEM SLICE!) ===\n\n';
+
+        for (const proj of ['A', 'B']) {
+          const data = this.projects[proj];
+          if (!data) {
+            report += `Projeto ${proj}: Não importado\n\n`;
+            continue;
+          }
+
+          const files = data.files;
+          const keys = Object.keys(files);
+          report += `📁 PROJETO ${proj} (${keys.length}):\n`;
+          
+          keys.forEach(f => report += `${f}\n`);
+          
+          report += '\n';
+        }
+
+        this.showReport('importReport', report);
+      },
+
+      searchHiddenFiles() {
+        let report = '=== ARQUIVOS OCULTOS ===\n\n';
+
+        for (const proj of ['A', 'B']) {
+          const data = this.projects[proj];
+          if (!data) {
+            report += `Projeto ${proj}: Não importado\n\n`;
+            continue;
+          }
+
+          const files = data.files;
+          const hidden = Object.keys(files).filter(f => f.includes('/.') || f.startsWith('.'));
+
+          report += `📁 PROJETO ${proj}:\n`;
+          if (hidden.length > 0) {
+            hidden.forEach(f => report += `${f}\n`);
+          } else {
+            report += `Nenhum arquivo oculto\n`;
+          }
+          report += '\n';
+        }
+
+        this.showReport('importReport', report);
+      },
+
+      detectBugsA() {
+        const data = this.projects.A;
+        if (!data) {
+          this.toast('Projeto A não importado', 'error');
+          return;
+        }
+
+        let report = '=== DETECÇÃO DE BUGS - PROJETO A (TUDO!) ===\n\n';
+
+        const bugs = [
+          { id: 1, name: 'console.log', pattern: /console\.(log|error|warn)/gi, severity: '🔴 CRÍTICO' },
+          { id: 2, name: 'var não removido', pattern: /\bvar\s+/g, severity: '🟡 IMPORTANTE' },
+          { id: 3, name: 'Comparação fraca (==)', pattern: /==[^=]/g, severity: '🟡 IMPORTANTE' },
+          { id: 4, name: 'fetch sem catch', pattern: /fetch\(/g, severity: '🟠 MÉDIO' },
+          { id: 5, name: '.then() sem await', pattern: /\.then\(/g, severity: '🟠 MÉDIO' },
+          { id: 6, name: 'window global', pattern: /window\.\w+\s*=/g, severity: '🟡 IMPORTANTE' }
+        ];
+
+        const files = data.files;
+        let totalBugs = 0;
+
+        for (const bug of bugs) {
+          let found = [];
+          for (const [path, content] of Object.entries(files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+            const matches = content.match(bug.pattern) || [];
+            if (matches.length > 0) {
+              found.push({ path, count: matches.length });
+              totalBugs += matches.length;
+            }
+          }
+
+          if (found.length > 0) {
+            report += `${bug.severity} #${bug.id}: ${bug.name}\n`;
+            report += `   Encontrado em: ${found.length} arquivo(s)\n`;
+            found.forEach(f => {
+              report += `   - ${f.path} (${f.count}x)\n`;
+            });
+            report += '\n';
+          }
+        }
+
+        report += `\n📊 TOTAL: ${totalBugs} bugs\n`;
+        this.showReport('bugsReport', report);
+      },
+
+      suggestFixes() {
+        let report = '=== SUGESTÕES DE CORREÇÃO ===\n\n';
+        report += '1️⃣ console.log → Remover antes de produção\n\n';
+        report += '2️⃣ var → Usar const/let\n\n';
+        report += '3️⃣ == → Usar ===\n\n';
+        report += '4️⃣ fetch → Adicionar .catch()\n\n';
+        report += '5️⃣ .then() → Usar async/await\n\n';
+        report += '6️⃣ window → Usar módulos/escopo local\n';
+
+        this.showReport('bugsReport', report);
+      },
+
+      compareProjects() {
+        const dataA = this.projects.A;
+        const dataB = this.projects.B;
+
+        if (!dataA || !dataB) {
+          this.toast('Importe os DOIS projetos', 'error');
+          return;
+        }
+
+        const filesA = dataA.files;
+        const filesB = dataB.files;
+        const keysA = Object.keys(filesA);
+        const keysB = Object.keys(filesB);
+        const setA = new Set(keysA);
+        const setB = new Set(keysB);
+
+        let report = '=== COMPARAÇÃO A vs B (TUDO!) ===\n\n';
+
+        const onlyA = keysA.filter(f => !setB.has(f));
+        const onlyB = keysB.filter(f => !setA.has(f));
+        const common = keysA.filter(f => setB.has(f));
+
+        report += `📊 RESUMO:\n`;
+        report += `Apenas em A: ${onlyA.length}\n`;
+        report += `Apenas em B: ${onlyB.length}\n`;
+        report += `Comuns: ${common.length}\n\n`;
+
+        if (onlyA.length > 0) {
+          report += `🔴 APENAS EM A (${onlyA.length}):\n`;
+          onlyA.forEach(f => report += `${f}\n`);
+          report += '\n';
+        }
+
+        if (onlyB.length > 0) {
+          report += `🟢 APENAS EM B (${onlyB.length}):\n`;
+          onlyB.forEach(f => report += `${f}\n`);
+          report += '\n';
+        }
+
+        this.showReport('compareReport', report);
+      },
+
+      findCommonBugs() {
+        const dataA = this.projects.A;
+        const dataB = this.projects.B;
+
+        if (!dataA || !dataB) {
+          this.toast('Importe os DOIS projetos', 'error');
+          return;
+        }
+
+        let report = '=== BUGS COMUNS (95%) ===\n\n';
+
+        const patterns = [
+          { name: 'console.log', regex: /console\.(log|error|warn)/gi },
+          { name: 'var', regex: /\bvar\s+/g },
+          { name: 'Comparação fraca (==)', regex: /==[^=]/g },
+          { name: 'Promises sem await', regex: /\.then\(/g },
+          { name: 'Variáveis globais', regex: /window\./g },
+          { name: 'Try-catch faltando', regex: /async\s+function/g }
+        ];
+
+        for (const proj of ['A', 'B']) {
+          const data = this.projects[proj];
+          const files = data.files;
+          report += `📁 PROJETO ${proj}:\n`;
+          let bugCount = 0;
+
+          for (const [path, content] of Object.entries(files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+
+            for (const pattern of patterns) {
+              const matches = content.match(pattern.regex) || [];
+              if (matches.length > 0) {
+                report += `🔴 ${pattern.name}: ${matches.length}x em ${path}\n`;
+                bugCount++;
+              }
+            }
+          }
+
+          report += `Total: ${bugCount} bugs\n\n`;
+        }
+
+        this.showReport('compareReport', report);
+      },
+
+      searchInAllFiles() {
+        const query = document.getElementById('searchInput').value.trim();
+        if (!query) {
+          this.toast('Digite algo', 'error');
+          return;
+        }
+
+        let report = `=== PESQUISA: "${query}" (TUDO!) ===\n\n`;
+
+        for (const proj of ['A', 'B']) {
+          const data = this.projects[proj];
+          if (!data) {
+            report += `Projeto ${proj}: Não importado\n\n`;
+            continue;
+          }
+
+          const files = data.files;
+          let found = [];
+
+          for (const [path, content] of Object.entries(files)) {
+            if (typeof content !== 'string' || content === '[BINÁRIO]') continue;
+            if (content.toLowerCase().includes(query.toLowerCase())) {
+              found.push(path);
+            }
+          }
+
+          report += `📁 PROJETO ${proj}: ${found.length} arquivo(s)\n`;
+          found.forEach(f => report += `${f}\n`);
+          report += '\n';
+        }
+
+        this.showReport('searchReport', report);
+      },
+
+      searchInHidden() {
+        this.searchHiddenFiles();
+      },
+
+      exportReport(type) {
+        let elementId = '';
+        if (type === 'bugs') elementId = 'bugsReport';
+        else if (type === 'compare') elementId = 'compareReport';
+        
+        const report = document.getElementById(elementId).textContent;
+        if (!report) {
+          this.toast('Nenhum relatório', 'error');
+          return;
+        }
+
+        const blob = new Blob([report], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${type}-${Date.now()}.txt`;
+        a.click();
+        this.toast('✅ Exportado!', 'success');
+      },
+
+      clearAll() {
+        this.storage.clear('A');
+        this.storage.clear('B');
+        this.projects.A = null;
+        this.projects.B = null;
+        document.getElementById('fileA').value = '';
+        document.getElementById('fileB').value = '';
+        document.getElementById('labelA').classList.remove('loaded');
+        document.getElementById('labelB').classList.remove('loaded');
+        document.getElementById('labelA').textContent = '📂 Selecionar arquivo';
+        document.getElementById('labelB').textContent = '📂 Selecionar arquivo';
+        document.getElementById('infoA').classList.add('hidden');
+        document.getElementById('infoB').classList.add('hidden');
+        this.toast('✅ Tudo limpo', 'success');
+      },
+
+      showReport(elementId, content) {
+        const el = document.getElementById(elementId);
+        el.textContent = content;
+        el.classList.remove('hidden');
+      },
+
+      formatSize(bytes) {
+        const units = ['B', 'KB', 'MB', 'GB'];
+        let size = bytes;
+        let idx = 0;
+        while (size >= 1024 && idx < units.length - 1) {
+          size /= 1024;
+          idx++;
+        }
+        return `${size.toFixed(1)} ${units[idx]}`;
+      }
+    };
+
+    // Inicializar na abertura
+    document.addEventListener('DOMContentLoaded', () => {
+      APP.init();
+    });
+  </script>
+
+</body>
+
+</html>
