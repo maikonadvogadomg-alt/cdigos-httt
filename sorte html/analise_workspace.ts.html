@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: workspace.ts</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 workspace.ts</h1>
+<div class="meta">Gerado em 03/10/2026, 08:42:32 • 10 elementos • 3 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { Router } from &quot;express&quot;;</div><div class="idx-item">L2 [import] import {</div><div class="idx-item">L6 [import] import { join, dirname, relative, basename } from &quot;node:path&quot;;</div><div class="idx-item">L7 [import] import { exec } from &quot;node:child_process&quot;;</div><div class="idx-item">L8 [import] import { promisify } from &quot;node:util&quot;;</div><div class="idx-item">L9 [import] import { logger } from &quot;../lib/logger&quot;;</div><div class="idx-item">L15 [const] WORKSPACE_DIR</div><div class="idx-item">L20 [function] ensureWorkspace</div><div class="idx-item">L92 [const] IGNORE</div><div class="idx-item">L94 [function] walk</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L19</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { Router } from &quot;express&quot;;
+import {
+  existsSync, mkdirSync, writeFileSync, readFileSync,
+  readdirSync, statSync, rmSync,
+} from &quot;node:fs&quot;;
+import { join, dirname, relative, basename } from &quot;node:path&quot;;
+import { exec } from &quot;node:child_process&quot;;
+import { promisify } from &quot;node:util&quot;;
+import { logger } from &quot;../lib/logger&quot;;
+
+const execAsync = promisify(exec);
+const router = Router();
+
+// Diretório raiz do workspace do usuário — persiste durante a sessão
+export const WORKSPACE_DIR =
+  process.env[&quot;SK_WORKSPACE_DIR&quot;] ||
+  join(process.env[&quot;HOME&quot;] || &quot;/home/runner&quot;, &quot;sk-user-workspace&quot;);
+
+// Garante que o diretório existe</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>ensureWorkspace</span>
+    <div>
+      <small>L20–L93</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function ensureWorkspace(): void {
+  if (!existsSync(WORKSPACE_DIR)) {
+    mkdirSync(WORKSPACE_DIR, { recursive: true });
+    // package.json padrão
+    const pkg = {
+      name: &quot;sk-projeto&quot;,
+      version: &quot;1.0.0&quot;,
+      description: &quot;Projeto SK Code Editor&quot;,
+      main: &quot;index.js&quot;,
+      scripts: { start: &quot;node index.js&quot;, dev: &quot;node index.js&quot; },
+      dependencies: {},
+    };
+    writeFileSync(join(WORKSPACE_DIR, &quot;package.json&quot;), JSON.stringify(pkg, null, 2), &quot;utf8&quot;);
+  }
+}
+
+// ─── GET /api/workspace/info ──────────────────────────────────────────────────
+router.get(&quot;/workspace/info&quot;, (_req, res) =&gt; {
+  ensureWorkspace();
+  res.json({ workspaceDir: WORKSPACE_DIR, exists: existsSync(WORKSPACE_DIR) });
+});
+
+// ─── POST /api/workspace/write ────────────────────────────────────────────────
+// Escreve um arquivo no workspace do servidor
+// Body: { path: string (relativo), content: string }
+router.post(&quot;/workspace/write&quot;, (req, res) =&gt; {
+  try {
+    ensureWorkspace();
+    const { path: filePath, content } = req.body as { path: string; content: string };
+    if (!filePath) { res.status(400).json({ message: &quot;Campo 'path' obrigatório.&quot; }); return; }
+
+    // Segurança: impede path traversal
+    const safe = relative(WORKSPACE_DIR, join(WORKSPACE_DIR, filePath));
+    if (safe.startsWith(&quot;..&quot;)) { res.status(400).json({ message: &quot;Caminho inválido.&quot; }); return; }
+
+    const abs = join(WORKSPACE_DIR, safe);
+    mkdirSync(dirname(abs), { recursive: true });
+    writeFileSync(abs, content ?? &quot;&quot;, &quot;utf8&quot;);
+    res.json({ ok: true, path: safe });
+  } catch (err: any) {
+    logger.error({ err }, &quot;Erro /workspace/write&quot;);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── GET /api/workspace/read ──────────────────────────────────────────────────
+// Lê um arquivo do workspace
+router.get(&quot;/workspace/read&quot;, (req, res) =&gt; {
+  try {
+    ensureWorkspace();
+    const filePath = String(req.query[&quot;path&quot;] || &quot;&quot;);
+    if (!filePath) { res.status(400).json({ message: &quot;Query 'path' obrigatória.&quot; }); return; }
+
+    const safe = relative(WORKSPACE_DIR, join(WORKSPACE_DIR, filePath));
+    if (safe.startsWith(&quot;..&quot;)) { res.status(400).json({ message: &quot;Caminho inválido.&quot; }); return; }
+
+    const abs = join(WORKSPACE_DIR, safe);
+    if (!existsSync(abs)) { res.status(404).json({ message: &quot;Arquivo não encontrado.&quot; }); return; }
+
+    const content = readFileSync(abs, &quot;utf8&quot;);
+    res.json({ content, path: safe });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── GET /api/workspace/list ──────────────────────────────────────────────────
+// Lista arquivos no workspace (recursivo, profundidade limitada)
+router.get(&quot;/workspace/list&quot;, (req, res) =&gt; {
+  try {
+    ensureWorkspace();
+    const result: Array&lt;{ path: string; size: number; isDir: boolean }&gt; = [];
+    const IGNORE = new Set([&quot;node_modules&quot;, &quot;.git&quot;, &quot;.cache&quot;, &quot;dist&quot;, &quot;.next&quot;, &quot;__pycache__&quot;]);
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>walk</span>
+    <div>
+      <small>L94–L318</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">    function walk(dir: string, depth = 0) {
+      if (depth &gt; 5) return;
+      const entries = readdirSync(dir);
+      for (const name of entries) {
+        if (IGNORE.has(name)) continue;
+        const abs = join(dir, name);
+        const rel = relative(WORKSPACE_DIR, abs);
+        try {
+          const st = statSync(abs);
+          result.push({ path: rel, size: st.size, isDir: st.isDirectory() });
+          if (st.isDirectory()) walk(abs, depth + 1);
+        } catch { /* ignora */ }
+      }
+    }
+    walk(WORKSPACE_DIR);
+    res.json({ files: result, workspaceDir: WORKSPACE_DIR });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── POST /api/workspace/delete ───────────────────────────────────────────────
+// Remove um arquivo do workspace
+router.post(&quot;/workspace/delete&quot;, (req, res) =&gt; {
+  try {
+    const { path: filePath } = req.body as { path: string };
+    if (!filePath) { res.status(400).json({ message: &quot;Campo 'path' obrigatório.&quot; }); return; }
+
+    const safe = relative(WORKSPACE_DIR, join(WORKSPACE_DIR, filePath));
+    if (safe.startsWith(&quot;..&quot;)) { res.status(400).json({ message: &quot;Caminho inválido.&quot; }); return; }
+
+    const abs = join(WORKSPACE_DIR, safe);
+    if (existsSync(abs)) rmSync(abs, { recursive: true, force: true });
+    res.json({ ok: true });
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── POST /api/workspace/install ─────────────────────────────────────────────
+// Instala pacotes npm/pip no workspace — retorna saída em streaming
+// Body: { packages?: string[], packageJson?: string, dev?: boolean, pip?: boolean }
+router.post(&quot;/workspace/install&quot;, async (req, res) =&gt; {
+  ensureWorkspace();
+  const { packages, packageJson, dev, pip } = req.body as {
+    packages?: string[];
+    packageJson?: string;
+    dev?: boolean;
+    pip?: boolean;
+  };
+
+  // Atualiza package.json se fornecido
+  if (packageJson &amp;&amp; !pip) {
+    try {
+      writeFileSync(join(WORKSPACE_DIR, &quot;package.json&quot;), packageJson, &quot;utf8&quot;);
+    } catch { /* ignora */ }
+  }
+
+  let cmd: string;
+
+  if (pip) {
+    // ── Instalação Python via pip3 ──────────────────────────────────────────
+    const pkgList = packages &amp;&amp; packages.length &gt; 0
+      ? packages.map(p =&gt; `&quot;${p.replace(/&quot;/g, &quot;&quot;)}&quot;`) .join(&quot; &quot;)
+      : &quot;&quot;;
+    if (!pkgList) { res.status(400).json({ message: &quot;Nenhum pacote especificado.&quot; }); return; }
+    cmd = `pip3 install ${pkgList} --break-system-packages 2&gt;&amp;1 || pip install ${pkgList} 2&gt;&amp;1`;
+  } else {
+    // ── Instalação npm ──────────────────────────────────────────────────────
+    // Encontra npm
+    let npmBin = &quot;npm&quot;;
+    try {
+      const { stdout } = await execAsync(&quot;which npm 2&gt;/dev/null || which pnpm 2&gt;/dev/null&quot;);
+      npmBin = stdout.trim().split(&quot;\n&quot;)[0] || &quot;npm&quot;;
+    } catch { /* usa npm padrão */ }
+
+    const pkgList = packages &amp;&amp; packages.length &gt; 0
+      ? packages.map(p =&gt; `&quot;${p.replace(/&quot;/g, &quot;&quot;)}&quot;`) .join(&quot; &quot;)
+      : &quot;&quot;;
+
+    const saveFlag = dev ? &quot;--save-dev&quot; : &quot;--save&quot;;
+    cmd = pkgList
+      ? `${npmBin} install ${pkgList} ${saveFlag} 2&gt;&amp;1`
+      : `${npmBin} install 2&gt;&amp;1`;
+  }
+
+  res.setHeader(&quot;Content-Type&quot;, &quot;text/event-stream; charset=utf-8&quot;);
+  res.setHeader(&quot;Cache-Control&quot;, &quot;no-cache&quot;);
+  res.setHeader(&quot;Connection&quot;, &quot;keep-alive&quot;);
+
+  res.write(`data: ${JSON.stringify({ out: `\x1b[36m$ ${cmd}\x1b[0m\n` })}\n\n`);
+
+  const child = exec(cmd, {
+    cwd: WORKSPACE_DIR,
+    timeout: 180_000,
+    maxBuffer: 5 * 1024 * 1024,
+    env: { ...process.env, npm_config_loglevel: &quot;warn&quot; },
+  });
+
+  child.stdout?.on(&quot;data&quot;, (d: string) =&gt; res.write(`data: ${JSON.stringify({ out: d })}\n\n`));
+  child.stderr?.on(&quot;data&quot;, (d: string) =&gt; res.write(`data: ${JSON.stringify({ out: d })}\n\n`));
+
+  child.on(&quot;close&quot;, (code) =&gt; {
+    const ok = code === 0;
+    let updatedPkg: string | null = null;
+    try { updatedPkg = readFileSync(join(WORKSPACE_DIR, &quot;package.json&quot;), &quot;utf8&quot;); } catch { /* ok */ }
+    res.write(`data: ${JSON.stringify({ done: true, ok, code, updatedPackageJson: updatedPkg })}\n\n`);
+    res.end();
+  });
+
+  child.on(&quot;error&quot;, (err) =&gt; {
+    res.write(`data: ${JSON.stringify({ out: `\n\x1b[31mErro: ${err.message}\x1b[0m\n`, done: true, ok: false })}\n\n`);
+    res.end();
+  });
+});
+
+// ─── POST /api/workspace/run ──────────────────────────────────────────────────
+// Salva arquivos e executa o código — streaming de saída
+// Body: { files: [{path, content}], entrypoint: string, runtime?: &quot;node&quot;|&quot;python&quot;|&quot;bash&quot; }
+router.post(&quot;/workspace/run&quot;, async (req, res) =&gt; {
+  ensureWorkspace();
+  const {
+    files, entrypoint, runtime,
+  } = req.body as {
+    files: Array&lt;{ path: string; content: string }&gt;;
+    entrypoint: string;
+    runtime?: string;
+  };
+
+  if (!entrypoint) { res.status(400).json({ message: &quot;entrypoint obrigatório.&quot; }); return; }
+
+  // Salva todos os arquivos fornecidos
+  if (Array.isArray(files)) {
+    for (const f of files) {
+      try {
+        const safe = relative(WORKSPACE_DIR, join(WORKSPACE_DIR, f.path));
+        if (!safe.startsWith(&quot;..&quot;)) {
+          const abs = join(WORKSPACE_DIR, safe);
+          mkdirSync(dirname(abs), { recursive: true });
+          writeFileSync(abs, f.content || &quot;&quot;, &quot;utf8&quot;);
+        }
+      } catch { /* ignora */ }
+    }
+  }
+
+  // Detecta o runtime correto
+  const ext = entrypoint.split(&quot;.&quot;).pop()?.toLowerCase() || &quot;&quot;;
+  let cmd: string;
+  if (runtime === &quot;python&quot; || ext === &quot;py&quot;) {
+    cmd = `python3 &quot;${basename(entrypoint)}&quot; 2&gt;&amp;1`;
+  } else if (runtime === &quot;bash&quot; || ext === &quot;sh&quot;) {
+    cmd = `bash &quot;${basename(entrypoint)}&quot; 2&gt;&amp;1`;
+  } else if (runtime === &quot;node&quot; || [&quot;js&quot;, &quot;mjs&quot;, &quot;cjs&quot;, &quot;ts&quot;].includes(ext)) {
+    if (ext === &quot;ts&quot;) {
+      // TypeScript: usa ts-node se disponível, senão compila
+      const tsNode = existsSync(join(WORKSPACE_DIR, &quot;node_modules/.bin/ts-node&quot;));
+      cmd = tsNode
+        ? `./node_modules/.bin/ts-node &quot;${basename(entrypoint)}&quot; 2&gt;&amp;1`
+        : `node --experimental-strip-types &quot;${basename(entrypoint)}&quot; 2&gt;&amp;1`;
+    } else {
+      cmd = `node &quot;${basename(entrypoint)}&quot; 2&gt;&amp;1`;
+    }
+  } else {
+    cmd = `node &quot;${basename(entrypoint)}&quot; 2&gt;&amp;1`;
+  }
+
+  res.setHeader(&quot;Content-Type&quot;, &quot;text/event-stream; charset=utf-8&quot;);
+  res.setHeader(&quot;Cache-Control&quot;, &quot;no-cache&quot;);
+  res.setHeader(&quot;Connection&quot;, &quot;keep-alive&quot;);
+
+  res.write(`data: ${JSON.stringify({ out: `\x1b[36m$ ${cmd}\x1b[0m\n` })}\n\n`);
+
+  const child = exec(cmd, {
+    cwd: WORKSPACE_DIR,
+    timeout: 60_000,
+    maxBuffer: 5 * 1024 * 1024,
+    env: { ...process.env, NODE_PATH: join(WORKSPACE_DIR, &quot;node_modules&quot;) },
+  });
+
+  child.stdout?.on(&quot;data&quot;, (d: string) =&gt; res.write(`data: ${JSON.stringify({ out: d })}\n\n`));
+  child.stderr?.on(&quot;data&quot;, (d: string) =&gt; res.write(`data: ${JSON.stringify({ out: d })}\n\n`));
+
+  child.on(&quot;close&quot;, (code) =&gt; {
+    res.write(`data: ${JSON.stringify({ done: true, code })}\n\n`);
+    res.end();
+  });
+
+  child.on(&quot;error&quot;, (err) =&gt; {
+    res.write(`data: ${JSON.stringify({ out: `\n\x1b[31mErro: ${err.message}\x1b[0m\n`, done: true, code: 1 })}\n\n`);
+    res.end();
+  });
+
+  req.on(&quot;close&quot;, () =&gt; { try { child.kill(&quot;SIGTERM&quot;); } catch { } });
+});
+
+// ─── POST /api/workspace/sync ─────────────────────────────────────────────────
+// Sincroniza múltiplos arquivos do editor → servidor
+// Body: { files: [{path, content}] }
+router.post(&quot;/workspace/sync&quot;, (req, res) =&gt; {
+  try {
+    ensureWorkspace();
+    const { files } = req.body as { files: Array&lt;{ path: string; content: string }&gt; };
+    if (!Array.isArray(files)) { res.status(400).json({ message: &quot;Campo 'files' deve ser array.&quot; }); return; }
+
+    const written: string[] = [];
+    for (const f of files) {
+      if (!f.path) continue;
+      try {
+        const safe = relative(WORKSPACE_DIR, join(WORKSPACE_DIR, f.path));
+        if (safe.startsWith(&quot;..&quot;)) continue;
+        const abs = join(WORKSPACE_DIR, safe);
+        mkdirSync(dirname(abs), { recursive: true });
+        writeFileSync(abs, f.content || &quot;&quot;, &quot;utf8&quot;);
+        written.push(safe);
+      } catch { /* ignora arquivo com erro */ }
+    }
+    res.json({ ok: true, written, workspaceDir: WORKSPACE_DIR });
+  } catch (err: any) {
+    logger.error({ err }, &quot;Erro /workspace/sync&quot;);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+export default router;
+</pre>
+</div>
+</body>
+</html>
