@@ -1,0 +1,879 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>relatorio-AssistenteJuridico-PWA-8zip 1AssistenteJ.md</title><style>
+    body{font-family:Georgia,Cambria,'Times New Roman',serif;max-width:860px;margin:30px auto;padding:0 24px;color:#222;line-height:1.7;background:#fafafa}
+    h1,h2,h3,h4{color:#2d4a1e;margin-top:28px;margin-bottom:12px}
+    h1{border-bottom:2px solid #5aab56;padding-bottom:8px}
+    h2{border-bottom:1px solid #ccc;padding-bottom:6px}
+    a{color:#0066cc}
+    code{background:#eee;padding:2px 5px;border-radius:3px;font-family:Consolas,monospace;font-size:90%}
+    pre{background:#0d1309;color:#a8d5a2;padding:14px;border-radius:6px;overflow-x:auto;font-size:13px;line-height:1.5}
+    pre code{background:transparent;color:inherit;padding:0}
+    blockquote{border-left:4px solid #5aab56;padding:6px 14px;margin:14px 0;background:#f0f7ed;color:#444}
+    table{border-collapse:collapse;margin:14px 0;width:100%}
+    th,td{border:1px solid #ccc;padding:8px 12px;text-align:left}
+    th{background:#e8f5e9}
+    .copy-btn{font-size:11px;padding:4px 10px;border:1px solid #5aab56;background:#fff;color:#2d4a1e;border-radius:5px;cursor:pointer;margin-left:8px}
+    .copy-btn:hover{background:#5aab56;color:#fff}
+    .code-wrap{position:relative;margin:14px 0}
+    .code-wrap .copy-btn{position:absolute;top:8px;right:8px}
+    @media print{.copy-btn{display:none}body{background:#fff}}
+  </style></head><body><h1 style="border:none">relatorio-AssistenteJuridico-PWA-8zip 1AssistenteJ.md</h1><div class="md" id="md"><h1 id="relatorio-do-projeto-assistentejuridico-pwa-8zip-1assistentejuridico-pwa-8zip" data-heading="1" data-raw="Relatório do projeto AssistenteJuridico-PWA-8zip (1)/AssistenteJuridico-PWA-8zip">Relatório do projeto "AssistenteJuridico-PWA-8zip (1)/AssistenteJuridico-PWA-8zip"<button class="copy-btn" data-section="relatorio-do-projeto-assistentejuridico-pwa-8zip-1assistentejuridico-pwa-8zip">📋 Seção</button></h1><p>1061 arquivos lidos (2.69 GB), 0 ignorados (node_modules/caches).</p>
+<h2 id="estrutura-detectada" data-heading="2" data-raw="Estrutura detectada">Estrutura detectada<button class="copy-btn" data-section="estrutura-detectada">📋 Seção</button></h2><ul>
+<li>(raiz) (@workspace/assistente-juridico): Vite, React, Express, Tailwind, TypeScript, Drizzle — scripts: dev="vite"; build="vite build"; preview="vite preview"; check="tsc --noEmit"</li>
+<li>electron-build (assistente-juridico-ia): Electron — scripts: start="electron ."; build-win="electron-builder --win --x64"</li>
+<li>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app (assistente-juridico-ia): Electron — scripts: start="electron ."; build-win="electron-builder --win --x64"</li>
+<li>assistente-juridico (@workspace/assistente-juridico): Vite, React, Tailwind, TypeScript, Drizzle — scripts: dev="vite-node server/index.ts"; dev:server="vite-node server/index.ts"; start="vite-node server/index.ts"; build="vite build"; preview="vite preview"; check="tsc --noEmit"</li>
+<li>assistente-juridico (Assistente Jurídico IA): Replit artifact</li>
+</ul>
+<h2 id="problemas-detectados-77" data-heading="2" data-raw="Problemas detectados (77)">Problemas detectados (77)<button class="copy-btn" data-section="problemas-detectados-77">📋 Seção</button></h2><ul>
+<li>[CRITICO] Import quebrado: Importa "./audio" mas o arquivo não existe — assistente-juridico/client/replit_integrations/audio/index.ts:10<br>Sugestão: Arquivo apagado/renomeado ou caminho errado. Confira o nome e a pasta.</li>
+<li>[CRITICO] Import quebrado: Importa "./replit_integrations/batch" mas o arquivo não existe — assistente-juridico/server/replit_integrations/batch/utils.ts:13<br>Sugestão: Arquivo apagado/renomeado ou caminho errado. Confira o nome e a pasta.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — assistente-juridico/client/src/pages/configuracoes.tsx:289<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/client/src/pages/robo-djen.tsx:887<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/dist/public/assets/index-DkhdfBQ3.js:645<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — assistente-juridico/dist/public/assets/index-DkhdfBQ3.js:734<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/server/routes.ts:3782<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — assistente-juridico/src/pages/configuracoes.tsx:305<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — assistente-juridico/src/pages/robo-djen.tsx:890<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-C4zU3f5W.js:663<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-C4zU3f5W.js:752<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-Cyd5PlW-.js:663<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-Cyd5PlW-.js:752<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-D43Wn5Im.js:663<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-D43Wn5Im.js:752<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — electron-build/www/assets/index-C4zU3f5W.js:663<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — electron-build/www/assets/index-C4zU3f5W.js:752<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — electron-build/www/assets/index-Cyd5PlW-.js:663<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — electron-build/www/assets/index-Cyd5PlW-.js:752<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: Chave privada escrita no código: -----B…---- — electron-build/www/assets/index-D43Wn5Im.js:663<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[CRITICO] Segredo exposto: URL de banco com senha escrita no código: postgr…uire — electron-build/www/assets/index-D43Wn5Im.js:752<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[ALTO] Dependência faltando: "drizzle-kit" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/drizzle.config.ts:1<br>Sugestão: Rode: npm install drizzle-kit  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "esbuild" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/script/build.ts:1<br>Sugestão: Rode: npm install esbuild  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "p-limit" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/server/replit_integrations/batch/utils.ts:1<br>Sugestão: Rode: npm install p-limit  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Dependência faltando: "p-retry" é importado mas não está no assistente-juridico/package.json (1 import(s)) — assistente-juridico/server/replit_integrations/batch/utils.ts:2<br>Sugestão: Rode: npm install p-retry  (na pasta de assistente-juridico/package.json)</li>
+<li>[ALTO] Replit: Arquivo de configuração do Replit (.replit) — .replit<br>Sugestão: Pode apagar ao tirar o projeto do Replit.</li>
+<li>[ALTO] Replit: Metadados de "artifact" do Replit (.replit-artifact) — assistente-juridico/.replit-artifact/<br>Sugestão: Pode apagar ao tirar o projeto do Replit.</li>
+<li>[ALTO] Replit: Ambiente Nix do Replit (replit.nix) — replit.nix<br>Sugestão: Pode apagar ao tirar o projeto do Replit.</li>
+<li>[ALTO] Segredo exposto: Token do GitHub escrita no código: ghp_kv…aXWu — .env.local:3<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[ALTO] Segredo exposto: Chave privada escrita no código: -----B…---- — .env.local:6<br>Sugestão: Mova para variável de ambiente (.env fora do Git) e GERE UMA CHAVE NOVA — a antiga pode ter vazado.</li>
+<li>[ALTO] Segredo exposto: Arquivo .env dentro do projeto — .env.local<br>Sugestão: Não publique .env: coloque no .gitignore e deixe só um .env.example sem valores.</li>
+<li>[MEDIO] API: Frontend chama /api/voice-conversations/1/messages mas não achei essa rota no servidor — assistente-juridico/client/replit_integrations/audio/index.ts:23<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/... mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:674<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/settings/ mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:785<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/demo-key mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:790<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ai-usage mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:793<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ai/chat mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:797<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ai/ mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:797<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/jwt mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:882<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/token mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:885<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/jurisprudencia mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:907<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/previdenciario mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:921<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/tramitacao mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:932<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/djen mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:935<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/publicacoes mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:936<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/pdpj mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:957<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/datajud mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:962<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/cnj mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:962<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/comunicacoes mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:962<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/export/ mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:967<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/voice mas não achei essa rota no servidor — assistente-juridico/src/lib/offline-api.ts:980<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] API: Frontend chama /api/ mas não achei essa rota no servidor — assistente-juridico/src/main.tsx:19<br>Sugestão: Rota apagada/renomeada, ou prefixo diferente. Confira o servidor.</li>
+<li>[MEDIO] Configuração: O código lê 13 variável(is) de ambiente e não há .env.example (DATABASE_URL, PORT, BASE_PATH, VITE_OFFLINE_MODE, APP_PASSWORD, AI_INTEGRATIONS_OPENAI_API_KEY, AI_INTEGRATIONS_OPENAI_BASE_URL, AI_INTEGRATIONS_GEMINI_API_KEY, AI_INTEGRATIONS_GEMINI_BASE_URL, PUBLIC_API_KEY, PUBLIC_API_MODEL, PUBLIC_API_URL, PERPLEXITY_API_KEY) — (projeto)<br>Sugestão: Crie um .env com esses nomes (valores fora do Git). Sem elas o app pode não iniciar.</li>
+<li>[MEDIO] Dependências: Vários gerenciadores misturados: package-lock.json, pnpm-lock.yaml — (projeto)<br>Sugestão: Escolha um só (npm ou pnpm) e apague os outros lockfiles.</li>
+<li>[MEDIO] Replit: Endereço fixo do Replit: seu-app.replit.app — assistente-juridico/client/src/pages/configuracoes.tsx:455<br>Sugestão: Fora do Replit esse endereço não vai responder. Use URL configurável.</li>
+<li>[INFO] Pendências no código: 29 marcações TODO/FIXME em 19 arquivo(s) (electron-build/www/assets/index-C4zU3f5W.js (2), electron-build/www/assets/index-Cyd5PlW-.js (2), electron-build/www/assets/index-D43Wn5Im.js (2), electron-build/www/assets/pdf-gh-BrLFn.js (2), electron-build/www/assets/pdf.worker-BgryrOlp.mjs (1), electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-C4zU3f5W.js (2), electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-Cyd5PlW-.js (2), electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-D43Wn5Im.js (2), electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/pdf-gh-BrLFn.js (2), electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/pdf.worker-BgryrOlp.mjs (1), assistente-juridico/src/pages/jurisprudencia.tsx (1), assistente-juridico/src/pages/legal-assistant.tsx (1)) — electron-build/www/assets/index-C4zU3f5W.js<br>Sugestão: Trechos que o autor (ou a IA) deixou incompletos.</li>
+<li>[INFO] Tamanho: Arquivo grande (172.5 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/AssistenteJuridico.exe<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (10.0 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/icudtl.dat<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (7.7 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/libGLESv2.dll<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (9.0 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/LICENSES.chromium.html<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (5.3 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources.pak<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (172.5 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/Assistente Jurídico IA.exe<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (10.0 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/icudtl.dat<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (7.7 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/libGLESv2.dll<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (9.0 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/LICENSES.chromium.html<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (5.3 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/resources.pak<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (4.9 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/resources/app.asar<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (5.2 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/vk_swiftshader.dll<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (5.2 MB) — electron-build/dist-packager/AssistenteJuridico-win32-x64/vk_swiftshader.dll<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (172.5 MB) — electron-build/dist/win-unpacked/Assistente Jurídico IA.exe<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (10.0 MB) — electron-build/dist/win-unpacked/icudtl.dat<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (7.7 MB) — electron-build/dist/win-unpacked/libGLESv2.dll<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (9.0 MB) — electron-build/dist/win-unpacked/LICENSES.chromium.html<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (5.3 MB) — electron-build/dist/win-unpacked/resources.pak<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (4.9 MB) — electron-build/dist/win-unpacked/resources/app.asar<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (5.2 MB) — electron-build/dist/win-unpacked/vk_swiftshader.dll<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+<li>[INFO] Tamanho: Arquivo grande (214.3 MB) — releases/AssistenteJuridico-Windows.zip<br>Sugestão: Deixa o repositório/APK pesado. Veja se é necessário.</li>
+</ul>
+<h2 id="variaveis-de-ambiente-usadas" data-heading="2" data-raw="Variáveis de ambiente usadas">Variáveis de ambiente usadas<button class="copy-btn" data-section="variaveis-de-ambiente-usadas">📋 Seção</button></h2><p>AI_INTEGRATIONS_GEMINI_API_KEY, AI_INTEGRATIONS_GEMINI_BASE_URL, AI_INTEGRATIONS_OPENAI_API_KEY, AI_INTEGRATIONS_OPENAI_BASE_URL, APP_PASSWORD, BASE_PATH, BASE_URL, DATABASE_URL, DATAJUD_API_KEY, NODE_ENV, PDPJ_PEM_PRIVATE_KEY, PERPLEXITY_API_KEY, PORT, PUBLIC_API_KEY, PUBLIC_API_MODEL, PUBLIC_API_URL, SESSION_SECRET, VITE_OFFLINE_MODE</p>
+<h2 id="rotas-de-api" data-heading="2" data-raw="Rotas de API">Rotas de API<button class="copy-btn" data-section="rotas-de-api">📋 Seção</button></h2><ul>
+<li>GET /sw.js (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/auth/check (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/auth/login (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/auth/logout (assistente-juridico/server/routes.ts)</li>
+<li>GET /parecer/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tjmg/fatores (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/test-connection (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pdpj/status (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/comunicacoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/representados (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/habilitacao (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/pessoa (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/webhooks/tramitacao (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/demo-key-status (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/demo-key-config (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/demo-key-config (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/perplexity-key-status (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/demo-key-test (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tts (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/voice-chat (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/share/parecer (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/snippets (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/snippets/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/snippets (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/snippets/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/snippets/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/custom-actions (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/custom-actions (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/custom-actions/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/custom-actions/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/ementas (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ementas (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/ementas/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/ementas/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/jurisprudencia/buscar (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/ai-history (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai-history (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/ai-history/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/ai-history (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/ai-usage-summary (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai-usage-credit (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/prompt-templates (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/prompt-templates (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/prompt-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/prompt-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/doc-templates (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/doc-templates (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/doc-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/doc-templates/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/doc-templates/upload-docx (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/export/word-with-template (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/import/url (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/upload/extract-text (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/upload/transcribe (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai/process (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/ai/refine (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/export/word (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/jwt/generate (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/jwt/status (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/processos (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/processos/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/processos (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/processos/:id (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/processos/:id (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/datajud/consulta (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/datajud/consulta-oab (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/cpf/:cpf (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/oab/:uf/:inscricao (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/magistrados/:tribunal (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pdpj/status (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/test-connection (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/comunicacoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/representados (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/habilitacao (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/pdpj/pessoa (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/datajud/tribunais (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/cnj/comunicacoes (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/cnj/comunicacoes/certidao/:hash (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/ai-config (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/ai-config (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/settings/database-reconnect (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/database-status (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/system-status (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/app-password (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/session-secret (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/settings/test-ai-key (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/settings/:key (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/settings/:key (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/clientes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tramitacao/clientes (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/clientes/:id (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/tramitacao/clientes/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/notas (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tramitacao/notas (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/tramitacao/notas/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/usuarios (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/test (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/tramitacao/publicacoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/tramitacao/sync-publicacoes (assistente-juridico/server/routes.ts)</li>
+<li>PATCH /api/tramitacao/publicacoes/:id/lida (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/code/run (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/previdenciario/extrair (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pesquisa/oab (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/pesquisa/processo (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/config (assistente-juridico/server/routes.ts)</li>
+<li>PUT /api/djen/config (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/clientes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/djen/clientes (assistente-juridico/server/routes.ts)</li>
+<li>DELETE /api/djen/clientes/:id (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/publicacoes (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/djen/execucoes (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/djen/executar (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/djen/gerar-token (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/cpf/:cpf (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/advogado/oab/:uf/:numero (assistente-juridico/server/routes.ts)</li>
+<li>GET /api/corporativo/magistrados/:tribunal (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/code-assistant (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/git-push (assistente-juridico/server/routes.ts)</li>
+<li>POST /api/generate-image (assistente-juridico/server/replit_integrations/image/routes.ts)</li>
+<li>GET /api/conversations (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>GET /api/conversations/:id (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>POST /api/conversations (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>DELETE /api/conversations/:id (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>POST /api/conversations/:id/messages (assistente-juridico/server/replit_integrations/chat/routes.ts)</li>
+<li>GET /api/conversations (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>GET /api/conversations/:id (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>POST /api/conversations (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>DELETE /api/conversations/:id (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+<li>POST /api/conversations/:id/messages (assistente-juridico/server/replit_integrations/audio/routes.ts)</li>
+</ul>
+<h2 id="git-branch-main" data-heading="2" data-raw="Git: branch main">Git: branch main<button class="copy-btn" data-section="git-branch-main">📋 Seção</button></h2><ul>
+<li>21/08/2026, 18:28 </li>
+<li>21/08/2026, 18:27 </li>
+<li>21/08/2026, 18:23 </li>
+<li>16/06/2026, 21:18 commit: Update application for corrected asset paths and new build artifacts</li>
+<li>16/06/2026, 21:03 commit: Published your App</li>
+<li>16/06/2026, 20:54 commit: Provide clean ZIP files with all bugs fixed</li>
+<li>16/06/2026, 20:47 commit: Saved progress at the end of the loop</li>
+<li>12/06/2026, 20:12 commit: Saved progress at the end of the loop</li>
+<li>12/06/2026, 20:02 commit: Add a basic configuration file for the application</li>
+<li>12/06/2026, 19:52 commit: Saved progress at the end of the loop</li>
+<li>12/06/2026, 18:33 commit: Fix errors in AI assistant and prepare deployment packages</li>
+<li>12/06/2026, 05:03 commit: Add multiple deployment packages and fix dark mode display</li>
+<li>11/06/2026, 17:42 commit: Add a package for Capacitor Android APK conversion</li>
+<li>11/06/2026, 17:36 commit: Create deployable packages for testing and use</li>
+<li>11/06/2026, 17:25 commit (initial): Initial commit</li>
+</ul>
+<h2 id="packagejson" data-heading="2" data-raw="package.json">package.json<button class="copy-btn" data-section="packagejson">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="{
+  &quot;name&quot;: &quot;@workspace/assistente-juridico&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;license&quot;: &quot;MIT&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite&quot;,
+    &quot;build&quot;: &quot;vite build&quot;,
+    &quot;preview&quot;: &quot;vite preview&quot;,
+    &quot;check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@google/genai&quot;: &quot;^1.43.0&quot;,
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.1.5&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.7&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.3&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.0&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.0&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;^5.60.5&quot;,
+    &quot;@tiptap/core&quot;: &quot;^3.22.5&quot;,
+    &quot;@tiptap/extension-color&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-font-family&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-highlight&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-link&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-cell&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-header&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-row&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-text-align&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-text-style&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-underline&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/pm&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/react&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/starter-kit&quot;: &quot;^3.20.1&quot;,
+    &quot;@types/express-session&quot;: &quot;^1.19.0&quot;,
+    &quot;@types/jsonwebtoken&quot;: &quot;^9.0.10&quot;,
+    &quot;@types/multer&quot;: &quot;^2.2.0&quot;,
+    &quot;class-variance-authority&quot;: &quot;^0.7.1&quot;,
+    &quot;clsx&quot;: &quot;^2.1.1&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;connect-pg-simple&quot;: &quot;^10.0.0&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;docx&quot;: &quot;^9.5.1&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;express&quot;: &quot;^5.2.1&quot;,
+    &quot;express-session&quot;: &quot;^1.19.0&quot;,
+    &quot;framer-motion&quot;: &quot;^11.13.1&quot;,
+    &quot;html-entities&quot;: &quot;^2.6.0&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;jsonwebtoken&quot;: &quot;^9.0.3&quot;,
+    &quot;jszip&quot;: &quot;^3.10.1&quot;,
+    &quot;lucide-react&quot;: &quot;^0.453.0&quot;,
+    &quot;mammoth&quot;: &quot;^1.12.0&quot;,
+    &quot;multer&quot;: &quot;^2.2.0&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;openai&quot;: &quot;^6.18.0&quot;,
+    &quot;pdf-parse&quot;: &quot;^2.4.5&quot;,
+    &quot;pdfjs-dist&quot;: &quot;^4.9.155&quot;,
+    &quot;pg&quot;: &quot;^8.23.0&quot;,
+    &quot;react&quot;: &quot;^18.3.1&quot;,
+    &quot;react-day-picker&quot;: &quot;^8.10.1&quot;,
+    &quot;react-dom&quot;: &quot;^18.3.1&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.55.0&quot;,
+    &quot;react-icons&quot;: &quot;^5.4.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.7&quot;,
+    &quot;recharts&quot;: &quot;^2.15.2&quot;,
+    &quot;tailwind-merge&quot;: &quot;^2.6.0&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;wouter&quot;: &quot;^3.3.5&quot;,
+    &quot;zod&quot;: &quot;^3.25.76&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@netlify/database-dev&quot;: &quot;^0.10.1&quot;,
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.15&quot;,
+    &quot;@types/express&quot;: &quot;^5.0.6&quot;,
+    &quot;@types/node&quot;: &quot;^26.1.1&quot;,
+    &quot;@types/react&quot;: &quot;^18.3.11&quot;,
+    &quot;@types/react-dom&quot;: &quot;^18.3.1&quot;,
+    &quot;@types/serve-static&quot;: &quot;^2.2.0&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;^4.7.0&quot;,
+    &quot;autoprefixer&quot;: &quot;^10.4.20&quot;,
+    &quot;cors&quot;: &quot;^2.8.6&quot;,
+    &quot;drizzle-orm&quot;: &quot;^0.45.2&quot;,
+    &quot;drizzle-zod&quot;: &quot;^0.8.3&quot;,
+    &quot;mv&quot;: &quot;^2.1.1&quot;,
+    &quot;neon-init&quot;: &quot;^0.20.2&quot;,
+    &quot;pg-browser-proxy&quot;: &quot;^0.1.0&quot;,
+    &quot;pg-gateway&quot;: &quot;^0.3.0-beta.4&quot;,
+    &quot;postcss&quot;: &quot;^8.4.47&quot;,
+    &quot;prettier&quot;: &quot;^3.9.5&quot;,
+    &quot;resolve&quot;: &quot;^1.22.12&quot;,
+    &quot;tailwindcss&quot;: &quot;^3.4.17&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;typescript&quot;: &quot;5.6.3&quot;,
+    &quot;vite&quot;: &quot;^7.3.0&quot;,
+    &quot;vite-node&quot;: &quot;^6.0.0&quot;,
+    &quot;vitest&quot;: &quot;^4.1.10&quot;,
+    &quot;ws&quot;: &quot;^8.21.1&quot;
+  }
+}">📋 Copiar</button><pre><code class="language-json">{
+  "name": "@workspace/assistente-juridico",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-accordion": "^1.2.4",
+    "@radix-ui/react-alert-dialog": "^1.1.7",
+    "@radix-ui/react-aspect-ratio": "^1.1.3",
+    "@radix-ui/react-avatar": "^1.1.4",
+    "@radix-ui/react-checkbox": "^1.1.5",
+    "@radix-ui/react-collapsible": "^1.1.4",
+    "@radix-ui/react-context-menu": "^2.2.7",
+    "@radix-ui/react-dialog": "^1.1.7",
+    "@radix-ui/react-dropdown-menu": "^2.1.7",
+    "@radix-ui/react-hover-card": "^1.1.7",
+    "@radix-ui/react-label": "^2.1.3",
+    "@radix-ui/react-menubar": "^1.1.7",
+    "@radix-ui/react-navigation-menu": "^1.2.6",
+    "@radix-ui/react-popover": "^1.1.7",
+    "@radix-ui/react-progress": "^1.1.3",
+    "@radix-ui/react-radio-group": "^1.2.4",
+    "@radix-ui/react-scroll-area": "^1.2.4",
+    "@radix-ui/react-select": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.3",
+    "@radix-ui/react-slider": "^1.2.4",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-switch": "^1.1.4",
+    "@radix-ui/react-tabs": "^1.1.4",
+    "@radix-ui/react-toast": "^1.2.7",
+    "@radix-ui/react-toggle": "^1.1.3",
+    "@radix-ui/react-toggle-group": "^1.1.3",
+    "@radix-ui/react-tooltip": "^1.2.0",
+    "@tanstack/react-query": "^5.60.5",
+    "@tiptap/core": "^3.22.5",
+    "@tiptap/extension-color": "^3.20.1",
+    "@tiptap/extension-font-family": "^3.20.1",
+    "@tiptap/extension-highlight": "^3.20.1",
+    "@tiptap/extension-link": "^3.20.1",
+    "@tiptap/extension-table": "^3.20.1",
+    "@tiptap/extension-table-cell": "^3.20.1",
+    "@tiptap/extension-table-header": "^3.20.1",
+    "@tiptap/extension-table-row": "^3.20.1",
+    "@tiptap/extension-text-align": "^3.20.1",
+    "@tiptap/extension-text-style": "^3.20.1",
+    "@tiptap/extension-underline": "^3.20.1",
+    "@tiptap/pm": "^3.20.1",
+    "@tiptap/react": "^3.20.1",
+    "@tiptap/starter-kit": "^3.20.1",
+    "@types/express-session": "^1.19.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "connect-pg-simple": "^10.0.0",
+    "date-fns": "^3.6.0",
+    "docx": "^9.5.1",
+    "embla-carousel-react": "^8.6.0",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "framer-motion": "^11.13.1",
+    "html-entities": "^2.6.0",
+    "input-otp": "^1.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.453.0",
+    "mammoth": "^1.12.0",
+    "multer": "^2.2.0",
+    "next-themes": "^0.4.6",
+    "openai": "^6.18.0",
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^4.9.155",
+    "pg": "^8.23.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.55.0",
+    "react-icons": "^5.4.0",
+    "react-resizable-panels": "^2.1.7",
+    "recharts": "^2.15.2",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^1.1.2",
+    "wouter": "^3.3.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@netlify/database-dev": "^0.10.1",
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.1",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@types/serve-static": "^2.2.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.20",
+    "cors": "^2.8.6",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
+    "mv": "^2.1.1",
+    "neon-init": "^0.20.2",
+    "pg-browser-proxy": "^0.1.0",
+    "pg-gateway": "^0.3.0-beta.4",
+    "postcss": "^8.4.47",
+    "prettier": "^3.9.5",
+    "resolve": "^1.22.12",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "5.6.3",
+    "vite": "^7.3.0",
+    "vite-node": "^6.0.0",
+    "vitest": "^4.1.10",
+    "ws": "^8.21.1"
+  }
+}</code></pre></div><h2 id="electron-buildpackagejson" data-heading="2" data-raw="electron-build/package.json">electron-build/package.json<button class="copy-btn" data-section="electron-buildpackagejson">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="{
+  &quot;name&quot;: &quot;assistente-juridico-ia&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;Assistente Jurídico IA - Aplicativo Desktop&quot;,
+  &quot;main&quot;: &quot;main.js&quot;,
+  &quot;scripts&quot;: {
+    &quot;start&quot;: &quot;electron .&quot;,
+    &quot;build-win&quot;: &quot;electron-builder --win --x64&quot;
+  },
+  &quot;build&quot;: {
+    &quot;appId&quot;: &quot;br.com.assistentejuridico&quot;,
+    &quot;productName&quot;: &quot;Assistente Jurídico IA&quot;,
+    &quot;directories&quot;: {
+      &quot;output&quot;: &quot;dist&quot;
+    },
+    &quot;files&quot;: [
+      &quot;main.js&quot;,
+      &quot;www/**/*&quot;
+    ],
+    &quot;win&quot;: {
+      &quot;target&quot;: [
+        {
+          &quot;target&quot;: &quot;portable&quot;,
+          &quot;arch&quot;: [
+            &quot;x64&quot;
+          ]
+        }
+      ],
+      &quot;icon&quot;: &quot;www/icon-512.png&quot;
+    },
+    &quot;portable&quot;: {
+      &quot;artifactName&quot;: &quot;AssistenteJuridico-Windows.exe&quot;
+    }
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@electron/packager&quot;: &quot;^18.4.4&quot;,
+    &quot;electron&quot;: &quot;^31.7.7&quot;,
+    &quot;electron-builder&quot;: &quot;^24.13.3&quot;
+  }
+}">📋 Copiar</button><pre><code class="language-json">{
+  "name": "assistente-juridico-ia",
+  "version": "1.0.0",
+  "description": "Assistente Jurídico IA - Aplicativo Desktop",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "br.com.assistentejuridico",
+    "productName": "Assistente Jurídico IA",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "www/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "www/icon-512.png"
+    },
+    "portable": {
+      "artifactName": "AssistenteJuridico-Windows.exe"
+    }
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.4.4",
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}</code></pre></div><h2 id="electron-builddist-packagerassistentejuridico-win32-x64resourcesapppackagejson" data-heading="2" data-raw="electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/package.json">electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/package.json<button class="copy-btn" data-section="electron-builddist-packagerassistentejuridico-win32-x64resourcesapppackagejson">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="{
+  &quot;name&quot;: &quot;assistente-juridico-ia&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;Assistente Jurídico IA - Aplicativo Desktop&quot;,
+  &quot;main&quot;: &quot;main.js&quot;,
+  &quot;scripts&quot;: {
+    &quot;start&quot;: &quot;electron .&quot;,
+    &quot;build-win&quot;: &quot;electron-builder --win --x64&quot;
+  },
+  &quot;build&quot;: {
+    &quot;appId&quot;: &quot;br.com.assistentejuridico&quot;,
+    &quot;productName&quot;: &quot;Assistente Jurídico IA&quot;,
+    &quot;directories&quot;: {
+      &quot;output&quot;: &quot;dist&quot;
+    },
+    &quot;files&quot;: [
+      &quot;main.js&quot;,
+      &quot;www/**/*&quot;
+    ],
+    &quot;win&quot;: {
+      &quot;target&quot;: [
+        {
+          &quot;target&quot;: &quot;portable&quot;,
+          &quot;arch&quot;: [
+            &quot;x64&quot;
+          ]
+        }
+      ],
+      &quot;icon&quot;: &quot;www/icon-512.png&quot;
+    },
+    &quot;portable&quot;: {
+      &quot;artifactName&quot;: &quot;AssistenteJuridico-Windows.exe&quot;
+    }
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@electron/packager&quot;: &quot;^18.4.4&quot;,
+    &quot;electron&quot;: &quot;^31.7.7&quot;,
+    &quot;electron-builder&quot;: &quot;^24.13.3&quot;
+  }
+}">📋 Copiar</button><pre><code class="language-json">{
+  "name": "assistente-juridico-ia",
+  "version": "1.0.0",
+  "description": "Assistente Jurídico IA - Aplicativo Desktop",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build-win": "electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "br.com.assistentejuridico",
+    "productName": "Assistente Jurídico IA",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "www/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "www/icon-512.png"
+    },
+    "portable": {
+      "artifactName": "AssistenteJuridico-Windows.exe"
+    }
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.4.4",
+    "electron": "^31.7.7",
+    "electron-builder": "^24.13.3"
+  }
+}</code></pre></div><h2 id="assistente-juridicopackagejson" data-heading="2" data-raw="assistente-juridico/package.json">assistente-juridico/package.json<button class="copy-btn" data-section="assistente-juridicopackagejson">📋 Seção</button></h2><div class="code-wrap"><button class="copy-btn" data-code="{
+  &quot;name&quot;: &quot;@workspace/assistente-juridico&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;license&quot;: &quot;MIT&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite-node server/index.ts&quot;,
+    &quot;dev:server&quot;: &quot;vite-node server/index.ts&quot;,
+    &quot;start&quot;: &quot;vite-node server/index.ts&quot;,
+    &quot;build&quot;: &quot;vite build&quot;,
+    &quot;preview&quot;: &quot;vite preview&quot;,
+    &quot;check&quot;: &quot;tsc --noEmit&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@google/genai&quot;: &quot;^1.43.0&quot;,
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.1.5&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.7&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.3&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.0&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.0&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;^5.60.5&quot;,
+    &quot;@tiptap/core&quot;: &quot;^3.22.5&quot;,
+    &quot;@tiptap/extension-color&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-font-family&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-highlight&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-link&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-cell&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-header&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-table-row&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-text-align&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-text-style&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/extension-underline&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/pm&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/react&quot;: &quot;^3.20.1&quot;,
+    &quot;@tiptap/starter-kit&quot;: &quot;^3.20.1&quot;,
+    &quot;class-variance-authority&quot;: &quot;^0.7.1&quot;,
+    &quot;clsx&quot;: &quot;^2.1.1&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;docx&quot;: &quot;^9.5.1&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;framer-motion&quot;: &quot;^11.13.1&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;lucide-react&quot;: &quot;^0.453.0&quot;,
+    &quot;mammoth&quot;: &quot;^1.12.0&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;openai&quot;: &quot;^6.18.0&quot;,
+    &quot;pdfjs-dist&quot;: &quot;^4.9.155&quot;,
+    &quot;react&quot;: &quot;^18.3.1&quot;,
+    &quot;react-day-picker&quot;: &quot;^8.10.1&quot;,
+    &quot;react-dom&quot;: &quot;^18.3.1&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.55.0&quot;,
+    &quot;react-icons&quot;: &quot;^5.4.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.7&quot;,
+    &quot;recharts&quot;: &quot;^2.15.2&quot;,
+    &quot;tailwind-merge&quot;: &quot;^2.6.0&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;wouter&quot;: &quot;^3.3.5&quot;,
+    &quot;zod&quot;: &quot;^3.25.76&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.15&quot;,
+    &quot;@types/node&quot;: &quot;20.19.27&quot;,
+    &quot;@types/react&quot;: &quot;^18.3.11&quot;,
+    &quot;@types/react-dom&quot;: &quot;^18.3.1&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;^4.7.0&quot;,
+    &quot;autoprefixer&quot;: &quot;^10.4.20&quot;,
+    &quot;drizzle-orm&quot;: &quot;^0.45.2&quot;,
+    &quot;drizzle-zod&quot;: &quot;^0.8.3&quot;,
+    &quot;postcss&quot;: &quot;^8.4.47&quot;,
+    &quot;tailwindcss&quot;: &quot;^3.4.17&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;typescript&quot;: &quot;5.6.3&quot;,
+    &quot;vite&quot;: &quot;^7.3.0&quot;
+  }
+}">📋 Copiar</button><pre><code class="language-json">{
+  "name": "@workspace/assistente-juridico",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite-node server/index.ts",
+    "dev:server": "vite-node server/index.ts",
+    "start": "vite-node server/index.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.43.0",
+    "@hookform/resolvers": "^3.10.0",
+    "@radix-ui/react-accordion": "^1.2.4",
+    "@radix-ui/react-alert-dialog": "^1.1.7",
+    "@radix-ui/react-aspect-ratio": "^1.1.3",
+    "@radix-ui/react-avatar": "^1.1.4",
+    "@radix-ui/react-checkbox": "^1.1.5",
+    "@radix-ui/react-collapsible": "^1.1.4",
+    "@radix-ui/react-context-menu": "^2.2.7",
+    "@radix-ui/react-dialog": "^1.1.7",
+    "@radix-ui/react-dropdown-menu": "^2.1.7",
+    "@radix-ui/react-hover-card": "^1.1.7",
+    "@radix-ui/react-label": "^2.1.3",
+    "@radix-ui/react-menubar": "^1.1.7",
+    "@radix-ui/react-navigation-menu": "^1.2.6",
+    "@radix-ui/react-popover": "^1.1.7",
+    "@radix-ui/react-progress": "^1.1.3",
+    "@radix-ui/react-radio-group": "^1.2.4",
+    "@radix-ui/react-scroll-area": "^1.2.4",
+    "@radix-ui/react-select": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.3",
+    "@radix-ui/react-slider": "^1.2.4",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-switch": "^1.1.4",
+    "@radix-ui/react-tabs": "^1.1.4",
+    "@radix-ui/react-toast": "^1.2.7",
+    "@radix-ui/react-toggle": "^1.1.3",
+    "@radix-ui/react-toggle-group": "^1.1.3",
+    "@radix-ui/react-tooltip": "^1.2.0",
+    "@tanstack/react-query": "^5.60.5",
+    "@tiptap/core": "^3.22.5",
+    "@tiptap/extension-color": "^3.20.1",
+    "@tiptap/extension-font-family": "^3.20.1",
+    "@tiptap/extension-highlight": "^3.20.1",
+    "@tiptap/extension-link": "^3.20.1",
+    "@tiptap/extension-table": "^3.20.1",
+    "@tiptap/extension-table-cell": "^3.20.1",
+    "@tiptap/extension-table-header": "^3.20.1",
+    "@tiptap/extension-table-row": "^3.20.1",
+    "@tiptap/extension-text-align": "^3.20.1",
+    "@tiptap/extension-text-style": "^3.20.1",
+    "@tiptap/extension-underline": "^3.20.1",
+    "@tiptap/pm": "^3.20.1",
+    "@tiptap/react": "^3.20.1",
+    "@tiptap/starter-kit": "^3.20.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
+    "date-fns": "^3.6.0",
+    "docx": "^9.5.1",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^11.13.1",
+    "input-otp": "^1.4.2",
+    "lucide-react": "^0.453.0",
+    "mammoth": "^1.12.0",
+    "next-themes": "^0.4.6",
+    "openai": "^6.18.0",
+    "pdfjs-dist": "^4.9.155",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.55.0",
+    "react-icons": "^5.4.0",
+    "react-resizable-panels": "^2.1.7",
+    "recharts": "^2.15.2",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "vaul": "^1.1.2",
+    "wouter": "^3.3.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/node": "20.19.27",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.20",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.8.3",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "5.6.3",
+    "vite": "^7.3.0"
+  }
+}</code></pre></div><h2 id="arvore-de-arquivos-sem-git" data-heading="2" data-raw="Árvore de arquivos (sem .git)">Árvore de arquivos (sem .git)<button class="copy-btn" data-section="arvore-de-arquivos-sem-git">📋 Seção</button></h2><p>.env.local<br>.gitattributes<br>.gitignore<br>.replit<br>app.json<br>package-lock.json<br>package.json<br>pnpm-lock.yaml<br>pnpm-workspace.yaml<br>replit.nix<br>zipFile.zip<br>screenshots/assistente-final-preview.jpg<br>releases/AssistenteJuridico-Backup-Codigo-Corrigido-2026-08-21.zip<br>releases/AssistenteJuridico-Codigo-Fonte.zip<br>releases/AssistenteJuridico-Netlify-Corrigido.zip<br>releases/AssistenteJuridico-Netlify-Limpo-2026-08-21.zip<br>releases/AssistenteJuridico-Netlify.zip<br>releases/AssistenteJuridico-Web-Limpo.zip<br>releases/AssistenteJuridico-Windows.zip<br>releases/TABELAS_SQL (copy)..md<br>releases/TABELAS_SQL.txt<br>releases/assistente-juridico-capacitor.zip<br>releases/assistente-juridico-eas.zip<br>releases/assistente-juridico-electron.zip<br>releases/assistente-juridico-github-pages.zip<br>releases/assistente-juridico-netlify.zip<br>electron-build/main.js<br>electron-build/package-lock.json<br>electron-build/package.json<br>electron-build/www/404.html<br>electron-build/www/_redirects<br>electron-build/www/auditoria.html<br>electron-build/www/favicon.svg<br>electron-build/www/icon-192.png<br>electron-build/www/icon-512.png<br>electron-build/www/icon.svg<br>electron-build/www/index.html<br>electron-build/www/manifest.webmanifest<br>electron-build/www/opengraph.jpg<br>electron-build/www/sw.js<br>electron-build/www/assets/_commonjs-dynamic-modules-TDtrdbi3.js<br>electron-build/www/assets/index-BgWec8kM.js<br>electron-build/www/assets/index-C4zU3f5W.js<br>electron-build/www/assets/index-Cyd5PlW-.js<br>electron-build/www/assets/index-D43Wn5Im.js<br>electron-build/www/assets/index-DyR0HLhG.css<br>electron-build/www/assets/mammoth.browser-CKl07MBh.js<br>electron-build/www/assets/pdf-gh-BrLFn.js<br>electron-build/www/assets/pdf.worker-BgryrOlp.mjs<br>electron-build/www/assets/tiptap-C0-As83Z.js<br>electron-build/www/assets/ui-oIe3ZHB5.js<br>electron-build/www/assets/vendor-B26YdgYl.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/AssistenteJuridico.exe<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/LICENSE<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/LICENSES.chromium.html<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/chrome_100_percent.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/chrome_200_percent.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/d3dcompiler_47.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/ffmpeg.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/icudtl.dat<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/libEGL.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/libGLESv2.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/snapshot_blob.bin<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/v8_context_snapshot.bin<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/version<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/vk_swiftshader.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/vk_swiftshader_icd.json<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/vulkan-1.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/main.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/package.json<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/404.html<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/_redirects<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/auditoria.html<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/favicon.svg<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/icon-192.png<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/icon-512.png<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/icon.svg<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/index.html<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/manifest.webmanifest<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/opengraph.jpg<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/sw.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/_commonjs-dynamic-modules-TDtrdbi3.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-BgWec8kM.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-C4zU3f5W.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-Cyd5PlW-.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-D43Wn5Im.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/index-DyR0HLhG.css<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/mammoth.browser-CKl07MBh.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/pdf-gh-BrLFn.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/pdf.worker-BgryrOlp.mjs<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/tiptap-C0-As83Z.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/ui-oIe3ZHB5.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/www/assets/vendor-B26YdgYl.js<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/builder-debug.yml<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/builder-effective-config.yaml<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/Assistente Jurídico IA.exe<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/LICENSE.electron.txt<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/LICENSES.chromium.html<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/chrome_100_percent.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/chrome_200_percent.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/d3dcompiler_47.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/ffmpeg.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/icudtl.dat<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/libEGL.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/libGLESv2.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/resources.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/snapshot_blob.bin<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/v8_context_snapshot.bin<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/vk_swiftshader.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/vk_swiftshader_icd.json<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/vulkan-1.dll<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/resources/app.asar<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/af.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/am.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ar.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/bg.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/bn.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ca.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/cs.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/da.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/de.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/el.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/en-GB.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/en-US.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/es-419.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/es.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/et.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/fa.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/fi.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/fil.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/fr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/gu.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/he.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/hi.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/hr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/hu.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/id.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/it.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ja.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/kn.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ko.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/lt.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/lv.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ml.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/mr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ms.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/nb.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/nl.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/pl.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/pt-BR.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/pt-PT.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ro.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ru.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/sk.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/sl.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/sr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/sv.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/sw.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ta.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/te.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/th.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/tr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/uk.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/ur.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/vi.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/zh-CN.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/win-unpacked/locales/zh-TW.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/resources/app/dist/.icon-ico/icon.ico<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/af.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/am.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ar.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/bg.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/bn.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ca.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/cs.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/da.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/de.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/el.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/en-GB.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/en-US.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/es-419.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/es.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/et.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/fa.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/fi.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/fil.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/fr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/gu.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/he.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/hi.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/hr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/hu.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/id.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/it.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ja.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/kn.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ko.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/lt.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/lv.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ml.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/mr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ms.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/nb.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/nl.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/pl.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/pt-BR.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/pt-PT.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ro.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ru.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/sk.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/sl.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/sr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/sv.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/sw.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ta.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/te.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/th.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/tr.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/uk.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/ur.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/vi.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/zh-CN.pak<br>electron-build/dist-packager/AssistenteJuridico-win32-x64/locales/zh-TW.pak<br>electron-build/dist/builder-debug.yml<br>electron-build/dist/builder-effective-config.yaml<br>electron-build/dist/win-unpacked/Assistente Jurídico IA.exe<br>electron-build/dist/win-unpacked/LICENSE.electron.txt<br>electron-build/dist/win-unpacked/LICENSES.chromium.html<br>electron-build/dist/win-unpacked/chrome_100_percent.pak<br>electron-build/dist/win-unpacked/chrome_200_percent.pak<br>electron-build/dist/win-unpacked/d3dcompiler_47.dll<br>electron-build/dist/win-unpacked/ffmpeg.dll<br>electron-build/dist/win-unpacked/icudtl.dat<br>electron-build/dist/win-unpacked/libEGL.dll<br>electron-build/dist/win-unpacked/libGLESv2.dll<br>electron-build/dist/win-unpacked/resources.pak<br>electron-build/dist/win-unpacked/snapshot_blob.bin<br>electron-build/dist/win-unpacked/v8_context_snapshot.bin<br>electron-build/dist/win-unpacked/vk_swiftshader.dll<br>electron-build/dist/win-unpacked/vk_swiftshader_icd.json<br>electron-build/dist/win-unpacked/vulkan-1.dll<br>electron-build/dist/win-unpacked/resources/app.asar<br>electron-build/dist/win-unpacked/locales/af.pak<br>electron-build/dist/win-unpacked/locales/am.pak<br>electron-build/dist/win-unpacked/locales/ar.pak<br>electron-build/dist/win-unpacked/locales/bg.pak<br>electron-build/dist/win-unpacked/locales/bn.pak<br>electron-build/dist/win-unpacked/locales/ca.pak<br>electron-build/dist/win-unpacked/locales/cs.pak<br>electron-build/dist/win-unpacked/locales/da.pak<br>electron-build/dist/win-unpacked/locales/de.pak<br>electron-build/dist/win-unpacked/locales/el.pak<br>electron-build/dist/win-unpacked/locales/en-GB.pak<br>electron-build/dist/win-unpacked/locales/en-US.pak<br>electron-build/dist/win-unpacked/locales/es-419.pak<br>electron-build/dist/win-unpacked/locales/es.pak<br>electron-build/dist/win-unpacked/locales/et.pak<br>electron-build/dist/win-unpacked/locales/fa.pak<br>electron-build/dist/win-unpacked/locales/fi.pak<br>electron-build/dist/win-unpacked/locales/fil.pak<br>electron-build/dist/win-unpacked/locales/fr.pak<br>electron-build/dist/win-unpacked/locales/gu.pak<br>electron-build/dist/win-unpacked/locales/he.pak<br>electron-build/dist/win-unpacked/locales/hi.pak<br>electron-build/dist/win-unpacked/locales/hr.pak<br>electron-build/dist/win-unpacked/locales/hu.pak<br>electron-build/dist/win-unpacked/locales/id.pak<br>electron-build/dist/win-unpacked/locales/it.pak<br>electron-build/dist/win-unpacked/locales/ja.pak<br>electron-build/dist/win-unpacked/locales/kn.pak<br>electron-build/dist/win-unpacked/locales/ko.pak<br>electron-build/dist/win-unpacked/locales/lt.pak<br>electron-build/dist/win-unpacked/locales/lv.pak<br>electron-build/dist/win-unpacked/locales/ml.pak<br>electron-build/dist/win-unpacked/locales/mr.pak<br>electron-build/dist/win-unpacked/locales/ms.pak<br>electron-build/dist/win-unpacked/locales/nb.pak<br>electron-build/dist/win-unpacked/locales/nl.pak<br>electron-build/dist/win-unpacked/locales/pl.pak<br>electron-build/dist/win-unpacked/locales/pt-BR.pak<br>electron-build/dist/win-unpacked/locales/pt-PT.pak<br>electron-build/dist/win-unpacked/locales/ro.pak<br>electron-build/dist/win-unpacked/locales/ru.pak<br>electron-build/dist/win-unpacked/locales/sk.pak<br>electron-build/dist/win-unpacked/locales/sl.pak<br>electron-build/dist/win-unpacked/locales/sr.pak<br>electron-build/dist/win-unpacked/locales/sv.pak<br>electron-build/dist/win-unpacked/locales/sw.pak<br>electron-build/dist/win-unpacked/locales/ta.pak<br>electron-build/dist/win-unpacked/locales/te.pak<br>electron-build/dist/win-unpacked/locales/th.pak<br>electron-build/dist/win-unpacked/locales/tr.pak<br>electron-build/dist/win-unpacked/locales/uk.pak<br>electron-build/dist/win-unpacked/locales/ur.pak<br>electron-build/dist/win-unpacked/locales/vi.pak<br>electron-build/dist/win-unpacked/locales/zh-CN.pak<br>electron-build/dist/win-unpacked/locales/zh-TW.pak<br>electron-build/dist/.icon-ico/icon.ico<br>assistente-juridico/.gitignore<br>assistente-juridico/MANUAL_APK_ANDROID.md<br>assistente-juridico/MANUAL_APK_ORIENTADO.md<br>assistente-juridico/README.md<br>assistente-juridico/RELATORIO_CORRECOES.md<br>assistente-juridico/SECURITY.md<br>assistente-juridico/TABELAS_SQL.sql<br>assistente-juridico/components.json<br>assistente-juridico/drizzle.config.ts<br>assistente-juridico/index.html<br>assistente-juridico/package-lock.json<br>assistente-juridico/package.json<br>assistente-juridico/postcss.config.js<br>assistente-juridico/tailwind.config.ts<br>assistente-juridico/tsconfig.json<br>assistente-juridico/vite.config.ts<br>assistente-juridico/src/App.tsx<br>assistente-juridico/src/index.css<br>assistente-juridico/src/main.tsx<br>assistente-juridico/src/vite-env.d.ts<br>assistente-juridico/src/pages/auditoria-financeira.tsx<br>assistente-juridico/src/pages/code-assistant.tsx<br>assistente-juridico/src/pages/comparador-juridico.tsx<br>assistente-juridico/src/pages/comunicacoes-cnj.tsx<br>assistente-juridico/src/pages/configuracoes.tsx<br>assistente-juridico/src/pages/consulta-corporativo.tsx<br>assistente-juridico/src/pages/consulta-pdpj.tsx<br>assistente-juridico/src/pages/consulta-processual.tsx<br>assistente-juridico/src/pages/filtrador.tsx<br>assistente-juridico/src/pages/jurisprudencia.tsx<br>assistente-juridico/src/pages/legal-assistant.tsx<br>assistente-juridico/src/pages/legal-assistant.tsx.recovered<br>assistente-juridico/src/pages/login.tsx<br>assistente-juridico/src/pages/not-found.tsx<br>assistente-juridico/src/pages/painel-processos.tsx<br>assistente-juridico/src/pages/playground.tsx<br>assistente-juridico/src/pages/previdenciario.tsx<br>assistente-juridico/src/pages/robo-djen.tsx<br>assistente-juridico/src/pages/token-generator.tsx<br>assistente-juridico/src/pages/tramitacao.tsx<br>assistente-juridico/src/lib/offline-api.ts<br>assistente-juridico/src/lib/queryClient.ts<br>assistente-juridico/src/lib/utils.ts<br>assistente-juridico/src/hooks/use-mobile.tsx<br>assistente-juridico/src/hooks/use-toast.ts<br>assistente-juridico/src/components/pwa-install.tsx<br>assistente-juridico/src/components/theme-provider.tsx<br>assistente-juridico/src/components/theme-toggle.tsx<br>assistente-juridico/src/components/tiptap-editor.tsx<br>assistente-juridico/src/components/ui/accordion.tsx<br>assistente-juridico/src/components/ui/alert-dialog.tsx<br>assistente-juridico/src/components/ui/alert.tsx<br>assistente-juridico/src/components/ui/aspect-ratio.tsx<br>assistente-juridico/src/components/ui/avatar.tsx<br>assistente-juridico/src/components/ui/badge.tsx<br>assistente-juridico/src/components/ui/breadcrumb.tsx<br>assistente-juridico/src/components/ui/button.tsx<br>assistente-juridico/src/components/ui/calendar.tsx<br>assistente-juridico/src/components/ui/card.tsx<br>assistente-juridico/src/components/ui/carousel.tsx<br>assistente-juridico/src/components/ui/chart.tsx<br>assistente-juridico/src/components/ui/checkbox.tsx<br>assistente-juridico/src/components/ui/collapsible.tsx<br>assistente-juridico/src/components/ui/command.tsx<br>assistente-juridico/src/components/ui/context-menu.tsx<br>assistente-juridico/src/components/ui/dialog.tsx<br>assistente-juridico/src/components/ui/drawer.tsx<br>assistente-juridico/src/components/ui/dropdown-menu.tsx<br>assistente-juridico/src/components/ui/form.tsx<br>assistente-juridico/src/components/ui/hover-card.tsx<br>assistente-juridico/src/components/ui/input-otp.tsx<br>assistente-juridico/src/components/ui/input.tsx<br>assistente-juridico/src/components/ui/label.tsx<br>assistente-juridico/src/components/ui/menubar.tsx<br>assistente-juridico/src/components/ui/navigation-menu.tsx<br>assistente-juridico/src/components/ui/pagination.tsx<br>assistente-juridico/src/components/ui/popover.tsx<br>assistente-juridico/src/components/ui/progress.tsx<br>assistente-juridico/src/components/ui/radio-group.tsx<br>assistente-juridico/src/components/ui/resizable.tsx<br>assistente-juridico/src/components/ui/scroll-area.tsx<br>assistente-juridico/src/components/ui/select.tsx<br>assistente-juridico/src/components/ui/separator.tsx<br>assistente-juridico/src/components/ui/sheet.tsx<br>assistente-juridico/src/components/ui/sidebar.tsx<br>assistente-juridico/src/components/ui/skeleton.tsx<br>assistente-juridico/src/components/ui/slider.tsx<br>assistente-juridico/src/components/ui/switch.tsx<br>assistente-juridico/src/components/ui/table.tsx<br>assistente-juridico/src/components/ui/tabs.tsx<br>assistente-juridico/src/components/ui/textarea.tsx<br>assistente-juridico/src/components/ui/toast.tsx<br>assistente-juridico/src/components/ui/toaster.tsx<br>assistente-juridico/src/components/ui/toggle-group.tsx<br>assistente-juridico/src/components/ui/toggle.tsx<br>assistente-juridico/src/components/ui/tooltip.tsx<br>assistente-juridico/shared/schema.ts<br>assistente-juridico/shared/shared/schema.ts<br>assistente-juridico/shared/models/chat.ts<br>assistente-juridico/server/db.ts<br>assistente-juridico/server/djen.ts<br>assistente-juridico/server/index.ts<br>assistente-juridico/server/local-config.ts<br>assistente-juridico/server/routes.ts<br>assistente-juridico/server/static.ts<br>assistente-juridico/server/storage.ts<br>assistente-juridico/server/vite.ts<br>assistente-juridico/server/replit_integrations/image/client.ts<br>assistente-juridico/server/replit_integrations/image/index.ts<br>assistente-juridico/server/replit_integrations/image/routes.ts<br>assistente-juridico/server/replit_integrations/chat/index.ts<br>assistente-juridico/server/replit_integrations/chat/routes.ts<br>assistente-juridico/server/replit_integrations/chat/storage.ts<br>assistente-juridico/server/replit_integrations/batch/index.ts<br>assistente-juridico/server/replit_integrations/batch/utils.ts<br>assistente-juridico/server/replit_integrations/audio/client.ts<br>assistente-juridico/server/replit_integrations/audio/index.ts<br>assistente-juridico/server/replit_integrations/audio/routes.ts<br>assistente-juridico/script/build.ts<br>assistente-juridico/public/auditoria.html<br>assistente-juridico/public/favicon.svg<br>assistente-juridico/public/icon-192.png<br>assistente-juridico/public/icon-512.png<br>assistente-juridico/public/icon.svg<br>assistente-juridico/public/manifest.webmanifest<br>assistente-juridico/public/opengraph.jpg<br>assistente-juridico/public/sw.js<br>assistente-juridico/migrations/0000_init.sql<br>assistente-juridico/migrations/meta/0000_snapshot.json<br>assistente-juridico/migrations/meta/_journal.json<br>assistente-juridico/dist/public/_redirects<br>assistente-juridico/dist/public/auditoria.html<br>assistente-juridico/dist/public/favicon.svg<br>assistente-juridico/dist/public/icon-192.png<br>assistente-juridico/dist/public/icon-512.png<br>assistente-juridico/dist/public/icon.svg<br>assistente-juridico/dist/public/index.html<br>assistente-juridico/dist/public/manifest.webmanifest<br>assistente-juridico/dist/public/opengraph.jpg<br>assistente-juridico/dist/public/sw.js<br>assistente-juridico/dist/public/assets/_commonjs-dynamic-modules-TDtrdbi3.js<br>assistente-juridico/dist/public/assets/index-BgWec8kM.js<br>assistente-juridico/dist/public/assets/index-DkhdfBQ3.js<br>assistente-juridico/dist/public/assets/index-DyR0HLhG.css<br>assistente-juridico/dist/public/assets/mammoth.browser-CKl07MBh.js<br>assistente-juridico/dist/public/assets/pdf-gh-BrLFn.js<br>assistente-juridico/dist/public/assets/pdf.worker-BgryrOlp.mjs<br>assistente-juridico/dist/public/assets/tiptap-C0-As83Z.js<br>assistente-juridico/dist/public/assets/ui-oIe3ZHB5.js<br>assistente-juridico/dist/public/assets/vendor-B26YdgYl.js<br>assistente-juridico/client/api.ts<br>assistente-juridico/client/index.html<br>assistente-juridico/client/index.ts<br>assistente-juridico/client/src/App.tsx<br>assistente-juridico/client/src/index.css<br>assistente-juridico/client/src/main.tsx<br>assistente-juridico/client/src/pages/auditoria-financeira.tsx<br>assistente-juridico/client/src/pages/code-assistant.tsx<br>assistente-juridico/client/src/pages/comparador-juridico.tsx<br>assistente-juridico/client/src/pages/comunicacoes-cnj.tsx<br>assistente-juridico/client/src/pages/configuracoes.tsx<br>assistente-juridico/client/src/pages/consulta-corporativo.tsx<br>assistente-juridico/client/src/pages/consulta-pdpj.tsx<br>assistente-juridico/client/src/pages/consulta-processual.tsx<br>assistente-juridico/client/src/pages/filtrador.tsx<br>assistente-juridico/client/src/pages/jurisprudencia.tsx<br>assistente-juridico/client/src/pages/legal-assistant.tsx<br>assistente-juridico/client/src/pages/legal-assistant.tsx.recovered<br>assistente-juridico/client/src/pages/login.tsx<br>assistente-juridico/client/src/pages/not-found.tsx<br>assistente-juridico/client/src/pages/painel-processos.tsx<br>assistente-juridico/client/src/pages/playground.tsx<br>assistente-juridico/client/src/pages/previdenciario.tsx<br>assistente-juridico/client/src/pages/robo-djen.tsx<br>assistente-juridico/client/src/pages/token-generator.tsx<br>assistente-juridico/client/src/pages/tramitacao.tsx<br>assistente-juridico/client/src/lib/queryClient.ts<br>assistente-juridico/client/src/lib/utils.ts<br>assistente-juridico/client/src/hooks/use-mobile.tsx<br>assistente-juridico/client/src/hooks/use-toast.ts<br>assistente-juridico/client/src/components/pwa-install.tsx<br>assistente-juridico/client/src/components/theme-provider.tsx<br>assistente-juridico/client/src/components/theme-toggle.tsx<br>assistente-juridico/client/src/components/tiptap-editor.tsx<br>assistente-juridico/client/src/components/ui/accordion.tsx<br>assistente-juridico/client/src/components/ui/alert-dialog.tsx<br>assistente-juridico/client/src/components/ui/alert.tsx<br>assistente-juridico/client/src/components/ui/aspect-ratio.tsx<br>assistente-juridico/client/src/components/ui/avatar.tsx<br>assistente-juridico/client/src/components/ui/badge.tsx<br>assistente-juridico/client/src/components/ui/breadcrumb.tsx<br>assistente-juridico/client/src/components/ui/button.tsx<br>assistente-juridico/client/src/components/ui/calendar.tsx<br>assistente-juridico/client/src/components/ui/card.tsx<br>assistente-juridico/client/src/components/ui/carousel.tsx<br>assistente-juridico/client/src/components/ui/chart.tsx<br>assistente-juridico/client/src/components/ui/checkbox.tsx<br>assistente-juridico/client/src/components/ui/collapsible.tsx<br>assistente-juridico/client/src/components/ui/command.tsx<br>assistente-juridico/client/src/components/ui/context-menu.tsx<br>assistente-juridico/client/src/components/ui/dialog.tsx<br>assistente-juridico/client/src/components/ui/drawer.tsx<br>assistente-juridico/client/src/components/ui/dropdown-menu.tsx<br>assistente-juridico/client/src/components/ui/form.tsx<br>assistente-juridico/client/src/components/ui/hover-card.tsx<br>assistente-juridico/client/src/components/ui/input-otp.tsx<br>assistente-juridico/client/src/components/ui/input.tsx<br>assistente-juridico/client/src/components/ui/label.tsx<br>assistente-juridico/client/src/components/ui/menubar.tsx<br>assistente-juridico/client/src/components/ui/navigation-menu.tsx<br>assistente-juridico/client/src/components/ui/pagination.tsx<br>assistente-juridico/client/src/components/ui/popover.tsx<br>assistente-juridico/client/src/components/ui/progress.tsx<br>assistente-juridico/client/src/components/ui/radio-group.tsx<br>assistente-juridico/client/src/components/ui/resizable.tsx<br>assistente-juridico/client/src/components/ui/scroll-area.tsx<br>assistente-juridico/client/src/components/ui/select.tsx<br>assistente-juridico/client/src/components/ui/separator.tsx<br>assistente-juridico/client/src/components/ui/sheet.tsx<br>assistente-juridico/client/src/components/ui/sidebar.tsx<br>assistente-juridico/client/src/components/ui/skeleton.tsx<br>assistente-juridico/client/src/components/ui/slider.tsx<br>assistente-juridico/client/src/components/ui/switch.tsx<br>assistente-juridico/client/src/components/ui/table.tsx<br>assistente-juridico/client/src/components/ui/tabs.tsx<br>assistente-juridico/client/src/components/ui/textarea.tsx<br>assistente-juridico/client/src/components/ui/toast.tsx<br>assistente-juridico/client/src/components/ui/toaster.tsx<br>assistente-juridico/client/src/components/ui/toggle-group.tsx<br>assistente-juridico/client/src/components/ui/toggle.tsx<br>assistente-juridico/client/src/components/ui/tooltip.tsx<br>assistente-juridico/client/replit_integrations/audio/audio-playback-worklet.js<br>assistente-juridico/client/replit_integrations/audio/audio-utils.ts<br>assistente-juridico/client/replit_integrations/audio/index.ts<br>assistente-juridico/client/replit_integrations/audio/useAudioPlayback.ts<br>assistente-juridico/client/replit_integrations/audio/useVoiceRecorder.ts<br>assistente-juridico/client/replit_integrations/audio/useVoiceStream.ts<br>assistente-juridico/client/public/auditoria.html<br>assistente-juridico/client/public/codigo-formatacao.txt<br>assistente-juridico/client/public/comparador.html<br>assistente-juridico/client/public/favicon.png<br>assistente-juridico/client/public/icon-192.png<br>assistente-juridico/client/public/icon-384.png<br>assistente-juridico/client/public/icon-512.png<br>assistente-juridico/client/public/icon-96.png<br>assistente-juridico/client/public/manifest.json<br>assistente-juridico/client/public/sw.js<br>assistente-juridico/api/.ts<br>assistente-juridico/.replit-artifact/artifact.toml<br>.vercel/README.txt<br>.vercel/project.json<br>.config/electron-builder.json<br>.config/netlify/autocompletion.json<br>.config/netlify/config.json<br>.config/eas-cli-nodejs/user-settings.json<br>.config/configstore/update-notifier-netlify-cli.json<br>.agents/agent_assets_metadata.toml<br>.agents/memory/MEMORY.md<br>.agents/memory/assistente-juridico-arch.md</p>
+</div>
+    <script>
+    document.querySelectorAll('.copy-btn[data-code]').forEach(b=>{
+      b.onclick=()=>{navigator.clipboard.writeText(b.dataset.code);b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Copiar',1500)};
+    });
+    document.querySelectorAll('.copy-btn[data-section]').forEach(b=>{
+      b.onclick=()=>{
+        const h=document.getElementById(b.dataset.section);
+        const lvl=parseInt(h.tagName[1]);
+        let txt=h.innerText.replace('📋 Seção','').trim()+'\n\n';
+        let el=h.nextElementSibling;
+        while(el){
+          if(/^H[1-6]$/.test(el.tagName)&&parseInt(el.tagName[1])<=lvl)break;
+          txt+=el.innerText+'\n\n';
+          el=el.nextElementSibling;
+        }
+        navigator.clipboard.writeText(txt.trim());
+        b.textContent='✓ Copiado!';setTimeout(()=>b.textContent='📋 Seção',1500);
+      };
+    });
+    </script>
+  </body></html>
