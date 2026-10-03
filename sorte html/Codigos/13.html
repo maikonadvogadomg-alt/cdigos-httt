@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AI Code Studio - Modular v3</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text2: #8b949e;
+      --accent: #58a6ff;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --purple: #bc8cff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      font-size: 14px;
+      color: var(--accent);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    select,
+    input[type="text"],
+    input[type="password"],
+    input[type="number"] {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    select:focus,
+    input:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      padding: 5px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg3);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: var(--border);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .btn.danger {
+      background: var(--red);
+      color: #fff;
+      border-color: var(--red);
+    }
+
+    .btn.success {
+      background: var(--green);
+      color: #000;
+      border-color: var(--green);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .panel {
+      flex: 1;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .panel-header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .panel-header h2 {
+      font-size: 12px;
+      color: var(--text2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+
+    .panel-header-actions {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .panel-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .panel-footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      overflow-x: auto;
+      min-height: 32px;
+    }
+
+    .tab {
+      padding: 6px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      border-right: 1px solid var(--border);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--text2);
+      transition: all 0.15s;
+    }
+
+    .tab:hover {
+      background: var(--bg3);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: var(--bg2);
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tab-close {
+      opacity: 0;
+      color: var(--red);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .tab:hover .tab-close {
+      opacity: 1;
+    }
+
+    .message {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+      max-width: 100%;
+    }
+
+    .message.user {
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    .message.user .avatar {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .message.ai .avatar {
+      background: var(--purple);
+      color: #fff;
+    }
+
+    .bubble {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 13px;
+      max-width: 85%;
+      font-size: 12px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .message.user .bubble {
+      background: var(--bg3);
+      border-color: var(--accent);
+    }
+
+    .bubble pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      overflow-x: auto;
+      margin: 7px 0;
+      position: relative;
+      font-size: 11px;
+    }
+
+    .bubble code {
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 2px 7px;
+      font-size: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 7px;
+      align-items: flex-end;
+    }
+
+    .input-box {
+      flex: 1;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      min-height: 38px;
+      max-height: 150px;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    .input-box:focus {
+      border-color: var(--accent);
+    }
+
+    .code-editor {
+      flex: 1;
+      background: var(--bg);
+      color: var(--text);
+      border: none;
+      padding: 10px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      resize: none;
+      outline: none;
+      line-height: 1.6;
+      tab-size: 2;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      width: 500px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h2 {
+      font-size: 15px;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--text2);
+      margin-bottom: 4px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 7px 10px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: 'Consolas', monospace;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 15px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.25s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .code-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+
+    .code-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .code-item-title {
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .code-item-content {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 6px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      font-size: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 10px 0;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text2);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>💻 AI Code Studio - Modular v3</h1>
+    <div class="header-controls">
+      <select id="aiProvider" onchange="APP.changeProvider()">
+            <option value="gemini">Google Gemini</option>
+            <option value="openai">OpenAI GPT</option>
+            <option value="anthropic">Claude</option>
+            <option value="groq">Groq</option>
+        </select>
+      <select id="modelSelect" style="min-width: 140px;"></select>
+      <button class="btn" onclick="APP.openSettings()">⚙️ Config</button>
+      <button class="btn" onclick="APP.importHTML()">📂 Importar</button>
+      <button class="btn success" onclick="APP.newChat()">＋ Chat</button>
+      <button class="btn primary" onclick="APP.exportAll()">💾 Exportar</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- PAINEL: CHAT -->
+    <div class="panel" style="flex: 1.2;">
+      <div class="panel-header">
+        <h2>💬 Chat</h2>
+        <div class="panel-header-actions">
+          <button class="btn" onclick="APP.copyChat()">📋 Copiar</button>
+          <button class="btn danger" onclick="APP.clearChat()">🗑️</button>
+        </div>
+      </div>
+      <div class="panel-content" id="chatMessages"></div>
+      <div class="panel-footer">
+        <div class="input-area" style="width: 100%;">
+          <textarea class="input-box" id="userInput" placeholder="Mensagem... (Ctrl+Enter)" onkeydown="APP.handleKey(event)"></textarea>
+          <button class="btn success" onclick="APP.sendMessage()">Enviar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAINEL: CÓDIGO -->
+    <div class="panel" style="flex: 1;">
+      <div class="panel-header">
+        <h2>💻 Código</h2>
+        <div class="panel-header-actions">
+          <button class="btn" onclick="APP.newCodeTab()">+ Tab</button>
+          <button class="btn" onclick="APP.importCode()">📂</button>
+        </div>
+      </div>
+      <div class="tabs" id="codeTabs"></div>
+      <textarea class="code-editor" id="codeEditor" spellcheck="false" placeholder="// Cole ou escreva código aqui..."></textarea>
+      <div class="panel-footer">
+        <button class="btn success" onclick="APP.copyCode()">📋 Copiar</button>
+        <button class="btn" onclick="APP.sendCodeToChat()">💬 Chat</button>
+        <button class="btn" onclick="APP.downloadCode()">⬇️ Download</button>
+        <button class="btn danger" onclick="APP.clearCode()">🗑️</button>
+        <select id="codeLang" style="font-size: 11px; margin-left: auto;">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="typescript">TypeScript</option>
+                <option value="java">Java</option>
+                <option value="csharp">C#</option>
+                <option value="cpp">C++</option>
+                <option value="php">PHP</option>
+                <option value="sql">SQL</option>
+                <option value="bash">Bash</option>
+                <option value="text">Texto</option>
+            </select>
+      </div>
+    </div>
+
+    <!-- PAINEL: PREVIEW -->
+    <div class="panel" style="flex: 1;">
+      <div class="panel-header">
+        <h2>👁️ Preview</h2>
+        <div class="panel-header-actions">
+          <button class="btn" onclick="APP.refreshPreview()">🔄</button>
+          <button class="btn" onclick="APP.openPreviewFull()">⛶</button>
+        </div>
+      </div>
+      <iframe id="previewFrame" style="flex: 1; border: none; background: white;"></iframe>
+    </div>
+  </div>
+
+  <!-- MODAL: SETTINGS -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal">
+      <h2>⚙️ Configurações</h2>
+
+      <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+        <h3 style="font-size: 12px; color: var(--accent); margin-bottom: 10px;">🔑 API Keys</h3>
+
+        <div class="form-group">
+          <label>Google Gemini</label>
+          <input type="password" id="geminiKey" placeholder="AIza...">
+        </div>
+
+        <div class="form-group">
+          <label>OpenAI / Groq</label>
+          <input type="password" id="apiKey" placeholder="sk-...">
+        </div>
+
+        <div class="form-group">
+          <label>Anthropic Claude</label>
+          <input type="password" id="anthropicKey" placeholder="sk-ant-...">
+        </div>
+      </div>
+
+      <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid var(--border);">
+        <h3 style="font-size: 12px; color: var(--accent); margin-bottom: 10px;">🎯 Modelo</h3>
+
+        <div class="form-group">
+          <label>Temperatura (0-2)</label>
+          <input type="number" id="temperature" value="0.7" min="0" max="2" step="0.1">
+        </div>
+
+        <div class="form-group">
+          <label>Max Tokens</label>
+          <input type="number" id="maxTokens" value="4096" min="256" max="32000">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>System Prompt</label>
+        <textarea id="systemPrompt">Você é um assistente especialista em programação e direito. Gere código limpo e bem comentado em português.</textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn" onclick="APP.closeSettings()">Cancelar</button>
+        <button class="btn primary" onclick="APP.saveSettings()">💾 Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PREVIEW FULLSCREEN -->
+  <div class="modal-overlay" id="previewFullModal">
+    <div
+      style="width: 95vw; height: 95vh; background: var(--bg2); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;">
+      <div
+        style="padding: 10px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 13px; color: var(--accent); margin: 0;">Preview Fullscreen</h2>
+        <button class="btn" onclick="document.getElementById('previewFullModal').classList.remove('open')">✕</button>
+      </div>
+      <iframe id="previewFullFrame" style="flex: 1; border: none; background: white;"></iframe>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <input type="file" id="fileImportCode" style="display: none;" accept=".js,.py,.html,.css,.ts,.java,.cs,.cpp,.php,.sql,.txt,.json,.md,.rs,.go,.sh,.zip">
+  <input type="file" id="fileImportHTML" style="display: none;" accept=".html,.zip">
+
+  <script>
+    'use strict';
+
+const APP = {
+    state: {
+        chats: {},
+        activeChatId: null,
+        codeTabs: [],
+        activeCodeTab: 0,
+        settings: {
+            geminiKey: '',
+            apiKey: '',
+            anthropicKey: '',
+            provider: 'gemini',
+            model: 'gemini-2.5-flash',
+            temperature: 0.7,
+            maxTokens: 4096,
+            systemPrompt: 'Você é um assistente especialista em programação e direito. Gere código limpo e bem comentado em português.'
+        }
+    },
+
+    MODELS: {
+        gemini: ['gemini-2.5-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'],
+        openai: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'],
+        anthropic: ['claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307'],
+        groq: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']
+    },
+
+    init() {
+        this.loadState();
+        this.setupUI();
+        this.newChat();
+        this.newCodeTab();
+        this.toast('🚀 AI Code Studio pronto!', 'success');
+    },
+
+    loadState() {
+        try {
+            const saved = localStorage.getItem('aiStudio_v3');
+            if (saved) {
+                const data = JSON.parse(saved);
+                this.state = { ...this.state, ...data };
+            }
+        } catch (e) {}
+    },
+
+    saveState() {
+        try {
+            localStorage.setItem('aiStudio_v3', JSON.stringify(this.state));
+        } catch (e) {}
+    },
+
+    setupUI() {
+        document.getElementById('aiProvider').value = this.state.settings.provider;
+        this.updateModelSelect();
+    },
+
+    changeProvider() {
+        this.state.settings.provider = document.getElementById('aiProvider').value;
+        this.updateModelSelect();
+        this.saveState();
+    },
+
+    updateModelSelect() {
+        const provider = this.state.settings.provider;
+        const models = this.MODELS[provider] || [];
+        const select = document.getElementById('modelSelect');
+        select.innerHTML = models.map(m => `<option value="${m}">${m}</option>`).join('');
+        if (models.includes(this.state.settings.model)) {
+            select.value = this.state.settings.model;
+        }
+    },
+
+    newChat() {
+        const id = 'chat_' + Date.now();
+        this.state.chats[id] = { id, title: 'Chat ' + Object.keys(this.state.chats).length + 1, messages: [] };
+        this.state.activeChatId = id;
+        this.renderChat();
+        this.saveState();
+    },
+
+    renderChat() {
+        const chat = this.state.chats[this.state.activeChatId];
+        if (!chat) return;
+
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = chat.messages.map(msg => `
+            <div class="message ${msg.role === 'user' ? 'user' : 'ai'}">
+                <div class="avatar">${msg.role === 'user' ? '👤' : '🤖'}</div>
+                <div class="bubble">${this.formatMessage(msg.content)}</div>
+            </div>
+        `).join('');
+
+        container.scrollTop = container.scrollHeight;
+    },
+
+    formatMessage(text) {
+        text = String(text);
+        text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, (_, lang, code) => {
+            const escaped = this.escapeHtml(code.trim());
+            return `<pre><code>${escaped}<button class="copy-btn" onclick="navigator.clipboard.writeText(\`${code.trim().replace(/`/g, '\\`')}\`); APP.toast('Copiado!', 'success')">📋</button></code></pre>`;
+        });
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        text = text.replace(/\n/g, '<br>');
+        return text;
+    },
+
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    },
+
+    async sendMessage() {
+        const input = document.getElementById('userInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const chat = this.state.chats[this.state.activeChatId];
+        if (!chat) return;
+
+        chat.messages.push({ role: 'user', content: text });
+        input.value = '';
+        this.renderChat();
+
+        try {
+            const reply = await this.callAI(chat.messages);
+            chat.messages.push({ role: 'assistant', content: reply });
+            this.renderChat();
+            this.saveState();
+        } catch (err) {
+            this.toast('❌ ' + err.message, 'error');
+        }
+    },
+
+    async callAI(messages) {
+        const { provider, model } = this.state.settings;
+        const temp = parseFloat(document.getElementById('temperature').value);
+        const maxT = parseInt(document.getElementById('maxTokens').value);
+
+        switch (provider) {
+            case 'gemini':
+                return await this.callGemini(messages, model, temp, maxT);
+            case 'openai':
+                return await this.callOpenAI(messages, model, temp, maxT);
+            case 'anthropic':
+                return await this.callAnthropic(messages, model, temp, maxT);
+            case 'groq':
+                return await this.callGroq(messages, model, temp, maxT);
+            default:
+                throw new Error('Provider inválido');
+        }
+    },
+
+    async callGemini(messages, model, temp, maxT) {
+        const key = this.state.settings.geminiKey;
+        if (!key) throw new Error('Configure a chave Gemini');
+
+        const contents = messages.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.content }]
+        }));
+
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents,
+                generationConfig: { temperature: temp, maxOutputTokens: maxT }
+            })
+        });
+
+        if (!res.ok) throw new Error(`Gemini: ${res.statusText}`);
+        const data = await res.json();
+        return data.candidates[0].content.parts[0].text;
+    },
+
+    async callOpenAI(messages, model, temp, maxT) {
+        const key = this.state.settings.apiKey;
+        if (!key) throw new Error('Configure a chave OpenAI');
+
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${key}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ model, messages, temperature: temp, max_tokens: maxT })
+        });
+
+        if (!res.ok) throw new Error(`OpenAI: ${res.statusText}`);
+        const data = await res.json();
+        return data.choices[0].message.content;
+    },
+
+    async callAnthropic(messages, model, temp, maxT) {
+        const key = this.state.settings.anthropicKey;
+        if (!key) throw new Error('Configure a chave Anthropic');
+
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'x-api-key': key,
+                'anthropic-version': '2023-06-01',
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({ model, messages, temperature: temp, max_tokens: maxT })
+        });
+
+        if (!res.ok) throw new Error(`Anthropic: ${res.statusText}`);
+        const data = await res.json();
+        return data.content[0].text;
+    },
+
+    async callGroq(messages, model, temp, maxT) {
+        const key = this.state.settings.apiKey;
+        if (!key) throw new Error('Configure a chave Groq');
+
+        const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${key}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ model, messages, temperature: temp, max_tokens: maxT })
+        });
+
+        if (!res.ok) throw new Error(`Groq: ${res.statusText}`);
+        const data = await res.json();
+        return data.choices[0].message.content;
+    },
+
+    handleKey(e) {
+        if (e.ctrlKey && e.key === 'Enter') {
+            e.preventDefault();
+            this.sendMessage();
+        }
+    },
+
+    copyChat() {
+        const chat = this.state.chats[this.state.activeChatId];
+        if (!chat) return;
+
+        let text = '';
+        chat.messages.forEach(msg => {
+            text += `${msg.role === 'user' ? 'Você' : 'IA'}:\n${msg.content}\n\n`;
+        });
+
+        navigator.clipboard.writeText(text);
+        this.toast('💬 Chat copiado!', 'success');
+    },
+
+    clearChat() {
+        const chat = this.state.chats[this.state.activeChatId];
+        if (!chat) return;
+        chat.messages = [];
+        this.renderChat();
+        this.saveState();
+    },
+
+    newCodeTab() {
+        this.state.codeTabs.push({
+            id: 'tab_' + Date.now(),
+            name: `código_${this.state.codeTabs.length + 1}`,
+            content: '',
+            language: 'javascript'
+        });
+        this.state.activeCodeTab = this.state.codeTabs.length - 1;
+        this.renderCodeTabs();
+    },
+
+    renderCodeTabs() {
+        const container = document.getElementById('codeTabs');
+        container.innerHTML = this.state.codeTabs.map((tab, i) => `
+            <div class="tab ${i === this.state.activeCodeTab ? 'active' : ''}" onclick="APP.switchCodeTab(${i})">
+                <span>${this.escapeHtml(tab.name)}</span>
+                <span class="tab-close" onclick="event.stopPropagation(); APP.closeCodeTab(${i})">✕</span>
+            </div>
+        `).join('');
+        this.updateCodeEditor();
+    },
+
+    switchCodeTab(i) {
+        if (i >= 0 && i < this.state.codeTabs.length) {
+            this.state.activeCodeTab = i;
+            this.renderCodeTabs();
+        }
+    },
+
+    closeCodeTab(i) {
+        this.state.codeTabs.splice(i, 1);
+        if (this.state.activeCodeTab >= this.state.codeTabs.length) {
+            this.state.activeCodeTab = Math.max(0, this.state.codeTabs.length - 1);
+        }
+        this.renderCodeTabs();
+    },
+
+    updateCodeEditor() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+
+        const editor = document.getElementById('codeEditor');
+        editor.value = tab.content;
+        editor.oninput = () => {
+            tab.content = editor.value;
+            this.saveState();
+        };
+
+        document.getElementById('codeLang').value = tab.language;
+    },
+
+    copyCode() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+
+        navigator.clipboard.writeText(tab.content);
+        this.toast('📋 Código copiado!', 'success');
+    },
+
+    sendCodeToChat() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+
+        const chat = this.state.chats[this.state.activeChatId];
+        if (!chat) return;
+
+        const lang = document.getElementById('codeLang').value;
+        const message = `\`\`\`${lang}\n${tab.content}\n\`\`\``;
+        document.getElementById('userInput').value = message;
+    },
+
+    downloadCode() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+
+        const ext = {
+            javascript: 'js',
+            python: 'py',
+            html: 'html',
+            css: 'css',
+            typescript: 'ts',
+            java: 'java',
+            csharp: 'cs',
+            cpp: 'cpp',
+            php: 'php',
+            sql: 'sql',
+            bash: 'sh',
+            text: 'txt'
+        }[tab.language] || 'txt';
+
+        const blob = new Blob([tab.content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${tab.name}.${ext}`;
+        a.click();
+    },
+
+    clearCode() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+        tab.content = '';
+        this.updateCodeEditor();
+        this.saveState();
+    },
+
+    importCode() {
+        document.getElementById('fileImportCode').click();
+    },
+
+    importHTML() {
+        document.getElementById('fileImportHTML').click();
+    },
+
+    refreshPreview() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+
+        const frame = document.getElementById('previewFrame');
+        frame.srcdoc = tab.content;
+    },
+
+    openPreviewFull() {
+        const tab = this.state.codeTabs[this.state.activeCodeTab];
+        if (!tab) return;
+
+        document.getElementById('previewFullModal').classList.add('open');
+        const frame = document.getElementById('previewFullFrame');
+        frame.srcdoc = tab.content;
+    },
+
+    openSettings() {
+        document.getElementById('geminiKey').value = this.state.settings.geminiKey;
+        document.getElementById('apiKey').value = this.state.settings.apiKey;
+        document.getElementById('anthropicKey').value = this.state.settings.anthropicKey;
+        document.getElementById('temperature').value = this.state.settings.temperature;
+        document.getElementById('maxTokens').value = this.state.settings.maxTokens;
+        document.getElementById('systemPrompt').value = this.state.settings.systemPrompt;
+        document.getElementById('settingsModal').classList.add('open');
+    },
+
+    closeSettings() {
+        document.getElementById('settingsModal').classList.remove('open');
+    },
+
+    saveSettings() {
+        this.state.settings.geminiKey = document.getElementById('geminiKey').value.trim();
+        this.state.settings.apiKey = document.getElementById('apiKey').value.trim();
+        this.state.settings.anthropicKey = document.getElementById('anthropicKey').value.trim();
+        this.state.settings.temperature = parseFloat(document.getElementById('temperature').value);
+        this.state.settings.maxTokens = parseInt(document.getElementById('maxTokens').value);
+        this.state.settings.systemPrompt = document.getElementById('systemPrompt').value.trim();
+        this.saveState();
+        this.closeSettings();
+        this.toast('✅ Configurações salvas!', 'success');
+    },
+
+    exportAll() {
+        const data = JSON.stringify(this.state, null, 2);
+        const blob = new Blob([data], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ai-studio-backup-${Date.now()}.json`;
+        a.click();
+        this.toast('💾 Exportado!', 'success');
+    },
+
+    toast(msg, type = '') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = `toast show ${type}`;
+        setTimeout(() => { el.className = 'toast'; }, 3000);
+    }
+};
+
+APP.init();
+  </script>
+
+</body>
+
+</html>
