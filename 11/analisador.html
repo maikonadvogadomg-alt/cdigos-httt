@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analisador de HTML - Gera Plano Visual</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      min-height: 300px;
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      flex: 1;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+      border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-success {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #45a049;
+    }
+
+    .output {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 5px;
+      flex: 1;
+      overflow-y: auto;
+      border: 2px solid #ddd;
+    }
+
+    .output pre {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85em;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      line-height: 1.6;
+    }
+
+    .tree-item {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border-left: 4px solid #667eea;
+      border-radius: 3px;
+    }
+
+    .tree-item.tag {
+      border-left-color: #667eea;
+    }
+
+    .tree-item.attribute {
+      border-left-color: #ff9800;
+      margin-left: 20px;
+    }
+
+    .tree-item.content {
+      border-left-color: #4CAF50;
+      margin-left: 40px;
+    }
+
+    .tree-item h4 {
+      color: #667eea;
+      margin-bottom: 5px;
+    }
+
+    .tree-item p {
+      color: #666;
+      font-size: 0.9em;
+      margin: 5px 0;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .tab-btn {
+      padding: 10px 20px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-weight: bold;
+      color: #666;
+      transition: all 0.3s;
+    }
+
+    .tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .drop-zone {
+      border: 3px dashed #667eea;
+      border-radius: 10px;
+      padding: 30px;
+      text-align: center;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 15px;
+    }
+
+    .drop-zone:hover {
+      background: #f0f0f0;
+      border-color: #764ba2;
+    }
+
+    .drop-zone.dragover {
+      background: #e8e8ff;
+      border-color: #764ba2;
+      transform: scale(1.02);
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🔍 Analisador de HTML</h1>
+      <p>Gera um plano visual da estrutura do seu HTML</p>
+    </header>
+
+    <div class="content">
+      <!-- COLUNA 1: INPUT -->
+      <div class="section">
+        <h2>📝 Seu HTML</h2>
+
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <p>🎯 Arraste seu HTML aqui</p>
+          <p>OU clique para selecionar</p>
+        </div>
+
+        <input type="file" id="fileInput" accept=".html,.htm" onchange="importarHTML(event)">
+
+        <div class="button-group">
+          <button class="btn-primary" onclick="document.getElementById('fileInput').click()">📁 Selecionar HTML</button>
+          <button class="btn-secondary" onclick="carregarExemplo()">📝 Exemplo</button>
+        </div>
+
+        <label>Ou cole aqui:</label>
+        <textarea id="htmlInput" placeholder="Cole seu HTML aqui..."></textarea>
+
+        <div class="button-group">
+          <button class="btn-primary" onclick="analisarHTML()">🔍 Analisar</button>
+          <button class="btn-secondary" onclick="limparTudo()">🗑️ Limpar</button>
+        </div>
+      </div>
+
+      <!-- COLUNA 2: OUTPUT -->
+      <div class="section">
+        <h2>📊 Análise</h2>
+
+        <div id="statusContainer"></div>
+
+        <div class="tabs">
+          <button class="tab-btn active" onclick="mudarTab('arvore')">🌳 Árvore</button>
+          <button class="tab-btn" onclick="mudarTab('elementos')">📋 Elementos</button>
+          <button class="tab-btn" onclick="mudarTab('plano')">📐 Plano</button>
+          <button class="tab-btn" onclick="mudarTab('resumo')">📊 Resumo</button>
+        </div>
+
+        <div id="arvore" class="tab-content active output" style="display: block;"></div>
+        <div id="elementos" class="tab-content output"></div>
+        <div id="plano" class="tab-content output"></div>
+        <div id="resumo" class="tab-content output"></div>
+
+        <div class="button-group" style="margin-top: 15px;">
+          <button class="btn-success" onclick="copiarResultado()">📋 Copiar</button>
+          <button class="btn-success" onclick="downloadResultado()">⬇️ Download</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DADOS GLOBAIS
+        let analiseAtual = null;
+        let htmlAtual = '';
+
+        // DRAG AND DROP
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                importarHTMLFile(files[0]);
+            }
+        });
+
+        // IMPORTAR HTML
+        function importarHTML(event) {
+            const file = event.target.files[0];
+            if (file) {
+                importarHTMLFile(file);
+            }
+        }
+
+        function importarHTMLFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                document.getElementById('htmlInput').value = e.target.result;
+                mostrarStatus('success', `✅ Arquivo "${file.name}" importado!`);
+                setTimeout(() => analisarHTML(), 500);
+            };
+            
+            reader.onerror = () => {
+                mostrarStatus('error', '❌ Erro ao ler arquivo!');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // ANALISAR HTML
+        function analisarHTML() {
+            htmlAtual = document.getElementById('htmlInput').value;
+            
+            if (!htmlAtual.trim()) {
+                mostrarStatus('error', '❌ Cole um HTML primeiro!');
+                return;
+            }
+            
+            mostrarStatus('info', '⏳ Analisando HTML...');
+            
+            try {
+                // Parser do HTML
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlAtual, 'text/html');
+                
+                // Análise
+                analiseAtual = {
+                    arvore: gerarArvore(doc.documentElement),
+                    elementos: analisarElementos(doc),
+                    plano: gerarPlano(doc),
+                    resumo: gerarResumo(doc)
+                };
+                
+                // Mostrar resultados
+                mostrarArvore();
+                mostrarElementos();
+                mostrarPlano();
+                mostrarResumo();
+                
+                mostrarStatus('success', '✅ HTML analisado com sucesso!');
+            } catch (erro) {
+                mostrarStatus('error', `❌ Erro: ${erro.message}`);
+            }
+        }
+
+        // GERAR ÁRVORE
+        function gerarArvore(elemento, nivel = 0) {
+            if (!elemento) return '';
+            
+            const indent = '  '.repeat(nivel);
+            const tagName = elemento.tagName.toLowerCase();
+            
+            let html = `${indent}├─ <${tagName}>`;
+            
+            // Atributos
+            if (elemento.attributes.length > 0) {
+                html += ` [${elemento.attributes.length} atributos]`;
+            }
+            
+            html += '\n';
+            
+            // Filhos
+            for (let i = 0; i < elemento.children.length; i++) {
+                html += gerarArvore(elemento.children[i], nivel + 1);
+            }
+            
+            return html;
+        }
+
+        // ANALISAR ELEMENTOS
+        function analisarElementos(doc) {
+            const elementos = {};
+            
+            // Contar elementos
+            const allElements = doc.querySelectorAll('*');
+            allElements.forEach(el => {
+                const tag = el.tagName.toLowerCase();
+                elementos[tag] = (elementos[tag] || 0) + 1;
+            });
+            
+            return elementos;
+        }
+
+        // GERAR PLANO
+        function gerarPlano(doc) {
+            const plano = {};
+            
+            // Estrutura principal
+            plano.head = {
+                titulo: doc.querySelector('title')?.textContent || 'Sem título',
+                meta: doc.querySelectorAll('meta').length,
+                links: doc.querySelectorAll('link').length,
+                scripts: doc.querySelectorAll('script').length,
+                estilos: doc.querySelectorAll('style').length
+            };
+            
+            plano.body = {
+                headers: doc.querySelectorAll('header').length,
+                mains: doc.querySelectorAll('main').length,
+                footers: doc.querySelectorAll('footer').length,
+                divs: doc.querySelectorAll('div').length,
+                forms: doc.querySelectorAll('form').length,
+                inputs: doc.querySelectorAll('input').length,
+                buttons: doc.querySelectorAll('button').length
+            };
+            
+            return plano;
+        }
+
+        // GERAR RESUMO
+        function gerarResumo(doc) {
+            const allElements = doc.querySelectorAll('*');
+            const resumo = {
+                totalElementos: allElements.length,
+                tagsUnicas: new Set([...allElements].map(el => el.tagName.toLowerCase())).size,
+                profundidade: calcularProfundidade(doc.documentElement),
+                temFormulario: doc.querySelectorAll('form').length > 0,
+                temScripts: doc.querySelectorAll('script').length > 0,
+                temEstilos: doc.querySelectorAll('style').length > 0
+            };
+            
+            return resumo;
+        }
+
+        // CALCULAR PROFUNDIDADE
+        function calcularProfundidade(elemento, nivel = 0) {
+            let maxNivel = nivel;
+            
+            for (let child of elemento.children) {
+                const nivelChild = calcularProfundidade(child, nivel + 1);
+                maxNivel = Math.max(maxNivel, nivelChild);
+            }
+            
+            return maxNivel;
+        }
+
+        // MOSTRAR ÁRVORE
+        function mostrarArvore() {
+            const output = document.getElementById('arvore');
+            output.innerHTML = `<pre>${escaparHTML(analiseAtual.arvore)}</pre>`;
+        }
+
+        // MOSTRAR ELEMENTOS
+        function mostrarElementos() {
+            const output = document.getElementById('elementos');
+            let html = '<h3>📋 Elementos Encontrados</h3>';
+            
+            Object.entries(analiseAtual.elementos)
+                .sort((a, b) => b[1] - a[1])
+                .forEach(([tag, count]) => {
+                    html += `
+                        <div class="tree-item tag">
+                            <h4>&lt;${tag}&gt;</h4>
+                            <p>Quantidade: ${count}</p>
+                        </div>
+                    `;
+                });
+            
+            output.innerHTML = html;
+        }
+
+        // MOSTRAR PLANO
+        function mostrarPlano() {
+            const output = document.getElementById('plano');
+            const p = analiseAtual.plano;
+            
+            let html = '<h3>📐 Estrutura do Plano</h3>';
+            
+            html += `
+                <div class="tree-item tag">
+                    <h4>&lt;head&gt;</h4>
+                    <p>Título: ${p.head.titulo}</p>
+                    <p>Meta tags: ${p.head.meta}</p>
+                    <p>Links: ${p.head.links}</p>
+                    <p>Scripts: ${p.head.scripts}</p>
+                    <p>Estilos: ${p.head.estilos}</p>
+                </div>
+            `;
+            
+            html += `
+                <div class="tree-item tag">
+                    <h4>&lt;body&gt;</h4>
+                    <p>Headers: ${p.body.headers}</p>
+                    <p>Mains: ${p.body.mains}</p>
+                    <p>Footers: ${p.body.footers}</p>
+                    <p>Divs: ${p.body.divs}</p>
+                    <p>Forms: ${p.body.forms}</p>
+                    <p>Inputs: ${p.body.inputs}</p>
+                    <p>Buttons: ${p.body.buttons}</p>
+                </div>
+            `;
+            
+            output.innerHTML = html;
+        }
+
+        // MOSTRAR RESUMO
+        function mostrarResumo() {
+            const output = document.getElementById('resumo');
+            const r = analiseAtual.resumo;
+            
+            let html = '<h3>📊 Resumo Geral</h3>';
+            
+            html += `
+                <div class="tree-item tag">
+                    <h4>Informações Gerais</h4>
+                    <p>Total de elementos: ${r.totalElementos}</p>
+                    <p>Tags únicas: ${r.tagsUnicas}</p>
+                    <p>Profundidade: ${r.profundidade} níveis</p>
+                    <p>Tem formulário: ${r.temFormulario ? '✅ Sim' : '❌ Não'}</p>
+                    <p>Tem scripts: ${r.temScripts ? '✅ Sim' : '❌ Não'}</p>
+                    <p>Tem estilos: ${r.temEstilos ? '✅ Sim' : '❌ Não'}</p>
+                </div>
+            `;
+            
+            output.innerHTML = html;
+        }
+
+        // MUDAR TAB
+        function mudarTab(tabName) {
+            // Esconder todos
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar selecionado
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById(tabName).style.display = 'block';
+            
+            event.target.classList.add('active');
+        }
+
+        // COPIAR RESULTADO
+        function copiarResultado() {
+            const arvore = document.getElementById('arvore').innerText;
+            navigator.clipboard.writeText(arvore).then(() => {
+                mostrarStatus('success', '✅ Copiado para clipboard!');
+            });
+        }
+
+        // DOWNLOAD RESULTADO
+        function downloadResultado() {
+            const arvore = document.getElementById('arvore').innerText;
+            const blob = new Blob([arvore], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'analise_html.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // LIMPAR TUDO
+        function limparTudo() {
+            document.getElementById('htmlInput').value = '';
+            document.getElementById('arvore').innerHTML = '';
+            document.getElementById('elementos').innerHTML = '';
+            document.getElementById('plano').innerHTML = '';
+            document.getElementById('resumo').innerHTML = '';
+            document.getElementById('statusContainer').innerHTML = '';
+            analiseAtual = null;
+        }
+
+        // MOSTRAR STATUS
+        function mostrarStatus(tipo, mensagem) {
+            const container = document.getElementById('statusContainer');
+            container.innerHTML = `<div class="status ${tipo}">${mensagem}</div>`;
+        }
+
+        // ESCAPAR HTML
+        function escaparHTML(texto) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return texto.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        // CARREGAR EXEMPLO
+        function carregarExemplo() {
+            const exemplo = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Projeto</title>
+    <style>
+        body { font-family: Arial; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Bem-vindo</h1>
+    </header>
+    
+    <main>
+        <div class="container">
+            <form>
+                <input type="text" placeholder="Seu nome">
+                <button type="submit">Enviar</button>
+            </form>
+            <div id="resultado"></div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>© 2024 Meu Projeto</p>
+    </footer>
+    
+    <script>
+        console.log('App iniciado');
+  </script>
+</body>
+
+</html>`;
+
+document.getElementById('htmlInput').value = exemplo;
+mostrarStatus('info', '📝 Exemplo carregado!');
+setTimeout(() => analisarHTML(), 500);
+}
+</script>
+</body>
+
+</html>
