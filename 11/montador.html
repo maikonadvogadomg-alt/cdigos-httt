@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔧 Montador de Códigos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cor-primaria: #667eea;
+      --cor-secundaria: #764ba2;
+      --cor-sucesso: #51cf66;
+      --cor-alerta: #ffd43b;
+      --cor-perigo: #ff6b6b;
+      --cor-bg: #f8f9fa;
+      --cor-card: #ffffff;
+      --cor-texto: #333333;
+      --cor-texto-claro: #666666;
+      --cor-borda: #dddddd;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--cor-bg);
+      color: var(--cor-texto);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    body.dark-mode {
+      --cor-bg: #1a1a1a;
+      --cor-card: #2d2d2d;
+      --cor-texto: #e0e0e0;
+      --cor-texto-claro: #b0b0b0;
+      --cor-borda: #444444;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--cor-card);
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 20px;
+      padding: 30px;
+      min-height: 600px;
+    }
+
+    /* PAINEL ESQUERDO - CONTROLES */
+    .painel-controles {
+      background: var(--cor-bg);
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid var(--cor-borda);
+      max-height: 800px;
+      overflow-y: auto;
+    }
+
+    .painel-titulo {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: var(--cor-texto);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--cor-primaria);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      font-size: 13px;
+      color: var(--cor-texto);
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--cor-borda);
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--cor-card);
+      color: var(--cor-texto);
+      transition: all 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--cor-primaria);
+      box-shadow: 0 0 8px rgba(102, 126, 234, 0.3);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-width: 80px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+
+    .btn-adicionar {
+      background: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+      color: white;
+    }
+
+    .btn-adicionar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-gerar {
+      background: linear-gradient(135deg, var(--cor-sucesso) 0%, #37b24d 100%);
+      color: white;
+      width: 100%;
+      padding: 12px;
+      font-size: 13px;
+      margin-top: 20px;
+    }
+
+    .btn-gerar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(81, 207, 102, 0.3);
+    }
+
+    .btn-gerar:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-limpar {
+      background: #f0f0f0;
+      color: var(--cor-texto);
+    }
+
+    body.dark-mode .btn-limpar {
+      background: #444;
+      color: #e0e0e0;
+    }
+
+    .btn-limpar:hover {
+      background: #e0e0e0;
+    }
+
+    .btn-exportar {
+      background: var(--cor-alerta);
+      color: #333;
+    }
+
+    .btn-exportar:hover {
+      background: #fcc419;
+    }
+
+    .btn-importar {
+      background: #4facfe;
+      color: white;
+    }
+
+    .btn-importar:hover {
+      background: #00f2fe;
+    }
+
+    .btn-dark-mode {
+      background: #333;
+      color: white;
+      width: 100%;
+    }
+
+    .btn-dark-mode:hover {
+      background: #555;
+    }
+
+    /* ESTATÍSTICAS */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .stat-item {
+      background: var(--cor-card);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+      border-left: 3px solid var(--cor-primaria);
+    }
+
+    .stat-numero {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--cor-primaria);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--cor-texto-claro);
+      margin-top: 3px;
+    }
+
+    /* LISTA DE CÓDIGOS */
+    .lista-codigos {
+      background: var(--cor-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+
+    .codigo-item {
+      padding: 12px;
+      border-bottom: 1px solid var(--cor-borda);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+
+    .codigo-item:last-child {
+      border-bottom: none;
+    }
+
+    .codigo-info {
+      flex: 1;
+    }
+
+    .codigo-nome {
+      font-weight: bold;
+      color: var(--cor-texto);
+    }
+
+    .codigo-versao {
+      font-size: 11px;
+      color: var(--cor-texto-claro);
+    }
+
+    .codigo-tamanho {
+      font-size: 11px;
+      color: var(--cor-alerta);
+    }
+
+    .btn-deletar-codigo {
+      background: var(--cor-perigo);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .btn-deletar-codigo:hover {
+      background: #fa5252;
+    }
+
+    /* PAINEL DIREITO - PREVIEW */
+    .painel-preview {
+      background: var(--cor-bg);
+      border: 1px solid var(--cor-borda);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-titulo {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: var(--cor-texto);
+    }
+
+    .abas-container {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid var(--cor-borda);
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .aba {
+      padding: 8px 15px;
+      background: var(--cor-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: 5px 5px 0 0;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--cor-texto-claro);
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .aba:hover {
+      background: var(--cor-primaria);
+      color: white;
+    }
+
+    .aba.ativa {
+      background: var(--cor-primaria);
+      color: white;
+      border-color: var(--cor-primaria);
+    }
+
+    .conteudo-aba {
+      flex: 1;
+      background: var(--cor-card);
+      border: 1px solid var(--cor-borda);
+      border-radius: 5px;
+      padding: 15px;
+      overflow-y: auto;
+      display: none;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--cor-texto);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .conteudo-aba.ativo {
+      display: block;
+    }
+
+    .vazio {
+      text-align: center;
+      color: var(--cor-texto-claro);
+      padding: 40px 20px;
+    }
+
+    .vazio-icone {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    /* AVISO */
+    .aviso {
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      font-size: 12px;
+      border-left: 4px solid;
+    }
+
+    .aviso.info {
+      background: #e3f2fd;
+      color: #1565c0;
+      border-left-color: #2196f3;
+    }
+
+    .aviso.sucesso {
+      background: #d4edda;
+      color: #155724;
+      border-left-color: var(--cor-sucesso);
+    }
+
+    .aviso.alerta {
+      background: #fff3cd;
+      color: #856404;
+      border-left-color: var(--cor-alerta);
+    }
+
+    .aviso.perigo {
+      background: #f8d7da;
+      color: #721c24;
+      border-left-color: var(--cor-perigo);
+    }
+
+    /* FOOTER */
+    .footer {
+      background: var(--cor-bg);
+      padding: 20px;
+      text-align: center;
+      color: var(--cor-texto-claro);
+      font-size: 12px;
+      border-top: 1px solid var(--cor-borda);
+    }
+
+    /* INPUT HIDDEN */
+    #inputImportar {
+      display: none;
+    }
+
+    /* RESPONSIVO */
+    @media (max-width: 1024px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .painel-controles {
+        max-height: 400px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      .content {
+        padding: 15px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      button {
+        min-width: auto;
+      }
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--cor-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--cor-primaria);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cor-secundaria);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔧 Montador de Códigos</h1>
+      <p>Combine múltiplos códigos em um HTML único com abas independentes</p>
+    </div>
+
+    <div class="content">
+      <!-- PAINEL ESQUERDO -->
+      <div class="painel-controles">
+        <div class="painel-titulo">📝 Adicionar Código</div>
+
+        <div class="form-group">
+          <label for="nomeCodigo">Nome do Código</label>
+          <input type="text" id="nomeCodigo" placeholder="Ex: Chat, Dashboard, etc">
+        </div>
+
+        <div class="form-group">
+          <label for="versaoCodigo">Versão</label>
+          <input type="text" id="versaoCodigo" placeholder="Ex: 1.0.0" value="1.0.0">
+        </div>
+
+        <div class="form-group">
+          <label for="descricaoCodigo">Descrição (opcional)</label>
+          <input type="text" id="descricaoCodigo" placeholder="Descrição breve">
+        </div>
+
+        <div class="form-group">
+          <label for="codigoTexto">Cole o Código (HTML/CSS/JS)</label>
+          <textarea id="codigoTexto" placeholder="Cole seu código aqui..."></textarea>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-adicionar" onclick="adicionarCodigo()">➕ Adicionar</button>
+          <button class="btn-limpar" onclick="limparFormulario()">🗑️ Limpar</button>
+        </div>
+
+        <!-- ESTATÍSTICAS -->
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-numero" id="totalCodigos">0</div>
+            <div class="stat-label">Códigos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-numero" id="limiteCodigos">∞</div>
+            <div class="stat-label">Limite</div>
+          </div>
+        </div>
+
+        <!-- CONTROLE DE LIMITE -->
+        <div class="form-group">
+          <label for="limiteCodigo">Limite de Códigos (0 = sem limite)</label>
+          <input type="number" id="limiteCodigo" value="0" min="0">
+        </div>
+
+        <!-- LISTA DE CÓDIGOS -->
+        <div class="painel-titulo" style="margin-top: 20px;">📋 Códigos Adicionados</div>
+        <div class="lista-codigos" id="listaCodigos">
+          <div style="padding: 20px; text-align: center; color: var(--cor-texto-claro);">
+            Nenhum código ainda
+          </div>
+        </div>
+
+        <!-- BOTÕES DE AÇÃO -->
+        <div class="button-group" style="margin-top: 20px;">
+          <button class="btn-gerar" onclick="gerarHTML()" id="btnGerar">
+                        ✨ Gerar HTML Único
+                    </button>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-exportar" onclick="exportarDados()">📥 Exportar</button>
+          <button class="btn-importar" onclick="importarDados()">📤 Importar</button>
+        </div>
+
+        <div class="button-group">
+          <button class="btn-dark-mode" onclick="alternarModoEscuro()">🌙 Modo Escuro</button>
+        </div>
+
+        <div id="avisoControles"></div>
+      </div>
+
+      <!-- PAINEL DIREITO -->
+      <div class="painel-preview">
+        <div class="preview-titulo">👁️ Preview dos Códigos</div>
+
+        <div class="abas-container" id="abasContainer">
+          <div class="vazio" style="grid-column: 1 / -1;">
+            <div class="vazio-icone">📭</div>
+            <p>Nenhum código adicionado</p>
+          </div>
+        </div>
+
+        <div id="conteudoAbas"></div>
+      </div>
+    </div>
+
+    <div class="footer">
+      💡 Dica: Adicione quantos códigos quiser! Cada um funcionará independentemente em sua própria aba.
+    </div>
+  </div>
+
+  <input type="file" id="inputImportar" accept=".json" onchange="processarImportacao()">
+
+  <script>
+    // ============================================
+        // DADOS
+        // ============================================
+
+        let dados = {
+            codigos: [],
+            limite: 0,
+            dataUltimaEdicao: null
+        };
+
+        // ============================================
+        // INICIALIZAR
+        // ============================================
+
+        window.addEventListener('DOMContentLoaded', () => {
+            carregarDados();
+            carregarModoEscuro();
+            atualizarUI();
+        });
+
+        // ============================================
+        // ADICIONAR CÓDIGO
+        // ============================================
+
+        function adicionarCodigo() {
+            const nome = document.getElementById('nomeCodigo').value.trim();
+            const versao = document.getElementById('versaoCodigo').value.trim();
+            const descricao = document.getElementById('descricaoCodigo').value.trim();
+            const codigo = document.getElementById('codigoTexto').value.trim();
+
+            // VALIDAR
+            if (!nome) {
+                mostrarAviso('❌ Digite o nome do código!', 'alerta');
+                return;
+            }
+
+            if (!codigo) {
+                mostrarAviso('❌ Cole o código!', 'alerta');
+                return;
+            }
+
+            // VERIFICAR LIMITE
+            const limite = parseInt(document.getElementById('limiteCodigo').value) || 0;
+            if (limite > 0 && dados.codigos.length >= limite) {
+                mostrarAviso(`❌ Limite de ${limite} códigos atingido!`, 'perigo');
+                return;
+            }
+
+            // ADICIONAR
+            dados.codigos.push({
+                id: Date.now(),
+                nome: nome,
+                versao: versao,
+                descricao: descricao,
+                codigo: codigo,
+                dataCriacao: new Date().toLocaleString('pt-BR'),
+                tamanho: codigo.length
+            });
+
+            dados.limite = limite;
+            dados.dataUltimaEdicao = new Date().toLocaleString('pt-BR');
+
+            salvarDados();
+            limparFormulario();
+            atualizarUI();
+            mostrarAviso('✅ Código adicionado com sucesso!', 'sucesso');
+        }
+
+        // ============================================
+        // DELETAR CÓDIGO
+        // ============================================
+
+        function deletarCodigo(id) {
+            if (confirm('Tem certeza que quer deletar este código?')) {
+                dados.codigos = dados.codigos.filter(c => c.id !== id);
+                salvarDados();
+                atualizarUI();
+            }
+        }
+
+        // ============================================
+        // ATUALIZAR UI
+        // ============================================
+
+        function atualizarUI() {
+            atualizarStats();
+            atualizarListaCodigos();
+            atualizarAbas();
+        }
+
+        function atualizarStats() {
+            document.getElementById('totalCodigos').textContent = dados.codigos.length;
+            const limite = parseInt(document.getElementById('limiteCodigo').value) || 0;
+            document.getElementById('limiteCodigos').textContent = limite === 0 ? '∞' : limite;
+        }
+
+        function atualizarListaCodigos() {
+            const lista = document.getElementById('listaCodigos');
+
+            if (dados.codigos.length === 0) {
+                lista.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--cor-texto-claro);">
+                        Nenhum código ainda
+                    </div>
+                `;
+                return;
+            }
+
+            lista.innerHTML = dados.codigos.map(codigo => `
+                <div class="codigo-item">
+                    <div class="codigo-info">
+                        <div class="codigo-nome">${codigo.nome}</div>
+                        <div class="codigo-versao">v${codigo.versao} • ${codigo.tamanho} caracteres</div>
+                    </div>
+                    <button class="btn-deletar-codigo" onclick="deletarCodigo(${codigo.id})">Deletar</button>
+                </div>
+            `).join('');
+        }
+
+        function atualizarAbas() {
+            const abasContainer = document.getElementById('abasContainer');
+            const conteudoAbas = document.getElementById('conteudoAbas');
+
+            if (dados.codigos.length === 0) {
+                abasContainer.innerHTML = `
+                    <div class="vazio" style="width: 100%;">
+                        <div class="vazio-icone">📭</div>
+                        <p>Nenhum código adicionado</p>
+                    </div>
+                `;
+                conteudoAbas.innerHTML = '';
+                return;
+            }
+
+            // CRIAR ABAS
+            abasContainer.innerHTML = dados.codigos.map((codigo, index) => `
+                <div class="aba ${index === 0 ? 'ativa' : ''}" onclick="mudarAba(${index})">
+                    ${codigo.nome} <span style="font-size: 10px;">(v${codigo.versao})</span>
+                </div>
+            `).join('');
+
+            // CRIAR CONTEÚDO
+            conteudoAbas.innerHTML = dados.codigos.map((codigo, index) => `
+                <div class="conteudo-aba ${index === 0 ? 'ativo' : ''}" id="aba-${index}">
+${codigo.codigo}
+                </div>
+            `).join('');
+        }
+
+        function mudarAba(index) {
+            // REMOVER ATIVA
+            document.querySelectorAll('.aba').forEach(aba => aba.classList.remove('ativa'));
+            document.querySelectorAll('.conteudo-aba').forEach(conteudo => conteudo.classList.remove('ativo'));
+
+            // ADICIONAR ATIVA
+            document.querySelectorAll('.aba')[index].classList.add('ativa');
+            document.getElementById(`aba-${index}`).classList.add('ativo');
+        }
+
+        // ============================================
+        // GERAR HTML ÚNICO
+        // ============================================
+
+        function gerarHTML() {
+            if (dados.codigos.length === 0) {
+                mostrarAviso('❌ Adicione pelo menos um código!', 'alerta');
+                return;
+            }
+
+            let htmlFinal = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montador de Códigos - ${new Date().toLocaleString('pt-BR')}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .abas {
+            display: flex;
+            gap: 5px;
+            padding: 15px 20px;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .aba-btn {
+            padding: 10px 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .aba-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .aba-btn.ativa {
+            background: #667eea;
+            color: white;
+        }
+
+        .conteudo {
+            padding: 20px;
+            display: none;
+        }
+
+        .conteudo.ativo {
+            display: block;
+        }
+
+        .info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Códigos Montados</h1>
+            <p>Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+        </div>
+
+        <div class="abas">
+            ${dados.codigos.map((codigo, index) => `
+                <button class="aba-btn ${index === 0 ? 'ativa' : ''}" onclick="mudarAbaPagina(${index})">
+                    ${codigo.nome} (v${codigo.versao})
+                </button>
+            `).join('')}
+        </div>
+
+        ${dados.codigos.map((codigo, index) => `
+            <div class="conteudo ${index === 0 ? 'ativo' : ''}" id="conteudo-${index}">
+                <div class="info">
+                    <strong>${codigo.nome}</strong> • Versão: ${codigo.versao}
+                    ${codigo.descricao ? `<br>Descrição: ${codigo.descricao}` : ''}
+                    <br>Criado em: ${codigo.dataCriacao}
+                </div>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; overflow-x: auto;">
+                    <pre style="margin: 0; font-family: 'Courier New', monospace; font-size: 12px;">${escapeHTML(codigo.codigo)}</pre>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+
+    <script>
+        function mudarAbaPagina(index) {
+            document.querySelectorAll('.aba-btn').forEach(btn => btn.classList.remove('ativa'));
+            document.querySelectorAll('.conteudo').forEach(con => con.classList.remove('ativo'));
+            
+            document.querySelectorAll('.aba-btn')[index].classList.add('ativa');
+            document.getElementById('conteudo-' + index).classList.add('ativo');
+        }
+  </script>
+</body>
+
+</html>`;
+
+// BAIXAR
+const blob = new Blob([htmlFinal], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = `codigos-montados-${new Date().toISOString().split('T')[0]}.html`;
+link.click();
+URL.revokeObjectURL(url);
+
+mostrarAviso('✅ HTML gerado e baixado com sucesso!', 'sucesso');
+}
+
+// ============================================
+// EXPORTAR/IMPORTAR
+// ============================================
+
+function exportarDados() {
+const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = `backup-codigos-${new Date().toISOString().split('T')[0]}.json`;
+link.click();
+URL.revokeObjectURL(url);
+mostrarAviso('✅ Backup exportado!', 'sucesso');
+}
+
+function importarDados() {
+document.getElementById('inputImportar').click();
+}
+
+function processarImportacao() {
+const file = document.getElementById('inputImportar').files[0];
+if (!file) return;
+
+const reader = new FileReader();
+reader.onload = (e) => {
+try {
+const dadosImportados = JSON.parse(e.target.result);
+if (dadosImportados.codigos && Array.isArray(dadosImportados.codigos)) {
+dados = dadosImportados;
+salvarDados();
+atualizarUI();
+mostrarAviso('✅ Backup importado com sucesso!', 'sucesso');
+} else {
+mostrarAviso('❌ Formato inválido!', 'perigo');
+}
+} catch (erro) {
+mostrarAviso('❌ Erro ao importar: ' + erro.message, 'perigo');
+}
+};
+reader.readAsText(file);
+}
+
+// ============================================
+// SALVAR/CARREGAR DADOS
+// ============================================
+
+function salvarDados() {
+localStorage.setItem('montador-codigos-dados', JSON.stringify(dados));
+}
+
+function carregarDados() {
+const dadosSalvos = localStorage.getItem('montador-codigos-dados');
+if (dadosSalvos) {
+dados = JSON.parse(dadosSalvos);
+document.getElementById('limiteCodigo').value = dados.limite || 0;
+}
+}
+
+// ============================================
+// MODO ESCURO
+// ============================================
+
+function alternarModoEscuro() {
+document.body.classList.toggle('dark-mode');
+localStorage.setItem('montador-dark-mode', document.body.classList.contains('dark-mode'));
+}
+
+function carregarModoEscuro() {
+if (localStorage.getItem('montador-dark-mode') === 'true') {
+document.body.classList.add('dark-mode');
+}
+}
+
+// ============================================
+// UTILITÁRIOS
+// ============================================
+
+function limparFormulario() {
+document.getElementById('nomeCodigo').value = '';
+document.getElementById('versaoCodigo').value = '1.0.0';
+document.getElementById('descricaoCodigo').value = '';
+document.getElementById('codigoTexto').value = '';
+}
+
+function mostrarAviso(mensagem, tipo) {
+const avisoDiv = document.getElementById('avisoControles');
+avisoDiv.innerHTML = `<div class="aviso ${tipo}">${mensagem}</div>`;
+setTimeout(() => {
+avisoDiv.innerHTML = '';
+}, 5000);
+}
+
+function escapeHTML(texto) {
+const map = {
+'&': '&amp;',
+'<': '&lt;' , '>' : '&gt;' , '"' : '&quot;' , "'" : '&#039;' }; return texto.replace(/[&<>"']/g, m => map[m]);
+  }
+
+  // ATUALIZAR LIMITE EM TEMPO REAL
+  document.getElementById('limiteCodigo').addEventListener('change', () => {
+  dados.limite = parseInt(document.getElementById('limiteCodigo').value) || 0;
+  salvarDados();
+  atualizarStats();
+  });
+  </script>
+  </body>
+
+  </html>
