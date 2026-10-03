@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: RealTerminal.tsx</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 RealTerminal.tsx</h1>
+<div class="meta">Gerado em 03/10/2026, 08:44:38 • 29 elementos • 12 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L1 [import] import { useEffect, useRef, useState, useCallback } from &quot;react&quot;;</div><div class="idx-item">L2 [import] import { Terminal } from &quot;@xterm/xterm&quot;;</div><div class="idx-item">L3 [import] import { FitAddon } from &quot;@xterm/addon-fit&quot;;</div><div class="idx-item">L4 [import] import { WebLinksAddon } from &quot;@xterm/addon-web-links&quot;;</div><div class="idx-item">L5 [import] import &quot;@xterm/xterm/css/xterm.css&quot;;</div><div class="idx-item">L7 [interface] Status</div><div class="idx-item">L9 [interface] PkgResult</div><div class="idx-item">L15 [interface] Props</div><div class="idx-item">L25 [const] CMD_TIMEOUT_MS</div><div class="idx-item">L26 [const] MAX_RECONNECT</div><div class="idx-item">L27 [const] RECONNECT_DELAY_MS</div><div class="idx-item">L29 [const] SERVER_PORT_RE</div><div class="idx-item">L30 [const] SERVER_STOP_RE</div><div class="idx-item">L31 [const] ERROR_RE</div><div class="idx-item">L33 [const] MISSING_PKG_RES</div><div class="idx-item">L47 [function] detectMissingPkg</div><div class="idx-item">L61 [const] QUICK_CMDS</div><div class="idx-item">L72 [component] RealTerminal</div><div class="idx-item">L124 [function] scheduleOutputFlush →</div><div class="idx-item">L175 [comment] // viewportY = quantas linhas o usuário scrollou para cima</div><div class="idx-item">L212 [function] connect →</div><div class="idx-item">L297 [function] context →</div><div class="idx-item">L301 [comment] // Prompt limpo = comando ok, esconde o banner</div><div class="idx-item">L375 [function] sendCmd</div><div class="idx-item">L402 [function] handleReconnect →</div><div class="idx-item">L444 [function] handlePkgQueryChange →</div><div class="idx-item">L450 [function] handlePkgModeChange →</div><div class="idx-item">L459 [function] installPkg →</div><div class="idx-item">L468 [function] explainErrorPt</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L46</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">import { useEffect, useRef, useState, useCallback } from &quot;react&quot;;
+import { Terminal } from &quot;@xterm/xterm&quot;;
+import { FitAddon } from &quot;@xterm/addon-fit&quot;;
+import { WebLinksAddon } from &quot;@xterm/addon-web-links&quot;;
+import &quot;@xterm/xterm/css/xterm.css&quot;;
+
+type Status = &quot;connecting&quot; | &quot;connected&quot; | &quot;disconnected&quot; | &quot;error&quot;;
+
+interface PkgResult {
+  name: string;
+  description: string;
+  version: string;
+}
+
+interface Props {
+  onFallback?: () =&gt; void;
+  externalCommand?: string;
+  onCommandExecuted?: () =&gt; void;
+  onCommandOutput?: (cmd: string, output: string, exitedClean: boolean) =&gt; void;
+  onServerToggle?: (running: boolean, port?: number) =&gt; void;
+  onBufferUpdate?: (buffer: string, hasError: boolean) =&gt; void;
+  onRunningChange?: (running: boolean, cmd?: string) =&gt; void;
+}
+
+const CMD_TIMEOUT_MS = 1_140_000; // 19 minutos
+const MAX_RECONNECT = 5;
+const RECONNECT_DELAY_MS = 2500;
+
+const SERVER_PORT_RE = /(?:listen(?:ing)?(?:\s+on)?(?:\s+port)?|started(?:\s+on)?|running(?:\s+on)?(?:\s+port)?|\bport\b|localhost|127\.0\.0\.1|0\.0\.0\.0|Local:|Network:|➜)\s*[:\s]*(?:https?:\/\/(?:localhost|127\.0\.0\.1))?:(\d{4,5})/i;
+const SERVER_STOP_RE = /(?:SIGTERM|SIGINT|server\s+(?:closed|stopped|killed)|process\s+exit)/i;
+const ERROR_RE = /(?:error|erro|exception|traceback|fatal|command not found|cannot find|failed|falhou|ENOENT|EACCES|SyntaxError|TypeError|ReferenceError|ModuleNotFoundError|ImportError)/i;
+
+const MISSING_PKG_RES = [
+  /(?:sh|bash|zsh):\s*\d*:?\s*([^\s:]+):\s*(?:not found|command not found)/i,
+  /Cannot find module ['&quot;](@?[a-zA-Z0-9._/@-]+)['&quot;]/i,
+  /Cannot find package ['&quot;](@?[a-zA-Z0-9._/@-]+)['&quot;]/i,
+  /npm ERR! missing: ([a-zA-Z0-9@._/-]+)@/i,
+  /ModuleNotFoundError: No module named ['&quot;]([a-zA-Z0-9._-]+)['&quot;]/i,
+];
+const CLI_TO_INSTALL: Record&lt;string, string&gt; = {
+  tsx: &quot;tsx&quot;, &quot;ts-node&quot;: &quot;ts-node&quot;, vite: &quot;vite&quot;, next: &quot;next&quot;,
+  tsc: &quot;typescript&quot;, eslint: &quot;eslint&quot;, prettier: &quot;prettier&quot;,
+  jest: &quot;jest&quot;, vitest: &quot;vitest&quot;, nodemon: &quot;nodemon&quot;,
+  concurrently: &quot;concurrently&quot;, &quot;cross-env&quot;: &quot;cross-env&quot;,
+};
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>detectMissingPkg</span>
+    <div>
+      <small>L47–L71</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">function detectMissingPkg(text: string): { pkg: string; isPip: boolean } | null {
+  for (const re of MISSING_PKG_RES) {
+    const m = text.match(re);
+    if (m &amp;&amp; m[1]) {
+      const raw = m[1].trim();
+      if (raw.startsWith(&quot;.&quot;) || raw.startsWith(&quot;/&quot;)) continue;
+      const isPip = /ModuleNotFoundError/.test(text);
+      const pkg = CLI_TO_INSTALL[raw] ?? raw.split(&quot;/&quot;).slice(0, raw.startsWith(&quot;@&quot;) ? 2 : 1).join(&quot;/&quot;);
+      return { pkg, isPip };
+    }
+  }
+  return null;
+}
+
+const QUICK_CMDS = [
+  { label: &quot;📦 npm install&quot;,    cmd: &quot;npm install&quot; },
+  { label: &quot;▶ npm run dev&quot;,     cmd: &quot;npm run dev&quot; },
+  { label: &quot;🔨 npm run build&quot;,  cmd: &quot;npm run build&quot; },
+  { label: &quot;🧪 npm test&quot;,       cmd: &quot;npm test&quot; },
+  { label: &quot;🚀 npm start&quot;,      cmd: &quot;npm start&quot; },
+  { label: &quot;📋 node index.js&quot;,  cmd: &quot;node index.js&quot; },
+  { label: &quot;🐍 pip install -r&quot;, cmd: &quot;pip install -r requirements.txt&quot; },
+  { label: &quot;🐍 python main.py&quot;, cmd: &quot;python3 main.py&quot; },
+];
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>RealTerminal</span>
+    <div>
+      <small>L72–L123</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">export default function RealTerminal({
+  onFallback,
+  externalCommand,
+  onCommandExecuted,
+  onCommandOutput,
+  onServerToggle,
+  onBufferUpdate,
+  onRunningChange,
+}: Props) {
+  const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+  const [status, setStatus] = useState&lt;Status&gt;(&quot;connecting&quot;);
+  const [runningCmd, setRunningCmd] = useState&lt;string | null&gt;(null);
+  const [missingPkg, setMissingPkg] = useState&lt;{ pkg: string; isPip: boolean } | null&gt;(null);
+
+  // ── Explicação de erros em português ────────────────────────────────────
+  const [errorExplain, setErrorExplain] = useState&lt;string | null&gt;(null);
+
+  // ── Busca de pacotes ─────────────────────────────────────────────────────
+  const [showPkgSearch, setShowPkgSearch] = useState(false);
+  const [pkgMode, setPkgMode]             = useState&lt;&quot;npm&quot; | &quot;pip&quot;&gt;(&quot;npm&quot;);
+  const [pkgQuery, setPkgQuery]           = useState(&quot;&quot;);
+  const [pkgResults, setPkgResults]       = useState&lt;PkgResult[]&gt;([]);
+  const [pkgSearching, setPkgSearching]   = useState(false);
+  const searchDebounceRef = useRef&lt;ReturnType&lt;typeof setTimeout&gt; | null&gt;(null);
+
+  // ── Scroll tracking ──────────────────────────────────────────────────────
+  const [linesAbove, setLinesAbove] = useState(0);
+
+  // ── Refs internos ────────────────────────────────────────────────────────
+  const wsRef    = useRef&lt;WebSocket | null&gt;(null);
+  const termRef  = useRef&lt;Terminal | null&gt;(null);
+  const runTimerRef = useRef&lt;ReturnType&lt;typeof setTimeout&gt; | null&gt;(null);
+  const connectFnRef = useRef&lt;(() =&gt; void) | null&gt;(null);
+  const mountedRef   = useRef(true);
+  const reconnectCountRef    = useRef(0);
+  const autoReconnTimerRef   = useRef&lt;ReturnType&lt;typeof setTimeout&gt; | null&gt;(null);
+  // Keepalive do lado do cliente — evita que o proxy feche conexão por inatividade
+  const clientHeartbeatRef   = useRef&lt;ReturnType&lt;typeof setInterval&gt; | null&gt;(null);
+
+  const onServerToggleRef = useRef(onServerToggle);
+  useEffect(() =&gt; { onServerToggleRef.current = onServerToggle; }, [onServerToggle]);
+  const onBufferUpdateRef = useRef(onBufferUpdate);
+  useEffect(() =&gt; { onBufferUpdateRef.current = onBufferUpdate; }, [onBufferUpdate]);
+  const onRunningChangeRef = useRef(onRunningChange);
+  useEffect(() =&gt; { onRunningChangeRef.current = onRunningChange; }, [onRunningChange]);
+
+  const globalBufferRef      = useRef&lt;string&gt;(&quot;&quot;);
+  const bufferFlushTimerRef  = useRef&lt;ReturnType&lt;typeof setTimeout&gt; | null&gt;(null);
+  const currentCmdRef        = useRef&lt;string | null&gt;(null);
+  const outputBufferRef      = useRef&lt;string&gt;(&quot;&quot;);
+  const silenceTimerRef      = useRef&lt;ReturnType&lt;typeof setTimeout&gt; | null&gt;(null);
+</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>scheduleOutputFlush →</span>
+    <div>
+      <small>L124–L211</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">  const scheduleOutputFlush = (cmd: string) =&gt; {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+    // Para npm install/pip install: aguarda 12s de silêncio (pacotes podem demorar)
+    // Para outros comandos: aguarda 5s de silêncio
+    const isInstall = /npm install|pip install|yarn add|pnpm add/i.test(cmd);
+    const delay = isInstall ? 12_000 : 5_000;
+    silenceTimerRef.current = setTimeout(() =&gt; {
+      const out = outputBufferRef.current;
+      const clean = out.includes(&quot;$&quot;) || out.includes(&quot;#&quot;) || out.includes(&quot;✓&quot;) || out.includes(&quot;added &quot;) || out.includes(&quot;Successfully installed&quot;);
+      onCommandOutput?.(cmd, out, clean);
+      currentCmdRef.current = null;
+      outputBufferRef.current = &quot;&quot;;
+      setRunningCmd(null);
+      onRunningChangeRef.current?.(false);
+    }, delay);
+  };
+
+  // ── Setup do terminal (xterm + WebSocket) ────────────────────────────────
+  useEffect(() =&gt; {
+    mountedRef.current = true;
+    if (!containerRef.current) return;
+
+    const term = new Terminal({
+      cursorBlink: true,
+      fontSize: 13,
+      fontFamily: '&quot;Fira Code&quot;, &quot;Cascadia Code&quot;, &quot;JetBrains Mono&quot;, monospace',
+      theme: {
+        background: &quot;#0d0d0d&quot;, foreground: &quot;#c8dda8&quot;, cursor: &quot;#88c060&quot;,
+        cursorAccent: &quot;#0d0d0d&quot;, selectionBackground: &quot;#3d5c28&quot;,
+        black: &quot;#0d0d0d&quot;, red: &quot;#e06c75&quot;, green: &quot;#88c060&quot;,
+        yellow: &quot;#e5c07b&quot;, blue: &quot;#61afef&quot;, magenta: &quot;#c678dd&quot;,
+        cyan: &quot;#56b6c2&quot;, white: &quot;#abb2bf&quot;, brightBlack: &quot;#5c6370&quot;,
+        brightRed: &quot;#e06c75&quot;, brightGreen: &quot;#98c379&quot;, brightYellow: &quot;#e5c07b&quot;,
+        brightBlue: &quot;#61afef&quot;, brightMagenta: &quot;#c678dd&quot;, brightCyan: &quot;#56b6c2&quot;,
+        brightWhite: &quot;#ffffff&quot;,
+      },
+      allowProposedApi: true,
+      scrollback: 10000,
+      convertEol: false,
+    });
+
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+    term.loadAddon(new WebLinksAddon());
+    term.open(containerRef.current);
+    termRef.current = term;
+    setTimeout(() =&gt; { try { fitAddon.fit(); } catch { } }, 50);
+
+    // Rastreia scroll para mostrar botão &quot;ir ao fim&quot;
+    term.onScroll(() =&gt; {
+      const buf = term.buffer.active;
+      // viewportY = quantas linhas o usuário scrollou para cima
+      const above = buf.viewportY ?? 0;
+      setLinesAbove(above);
+    });
+
+    // onData lê sempre wsRef.current — sem duplicar listeners ao reconectar
+    term.onData((data: string) =&gt; {
+      const ws = wsRef.current;
+      if (ws &amp;&amp; ws.readyState === WebSocket.OPEN) ws.send(data);
+    });
+
+    const ro = new ResizeObserver(() =&gt; {
+      try { fitAddon.fit(); } catch { }
+      const ws = wsRef.current;
+      if (ws &amp;&amp; ws.readyState === WebSocket.OPEN &amp;&amp; term.cols &amp;&amp; term.rows) {
+        ws.send(JSON.stringify({ type: &quot;resize&quot;, cols: term.cols, rows: term.rows }));
+      }
+    });
+    if (containerRef.current) ro.observe(containerRef.current);
+
+    // Busca URL direta ao API server (porta 8080) via /api/config para evitar
+    // duplo-proxy Replit→Vite→API que impede WebSocket de funcionar no ambiente Replit.
+    const proto = window.location.protocol === &quot;https:&quot; ? &quot;wss:&quot; : &quot;ws:&quot;;
+    const fallbackWsUrl = `${proto}//${window.location.host}/api/ws/terminal`;
+
+    let wsUrl = fallbackWsUrl;
+
+    fetch(&quot;/api/config&quot;)
+      .then(r =&gt; r.ok ? r.json() : null)
+      .catch(() =&gt; null)
+      .then((cfg) =&gt; {
+        if (!mountedRef.current) return;
+        if (cfg?.terminalWsUrl) wsUrl = cfg.terminalWsUrl;
+        connectFnRef.current = connect;
+        connect();
+      });
+</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>connect →</span>
+    <div>
+      <small>L212–L296</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">    const connect = () =&gt; {
+      if (!mountedRef.current) return;
+      if (autoReconnTimerRef.current) { clearTimeout(autoReconnTimerRef.current); autoReconnTimerRef.current = null; }
+
+      setStatus(&quot;connecting&quot;);
+      if (reconnectCountRef.current === 0) {
+        term.writeln(&quot;\x1b[90m[Conectando ao terminal...]\x1b[0m\r\n&quot;);
+      } else {
+        term.writeln(`\x1b[90m[Reconectando... tentativa ${reconnectCountRef.current}/${MAX_RECONNECT}]\x1b[0m\r\n`);
+      }
+
+      try { wsRef.current?.close(); } catch { }
+
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+      ws.binaryType = &quot;arraybuffer&quot;;
+
+      const connTimeout = setTimeout(() =&gt; {
+        if (ws.readyState !== WebSocket.OPEN) {
+          ws.close();
+          if (!mountedRef.current) return;
+          setStatus(&quot;error&quot;);
+          term.writeln(&quot;\r\n\x1b[31m[Conexão esgotou — servidor não respondeu em 8s]\x1b[0m\r\n&quot;);
+        }
+      }, 8000);
+
+      ws.onopen = () =&gt; {
+        clearTimeout(connTimeout);
+        if (!mountedRef.current) { ws.close(); return; }
+        reconnectCountRef.current = 0;
+        setStatus(&quot;connected&quot;);
+        term.writeln(&quot;\x1b[32m[Terminal bash conectado ✓]\x1b[0m\r\n&quot;);
+
+        // ── Keepalive do cliente ──────────────────────────────────────────
+        // Envia um byte nulo a cada 20s para manter o proxy do Replit vivo.
+        // Sem isso, o proxy fecha a conexão após ~60s de inatividade de dados,
+        // mesmo que o npm install ainda esteja rodando no servidor.
+        if (clientHeartbeatRef.current) clearInterval(clientHeartbeatRef.current);
+        clientHeartbeatRef.current = setInterval(() =&gt; {
+          if (ws.readyState === WebSocket.OPEN) {
+            try { ws.send(&quot;&quot;); } catch { /* ok */ }
+          }
+        }, 20_000);
+
+        // Setup inicial: cria pasta de projetos persistente, configura PT-BR
+        setTimeout(() =&gt; {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(
+              `export LANG=pt_BR.UTF-8 LC_ALL=pt_BR.UTF-8 2&gt;/dev/null; ` +
+              `mkdir -p ~/sk-projetos 2&gt;/dev/null; ` +
+              `cd ~/sk-projetos; ` +
+              `echo -e &quot;\\x1b[90m📂 Pasta de trabalho: $(pwd)\\x1b[0m&quot;; ` +
+              `echo -e &quot;\\x1b[90m📦 Pacotes instalados aqui ficam salvos entre sessões\\x1b[0m&quot;\n`
+            );
+          }
+        }, 800);
+      };
+
+      ws.onmessage = (e: MessageEvent) =&gt; {
+        let text = &quot;&quot;;
+        if (e.data instanceof ArrayBuffer) {
+          const arr = new Uint8Array(e.data);
+          term.write(arr);
+          text = new TextDecoder().decode(arr);
+        } else {
+          term.write(e.data as string);
+          text = e.data as string;
+        }
+        const plain = text.replace(/\x1b\[[0-9;]*[mGKHJA-Za-z]/g, &quot;&quot;).replace(/\r/g, &quot;&quot;);
+
+        const missing = detectMissingPkg(plain);
+        if (missing) setMissingPkg(missing);
+
+        const portMatch = plain.match(SERVER_PORT_RE);
+        if (portMatch) {
+          const p = Number(portMatch[1]);
+          if (p &gt;= 1024 &amp;&amp; p &lt; 65535) onServerToggleRef.current?.(true, p);
+        }
+        if (SERVER_STOP_RE.test(plain)) onServerToggleRef.current?.(false);
+
+        // Aumentado para 30000 — Jasmim vê erros completos sem truncar
+        globalBufferRef.current = (globalBufferRef.current + plain).slice(-30000);
+        const hasErr = ERROR_RE.test(plain);
+        if (hasErr) {
+          // Mostra explicação em português para o usuário</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>context →</span>
+    <div>
+      <small>L297–L374</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">          const context = (globalBufferRef.current + plain).slice(-2000);
+          const explain = explainErrorPt(context);
+          if (explain) setErrorExplain(explain);
+        } else if (/\$\s*$/.test(plain) &amp;&amp; plain.trim().length &lt; 10) {
+          // Prompt limpo = comando ok, esconde o banner
+          setErrorExplain(null);
+        }
+        if (bufferFlushTimerRef.current) clearTimeout(bufferFlushTimerRef.current);
+        bufferFlushTimerRef.current = setTimeout(() =&gt; {
+          onBufferUpdateRef.current?.(globalBufferRef.current, hasErr || ERROR_RE.test(globalBufferRef.current.slice(-1000)));
+        }, 1500);
+
+        if (currentCmdRef.current) {
+          outputBufferRef.current += plain;
+          scheduleOutputFlush(currentCmdRef.current);
+        }
+      };
+
+      ws.onclose = () =&gt; {
+        clearTimeout(connTimeout);
+        if (clientHeartbeatRef.current) { clearInterval(clientHeartbeatRef.current); clientHeartbeatRef.current = null; }
+        if (!mountedRef.current) return;
+        setStatus(&quot;disconnected&quot;);
+        setRunningCmd(null);
+        onRunningChangeRef.current?.(false);
+        currentCmdRef.current = null;
+        term.writeln(&quot;\r\n\x1b[90m[Sessão encerrada]\x1b[0m\r\n&quot;);
+
+        // Reconexão automática
+        if (reconnectCountRef.current &lt; MAX_RECONNECT) {
+          reconnectCountRef.current++;
+          term.writeln(`\x1b[90m[Reconectando em ${RECONNECT_DELAY_MS / 1000}s...]\x1b[0m\r\n`);
+          autoReconnTimerRef.current = setTimeout(() =&gt; connectFnRef.current?.(), RECONNECT_DELAY_MS);
+        } else {
+          term.writeln(&quot;\x1b[33m[Máximo de tentativas atingido. Clique em ↺ Reconectar.]\x1b[0m\r\n&quot;);
+        }
+      };
+
+      ws.onerror = () =&gt; {
+        clearTimeout(connTimeout);
+        if (!mountedRef.current) return;
+        setStatus(&quot;error&quot;);
+        setRunningCmd(null);
+        term.writeln(&quot;\r\n\x1b[31m[Erro ao conectar ao servidor de terminal]\x1b[0m\r\n&quot;);
+      };
+    };
+
+    return () =&gt; {
+      mountedRef.current = false;
+      if (autoReconnTimerRef.current) clearTimeout(autoReconnTimerRef.current);
+      if (runTimerRef.current) clearTimeout(runTimerRef.current);
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+      if (bufferFlushTimerRef.current) clearTimeout(bufferFlushTimerRef.current);
+      if (clientHeartbeatRef.current) clearInterval(clientHeartbeatRef.current);
+      ro.disconnect();
+      wsRef.current?.close();
+      wsRef.current = null;
+      term.dispose();
+      termRef.current = null;
+    };
+  }, []);
+
+  // ── Executa comandos externos (da IA / botões de ação) ───────────────────
+  useEffect(() =&gt; {
+    if (!externalCommand) return;
+    const ws = wsRef.current;
+    if (!ws || ws.readyState !== WebSocket.OPEN) {
+      const t = setTimeout(() =&gt; {
+        const ws2 = wsRef.current;
+        if (ws2 &amp;&amp; ws2.readyState === WebSocket.OPEN) sendCmd(ws2, termRef.current, externalCommand);
+      }, 1000);
+      return () =&gt; clearTimeout(t);
+    }
+    sendCmd(ws, termRef.current, externalCommand);
+    onCommandExecuted?.();
+    return undefined;
+  }, [externalCommand]);
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>sendCmd</span>
+    <div>
+      <small>L375–L401</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  function sendCmd(ws: WebSocket, term: Terminal | null, cmd: string) {
+    if (term) term.writeln(`\r\n\x1b[32m▶ Executando:\x1b[0m \x1b[33m${cmd}\x1b[0m`);
+    setRunningCmd(cmd);
+    onRunningChangeRef.current?.(true, cmd);
+    currentCmdRef.current = cmd;
+    outputBufferRef.current = &quot;&quot;;
+    ws.send(cmd + &quot;\n&quot;);
+    onCommandExecuted?.();
+    if (runTimerRef.current) clearTimeout(runTimerRef.current);
+    runTimerRef.current = setTimeout(() =&gt; {
+      setRunningCmd(null);
+      onRunningChangeRef.current?.(false);
+      if (currentCmdRef.current === cmd) {
+        const out = outputBufferRef.current.slice(0, 8000);
+        onCommandOutput?.(cmd, out + &quot;\n[Timeout — comando excedeu 10 minutos]&quot;, false);
+        currentCmdRef.current = null;
+        outputBufferRef.current = &quot;&quot;;
+      }
+    }, CMD_TIMEOUT_MS);
+  }
+
+  const quickSend = useCallback((cmd: string) =&gt; {
+    const ws = wsRef.current;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+    sendCmd(ws, termRef.current, cmd);
+  }, []);
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>handleReconnect →</span>
+    <div>
+      <small>L402–L443</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">  const handleReconnect = () =&gt; {
+    reconnectCountRef.current = 0;
+    connectFnRef.current?.();
+  };
+
+  // ── Busca de pacotes npm / pip ───────────────────────────────────────────
+  const searchPackages = useCallback(async (query: string, mode: &quot;npm&quot; | &quot;pip&quot;) =&gt; {
+    if (!query.trim() || query.length &lt; 2) { setPkgResults([]); return; }
+    setPkgSearching(true);
+    try {
+      if (mode === &quot;npm&quot;) {
+        const res = await fetch(`https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(query)}&amp;size=8`);
+        if (!res.ok) throw new Error(&quot;Falha&quot;);
+        const data = await res.json();
+        setPkgResults((data.objects ?? []).map((o: any) =&gt; ({
+          name: o.package.name,
+          description: o.package.description ?? &quot;&quot;,
+          version: o.package.version ?? &quot;&quot;,
+        })));
+      } else {
+        const names = [query, query.replace(/-/g, &quot;_&quot;), query.replace(/_/g, &quot;-&quot;)];
+        const found: PkgResult[] = [];
+        for (const n of names) {
+          try {
+            const res = await fetch(`https://pypi.org/pypi/${encodeURIComponent(n)}/json`);
+            if (res.ok) {
+              const { info } = await res.json();
+              if (info &amp;&amp; !found.find(x =&gt; x.name === info.name)) {
+                found.push({ name: info.name, description: info.summary ?? &quot;&quot;, version: info.version ?? &quot;&quot; });
+              }
+            }
+          } catch { /* sem resultado */ }
+        }
+        setPkgResults(found);
+      }
+    } catch {
+      setPkgResults([]);
+    } finally {
+      setPkgSearching(false);
+    }
+  }, []);
+</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>handlePkgQueryChange →</span>
+    <div>
+      <small>L444–L449</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">  const handlePkgQueryChange = (q: string) =&gt; {
+    setPkgQuery(q);
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() =&gt; searchPackages(q, pkgMode), 400);
+  };
+</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>handlePkgModeChange →</span>
+    <div>
+      <small>L450–L458</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">  const handlePkgModeChange = (m: &quot;npm&quot; | &quot;pip&quot;) =&gt; {
+    setPkgMode(m);
+    setPkgResults([]);
+    if (pkgQuery.trim().length &gt;= 2) {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+      searchDebounceRef.current = setTimeout(() =&gt; searchPackages(pkgQuery, m), 400);
+    }
+  };
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>installPkg →</span>
+    <div>
+      <small>L459–L467</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">  const installPkg = (name: string) =&gt; {
+    const cmd = pkgMode === &quot;npm&quot; ? `npm install ${name}` : `pip install ${name}`;
+    quickSend(cmd);
+    setShowPkgSearch(false);
+    setPkgQuery(&quot;&quot;);
+    setPkgResults([]);
+  };
+
+  // ── Tradução de erros para português ─────────────────────────────────────</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>explainErrorPt</span>
+    <div>
+      <small>L468–L724</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">  function explainErrorPt(text: string): string | null {
+    const t = text.toLowerCase();
+    if (/command not found|not found.*command/i.test(text))
+      return &quot;⚠️ Comando não encontrado — o programa pode não estar instalado. Tente instalar com npm install ou pip install.&quot;;
+    if (/cannot find module|module not found/i.test(text)) {
+      const m = text.match(/cannot find module ['&quot;]([^'&quot;]+)['&quot;]/i);
+      return `⚠️ Módulo Node.js não encontrado${m ? `: &quot;${m[1]}&quot;` : &quot;&quot;}. Rode: npm install ${m?.[1] || &quot;[nome]&quot;}`;
+    }
+    if (/modulenotfounderror|no module named/i.test(text)) {
+      const m = text.match(/no module named '([^']+)'/i);
+      return `⚠️ Biblioteca Python não instalada${m ? `: &quot;${m[1]}&quot;` : &quot;&quot;}. Rode: pip install ${m?.[1] || &quot;[nome]&quot;}`;
+    }
+    if (/enoent/i.test(text))
+      return &quot;⚠️ Arquivo ou pasta não encontrado (ENOENT). Verifique se o caminho está correto.&quot;;
+    if (/eacces|permission denied/i.test(text))
+      return &quot;⚠️ Permissão negada. O arquivo ou pasta não pode ser acessado. Verifique as permissões.&quot;;
+    if (/eaddrinuse|address already in use/i.test(text)) {
+      const m = text.match(/:(\d{4,5})/);
+      return `⚠️ Porta${m ? ` ${m[1]}` : &quot;&quot;} já está em uso. Mude a porta no seu código ou pare o outro processo.`;
+    }
+    if (/econnrefused|connection refused/i.test(text))
+      return &quot;⚠️ Conexão recusada. O servidor não está rodando ou a porta está errada.&quot;;
+    if (/syntaxerror/i.test(text))
+      return &quot;⚠️ Erro de sintaxe no código — há um erro de digitação. Verifique a linha indicada acima.&quot;;
+    if (/typeerror/i.test(text))
+      return &quot;⚠️ Erro de tipo — uma variável ou valor está sendo usado de forma incorreta. Veja a linha indicada.&quot;;
+    if (/referenceerror/i.test(text))
+      return &quot;⚠️ Variável ou função não definida. Verifique se o nome está certo e se foi declarada.&quot;;
+    if (/importerror|cannot import/i.test(text))
+      return &quot;⚠️ Erro ao importar — a biblioteca pode não estar instalada ou o nome está errado.&quot;;
+    if (/traceback/i.test(text))
+      return &quot;⚠️ Erro Python detectado. Veja as linhas acima (Traceback) para identificar onde ocorreu.&quot;;
+    if (/npm err!/i.test(text))
+      return &quot;⚠️ Erro no npm. Veja a mensagem acima. Tente rodar: npm install para reinstalar as dependências.&quot;;
+    if (/build failed|compilation failed/i.test(text))
+      return &quot;⚠️ A compilação falhou. Veja os erros listados acima e corrija antes de tentar de novo.&quot;;
+    if (/out of memory|heap out of memory/i.test(text))
+      return &quot;⚠️ Memória insuficiente. O processo consumiu toda a RAM disponível. Reinicie o terminal.&quot;;
+    if (t.includes(&quot;error&quot;) || t.includes(&quot;erro&quot;) || t.includes(&quot;exception&quot;) || t.includes(&quot;fatal&quot;))
+      return &quot;⚠️ Erro detectado no terminal. Leia a mensagem acima para identificar o problema.&quot;;
+    return null;
+  }
+
+  // ── Status visual ────────────────────────────────────────────────────────
+  const statusDot: Record&lt;Status, string&gt; = {
+    connecting:   &quot;bg-yellow-400 animate-pulse&quot;,
+    connected:    &quot;bg-green-400&quot;,
+    disconnected: &quot;bg-gray-500 animate-pulse&quot;,
+    error:        &quot;bg-red-500&quot;,
+  };
+  const statusLabel: Record&lt;Status, string&gt; = {
+    connecting:   &quot;conectando...&quot;,
+    connected:    &quot;bash ativo&quot;,
+    disconnected: &quot;reconectando...&quot;,
+    error:        &quot;erro&quot;,
+  };
+
+  return (
+    &lt;div className=&quot;h-full flex flex-col bg-[#0d0d0d] overflow-hidden&quot;&gt;
+
+      {/* ── Status bar ── */}
+      &lt;div className=&quot;flex items-center gap-2 px-3 py-1 bg-[#141414] border-b border-gray-700/30 shrink-0 min-h-[28px]&quot;&gt;
+        &lt;div className={`w-2 h-2 rounded-full shrink-0 ${statusDot[status]}`} /&gt;
+        &lt;span className=&quot;text-[11px] text-gray-500&quot;&gt;{statusLabel[status]}&lt;/span&gt;
+
+        {runningCmd &amp;&amp; (
+          &lt;div className=&quot;flex items-center gap-1.5 ml-1&quot;&gt;
+            &lt;div className=&quot;flex gap-0.5&quot;&gt;
+              {[0,1,2].map(i =&gt; (
+                &lt;div key={i} className=&quot;w-1.5 h-1.5 bg-yellow-400 rounded-full animate-bounce&quot; style={{ animationDelay: `${i*0.1}s` }} /&gt;
+              ))}
+            &lt;/div&gt;
+            &lt;span className=&quot;text-[10px] text-yellow-300 font-mono max-w-[180px] truncate&quot;&gt;
+              ⏳ {runningCmd.length &gt; 35 ? runningCmd.slice(0, 35) + &quot;…&quot; : runningCmd}
+            &lt;/span&gt;
+          &lt;/div&gt;
+        )}
+
+        &lt;div className=&quot;flex-1&quot; /&gt;
+
+        {/* Botão busca de pacotes */}
+        &lt;button
+          onClick={() =&gt; { setShowPkgSearch(v =&gt; !v); setPkgQuery(&quot;&quot;); setPkgResults([]); }}
+          className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all active:scale-95 ${
+            showPkgSearch
+              ? &quot;bg-gray-800/30 text-green-300 border-green-600/50&quot;
+              : &quot;text-gray-500 border-gray-700/30 hover:border-green-700/40 hover:text-green-400&quot;
+          }`}
+          title=&quot;Buscar e instalar biblioteca&quot;
+        &gt;
+          📦 Pacotes
+        &lt;/button&gt;
+
+        {(status === &quot;error&quot; || (status === &quot;disconnected&quot; &amp;&amp; reconnectCountRef.current &gt;= MAX_RECONNECT)) &amp;&amp; (
+          &lt;button
+            onClick={handleReconnect}
+            className=&quot;text-[11px] px-2.5 py-1 rounded-lg border font-bold transition-all active:scale-95 text-green-400 border-green-700/30 hover:border-green-600/50 hover:bg-green-900/10&quot;
+          &gt;
+            ↺ Reconectar
+          &lt;/button&gt;
+        )}
+      &lt;/div&gt;
+
+      {/* ── Banner de erro em português ── */}
+      {errorExplain &amp;&amp; (
+        &lt;div className=&quot;shrink-0 flex items-start gap-2 px-3 py-2 bg-[#1f0e0e] border-b border-red-800/50&quot;&gt;
+          &lt;span className=&quot;text-[12px] text-red-300 flex-1 leading-relaxed&quot;&gt;{errorExplain}&lt;/span&gt;
+          &lt;button
+            onClick={() =&gt; setErrorExplain(null)}
+            className=&quot;text-red-700 hover:text-red-400 shrink-0 text-[11px] mt-0.5&quot;
+            title=&quot;Fechar&quot;
+          &gt;
+            ✕
+          &lt;/button&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* ── Painel de busca de pacotes ── */}
+      {showPkgSearch &amp;&amp; (
+        &lt;div className=&quot;shrink-0 bg-[#111a0a] border-b border-green-700/30 px-2 py-2 flex flex-col gap-1.5&quot;&gt;
+          {/* Tabs npm / pip */}
+          &lt;div className=&quot;flex items-center gap-1&quot;&gt;
+            {([&quot;npm&quot;, &quot;pip&quot;] as const).map(m =&gt; (
+              &lt;button
+                key={m}
+                onClick={() =&gt; handlePkgModeChange(m)}
+                className={`px-3 py-0.5 rounded-md text-[11px] font-bold transition-all ${
+                  pkgMode === m
+                    ? &quot;bg-green-700/50 text-green-200 border border-green-600/50&quot;
+                    : &quot;text-gray-500 hover:text-gray-300&quot;
+                }`}
+              &gt;
+                {m === &quot;npm&quot; ? &quot;📦 npm&quot; : &quot;🐍 pip&quot;}
+              &lt;/button&gt;
+            ))}
+            &lt;span className=&quot;text-[10px] text-gray-600 ml-auto&quot;&gt;
+              {pkgMode === &quot;npm&quot; ? &quot;npmjs.com&quot; : &quot;pypi.org&quot;}
+            &lt;/span&gt;
+          &lt;/div&gt;
+
+          {/* Campo de busca */}
+          &lt;div className=&quot;relative&quot;&gt;
+            &lt;input
+              autoFocus
+              type=&quot;text&quot;
+              value={pkgQuery}
+              onChange={e =&gt; handlePkgQueryChange(e.target.value)}
+              placeholder={pkgMode === &quot;npm&quot; ? &quot;ex: axios, lodash, react-query...&quot; : &quot;ex: requests, numpy, flask...&quot;}
+              className=&quot;w-full bg-[#141414] border border-gray-700/40 rounded-lg px-3 py-1.5 text-[12px] text-gray-200 placeholder-gray-600 focus:outline-none focus:border-green-600/60 focus:ring-1 focus:ring-green-700/30&quot;
+            /&gt;
+            {pkgSearching &amp;&amp; (
+              &lt;div className=&quot;absolute right-2 top-1/2 -translate-y-1/2&quot;&gt;
+                &lt;div className=&quot;w-3.5 h-3.5 border-2 border-green-600/40 border-t-green-400 rounded-full animate-spin&quot; /&gt;
+              &lt;/div&gt;
+            )}
+          &lt;/div&gt;
+
+          {/* Resultados */}
+          {pkgResults.length &gt; 0 &amp;&amp; (
+            &lt;div className=&quot;flex flex-col gap-0.5 max-h-[180px] overflow-y-auto&quot;&gt;
+              {pkgResults.map(pkg =&gt; (
+                &lt;button
+                  key={pkg.name}
+                  onClick={() =&gt; installPkg(pkg.name)}
+                  disabled={status !== &quot;connected&quot;}
+                  className=&quot;flex items-start gap-2 px-2.5 py-1.5 rounded-lg bg-[#141414] hover:bg-green-900/20 border border-gray-700/30 hover:border-green-600/40 text-left transition-all group disabled:opacity-40&quot;
+                &gt;
+                  &lt;div className=&quot;flex-1 min-w-0&quot;&gt;
+                    &lt;div className=&quot;flex items-center gap-2&quot;&gt;
+                      &lt;span className=&quot;text-[12px] font-bold text-green-300 font-mono&quot;&gt;{pkg.name}&lt;/span&gt;
+                      {pkg.version &amp;&amp; (
+                        &lt;span className=&quot;text-[9px] text-gray-600 font-mono&quot;&gt;v{pkg.version}&lt;/span&gt;
+                      )}
+                    &lt;/div&gt;
+                    {pkg.description &amp;&amp; (
+                      &lt;p className=&quot;text-[10px] text-gray-500 truncate mt-0.5&quot;&gt;{pkg.description}&lt;/p&gt;
+                    )}
+                  &lt;/div&gt;
+                  &lt;span className=&quot;shrink-0 text-[10px] text-green-600 group-hover:text-green-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity mt-0.5&quot;&gt;
+                    instalar →
+                  &lt;/span&gt;
+                &lt;/button&gt;
+              ))}
+            &lt;/div&gt;
+          )}
+
+          {!pkgSearching &amp;&amp; pkgQuery.length &gt;= 2 &amp;&amp; pkgResults.length === 0 &amp;&amp; (
+            &lt;p className=&quot;text-[11px] text-gray-600 px-1&quot;&gt;
+              {pkgMode === &quot;pip&quot;
+                ? &quot;Não encontrado no PyPI. Verifique o nome exato.&quot;
+                : &quot;Nenhum resultado encontrado.&quot;}
+            &lt;/p&gt;
+          )}
+        &lt;/div&gt;
+      )}
+
+      {/* ── Barra de comandos rápidos ── */}
+      &lt;div className=&quot;flex items-center gap-1.5 px-2 py-1.5 bg-[#111a0a] border-b border-gray-700/20 shrink-0 overflow-x-auto scrollbar-hide&quot;&gt;
+        {QUICK_CMDS.map(({ label, cmd }) =&gt; (
+          &lt;button
+            key={cmd}
+            onPointerDown={() =&gt; quickSend(cmd)}
+            disabled={status !== &quot;connected&quot;}
+            className=&quot;shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-[#141414] border border-gray-700/40 text-gray-400 hover:border-green-600/50 hover:text-green-300 hover:bg-green-900/10 transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed touch-manipulation&quot;
+            title={cmd}
+          &gt;
+            {label}
+          &lt;/button&gt;
+        ))}
+      &lt;/div&gt;
+
+      {/* ── Banner: pacote faltando detectado ── */}
+      {missingPkg &amp;&amp; (
+        &lt;div className=&quot;flex items-center gap-2 px-3 py-2 bg-amber-900/20 border-b border-amber-600/30 shrink-0&quot;&gt;
+          &lt;span className=&quot;text-[11px] text-amber-300 flex-1 truncate&quot;&gt;
+            📦 &lt;span className=&quot;font-bold font-mono&quot;&gt;{missingPkg.pkg}&lt;/span&gt; não encontrado
+          &lt;/span&gt;
+          &lt;button
+            onPointerDown={() =&gt; {
+              const cmd = missingPkg.isPip ? `pip install ${missingPkg.pkg}` : `npm install ${missingPkg.pkg}`;
+              quickSend(cmd);
+              setMissingPkg(null);
+            }}
+            className=&quot;shrink-0 px-3 py-1 rounded-lg text-[11px] font-bold bg-amber-600/30 border border-amber-500/50 text-amber-200 hover:bg-amber-600/50 active:scale-95 transition-all&quot;
+          &gt;
+            {missingPkg.isPip ? &quot;pip install&quot; : &quot;npm install&quot;} →
+          &lt;/button&gt;
+          &lt;button
+            onPointerDown={() =&gt; setMissingPkg(null)}
+            className=&quot;shrink-0 text-gray-600 hover:text-gray-400 p-0.5&quot;
+          &gt;✕&lt;/button&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* ── xterm container + botão ir ao fim ── */}
+      &lt;div className=&quot;flex-1 overflow-hidden relative&quot;&gt;
+        &lt;div ref={containerRef} className=&quot;w-full h-full p-1&quot; /&gt;
+
+        {/* Botão &quot;Ir ao fim&quot; — aparece quando o usuário scrollou para cima */}
+        {linesAbove &gt; 0 &amp;&amp; (
+          &lt;button
+            onPointerDown={() =&gt; {
+              termRef.current?.scrollToBottom();
+              setLinesAbove(0);
+            }}
+            className=&quot;absolute bottom-3 right-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#141414]/95 border border-green-600/50 text-green-300 text-[11px] font-bold shadow-lg hover:bg-green-900/40 active:scale-95 transition-all backdrop-blur-sm&quot;
+            title=&quot;Ir para o final do terminal&quot;
+          &gt;
+            &lt;span className=&quot;text-[10px] text-gray-500&quot;&gt;{linesAbove.toLocaleString()} linhas acima&lt;/span&gt;
+            &lt;span&gt;⬇ Fim&lt;/span&gt;
+          &lt;/button&gt;
+        )}
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+</body>
+</html>
