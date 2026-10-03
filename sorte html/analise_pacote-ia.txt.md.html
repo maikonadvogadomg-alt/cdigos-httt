@@ -1,0 +1,3910 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Análise: pacote-ia.txt.md</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; max-width: 1000px; margin: 0 auto; }
+  h1 { color: #74c69d; } h2 { color: #90cdf4; margin-top: 32px; }
+  .meta { color: #718096; font-size: 0.85rem; margin-bottom: 24px; }
+  .idx { background: #161b22; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .idx-item { padding: 4px 0; font-family: monospace; font-size: 0.85rem; }
+  .block { background: #161b22; border: 1px solid #2d3748; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+  .block-h { background: #1a2332; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .block-h span { color: #74c69d; font-family: monospace; }
+  .block-h small { color: #4a5568; }
+  .copy-btn { background: #1a365d; color: #90cdf4; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.78rem; }
+  .copy-btn:hover { background: #2a4a7f; }
+  pre { padding: 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; color: #a8b2c1; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; }
+</style>
+</head>
+<body>
+<h1>🔬 pacote-ia.txt.md</h1>
+<div class="meta">Gerado em 03/10/2026, 08:49:23 • 166 elementos • 36 blocos</div>
+<h2>📋 Índice</h2>
+<div class="idx">
+<div class="idx-item">L37 [import] import { createRequire } from &quot;node:module&quot;;</div><div class="idx-item">L38 [import] import path from &quot;node:path&quot;;</div><div class="idx-item">L39 [import] import { fileURLToPath } from &quot;node:url&quot;;</div><div class="idx-item">L40 [import] import { build as esbuild } from &quot;esbuild&quot;;</div><div class="idx-item">L41 [import] import esbuildPluginPino from &quot;esbuild-plugin-pino&quot;;</div><div class="idx-item">L42 [import] import { rm, chmod, access } from &quot;node:fs/promises&quot;;</div><div class="idx-item">L43 [import] import { spawnSync } from &quot;node:child_process&quot;;</div><div class="idx-item">L50 [function] buildAll</div><div class="idx-item">L149 [import] import __bannerPath from 'node:path';</div><div class="idx-item">L150 [import] import __bannerUrl from 'node:url';</div><div class="idx-item">L247 [import] import path from &quot;node:path&quot;;</div><div class="idx-item">L248 [import] import { fileURLToPath } from &quot;node:url&quot;;</div><div class="idx-item">L249 [import] import { spawn, spawnSync } from &quot;node:child_process&quot;;</div><div class="idx-item">L250 [import] import { existsSync, chmodSync, unlinkSync, mkdirSync, writeFileSync } from &quot;nod</div><div class="idx-item">L251 [import] import { join as pathJoin } from &quot;node:path&quot;;</div><div class="idx-item">L252 [import] import http from &quot;http&quot;;</div><div class="idx-item">L253 [import] import { WebSocketServer, WebSocket } from &quot;ws&quot;;</div><div class="idx-item">L254 [import] import app from &quot;./app&quot;;</div><div class="idx-item">L255 [import] import { logger } from &quot;./lib/logger&quot;;</div><div class="idx-item">L283 [const] PTY_HELPER</div><div class="idx-item">L284 [const] PTY_SRC</div><div class="idx-item">L286 [interface] TermMode</div><div class="idx-item">L288 [function] detectTermMode</div><div class="idx-item">L309 [function] helpText →</div><div class="idx-item">L327 [const] TERM_MODE</div><div class="idx-item">L332 [const] WORKSPACE_DIR</div><div class="idx-item">L354 [function] PYTHON3_PATH →</div><div class="idx-item">L401 [comment] // \x1b[s = salva posição do cursor  \x1b[u = restaura posiç</div><div class="idx-item">L469 [function] sendFb →</div><div class="idx-item">L482 [function] send →</div><div class="idx-item">L536 [import] import { Router, type IRouter } from &quot;express&quot;;</div><div class="idx-item">L537 [import] import healthRouter from &quot;./health&quot;;</div><div class="idx-item">L538 [import] import aiChatRouter from &quot;./ai-chat&quot;;</div><div class="idx-item">L539 [import] import searchRouter from &quot;./search&quot;;</div><div class="idx-item">L540 [import] import execRouter from &quot;./exec&quot;;</div><div class="idx-item">L541 [import] import proxyRouter from &quot;./proxy&quot;;</div><div class="idx-item">L542 [import] import voiceRouter from &quot;./voice&quot;;</div><div class="idx-item">L543 [import] import githubRouter from &quot;./github&quot;;</div><div class="idx-item">L544 [import] import configRouter from &quot;./config&quot;;</div><div class="idx-item">L545 [import] import driveRouter from &quot;./drive&quot;;</div><div class="idx-item">L546 [import] import uploadRouter from &quot;./upload&quot;;</div><div class="idx-item">L547 [import] import legalAiRouter from &quot;./legal-ai&quot;;</div><div class="idx-item">L548 [import] import workspaceRouter from &quot;./workspace&quot;;</div><div class="idx-item">L549 [import] import dbRouter from &quot;./db&quot;;</div><div class="idx-item">L550 [import] import aiForwardRouter from &quot;./ai-forward&quot;;</div><div class="idx-item">L551 [import] import twaRouter from &quot;./twa&quot;;</div><div class="idx-item">L552 [import] import pagesRouter from &quot;./pages&quot;;</div><div class="idx-item">L694 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L695 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L696 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L697 [import] import path from &quot;path&quot;;</div><div class="idx-item">L740 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L741 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L742 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L743 [import] import path from &quot;path&quot;;</div><div class="idx-item">L744 [import] import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;</div><div class="idx-item">L1261 [import] import { createRoot } from &quot;react-dom/client&quot;;</div><div class="idx-item">L1262 [import] import App from &quot;./App&quot;;</div><div class="idx-item">L1263 [import] import &quot;./index.css&quot;;</div><div class="idx-item">L1268 [import] import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;</div><div class="idx-item">L1269 [import] import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;</div><div class="idx-item">L1270 [import] import { Template } from &quot;@/lib/templates&quot;;</div><div class="idx-item">L1271 [import] import { importFromZip } from &quot;@/lib/zip-service&quot;;</div><div class="idx-item">L1272 [import] import {</div><div class="idx-item">L1276 [import] import TemplateSelector from &quot;@/components/TemplateSelector&quot;;</div><div class="idx-item">L1277 [import] import EditorLayout from &quot;@/components/EditorLayout&quot;;</div><div class="idx-item">L1278 [import] import CampoLivre from &quot;@/components/CampoLivre&quot;;</div><div class="idx-item">L1279 [import] import AssistenteJuridico from &quot;@/components/AssistenteJuridico&quot;;</div><div class="idx-item">L1283 [component] App</div><div class="idx-item">L1328 [function] save →</div><div class="idx-item">L1410 [function] toggleBtn →</div><div class="idx-item">L1487 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L1488 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L1489 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L1490 [import] import path from &quot;path&quot;;</div><div class="idx-item">L1491 [import] import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;</div><div class="idx-item">L1492 [import] import { mockupPreviewPlugin } from &quot;./mockupPreviewPlugin&quot;;</div><div class="idx-item">L1655 [import] import { createRoot } from &quot;react-dom/client&quot;;</div><div class="idx-item">L1656 [import] import App from &quot;./App&quot;;</div><div class="idx-item">L1657 [import] import &quot;./index.css&quot;;</div><div class="idx-item">L1662 [import] import { useEffect, useState, type ComponentType } from &quot;react&quot;;</div><div class="idx-item">L1664 [import] import { modules as discoveredModules } from &quot;./.generated/mockup-components&quot;;</div><div class="idx-item">L1666 [interface] ModuleMap</div><div class="idx-item">L1683 [component] PreviewRenderer</div><div class="idx-item">L1699 [function] loadComponent</div><div class="idx-item">L1751 [function] getBasePath</div><div class="idx-item">L1755 [function] getPreviewExamplePath</div><div class="idx-item">L1760 [component] Gallery</div><div class="idx-item">L1781 [function] getPreviewPath</div><div class="idx-item">L1792 [component] App</div><div class="idx-item">L1810 [import] import { createRoot } from &quot;react-dom/client&quot;;</div><div class="idx-item">L1811 [import] import App from &quot;./App&quot;;</div><div class="idx-item">L1812 [import] import &quot;./index.css&quot;;</div><div class="idx-item">L1817 [import] import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;</div><div class="idx-item">L1818 [import] import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;</div><div class="idx-item">L1819 [import] import { Template } from &quot;@/lib/templates&quot;;</div><div class="idx-item">L1820 [import] import { importFromZip } from &quot;@/lib/zip-service&quot;;</div><div class="idx-item">L1821 [import] import {</div><div class="idx-item">L1825 [import] import TemplateSelector from &quot;@/components/TemplateSelector&quot;;</div><div class="idx-item">L1826 [import] import EditorLayout from &quot;@/components/EditorLayout&quot;;</div><div class="idx-item">L1827 [import] import CampoLivre from &quot;@/components/CampoLivre&quot;;</div><div class="idx-item">L1828 [import] import AssistenteJuridico from &quot;@/components/AssistenteJuridico&quot;;</div><div class="idx-item">L1829 [import] import Extrator from &quot;@/components/Extrator&quot;;</div><div class="idx-item">L1830 [import] import Scanner from &quot;@/components/Scanner&quot;;</div><div class="idx-item">L1831 [import] import InAppBrowser from &quot;@/components/InAppBrowser&quot;;</div><div class="idx-item">L1832 [import] import AbrirOnline from &quot;@/components/AbrirOnline&quot;;</div><div class="idx-item">L1836 [component] App</div><div class="idx-item">L1899 [function] save →</div><div class="idx-item">L1973 [function] toggleBtn →</div><div class="idx-item">L2072 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L2073 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L2074 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L2075 [import] import path from &quot;path&quot;;</div><div class="idx-item">L2102 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L2103 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L2104 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L2105 [import] import path from &quot;path&quot;;</div><div class="idx-item">L2125 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L2126 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L2127 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L2128 [import] import path from &quot;path&quot;;</div><div class="idx-item">L2129 [import] import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;</div><div class="idx-item">L2347 [import] import type { CapacitorConfig } from '@capacitor/cli';</div><div class="idx-item">L2372 [import] import { defineConfig } from &quot;vite&quot;;</div><div class="idx-item">L2373 [import] import react from &quot;@vitejs/plugin-react&quot;;</div><div class="idx-item">L2374 [import] import tailwindcss from &quot;@tailwindcss/vite&quot;;</div><div class="idx-item">L2375 [import] import path from &quot;path&quot;;</div><div class="idx-item">L2376 [import] import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;</div><div class="idx-item">L2492 [const] PORT</div><div class="idx-item">L2493 [const] GEMINI_KEY</div><div class="idx-item">L2494 [const] GEMINI_MODEL</div><div class="idx-item">L2495 [const] GEMINI_BASE</div><div class="idx-item">L2498 [function] setCors</div><div class="idx-item">L2505 [function] readBody</div><div class="idx-item">L2515 [function] handleAIChat</div><div class="idx-item">L2577 [function] handleHealth</div><div class="idx-item">L2786 [import] import { createRoot } from &quot;react-dom/client&quot;;</div><div class="idx-item">L2787 [import] import App from &quot;./App&quot;;</div><div class="idx-item">L2788 [import] import &quot;./index.css&quot;;</div><div class="idx-item">L2793 [import] import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;</div><div class="idx-item">L2794 [import] import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;</div><div class="idx-item">L2795 [import] import { Template } from &quot;@/lib/templates&quot;;</div><div class="idx-item">L2796 [import] import { importFromZip } from &quot;@/lib/zip-service&quot;;</div><div class="idx-item">L2797 [import] import {</div><div class="idx-item">L2802 [import] import TemplateSelector from &quot;@/components/TemplateSelector&quot;;</div><div class="idx-item">L2803 [import] import EditorLayout from &quot;@/components/EditorLayout&quot;;</div><div class="idx-item">L2804 [import] import CampoLivre from &quot;@/components/CampoLivre&quot;;</div><div class="idx-item">L2805 [import] import AssistenteJuridico from &quot;@/components/AssistenteJuridico&quot;;</div><div class="idx-item">L2809 [component] App</div><div class="idx-item">L2867 [function] save →</div><div class="idx-item">L2949 [function] toggleBtn →</div><div class="idx-item">L3036 [const] DIST</div><div class="idx-item">L3037 [const] PROJECTS_DIR</div><div class="idx-item">L3038 [const] SETTINGS_FILE</div><div class="idx-item">L3043 [const] MIME</div><div class="idx-item">L3055 [const] PORT_PATTERNS</div><div class="idx-item">L3064 [function] detectPort</div><div class="idx-item">L3076 [function] proxyRequest</div><div class="idx-item">L3109 [function] startServer</div><div class="idx-item">L3151 [function] send →</div><div class="idx-item">L3164 [const] PATH</div><div class="idx-item">L3175 [function] handleData →</div><div class="idx-item">L3341 [function] getShell</div><div class="idx-item">L3362 [function] send →</div><div class="idx-item">L3404 [function] ensureProjectsDir</div><div class="idx-item">L3495 [function] createWindow</div>
+</div>
+<h2>🧩 Blocos</h2>
+
+<div class="block" id="b0">
+  <div class="block-h">
+    <span>📦 Imports e Configurações</span>
+    <div>
+      <small>L1–L49</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre0').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre0">===== ARQUIVO: .replit =====
+modules = [&quot;nodejs-20&quot;]
+[nix]
+channel = &quot;stable-25_05&quot;
+
+[agent]
+expertMode = true
+
+===== ARQUIVO: replit.nix =====
+{pkgs}: {
+  deps = [
+    pkgs.python313Packages.pyngrok
+    pkgs.unzip
+  ];
+}
+
+===== ARQUIVO: api-server/tsconfig.json =====
+{
+  &quot;extends&quot;: &quot;../../tsconfig.base.json&quot;,
+  &quot;compilerOptions&quot;: {
+    &quot;outDir&quot;: &quot;dist&quot;,
+    &quot;rootDir&quot;: &quot;src&quot;,
+    &quot;types&quot;: [&quot;node&quot;]
+  },
+  &quot;include&quot;: [&quot;src&quot;],
+  &quot;references&quot;: [
+    {
+      &quot;path&quot;: &quot;../../lib/db&quot;
+    },
+    {
+      &quot;path&quot;: &quot;../../lib/api-zod&quot;
+    }
+  ]
+}
+
+===== ARQUIVO: api-server/build.mjs =====
+import { createRequire } from &quot;node:module&quot;;
+import path from &quot;node:path&quot;;
+import { fileURLToPath } from &quot;node:url&quot;;
+import { build as esbuild } from &quot;esbuild&quot;;
+import esbuildPluginPino from &quot;esbuild-plugin-pino&quot;;
+import { rm, chmod, access } from &quot;node:fs/promises&quot;;
+import { spawnSync } from &quot;node:child_process&quot;;
+
+// Plugins (e.g. 'esbuild-plugin-pino') may use `require` to resolve dependencies
+globalThis.require = createRequire(import.meta.url);
+
+const artifactDir = path.dirname(fileURLToPath(import.meta.url));
+</pre>
+</div>
+<div class="block" id="b1">
+  <div class="block-h">
+    <span>buildAll</span>
+    <div>
+      <small>L50–L287</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre1').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre1">async function buildAll() {
+  const distDir = path.resolve(artifactDir, &quot;dist&quot;);
+  await rm(distDir, { recursive: true, force: true });
+
+  await esbuild({
+    entryPoints: [path.resolve(artifactDir, &quot;src/index.ts&quot;)],
+    platform: &quot;node&quot;,
+    bundle: true,
+    format: &quot;esm&quot;,
+    outdir: distDir,
+    outExtension: { &quot;.js&quot;: &quot;.mjs&quot; },
+    logLevel: &quot;info&quot;,
+    // Some packages may not be bundleable, so we externalize them, we can add more here as needed.
+    // Some of the packages below may not be imported or installed, but we're adding them in case they are in the future.
+    // Examples of unbundleable packages:
+    // - uses native modules and loads them dynamically (e.g. sharp)
+    // - use path traversal to read files (e.g. @google-cloud/secret-manager loads sibling .proto files)
+    external: [
+      &quot;*.node&quot;,
+      &quot;sharp&quot;,
+      &quot;better-sqlite3&quot;,
+      &quot;sqlite3&quot;,
+      &quot;canvas&quot;,
+      &quot;bcrypt&quot;,
+      &quot;argon2&quot;,
+      &quot;fsevents&quot;,
+      &quot;re2&quot;,
+      &quot;farmhash&quot;,
+      &quot;xxhash-addon&quot;,
+      &quot;bufferutil&quot;,
+      &quot;utf-8-validate&quot;,
+      &quot;ssh2&quot;,
+      &quot;cpu-features&quot;,
+      &quot;dtrace-provider&quot;,
+      &quot;isolated-vm&quot;,
+      &quot;lightningcss&quot;,
+      &quot;pg-native&quot;,
+      &quot;oracledb&quot;,
+      &quot;mongodb-client-encryption&quot;,
+      &quot;nodemailer&quot;,
+      &quot;handlebars&quot;,
+      &quot;knex&quot;,
+      &quot;typeorm&quot;,
+      &quot;protobufjs&quot;,
+      &quot;onnxruntime-node&quot;,
+      &quot;@tensorflow/*&quot;,
+      &quot;@prisma/client&quot;,
+      &quot;@mikro-orm/*&quot;,
+      &quot;@grpc/*&quot;,
+      &quot;@swc/*&quot;,
+      &quot;@aws-sdk/*&quot;,
+      &quot;@azure/*&quot;,
+      &quot;@opentelemetry/*&quot;,
+      &quot;@google-cloud/*&quot;,
+      &quot;@google/*&quot;,
+      &quot;googleapis&quot;,
+      &quot;firebase-admin&quot;,
+      &quot;@parcel/watcher&quot;,
+      &quot;@sentry/profiling-node&quot;,
+      &quot;@tree-sitter/*&quot;,
+      &quot;aws-sdk&quot;,
+      &quot;classic-level&quot;,
+      &quot;dd-trace&quot;,
+      &quot;ffi-napi&quot;,
+      &quot;grpc&quot;,
+      &quot;hiredis&quot;,
+      &quot;kerberos&quot;,
+      &quot;leveldown&quot;,
+      &quot;miniflare&quot;,
+      &quot;mysql2&quot;,
+      &quot;newrelic&quot;,
+      &quot;odbc&quot;,
+      &quot;piscina&quot;,
+      &quot;realm&quot;,
+      &quot;ref-napi&quot;,
+      &quot;rocksdb&quot;,
+      &quot;sass-embedded&quot;,
+      &quot;sequelize&quot;,
+      &quot;serialport&quot;,
+      &quot;snappy&quot;,
+      &quot;tinypool&quot;,
+      &quot;usb&quot;,
+      &quot;workerd&quot;,
+      &quot;wrangler&quot;,
+      &quot;zeromq&quot;,
+      &quot;zeromq-prebuilt&quot;,
+      &quot;playwright&quot;,
+      &quot;puppeteer&quot;,
+      &quot;puppeteer-core&quot;,
+      &quot;electron&quot;,
+    ],
+    sourcemap: &quot;linked&quot;,
+    plugins: [
+      // pino relies on workers to handle logging, instead of externalizing it we use a plugin to handle it
+      esbuildPluginPino({ transports: [&quot;pino-pretty&quot;] })
+    ],
+    // Make sure packages that are cjs only (e.g. express) but are bundled continue to work in our esm output file
+    banner: {
+      js: `import { createRequire as __bannerCrReq } from 'node:module';
+import __bannerPath from 'node:path';
+import __bannerUrl from 'node:url';
+
+globalThis.require = __bannerCrReq(import.meta.url);
+globalThis.__filename = __bannerUrl.fileURLToPath(import.meta.url);
+globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
+    `,
+    },
+  });
+}
+
+buildAll()
+  .then(async () =&gt; {
+    // Compila o helper PTY nativo (C) — necessario para terminal real
+    const helperSrc = path.resolve(artifactDir, &quot;pty_helper.c&quot;);
+    const helperDst = path.resolve(artifactDir, &quot;pty_helper&quot;);
+
+    // Verifica se o .c existe
+    try { await access(helperSrc); } catch {
+      console.warn(&quot;Aviso: pty_helper.c nao encontrado, terminal PTY indisponivel&quot;);
+      return;
+    }
+
+    // Tenta compilar com gcc, depois com cc
+    const compilers = [&quot;gcc&quot;, &quot;cc&quot;, &quot;g++&quot;];
+    let compiled = false;
+    for (const compiler of compilers) {
+      const result = spawnSync(compiler, [&quot;-O2&quot;, &quot;-o&quot;, helperDst, helperSrc, &quot;-lutil&quot;], {
+        stdio: &quot;inherit&quot;,
+        encoding: &quot;utf8&quot;,
+      });
+      if (result.status === 0) {
+        await chmod(helperDst, 0o755);
+        console.log(`pty_helper compilado com ${compiler} -&gt; ${helperDst}`);
+        compiled = true;
+        break;
+      }
+    }
+    if (!compiled) {
+      console.warn(&quot;Aviso: nao foi possivel compilar pty_helper (gcc/cc nao encontrado)&quot;);
+    }
+  })
+  .catch((err) =&gt; {
+    console.error(err);
+    process.exit(1);
+  });
+
+===== ARQUIVO: api-server/package.json =====
+{
+  &quot;name&quot;: &quot;@workspace/api-server&quot;,
+  &quot;version&quot;: &quot;0.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;export NODE_ENV=development &amp;&amp; pnpm run build &amp;&amp; pnpm run start&quot;,
+    &quot;build&quot;: &quot;node ./build.mjs&quot;,
+    &quot;start&quot;: &quot;node --enable-source-maps ./dist/index.mjs&quot;,
+    &quot;typecheck&quot;: &quot;tsc -p tsconfig.json --noEmit&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@google/genai&quot;: &quot;^2.2.0&quot;,
+    &quot;@neondatabase/serverless&quot;: &quot;^1.0.2&quot;,
+    &quot;@octokit/rest&quot;: &quot;^22.0.1&quot;,
+    &quot;@replit/connectors-sdk&quot;: &quot;^0.4.0&quot;,
+    &quot;@types/jszip&quot;: &quot;^3.4.1&quot;,
+    &quot;@types/pdf-parse&quot;: &quot;^1.1.5&quot;,
+    &quot;@types/pg&quot;: &quot;^8.18.0&quot;,
+    &quot;@workspace/api-zod&quot;: &quot;workspace:*&quot;,
+    &quot;@workspace/db&quot;: &quot;workspace:*&quot;,
+    &quot;cookie-parser&quot;: &quot;^1.4.7&quot;,
+    &quot;cors&quot;: &quot;^2&quot;,
+    &quot;drizzle-orm&quot;: &quot;catalog:&quot;,
+    &quot;express&quot;: &quot;^5&quot;,
+    &quot;jszip&quot;: &quot;^3.10.1&quot;,
+    &quot;mammoth&quot;: &quot;^1.12.0&quot;,
+    &quot;multer&quot;: &quot;^2.1.1&quot;,
+    &quot;openai&quot;: &quot;^6.34.0&quot;,
+    &quot;pdf-parse&quot;: &quot;^2.4.5&quot;,
+    &quot;pg&quot;: &quot;^8.20.0&quot;,
+    &quot;pino&quot;: &quot;^9&quot;,
+    &quot;pino-http&quot;: &quot;^10&quot;,
+    &quot;ws&quot;: &quot;^8.20.0&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/cookie-parser&quot;: &quot;^1.4.10&quot;,
+    &quot;@types/cors&quot;: &quot;^2.8.19&quot;,
+    &quot;@types/express&quot;: &quot;^5.0.6&quot;,
+    &quot;@types/multer&quot;: &quot;^2.1.0&quot;,
+    &quot;@types/node&quot;: &quot;catalog:&quot;,
+    &quot;@types/ws&quot;: &quot;^8.18.1&quot;,
+    &quot;esbuild&quot;: &quot;^0.27.3&quot;,
+    &quot;esbuild-plugin-pino&quot;: &quot;^2.3.3&quot;,
+    &quot;pino-pretty&quot;: &quot;^13&quot;,
+    &quot;thread-stream&quot;: &quot;3.1.0&quot;
+  }
+}
+
+===== ARQUIVO: api-server/src/index.ts =====
+import path from &quot;node:path&quot;;
+import { fileURLToPath } from &quot;node:url&quot;;
+import { spawn, spawnSync } from &quot;node:child_process&quot;;
+import { existsSync, chmodSync, unlinkSync, mkdirSync, writeFileSync } from &quot;node:fs&quot;;
+import { join as pathJoin } from &quot;node:path&quot;;
+import http from &quot;http&quot;;
+import { WebSocketServer, WebSocket } from &quot;ws&quot;;
+import app from &quot;./app&quot;;
+import { logger } from &quot;./lib/logger&quot;;
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const rawPort = process.env[&quot;PORT&quot;];
+if (!rawPort) throw new Error(&quot;PORT environment variable is required.&quot;);
+const port = Number(rawPort);
+if (Number.isNaN(port) || port &lt;= 0) throw new Error(`Invalid PORT: &quot;${rawPort}&quot;`);
+
+const server = http.createServer(app);
+
+// ─── WebSocket Terminal ───────────────────────────────────────────────────────
+const wss = new WebSocketServer({ noServer: true });
+
+server.on(&quot;upgrade&quot;, (req, socket, head) =&gt; {
+  const url = req.url ?? &quot;&quot;;
+  if (url === &quot;/api/ws/terminal&quot; || url === &quot;/ws/terminal&quot; || url.endsWith(&quot;/ws/terminal&quot;)) {
+    wss.handleUpgrade(req, socket, head, (ws) =&gt; wss.emit(&quot;connection&quot;, ws, req));
+  } else {
+    socket.destroy();
+  }
+});
+
+// ─── Detectar modo de terminal disponivel ────────────────────────────────────
+// Hierarquia:
+//   1. pty_helper (C custom) — melhor: cores, resize, scrollback completo
+//   2. script -q /dev/null   — bom: cria PTY sem precisar de gcc (disponível em prod)
+//   3. bash --login          — basico: sem PTY, sem cores, buffering limitado
+const PTY_HELPER = path.resolve(__dirname, &quot;../pty_helper&quot;);
+const PTY_SRC    = path.resolve(__dirname, &quot;../pty_helper.c&quot;);
+
+type TermMode = &quot;pty_helper&quot; | &quot;script&quot; | &quot;script-noflush&quot; | &quot;stdbuf&quot; | &quot;bash&quot;;
+</pre>
+</div>
+<div class="block" id="b2">
+  <div class="block-h">
+    <span>detectTermMode</span>
+    <div>
+      <small>L288–L308</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre2').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre2">function detectTermMode(): TermMode {
+  // Tentativa 1: compilar pty_helper.c fresh (se gcc disponivel)
+  if (existsSync(PTY_SRC)) {
+    try { if (existsSync(PTY_HELPER)) unlinkSync(PTY_HELPER); } catch { /* ok */ }
+    for (const cc of [&quot;gcc&quot;, &quot;cc&quot;, &quot;g++&quot;]) {
+      const r = spawnSync(cc, [&quot;-O2&quot;, &quot;-o&quot;, PTY_HELPER, PTY_SRC, &quot;-lutil&quot;], {
+        stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot;,
+      });
+      if (r.status === 0) {
+        try { chmodSync(PTY_HELPER, 0o755); } catch { /* ok */ }
+        logger.info({ compiler: cc }, &quot;pty_helper compilado com sucesso&quot;);
+        return &quot;pty_helper&quot;;
+      }
+    }
+  }
+
+  // Tentativa 2: usar `script` (cria PTY sem gcc — disponivel em producao)
+  const scriptCheck = spawnSync(&quot;which&quot;, [&quot;script&quot;], { stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot; });
+  if (scriptCheck.status === 0 &amp;&amp; scriptCheck.stdout.trim()) {
+    // Verifica se a flag -f (flush) está disponível nessa versão do script
+    const scriptFlushCheck = spawnSync(&quot;script&quot;, [&quot;--help&quot;], { stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot; });</pre>
+</div>
+<div class="block" id="b3">
+  <div class="block-h">
+    <span>helpText →</span>
+    <div>
+      <small>L309–L353</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre3').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre3">    const helpText = (scriptFlushCheck.stdout || &quot;&quot;) + (scriptFlushCheck.stderr || &quot;&quot;);
+    const hasFlush = helpText.includes(&quot;-f&quot;) || helpText.includes(&quot;--flush&quot;);
+    logger.info({ hasFlush }, &quot;Terminal PTY via script command&quot;);
+    return hasFlush ? &quot;script&quot; : &quot;script-noflush&quot;;
+  }
+
+  // Tentativa 3: stdbuf — força line-buffering sem precisar de PTY
+  const stdbufCheck = spawnSync(&quot;which&quot;, [&quot;stdbuf&quot;], { stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot; });
+  if (stdbufCheck.status === 0 &amp;&amp; stdbufCheck.stdout.trim()) {
+    logger.info(&quot;Terminal via stdbuf (line-buffered bash)&quot;);
+    return &quot;stdbuf&quot; as TermMode;
+  }
+
+  // Fallback: bash direto sem PTY
+  logger.warn(&quot;Terminal em modo basico (sem PTY) — sem cores e buffering limitado&quot;);
+  return &quot;bash&quot;;
+}
+
+const TERM_MODE = detectTermMode();
+logger.info({ mode: TERM_MODE }, &quot;Modo de terminal selecionado&quot;);
+
+// ─── Configuracao do shell ────────────────────────────────────────────────────
+// Workspace persistente do usuário — terminal começa aqui, npm install funciona aqui
+const WORKSPACE_DIR = process.env[&quot;SK_WORKSPACE_DIR&quot;] ||
+  pathJoin(process.env[&quot;HOME&quot;] || process.env[&quot;REPL_HOME&quot;] || &quot;/home/runner&quot;, &quot;sk-user-workspace&quot;);
+
+if (!existsSync(WORKSPACE_DIR)) {
+  try {
+    mkdirSync(WORKSPACE_DIR, { recursive: true });
+    const defaultPkg = JSON.stringify({
+      name: &quot;sk-projeto&quot;, version: &quot;1.0.0&quot;, main: &quot;index.js&quot;,
+      scripts: { start: &quot;node index.js&quot;, dev: &quot;node index.js&quot; },
+      dependencies: {},
+    }, null, 2);
+    writeFileSync(pathJoin(WORKSPACE_DIR, &quot;package.json&quot;), defaultPkg, &quot;utf8&quot;);
+    logger.info({ dir: WORKSPACE_DIR }, &quot;Workspace do usuário criado&quot;);
+  } catch (err) {
+    logger.warn({ err }, &quot;Não foi possível criar workspace — usando HOME como fallback&quot;);
+  }
+}
+
+const cwd = existsSync(WORKSPACE_DIR) ? WORKSPACE_DIR :
+  (process.env[&quot;HOME&quot;] || process.env[&quot;REPL_HOME&quot;] || &quot;/home/runner&quot;);
+
+// Detecta o Python3 instalado via Nix para passar ao node-gyp</pre>
+</div>
+<div class="block" id="b4">
+  <div class="block-h">
+    <span>PYTHON3_PATH →</span>
+    <div>
+      <small>L354–L468</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre4').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre4">const PYTHON3_PATH = (() =&gt; {
+  try {
+    const { execSync } = require(&quot;child_process&quot;);
+    return execSync(&quot;which python3 2&gt;/dev/null&quot;, { encoding: &quot;utf8&quot; }).trim() || &quot;&quot;;
+  } catch { return &quot;&quot;; }
+})();
+
+const shellEnv = {
+  ...process.env,
+  TERM: &quot;xterm-256color&quot;,
+  COLORTERM: &quot;truecolor&quot;,
+  FORCE_COLOR: &quot;3&quot;,
+  LANG: &quot;pt_BR.UTF-8&quot;,
+  SHELL: process.env[&quot;SHELL&quot;] || &quot;/bin/bash&quot;,
+  // Força npm/pip a mostrar cada pacote sendo baixado em tempo real
+  NPM_CONFIG_PROGRESS: &quot;true&quot;,
+  NPM_CONFIG_LOGLEVEL: &quot;verbose&quot;,
+  NPM_CONFIG_COLOR: &quot;always&quot;,
+  CI: &quot;false&quot;,
+  PYTHONUNBUFFERED: &quot;1&quot;,
+  NODE_NO_READLINE: &quot;0&quot;,
+  // node-gyp precisa de PYTHON para compilar módulos nativos (ex: drivelist, canvas, bcrypt)
+  ...(PYTHON3_PATH ? {
+    PYTHON: PYTHON3_PATH,
+    npm_config_python: PYTHON3_PATH,
+  } : {}),
+};
+
+// ─── WebSocket: uma sessao de terminal por conexao ───────────────────────────
+wss.on(&quot;connection&quot;, (ws: WebSocket) =&gt; {
+  let cols = 220;
+  let rows = 50;
+
+  // ── Keepalive duplo: ping/pong WebSocket + dados reais ────────────────────
+  // O proxy do Replit fecha conexões WebSocket por INATIVIDADE DE DADOS (não por
+  // ausência de ping). Precisamos enviar dados reais a cada ~30s para manter vivo.
+  // Usamos uma sequência ANSI invisível: salva cursor e restaura imediatamente.
+  // O xterm.js no cliente simplesmente ignora (sem efeito visível).
+  let isAlive = true;
+  ws.on(&quot;pong&quot;, () =&gt; { isAlive = true; });
+  const keepAlive = setInterval(() =&gt; {
+    if (!isAlive) { clearInterval(keepAlive); ws.terminate(); return; }
+    isAlive = false;
+    try { ws.ping(); } catch { clearInterval(keepAlive); }
+  }, 20_000);
+
+  // Heartbeat de DADOS a cada 25s — mantém o proxy HTTP do Replit vivo
+  // \x1b[s = salva posição do cursor  \x1b[u = restaura posição do cursor
+  // Efeito visível: zero. Previne timeout do proxy durante npm install longas.
+  const dataHeartbeat = setInterval(() =&gt; {
+    if (ws.readyState === WebSocket.OPEN) {
+      try { ws.send(Buffer.from(&quot;\x1b[s\x1b[u&quot;)); } catch { /* ok */ }
+    }
+  }, 25_000);
+
+  ws.on(&quot;close&quot;, () =&gt; { clearInterval(keepAlive); clearInterval(dataHeartbeat); });
+  ws.on(&quot;error&quot;, () =&gt; { clearInterval(keepAlive); clearInterval(dataHeartbeat); });
+
+  // Monta o comando/args correto conforme o modo disponivel
+  let shellCmd: string;
+  let shellArgs: string[];
+
+  if (TERM_MODE === &quot;pty_helper&quot;) {
+    shellCmd = PTY_HELPER;
+    shellArgs = [String(rows), String(cols)];
+  } else if (TERM_MODE === &quot;script&quot;) {
+    // `script -q -f /dev/null` cria um PTY com flush imediato (output ao vivo)
+    const scriptBin = spawnSync(&quot;which&quot;, [&quot;script&quot;], { stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot; }).stdout.trim() || &quot;/usr/bin/script&quot;;
+    shellCmd = scriptBin;
+    shellArgs = [&quot;-q&quot;, &quot;-f&quot;, &quot;/dev/null&quot;, &quot;--&quot;, &quot;/bin/bash&quot;, &quot;--login&quot;];
+  } else if (TERM_MODE === &quot;script-noflush&quot;) {
+    // script disponível mas sem -f: usa sem flush (output pode ter leve delay)
+    const scriptBin = spawnSync(&quot;which&quot;, [&quot;script&quot;], { stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot; }).stdout.trim() || &quot;/usr/bin/script&quot;;
+    shellCmd = scriptBin;
+    shellArgs = [&quot;-q&quot;, &quot;/dev/null&quot;, &quot;--&quot;, &quot;/bin/bash&quot;, &quot;--login&quot;];
+  } else if (TERM_MODE === &quot;stdbuf&quot;) {
+    // stdbuf -oL -eL força line-buffering sem PTY — saída linha a linha
+    const stdbufBin = spawnSync(&quot;which&quot;, [&quot;stdbuf&quot;], { stdio: &quot;pipe&quot;, encoding: &quot;utf8&quot; }).stdout.trim() || &quot;/usr/bin/stdbuf&quot;;
+    shellCmd = stdbufBin;
+    shellArgs = [&quot;-oL&quot;, &quot;-eL&quot;, &quot;/bin/bash&quot;, &quot;--login&quot;];
+  } else {
+    shellCmd = &quot;/bin/bash&quot;;
+    shellArgs = [&quot;--login&quot;];
+  }
+
+  const shell = spawn(shellCmd, shellArgs, {
+    cwd,
+    env: shellEnv,
+    stdio: [&quot;pipe&quot;, &quot;pipe&quot;, &quot;pipe&quot;],
+  });
+
+  // Mensagem de boas-vindas + configura npm para mostrar saída ao vivo
+  setTimeout(() =&gt; {
+    if (shell.stdin &amp;&amp; !shell.killed) {
+      shell.stdin.write(
+        `echo -e &quot;\\x1b[90m\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\\r\\n\u{1F4C1} Workspace: ${cwd}\\r\\n\u{1F4A1} 'node arquivo.js' ou 'python3 arquivo.py' \u2014 use Sync\u2191 no editor primeiro!\\r\\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\\x1b[0m&quot;\r\n` +
+        // Configura ~/.npmrc global: resolve 90% dos erros de instalação de pacotes
+        // legacy-peer-deps: ignora conflitos de versão (ERESOLVE)
+        // python: aponta o node-gyp para o Python3 (compila módulos nativos)
+        // fund/audit: desativa avisos desnecessários
+        (PYTHON3_PATH
+          ? `printf 'legacy-peer-deps=true\\nprogress=true\\nfund=false\\naudit=false\\n${PYTHON3_PATH ? &quot;python=&quot; + PYTHON3_PATH + &quot;\\n&quot; : &quot;&quot;}' &gt; ~/.npmrc`
+          : `printf 'legacy-peer-deps=true\\nprogress=true\\nfund=false\\naudit=false\\n' &gt; ~/.npmrc`) +
+        ` &amp;&amp; export PYTHON=&quot;${PYTHON3_PATH}&quot; &amp;&amp; export npm_config_python=&quot;${PYTHON3_PATH}&quot;` +
+        ` &amp;&amp; echo -e &quot;\\x1b[32m✔ npm configurado\\x1b[90m (legacy-peer-deps=true | python: ${PYTHON3_PATH ? &quot;ok&quot; : &quot;não encontrado&quot;})\\x1b[0m&quot;` +
+        `\r\n`
+      );
+    }
+  }, 600);
+
+  shell.on(&quot;error&quot;, (err) =&gt; {
+    logger.error({ err, mode: TERM_MODE }, &quot;Erro ao iniciar shell&quot;);
+    // Se script falhou, tenta bash direto como ultimo recurso
+    if (TERM_MODE === &quot;script&quot;) {
+      const fallback = spawn(&quot;/bin/bash&quot;, [&quot;--login&quot;], { cwd, env: shellEnv, stdio: [&quot;pipe&quot;, &quot;pipe&quot;, &quot;pipe&quot;] });</pre>
+</div>
+<div class="block" id="b5">
+  <div class="block-h">
+    <span>sendFb →</span>
+    <div>
+      <small>L469–L481</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre5').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre5">      const sendFb = (d: Buffer | string) =&gt; { if (ws.readyState === WebSocket.OPEN) ws.send(d instanceof Buffer ? d : Buffer.from(d)); };
+      fallback.stdout?.on(&quot;data&quot;, (c: Buffer) =&gt; sendFb(c));
+      fallback.stderr?.on(&quot;data&quot;, (c: Buffer) =&gt; sendFb(c));
+      fallback.on(&quot;exit&quot;, (code) =&gt; { sendFb(`\r\n\x1b[90m[encerrado: ${code ?? 0}]\x1b[0m\r\n`); try { ws.close(); } catch { } });
+      ws.on(&quot;message&quot;, (d: Buffer | string) =&gt; { try { fallback.stdin?.write(typeof d === &quot;string&quot; ? d : d); } catch { } });
+      ws.on(&quot;close&quot;, () =&gt; { try { fallback.kill(&quot;SIGTERM&quot;); } catch { } });
+    } else {
+      const msg = `\r\n\x1b[31m[Erro ao iniciar terminal: ${err.message}]\x1b[0m\r\n`;
+      if (ws.readyState === WebSocket.OPEN) ws.send(Buffer.from(msg));
+      ws.close();
+    }
+  });
+</pre>
+</div>
+<div class="block" id="b6">
+  <div class="block-h">
+    <span>send →</span>
+    <div>
+      <small>L482–L1282</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre6').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre6">  const send = (data: Buffer | string) =&gt; {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(data instanceof Buffer ? data : Buffer.from(data));
+    }
+  };
+
+  shell.stdout?.on(&quot;data&quot;, (chunk: Buffer) =&gt; send(chunk));
+  shell.stderr?.on(&quot;data&quot;, (chunk: Buffer) =&gt; send(chunk));
+
+  shell.on(&quot;exit&quot;, (code: number | null) =&gt; {
+    send(`\r\n\x1b[90m[processo encerrado com codigo ${code ?? 0}]\x1b[0m\r\n`);
+    try { ws.close(); } catch { }
+  });
+
+  ws.on(&quot;message&quot;, (data: Buffer | string) =&gt; {
+    try {
+      const msg = typeof data === &quot;string&quot; ? data : data.toString();
+
+      // Resize: {&quot;type&quot;:&quot;resize&quot;,&quot;cols&quot;:N,&quot;rows&quot;:N}
+      if (msg.startsWith(&quot;{&quot;) &amp;&amp; msg.includes('&quot;type&quot;:&quot;resize&quot;')) {
+        try {
+          const obj = JSON.parse(msg);
+          if (obj.type === &quot;resize&quot; &amp;&amp; obj.cols &amp;&amp; obj.rows) {
+            cols = Number(obj.cols);
+            rows = Number(obj.rows);
+            if (TERM_MODE === &quot;pty_helper&quot;) {
+              const resizeCmd = Buffer.concat([
+                Buffer.from([0x00]),
+                Buffer.from(`RESIZE:${rows}:${cols}\n`),
+              ]);
+              shell.stdin?.write(resizeCmd);
+            }
+          }
+        } catch { /* ignore malformed resize */ }
+        return;
+      }
+
+      shell.stdin?.write(typeof data === &quot;string&quot; ? data : data);
+    } catch (err) {
+      logger.warn({ err }, &quot;Erro ao escrever no shell&quot;);
+    }
+  });
+
+  ws.on(&quot;close&quot;, () =&gt; { try { shell.kill(&quot;SIGTERM&quot;); } catch { } });
+  ws.on(&quot;error&quot;, () =&gt; { try { shell.kill(&quot;SIGTERM&quot;); } catch { } });
+});
+
+// ─── HTTP Listen ──────────────────────────────────────────────────────────────
+server.listen(port, (err?: Error) =&gt; {
+  if (err) { logger.error({ err }, &quot;Error listening&quot;); process.exit(1); }
+  logger.info({ port, mode: TERM_MODE }, &quot;Server listening&quot;);
+});
+
+===== ARQUIVO: api-server/src/routes/index.ts =====
+import { Router, type IRouter } from &quot;express&quot;;
+import healthRouter from &quot;./health&quot;;
+import aiChatRouter from &quot;./ai-chat&quot;;
+import searchRouter from &quot;./search&quot;;
+import execRouter from &quot;./exec&quot;;
+import proxyRouter from &quot;./proxy&quot;;
+import voiceRouter from &quot;./voice&quot;;
+import githubRouter from &quot;./github&quot;;
+import configRouter from &quot;./config&quot;;
+import driveRouter from &quot;./drive&quot;;
+import uploadRouter from &quot;./upload&quot;;
+import legalAiRouter from &quot;./legal-ai&quot;;
+import workspaceRouter from &quot;./workspace&quot;;
+import dbRouter from &quot;./db&quot;;
+import aiForwardRouter from &quot;./ai-forward&quot;;
+import twaRouter from &quot;./twa&quot;;
+import pagesRouter from &quot;./pages&quot;;
+
+const router: IRouter = Router();
+
+router.use(configRouter);
+router.use(healthRouter);
+router.use(twaRouter);
+router.use(aiChatRouter);
+router.use(legalAiRouter);
+router.use(searchRouter);
+router.use(execRouter);
+router.use(proxyRouter);
+router.use(&quot;/voice&quot;, voiceRouter);
+router.use(githubRouter);
+router.use(driveRouter);
+router.use(uploadRouter);
+router.use(workspaceRouter);
+router.use(dbRouter);
+router.use(aiForwardRouter);
+router.use(pagesRouter);
+
+export default router;
+
+===== ARQUIVO: code-editor/tsconfig.json =====
+{
+  &quot;extends&quot;: &quot;../../tsconfig.base.json&quot;,
+  &quot;include&quot;: [&quot;src/**/*&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;build&quot;, &quot;dist&quot;, &quot;**/*.test.ts&quot;],
+  &quot;compilerOptions&quot;: {
+    &quot;noEmit&quot;: true,
+    &quot;jsx&quot;: &quot;preserve&quot;,
+    &quot;lib&quot;: [&quot;esnext&quot;, &quot;dom&quot;, &quot;dom.iterable&quot;],
+    &quot;resolveJsonModule&quot;: true,
+    &quot;allowImportingTsExtensions&quot;: true,
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    &quot;types&quot;: [&quot;node&quot;, &quot;vite/client&quot;],
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./src/*&quot;]
+    }
+  },
+  &quot;references&quot;: [
+    {
+      &quot;path&quot;: &quot;../../lib/api-client-react&quot;
+    }
+  ]
+}
+
+===== ARQUIVO: code-editor/package.json =====
+{
+  &quot;name&quot;: &quot;@workspace/code-editor&quot;,
+  &quot;version&quot;: &quot;0.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite --config vite.config.ts --host 0.0.0.0&quot;,
+    &quot;build&quot;: &quot;vite build --config vite.config.ts&quot;,
+    &quot;serve&quot;: &quot;vite preview --config vite.config.ts --host 0.0.0.0&quot;,
+    &quot;typecheck&quot;: &quot;tsc -p tsconfig.json --noEmit&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.1.5&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.7&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.3&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.0&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.0&quot;,
+    &quot;@replit/vite-plugin-cartographer&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-dev-banner&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-runtime-error-modal&quot;: &quot;catalog:&quot;,
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.15&quot;,
+    &quot;@tailwindcss/vite&quot;: &quot;catalog:&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;catalog:&quot;,
+    &quot;@types/file-saver&quot;: &quot;^2.0.7&quot;,
+    &quot;@types/node&quot;: &quot;catalog:&quot;,
+    &quot;@types/react&quot;: &quot;catalog:&quot;,
+    &quot;@types/react-dom&quot;: &quot;catalog:&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;catalog:&quot;,
+    &quot;@workspace/api-client-react&quot;: &quot;workspace:*&quot;,
+    &quot;class-variance-authority&quot;: &quot;catalog:&quot;,
+    &quot;clsx&quot;: &quot;catalog:&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;framer-motion&quot;: &quot;catalog:&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;lucide-react&quot;: &quot;catalog:&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;react&quot;: &quot;catalog:&quot;,
+    &quot;react-day-picker&quot;: &quot;^9.11.1&quot;,
+    &quot;react-dom&quot;: &quot;catalog:&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.55.0&quot;,
+    &quot;react-icons&quot;: &quot;^5.4.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.7&quot;,
+    &quot;recharts&quot;: &quot;^2.15.2&quot;,
+    &quot;sonner&quot;: &quot;^2.0.7&quot;,
+    &quot;tailwind-merge&quot;: &quot;catalog:&quot;,
+    &quot;tailwindcss&quot;: &quot;catalog:&quot;,
+    &quot;tw-animate-css&quot;: &quot;^1.4.0&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;vite&quot;: &quot;catalog:&quot;,
+    &quot;wouter&quot;: &quot;^3.3.5&quot;,
+    &quot;zod&quot;: &quot;catalog:&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@isomorphic-git/lightning-fs&quot;: &quot;^4.6.2&quot;,
+    &quot;@monaco-editor/react&quot;: &quot;^4.7.0&quot;,
+    &quot;@webcontainer/api&quot;: &quot;^1.6.4&quot;,
+    &quot;@xterm/addon-fit&quot;: &quot;^0.11.0&quot;,
+    &quot;@xterm/addon-web-links&quot;: &quot;^0.12.0&quot;,
+    &quot;@xterm/xterm&quot;: &quot;^6.0.0&quot;,
+    &quot;file-saver&quot;: &quot;^2.0.5&quot;,
+    &quot;highlight.js&quot;: &quot;^11.11.1&quot;,
+    &quot;jszip&quot;: &quot;^3.10.1&quot;,
+    &quot;react-markdown&quot;: &quot;^10.1.0&quot;,
+    &quot;rehype-highlight&quot;: &quot;^7.0.2&quot;,
+    &quot;remark-gfm&quot;: &quot;^4.0.1&quot;
+  }
+}
+
+===== ARQUIVO: code-editor/vite.config.standalone.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+
+export default defineConfig({
+  base: &quot;./&quot;,
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+      &quot;@assets&quot;: path.resolve(import.meta.dirname, &quot;src&quot;, &quot;assets&quot;),
+    },
+    dedupe: [&quot;react&quot;, &quot;react-dom&quot;],
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist-standalone&quot;),
+    emptyOutDir: true,
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes(&quot;node_modules/@monaco-editor&quot;) || id.includes(&quot;node_modules/monaco-editor&quot;)) return &quot;vendor-monaco&quot;;
+          if (id.includes(&quot;node_modules/react-dom&quot;)) return &quot;vendor-react-dom&quot;;
+          if (id.includes(&quot;node_modules/react/&quot;)) return &quot;vendor-react&quot;;
+          if (id.includes(&quot;node_modules/framer-motion&quot;)) return &quot;vendor-framer&quot;;
+          if (id.includes(&quot;node_modules/lucide-react&quot;)) return &quot;vendor-lucide&quot;;
+          if (id.includes(&quot;node_modules/@radix-ui&quot;)) return &quot;vendor-radix&quot;;
+          if (id.includes(&quot;node_modules/react-markdown&quot;) || id.includes(&quot;node_modules/rehype&quot;) || id.includes(&quot;node_modules/remark&quot;) || id.includes(&quot;node_modules/unified&quot;) || id.includes(&quot;node_modules/hast&quot;) || id.includes(&quot;node_modules/mdast&quot;) || id.includes(&quot;node_modules/micromark&quot;)) return &quot;vendor-markdown&quot;;
+          if (id.includes(&quot;node_modules/highlight.js&quot;)) return &quot;vendor-highlight&quot;;
+          if (id.includes(&quot;node_modules/@xterm&quot;)) return &quot;vendor-xterm&quot;;
+          if (id.includes(&quot;node_modules/jszip&quot;) || id.includes(&quot;node_modules/file-saver&quot;) || id.includes(&quot;node_modules/@isomorphic-git&quot;)) return &quot;vendor-fs&quot;;
+          if (id.includes(&quot;node_modules/@webcontainer&quot;)) return &quot;vendor-webcontainer&quot;;
+          if (id.includes(&quot;node_modules/&quot;)) return &quot;vendor-misc&quot;;
+        },
+      },
+    },
+  },
+  server: {
+    port: 5173,
+    host: &quot;0.0.0.0&quot;,
+  },
+});
+
+===== ARQUIVO: code-editor/vite.config.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;
+
+const rawPort = process.env.PORT;
+const port = rawPort ? Number(rawPort) : 22595;
+const basePath = process.env.BASE_PATH ?? &quot;/&quot;;
+
+export default defineConfig({
+  base: basePath,
+  plugins: [
+    react(),
+    tailwindcss(),
+    runtimeErrorOverlay(),
+    ...(process.env.NODE_ENV !== &quot;production&quot; &amp;&amp;
+    process.env.REPL_ID !== undefined
+      ? [
+          await import(&quot;@replit/vite-plugin-cartographer&quot;).then((m) =&gt;
+            m.cartographer({
+              root: path.resolve(import.meta.dirname, &quot;..&quot;),
+            }),
+          ),
+          await import(&quot;@replit/vite-plugin-dev-banner&quot;).then((m) =&gt;
+            m.devBanner(),
+          ),
+        ]
+      : []),
+  ],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+      &quot;@assets&quot;: path.resolve(import.meta.dirname, &quot;src&quot;, &quot;assets&quot;),
+    },
+    dedupe: [&quot;react&quot;, &quot;react-dom&quot;],
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist/public&quot;),
+    emptyOutDir: true,
+  },
+  server: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+    // Headers COOP/COEP (necessários pro WebContainer / Terminal Real) NÃO
+    // são adicionados aqui porque quebrariam o preview embedado do Replit.
+    // Em vez disso, o service worker (public/sw.js) os adiciona em runtime,
+    // funcionando tanto em dev quanto em produção (PWA instalado / APK).
+    proxy: {
+      &quot;/api&quot;: {
+        target: &quot;http://localhost:8080&quot;,
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+    fs: {
+      strict: true,
+      deny: [&quot;**/.*&quot;],
+    },
+  },
+  preview: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+  },
+});
+
+===== ARQUIVO: code-editor/.github/workflows/deploy.yml =====
+name: Deploy no GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: &quot;pages&quot;
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload dist-pronto
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist-pronto
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+===== ARQUIVO: code-editor/.github/workflows/build-apk.yml =====
+name: &quot;\uD83E\uDD16 Build APK - SK Code Editor&quot;
+
+on:
+  workflow_dispatch:
+    inputs:
+      pages_url:
+        description: &quot;URL do GitHub Pages (deixe vazio para calcular automaticamente)&quot;
+        required: false
+        default: &quot;&quot;
+
+permissions:
+  contents: write
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: &quot;17&quot;
+          distribution: temurin
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar componentes Android SDK
+        run: |
+          yes | sdkmanager \
+            &quot;build-tools;34.0.0&quot; \
+            &quot;platforms;android-34&quot; \
+            &quot;platform-tools&quot; 2&gt;/dev/null || true
+          echo &quot;ANDROID_HOME=$ANDROID_HOME&quot;
+          echo &quot;ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT&quot;
+
+      - name: Calcular URL e dados do app
+        id: url
+        run: |
+          OWNER=&quot;${{ github.repository_owner }}&quot;
+          REPO=&quot;${{ github.event.repository.name }}&quot;
+          INPUT_URL=&quot;${{ github.event.inputs.pages_url }}&quot;
+          if [ -n &quot;$INPUT_URL&quot; ]; then
+            PAGES_URL=&quot;$INPUT_URL&quot;
+          else
+            PAGES_URL=&quot;https://${OWNER}.github.io/${REPO}/&quot;
+          fi
+          HOST=$(echo &quot;$PAGES_URL&quot; | sed 's|https://||' | sed 's|/.*||')
+          OWNER_CLEAN=$(echo &quot;$OWNER&quot; | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g')
+          REPO_CLEAN=$(echo &quot;$REPO&quot;  | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g')
+          PKG=&quot;com.${OWNER_CLEAN}.${REPO_CLEAN}&quot;
+          echo &quot;pages_url=$PAGES_URL&quot; &gt;&gt; $GITHUB_OUTPUT
+          echo &quot;host=$HOST&quot;           &gt;&gt; $GITHUB_OUTPUT
+          echo &quot;pkg=$PKG&quot;             &gt;&gt; $GITHUB_OUTPUT
+          echo &quot;✅ URL: $PAGES_URL | Host: $HOST | Package: $PKG&quot;
+
+      - name: Gerar keystore de assinatura
+        run: |
+          keytool -genkey -v \
+            -keystore release.keystore -alias app \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass android123 -keypass android123 \
+            -dname &quot;CN=SK Code Editor, OU=App, O=DevMobile, L=BR, ST=SP, C=BR&quot;
+          echo &quot;✅ Keystore gerada&quot;
+
+      - name: Criar projeto Android (TWA sem Bubblewrap)
+        run: |
+          PAGES_URL=&quot;${{ steps.url.outputs.pages_url }}&quot;
+          HOST=&quot;${{ steps.url.outputs.host }}&quot;
+          PKG=&quot;${{ steps.url.outputs.pkg }}&quot;
+
+          mkdir -p twa-app/app/src/main/res/values
+          mkdir -p twa-app/app/src/main/res/mipmap-hdpi
+          mkdir -p twa-app/gradle/wrapper
+
+          # ── settings.gradle ────────────────────────────────────────────────
+          cat &gt; twa-app/settings.gradle &lt;&lt; 'GRADLE'
+pluginManagement {
+    repositories { google(); mavenCentral(); gradlePluginPortal() }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories { google(); mavenCentral() }
+}
+rootProject.name = &quot;SKCodeEditor&quot;
+include ':app'
+GRADLE
+
+          # ── build.gradle (raiz) ─────────────────────────────────────────────
+          cat &gt; twa-app/build.gradle &lt;&lt; 'GRADLE'
+plugins {
+    id 'com.android.application' version '8.2.2' apply false
+}
+GRADLE
+
+          # ── app/build.gradle ────────────────────────────────────────────────
+          cat &gt; twa-app/app/build.gradle &lt;&lt; GRADLE
+plugins { id 'com.android.application' }
+android {
+    compileSdk 34
+    namespace '$PKG'
+    defaultConfig {
+        applicationId '$PKG'
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName '2.0'
+    }
+    signingConfigs {
+        release {
+            storeFile file('../../release.keystore')
+            storePassword 'android123'
+            keyAlias 'app'
+            keyPassword 'android123'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+dependencies {
+    implementation 'androidx.core:core:1.12.0'
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}
+GRADLE
+
+          # ── AndroidManifest.xml ─────────────────────────────────────────────
+          cat &gt; twa-app/app/src/main/AndroidManifest.xml &lt;&lt; MANIFEST
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
+    &lt;uses-permission android:name=&quot;android.permission.INTERNET&quot; /&gt;
+    &lt;application
+        android:label=&quot;SK Code Editor&quot;
+        android:allowBackup=&quot;true&quot;
+        android:supportsRtl=&quot;true&quot;
+        android:theme=&quot;@android:style/Theme.Black.NoTitleBar.Fullscreen&quot;&gt;
+
+        &lt;activity
+            android:name=&quot;com.google.androidbrowserhelper.trusted.LauncherActivity&quot;
+            android:exported=&quot;true&quot;&gt;
+            &lt;meta-data
+                android:name=&quot;android.support.customtabs.trusted.DEFAULT_URL&quot;
+                android:value=&quot;$PAGES_URL&quot; /&gt;
+            &lt;meta-data
+                android:name=&quot;android.support.customtabs.trusted.STATUS_BAR_COLOR&quot;
+                android:resource=&quot;@color/colorPrimary&quot; /&gt;
+            &lt;meta-data
+                android:name=&quot;android.support.customtabs.trusted.NAVIGATION_BAR_COLOR&quot;
+                android:resource=&quot;@color/colorPrimary&quot; /&gt;
+            &lt;meta-data
+                android:name=&quot;android.support.customtabs.trusted.FALLBACK_STRATEGY&quot;
+                android:value=&quot;customtabs&quot; /&gt;
+            &lt;meta-data
+                android:name=&quot;android.support.customtabs.trusted.SCREEN_ORIENTATION&quot;
+                android:value=&quot;portrait&quot; /&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;
+                &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;
+            &lt;/intent-filter&gt;
+            &lt;intent-filter android:autoVerify=&quot;true&quot;&gt;
+                &lt;action android:name=&quot;android.intent.action.VIEW&quot;/&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
+                &lt;category android:name=&quot;android.intent.category.BROWSABLE&quot;/&gt;
+                &lt;data android:scheme=&quot;https&quot; android:host=&quot;$HOST&quot;/&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+
+        &lt;service
+            android:name=&quot;com.google.androidbrowserhelper.trusted.DelegationService&quot;
+            android:exported=&quot;true&quot;
+            android:permission=&quot;android.permission.BIND_CUSTOM_TABS_CONNECTION&quot;&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&quot;android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE&quot;/&gt;
+                &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
+            &lt;/intent-filter&gt;
+        &lt;/service&gt;
+
+    &lt;/application&gt;
+&lt;/manifest&gt;
+MANIFEST
+
+          # ── res/values/strings.xml ──────────────────────────────────────────
+          cat &gt; twa-app/app/src/main/res/values/strings.xml &lt;&lt; STRINGS
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+    &lt;string name=&quot;app_name&quot;&gt;SK Code Editor&lt;/string&gt;
+    &lt;string name=&quot;asset_statements&quot;&gt;[{&quot;relation&quot;:[&quot;delegate_permission/common.handle_all_urls&quot;],&quot;target&quot;:{&quot;namespace&quot;:&quot;web&quot;,&quot;site&quot;:&quot;$PAGES_URL&quot;}}]&lt;/string&gt;
+&lt;/resources&gt;
+STRINGS
+
+          # ── res/values/colors.xml ───────────────────────────────────────────
+          cat &gt; twa-app/app/src/main/res/values/colors.xml &lt;&lt; 'COLORS'
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+    &lt;color name=&quot;colorPrimary&quot;&gt;#0d1117&lt;/color&gt;
+    &lt;color name=&quot;colorPrimaryDark&quot;&gt;#0d1117&lt;/color&gt;
+    &lt;color name=&quot;colorAccent&quot;&gt;#58a6ff&lt;/color&gt;
+&lt;/resources&gt;
+COLORS
+
+          # ── gradle/wrapper/gradle-wrapper.properties ────────────────────────
+          cat &gt; twa-app/gradle/wrapper/gradle-wrapper.properties &lt;&lt; 'WRAPPER'
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-8.4-bin.zip
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+WRAPPER
+
+          # ── gradle/wrapper/gradle-wrapper.jar (baixar) ──────────────────────
+          curl -sL \
+            &quot;https://github.com/gradle/gradle/raw/v8.4.0/gradle/wrapper/gradle-wrapper.jar&quot; \
+            -o twa-app/gradle/wrapper/gradle-wrapper.jar || \
+          wget -q \
+            &quot;https://repo.maven.apache.org/maven2/org/gradle/gradle-wrapper/8.4/gradle-wrapper-8.4.jar&quot; \
+            -O twa-app/gradle/wrapper/gradle-wrapper.jar || true
+
+          # ── gradlew script ──────────────────────────────────────────────────
+          cat &gt; twa-app/gradlew &lt;&lt; 'GRADLEW'
+#!/bin/sh
+exec java -jar &quot;$(dirname &quot;$0&quot;)/gradle/wrapper/gradle-wrapper.jar&quot; &quot;$@&quot;
+GRADLEW
+          chmod +x twa-app/gradlew
+
+          # ── gradle.properties ───────────────────────────────────────────────
+          cat &gt; twa-app/gradle.properties &lt;&lt; 'GPROPS'
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.nonTransitiveRClass=true
+GPROPS
+
+          echo &quot;✅ Projeto Android criado&quot;
+          find twa-app -type f | sort
+
+      - name: Setup Gradle (cache)
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: &quot;8.4&quot;
+
+      - name: Build APK com Gradle
+        working-directory: twa-app
+        run: |
+          gradle assembleRelease \
+            --no-daemon \
+            --stacktrace \
+            --warning-mode all 2&gt;&amp;1 | tail -150
+          echo &quot;✅ Build concluído!&quot;
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+
+      - name: Localizar APK
+        id: apk
+        run: |
+          APK=$(find twa-app -name &quot;*.apk&quot; -type f 2&gt;/dev/null | head -1)
+          if [ -z &quot;$APK&quot; ]; then
+            echo &quot;❌ APK não encontrado!&quot;
+            find twa-app -type f | grep -v &quot;.gradle\|build/tmp\|build/intermediates&quot; | tail -30
+            exit 1
+          fi
+          echo &quot;path=$APK&quot; &gt;&gt; $GITHUB_OUTPUT
+          SIZE=$(du -sh &quot;$APK&quot; | cut -f1)
+          echo &quot;✅ APK: $APK ($SIZE)&quot;
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SK-Code-Editor-APK-${{ github.run_number }}
+          path: ${{ steps.apk.outputs.path }}
+          retention-days: 30
+
+      - name: Resumo
+        run: |
+          echo &quot;## ✅ APK Gerado com Sucesso!&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;| Info | Valor |&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;|------|-------|&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;| App | SK Code Editor |&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;| URL | ${{ steps.url.outputs.pages_url }} |&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;| Package | ${{ steps.url.outputs.pkg }} |&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+          echo &quot;Baixe o arquivo **.apk** na aba **Artifacts** acima e instale no celular.&quot; &gt;&gt; $GITHUB_STEP_SUMMARY
+
+===== ARQUIVO: code-editor/dist-standalone/.github/workflows/build-apk.yml =====
+name: Gerar APK Android
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: &quot;.&quot;
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  build-apk:
+    runs-on: ubuntu-latest
+    needs: deploy-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: &quot;17&quot;
+          distribution: &quot;temurin&quot;
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: &quot;20&quot;
+
+      - name: Instalar Bubblewrap
+        run: npm install -g @bubblewrap/cli@latest
+
+      - name: Gerar keystore
+        run: |
+          keytool -genkey -v \
+            -keystore android.keystore \
+            -alias app \
+            -keyalg RSA -keysize 2048 -validity 10000 \
+            -storepass skpassword123 -keypass skpassword123 \
+            -dname &quot;CN=SK Code Editor, OU=App, O=SKEditor, L=BR, ST=SP, C=BR&quot;
+
+      - name: Descobrir URL do GitHub Pages
+        id: pageurl
+        run: |
+          OWNER=&quot;${{ github.repository_owner }}&quot;
+          REPO=&quot;${{ github.event.repository.name }}&quot;
+          echo &quot;url=https://${OWNER}.github.io/${REPO}/&quot; &gt;&gt; $GITHUB_OUTPUT
+
+      - name: Criar twa-manifest.json
+        run: |
+          OWNER=&quot;${{ github.repository_owner }}&quot;
+          REPO=&quot;${{ github.event.repository.name }}&quot;
+          PKG=&quot;com.$(echo $OWNER | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g').$(echo $REPO | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]//g')&quot;
+          URL=&quot;${{ steps.pageurl.outputs.url }}&quot;
+          cat &gt; twa-manifest.json &lt;&lt; EOF
+          {
+            &quot;packageId&quot;: &quot;$PKG&quot;,
+            &quot;host&quot;: &quot;${OWNER}.github.io&quot;,
+            &quot;name&quot;: &quot;SK Code Editor&quot;,
+            &quot;launcherName&quot;: &quot;SK Editor&quot;,
+            &quot;display&quot;: &quot;standalone&quot;,
+            &quot;themeColor&quot;: &quot;#1a237e&quot;,
+            &quot;navigationColor&quot;: &quot;#1a237e&quot;,
+            &quot;backgroundColor&quot;: &quot;#0d1117&quot;,
+            &quot;enableNotifications&quot;: false,
+            &quot;startUrl&quot;: &quot;/${REPO}/&quot;,
+            &quot;iconUrl&quot;: &quot;${URL}icon-192.png&quot;,
+            &quot;maskableIconUrl&quot;: &quot;${URL}icon-192.png&quot;,
+            &quot;appVersion&quot;: &quot;4.0.0&quot;,
+            &quot;appVersionCode&quot;: 4,
+            &quot;signingKey&quot;: { &quot;path&quot;: &quot;../android.keystore&quot;, &quot;alias&quot;: &quot;app&quot; },
+            &quot;shortcuts&quot;: [],
+            &quot;generatorApp&quot;: &quot;bubblewrap-cli&quot;,
+            &quot;webManifestUrl&quot;: &quot;${URL}manifest.json&quot;,
+            &quot;fallbackType&quot;: &quot;customtabs&quot;,
+            &quot;features&quot;: {},
+            &quot;minSdkVersion&quot;: 21,
+            &quot;orientation&quot;: &quot;default&quot;,
+            &quot;fullScopeUrl&quot;: &quot;${URL}&quot;
+          }
+          EOF
+
+      - name: Build APK
+        run: |
+          mkdir -p twa-app
+          cd twa-app
+          bubblewrap init --manifest ../twa-manifest.json
+          bubblewrap build
+        env:
+          BUBBLEWRAP_KEYSTORE_PASSWORD: skpassword123
+          BUBBLEWRAP_KEY_PASSWORD: skpassword123
+
+      - name: Upload APK como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SK-Code-Editor-APK
+          path: &quot;**/*.apk&quot;
+          retention-days: 30
+
+===== ARQUIVO: code-editor/src/main.tsx =====
+import { createRoot } from &quot;react-dom/client&quot;;
+import App from &quot;./App&quot;;
+import &quot;./index.css&quot;;
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;App /&gt;);
+
+===== ARQUIVO: code-editor/src/App.tsx =====
+import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;
+import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;
+import { Template } from &quot;@/lib/templates&quot;;
+import { importFromZip } from &quot;@/lib/zip-service&quot;;
+import {
+  Project, loadProjects, saveProjects, createProject,
+  upsertProject, duplicateProject, getCurrentProjectId, setCurrentProjectId,
+} from &quot;@/lib/projects&quot;;
+import TemplateSelector from &quot;@/components/TemplateSelector&quot;;
+import EditorLayout from &quot;@/components/EditorLayout&quot;;
+import CampoLivre from &quot;@/components/CampoLivre&quot;;
+import AssistenteJuridico from &quot;@/components/AssistenteJuridico&quot;;
+
+const vfs = new VirtualFileSystem();
+</pre>
+</div>
+<div class="block" id="b7">
+  <div class="block-h">
+    <span>App</span>
+    <div>
+      <small>L1283–L1327</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre7').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre7">function App() {
+  const [projects, setProjects] = useState&lt;Project[]&gt;(loadProjects);
+  const [currentProject, setCurrentProject] = useState&lt;Project | null&gt;(null);
+  const [showCampoLivre,      setShowCampoLivre]      = useState(false);
+  const [showAssistenteJur,   setShowAssistenteJur]   = useState(false);
+  const [lightMode, setLightMode] = useState(() =&gt; localStorage.getItem(&quot;sk-light-mode&quot;) === &quot;1&quot;);
+
+  useEffect(() =&gt; {
+    localStorage.setItem(&quot;sk-light-mode&quot;, lightMode ? &quot;1&quot; : &quot;0&quot;);
+  }, [lightMode]);
+
+  const zipInputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+  useEffect(() =&gt; {
+    const all = loadProjects();
+    setProjects(all);
+    const id = getCurrentProjectId();
+    if (id) {
+      const p = all.find(x =&gt; x.id === id);
+      if (p &amp;&amp; Object.keys(p.files).length &gt; 0) {
+        vfs.clear();
+        vfs.fromJSON(p.files);
+        setCurrentProject(p);
+      }
+    }
+  }, []);
+
+  const saveCurrentProject = useCallback((proj: Project, name?: string) =&gt; {
+    const updated: Project = {
+      ...proj,
+      name: name || proj.name,
+      files: vfs.toJSON(),
+      updatedAt: Date.now(),
+    };
+    setCurrentProject(updated);
+    setProjects(prev =&gt; {
+      const next = upsertProject(prev, updated);
+      saveProjects(next);
+      return next;
+    });
+    return updated;
+  }, []);
+
+  useEffect(() =&gt; {
+    if (!currentProject) return;</pre>
+</div>
+<div class="block" id="b8">
+  <div class="block-h">
+    <span>save →</span>
+    <div>
+      <small>L1328–L1409</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre8').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre8">    const save = () =&gt; saveCurrentProject(currentProject);
+    const unsub = vfs.onChange(save);
+    const interval = setInterval(save, 8000);
+    return () =&gt; { unsub(); clearInterval(interval); };
+  }, [currentProject, saveCurrentProject]);
+
+  const handleStart = useCallback((files: Record&lt;string, string&gt;, name: string) =&gt; {
+    const project = createProject(name, files);
+    vfs.clear();
+    vfs.fromJSON(files);
+    setCurrentProject(project);
+    setCurrentProjectId(project.id);
+    setProjects(prev =&gt; {
+      const next = [project, ...prev];
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleOpenProject = useCallback((project: Project) =&gt; {
+    // Salva o projeto atual antes de trocar
+    setCurrentProject(prev =&gt; {
+      if (prev) {
+        const updated: Project = { ...prev, files: vfs.toJSON(), updatedAt: Date.now() };
+        setProjects(all =&gt; { const next = upsertProject(all, updated); saveProjects(next); return next; });
+      }
+      return prev;
+    });
+    vfs.clear();
+    vfs.fromJSON(project.files);
+    setCurrentProject(project);
+    setCurrentProjectId(project.id);
+  }, []);
+
+  const handleNewProject = useCallback(() =&gt; {
+    setCurrentProject(null);
+    setCurrentProjectId(null);
+    vfs.clear();
+  }, []);
+
+  const handleImportZip = useCallback(() =&gt; zipInputRef.current?.click(), []);
+
+  const handleZipFile = useCallback(async (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const imported = await importFromZip(file);
+      const count = Object.keys(imported).length;
+      if (count === 0) {
+        alert(&quot;Nenhum arquivo de código encontrado no ZIP.\n\nPossíveis motivos:\n• O ZIP contém apenas imagens ou arquivos binários\n• Os arquivos estão em formato que não pode ser lido\n• O ZIP está vazio ou corrompido&quot;);
+        return;
+      }
+      handleStart(imported, file.name.replace(/\.(zip|tar\.gz|tgz|tar)$/i, &quot;&quot;));
+      setTimeout(() =&gt; {
+        alert(`✓ ${count} arquivo(s) importado(s) com sucesso!\n\nNode_modules, arquivos binários e pastas de build foram ignorados automaticamente para manter o projeto organizado.\n\nAbra a Jasmim (✨) para pedir ajuda para entender ou modificar o projeto.`);
+      }, 800);
+    } catch (err: any) { alert(`Erro ao importar: ${err.message}`); }
+    e.target.value = &quot;&quot;;
+  }, [handleStart]);
+
+  const handleDeleteProject = useCallback((id: string) =&gt; {
+    setProjects(prev =&gt; {
+      const next = prev.filter(p =&gt; p.id !== id);
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleDuplicateProject = useCallback((project: Project) =&gt; {
+    const dup = duplicateProject(project);
+    setProjects(prev =&gt; {
+      const next = [dup, ...prev];
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleSaveProject = useCallback((name: string) =&gt; {
+    if (!currentProject) return;
+    saveCurrentProject(currentProject, name);
+  }, [currentProject, saveCurrentProject]);
+</pre>
+</div>
+<div class="block" id="b9">
+  <div class="block-h">
+    <span>toggleBtn →</span>
+    <div>
+      <small>L1410–L1682</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre9').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre9">  const toggleBtn = (
+    &lt;button
+      onClick={() =&gt; setLightMode(v =&gt; !v)}
+      style={{
+        position: &quot;fixed&quot;, top: 8, right: 8, zIndex: 99999,
+        width: 26, height: 26, borderRadius: &quot;50%&quot;,
+        background: lightMode ? &quot;#1c2714&quot; : &quot;#e8f5e0&quot;,
+        border: lightMode ? &quot;1px solid #4a7c3f&quot; : &quot;1px solid #6ab04c&quot;,
+        fontSize: 13, cursor: &quot;pointer&quot;,
+        display: &quot;flex&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot;,
+        boxShadow: &quot;0 1px 6px rgba(0,0,0,0.25)&quot;,
+        opacity: 0.85,
+      }}
+      title={lightMode ? &quot;Modo escuro&quot; : &quot;Modo claro&quot;}
+    &gt;
+      {lightMode ? &quot;🌙&quot; : &quot;☀️&quot;}
+    &lt;/button&gt;
+  );
+
+  const filterStyle = lightMode
+    ? { filter: &quot;invert(1) hue-rotate(180deg)&quot;, minHeight: &quot;100dvh&quot; }
+    : { minHeight: &quot;100dvh&quot; };
+
+  if (showCampoLivre) {
+    return &lt;div style={filterStyle}&gt;{toggleBtn}&lt;CampoLivre onBack={() =&gt; setShowCampoLivre(false)} /&gt;&lt;/div&gt;;
+  }
+
+  if (showAssistenteJur) {
+    return &lt;div style={filterStyle}&gt;{toggleBtn}&lt;AssistenteJuridico onBack={() =&gt; setShowAssistenteJur(false)} /&gt;&lt;/div&gt;;
+  }
+
+  if (!currentProject) {
+    return (
+      &lt;div style={filterStyle}&gt;
+        {toggleBtn}
+        &lt;input ref={zipInputRef} type=&quot;file&quot; accept=&quot;.zip,.tar,.tar.gz,.tgz&quot; onChange={handleZipFile} className=&quot;hidden&quot; /&gt;
+        &lt;TemplateSelector
+          projects={projects}
+          onSelect={(t: Template) =&gt; handleStart(t.files, t.name)}
+          onOpenProject={handleOpenProject}
+          onImportZip={handleImportZip}
+          onCreateFromAI={(files, name) =&gt; handleStart(files, name)}
+          onDeleteProject={handleDeleteProject}
+          onDuplicateProject={handleDuplicateProject}
+          onOpenCampoLivre={() =&gt; setShowCampoLivre(true)}
+          onOpenAssistenteJuridico={() =&gt; setShowAssistenteJur(true)}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div style={filterStyle}&gt;
+      {toggleBtn}
+      &lt;EditorLayout
+        vfs={vfs}
+        projectName={currentProject.name}
+        onNewProject={handleNewProject}
+        onSaveProject={handleSaveProject}
+        onOpenCampoLivre={() =&gt; setShowCampoLivre(true)}
+        onOpenAssistenteJuridico={() =&gt; setShowAssistenteJur(true)}
+        onBackToProjects={() =&gt; {
+          if (currentProject) {
+            const updated: Project = { ...currentProject, files: vfs.toJSON(), updatedAt: Date.now() };
+            setProjects(prev =&gt; { const next = upsertProject(prev, updated); saveProjects(next); return next; });
+          }
+          setCurrentProject(null);
+          setCurrentProjectId(null);
+        }}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+
+===== ARQUIVO: mockup-sandbox/vite.config.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;
+import { mockupPreviewPlugin } from &quot;./mockupPreviewPlugin&quot;;
+
+const rawPort = process.env.PORT;
+
+if (!rawPort) {
+  throw new Error(
+    &quot;PORT environment variable is required but was not provided.&quot;,
+  );
+}
+
+const port = Number(rawPort);
+
+if (Number.isNaN(port) || port &lt;= 0) {
+  throw new Error(`Invalid PORT value: &quot;${rawPort}&quot;`);
+}
+
+const basePath = process.env.BASE_PATH;
+
+if (!basePath) {
+  throw new Error(
+    &quot;BASE_PATH environment variable is required but was not provided.&quot;,
+  );
+}
+
+export default defineConfig({
+  base: basePath,
+  plugins: [
+    mockupPreviewPlugin(),
+    react(),
+    tailwindcss(),
+    runtimeErrorOverlay(),
+    ...(process.env.NODE_ENV !== &quot;production&quot; &amp;&amp;
+    process.env.REPL_ID !== undefined
+      ? [
+          await import(&quot;@replit/vite-plugin-cartographer&quot;).then((m) =&gt;
+            m.cartographer({
+              root: path.resolve(import.meta.dirname, &quot;..&quot;),
+            }),
+          ),
+        ]
+      : []),
+  ],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+    },
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist&quot;),
+    emptyOutDir: true,
+  },
+  server: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+    fs: {
+      strict: true,
+      deny: [&quot;**/.*&quot;],
+    },
+  },
+  preview: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+  },
+});
+
+===== ARQUIVO: mockup-sandbox/tsconfig.json =====
+{
+  &quot;extends&quot;: &quot;../../tsconfig.base.json&quot;,
+  &quot;include&quot;: [&quot;src/**/*&quot;, &quot;mockupPreviewPlugin.ts&quot;, &quot;vite.config.ts&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;build&quot;, &quot;dist&quot;, &quot;**/*.test.ts&quot;],
+  &quot;compilerOptions&quot;: {
+    &quot;noEmit&quot;: true,
+    &quot;lib&quot;: [&quot;es2022&quot;, &quot;dom&quot;, &quot;dom.iterable&quot;],
+    &quot;jsx&quot;: &quot;preserve&quot;,
+    &quot;esModuleInterop&quot;: true,
+    &quot;allowImportingTsExtensions&quot;: true,
+    &quot;types&quot;: [&quot;node&quot;, &quot;vite/client&quot;],
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./src/*&quot;]
+    }
+  }
+}
+
+===== ARQUIVO: mockup-sandbox/package.json =====
+{
+  &quot;name&quot;: &quot;@workspace/mockup-sandbox&quot;,
+  &quot;version&quot;: &quot;2.0.0&quot;,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;private&quot;: true,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite dev&quot;,
+    &quot;build&quot;: &quot;vite build&quot;,
+    &quot;preview&quot;: &quot;vite preview&quot;,
+    &quot;typecheck&quot;: &quot;tsc -p tsconfig.json --noEmit&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.12&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.15&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.8&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.11&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.3.3&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.12&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.16&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.15&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.16&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.15&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.8&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.16&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.14&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.15&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.8&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.3.8&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.10&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.2.6&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.8&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.3.6&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.13&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.10&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.11&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.8&quot;,
+    &quot;@replit/vite-plugin-cartographer&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-runtime-error-modal&quot;: &quot;catalog:&quot;,
+    &quot;@tailwindcss/vite&quot;: &quot;catalog:&quot;,
+    &quot;@types/node&quot;: &quot;catalog:&quot;,
+    &quot;@types/react&quot;: &quot;catalog:&quot;,
+    &quot;@types/react-dom&quot;: &quot;catalog:&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;catalog:&quot;,
+    &quot;chokidar&quot;: &quot;^4.0.3&quot;,
+    &quot;class-variance-authority&quot;: &quot;catalog:&quot;,
+    &quot;clsx&quot;: &quot;catalog:&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;fast-glob&quot;: &quot;^3.3.3&quot;,
+    &quot;framer-motion&quot;: &quot;catalog:&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;lucide-react&quot;: &quot;catalog:&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;react&quot;: &quot;catalog:&quot;,
+    &quot;react-day-picker&quot;: &quot;^9.11.1&quot;,
+    &quot;react-dom&quot;: &quot;catalog:&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.66.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.9&quot;,
+    &quot;recharts&quot;: &quot;^2.15.4&quot;,
+    &quot;sonner&quot;: &quot;^2.0.7&quot;,
+    &quot;tailwind-merge&quot;: &quot;catalog:&quot;,
+    &quot;tailwindcss&quot;: &quot;catalog:&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;tw-animate-css&quot;: &quot;^1.4.0&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;vite&quot;: &quot;catalog:&quot;,
+    &quot;zod&quot;: &quot;catalog:&quot;
+  }
+}
+
+===== ARQUIVO: mockup-sandbox/src/main.tsx =====
+import { createRoot } from &quot;react-dom/client&quot;;
+import App from &quot;./App&quot;;
+import &quot;./index.css&quot;;
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;App /&gt;);
+
+===== ARQUIVO: mockup-sandbox/src/App.tsx =====
+import { useEffect, useState, type ComponentType } from &quot;react&quot;;
+
+import { modules as discoveredModules } from &quot;./.generated/mockup-components&quot;;
+
+type ModuleMap = Record&lt;string, () =&gt; Promise&lt;Record&lt;string, unknown&gt;&gt;&gt;;
+
+function _resolveComponent(
+  mod: Record&lt;string, unknown&gt;,
+  name: string,
+): ComponentType | undefined {
+  const fns = Object.values(mod).filter(
+    (v) =&gt; typeof v === &quot;function&quot;,
+  ) as ComponentType[];
+  return (
+    (mod.default as ComponentType) ||
+    (mod.Preview as ComponentType) ||
+    (mod[name] as ComponentType) ||
+    fns[fns.length - 1]
+  );
+}
+</pre>
+</div>
+<div class="block" id="b10">
+  <div class="block-h">
+    <span>PreviewRenderer</span>
+    <div>
+      <small>L1683–L1698</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre10').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre10">function PreviewRenderer({
+  componentPath,
+  modules,
+}: {
+  componentPath: string;
+  modules: ModuleMap;
+}) {
+  const [Component, setComponent] = useState&lt;ComponentType | null&gt;(null);
+  const [error, setError] = useState&lt;string | null&gt;(null);
+
+  useEffect(() =&gt; {
+    let cancelled = false;
+
+    setComponent(null);
+    setError(null);
+</pre>
+</div>
+<div class="block" id="b11">
+  <div class="block-h">
+    <span>loadComponent</span>
+    <div>
+      <small>L1699–L1750</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre11').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre11">    async function loadComponent(): Promise&lt;void&gt; {
+      const key = `./components/mockups/${componentPath}.tsx`;
+      const loader = modules[key];
+      if (!loader) {
+        setError(`No component found at ${componentPath}.tsx`);
+        return;
+      }
+
+      try {
+        const mod = await loader();
+        if (cancelled) {
+          return;
+        }
+        const name = componentPath.split(&quot;/&quot;).pop()!;
+        const comp = _resolveComponent(mod, name);
+        if (!comp) {
+          setError(
+            `No exported React component found in ${componentPath}.tsx\n\nMake sure the file has at least one exported function component.`,
+          );
+          return;
+        }
+        setComponent(() =&gt; comp);
+      } catch (e) {
+        if (cancelled) {
+          return;
+        }
+
+        const message = e instanceof Error ? e.message : String(e);
+        setError(`Failed to load preview.\n${message}`);
+      }
+    }
+
+    void loadComponent();
+
+    return () =&gt; {
+      cancelled = true;
+    };
+  }, [componentPath, modules]);
+
+  if (error) {
+    return (
+      &lt;pre style={{ color: &quot;red&quot;, padding: &quot;2rem&quot;, fontFamily: &quot;system-ui&quot; }}&gt;
+        {error}
+      &lt;/pre&gt;
+    );
+  }
+
+  if (!Component) return null;
+
+  return &lt;Component /&gt;;
+}
+</pre>
+</div>
+<div class="block" id="b12">
+  <div class="block-h">
+    <span>getBasePath</span>
+    <div>
+      <small>L1751–L1754</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre12').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre12">function getBasePath(): string {
+  return import.meta.env.BASE_URL.replace(/\/$/, &quot;&quot;);
+}
+</pre>
+</div>
+<div class="block" id="b13">
+  <div class="block-h">
+    <span>getPreviewExamplePath</span>
+    <div>
+      <small>L1755–L1759</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre13').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre13">function getPreviewExamplePath(): string {
+  const basePath = getBasePath();
+  return `${basePath}/preview/ComponentName`;
+}
+</pre>
+</div>
+<div class="block" id="b14">
+  <div class="block-h">
+    <span>Gallery</span>
+    <div>
+      <small>L1760–L1780</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre14').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre14">function Gallery() {
+  return (
+    &lt;div className=&quot;min-h-screen bg-gray-50 flex items-center justify-center p-8&quot;&gt;
+      &lt;div className=&quot;text-center max-w-md&quot;&gt;
+        &lt;h1 className=&quot;text-2xl font-semibold text-gray-900 mb-3&quot;&gt;
+          Component Preview Server
+        &lt;/h1&gt;
+        &lt;p className=&quot;text-gray-500 mb-4&quot;&gt;
+          This server renders individual components for the workspace canvas.
+        &lt;/p&gt;
+        &lt;p className=&quot;text-sm text-gray-400&quot;&gt;
+          Access component previews at{&quot; &quot;}
+          &lt;code className=&quot;bg-gray-100 px-1.5 py-0.5 rounded text-gray-600&quot;&gt;
+            {getPreviewExamplePath()}
+          &lt;/code&gt;
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  );
+}
+</pre>
+</div>
+<div class="block" id="b15">
+  <div class="block-h">
+    <span>getPreviewPath</span>
+    <div>
+      <small>L1781–L1791</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre15').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre15">function getPreviewPath(): string | null {
+  const basePath = getBasePath();
+  const { pathname } = window.location;
+  const local =
+    basePath &amp;&amp; pathname.startsWith(basePath)
+      ? pathname.slice(basePath.length) || &quot;/&quot;
+      : pathname;
+  const match = local.match(/^\/preview\/(.+)$/);
+  return match ? match[1] : null;
+}
+</pre>
+</div>
+<div class="block" id="b16">
+  <div class="block-h">
+    <span>App</span>
+    <div>
+      <small>L1792–L1835</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre16').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre16">function App() {
+  const previewPath = getPreviewPath();
+
+  if (previewPath) {
+    return (
+      &lt;PreviewRenderer
+        componentPath={previewPath}
+        modules={discoveredModules}
+      /&gt;
+    );
+  }
+
+  return &lt;Gallery /&gt;;
+}
+
+export default App;
+
+===== ARQUIVO: Sk1/src/main.tsx =====
+import { createRoot } from &quot;react-dom/client&quot;;
+import App from &quot;./App&quot;;
+import &quot;./index.css&quot;;
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;App /&gt;);
+
+===== ARQUIVO: Sk1/src/App.tsx =====
+import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;
+import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;
+import { Template } from &quot;@/lib/templates&quot;;
+import { importFromZip } from &quot;@/lib/zip-service&quot;;
+import {
+  Project, loadProjects, saveProjects, createProject,
+  upsertProject, duplicateProject, getCurrentProjectId, setCurrentProjectId,
+} from &quot;@/lib/projects&quot;;
+import TemplateSelector from &quot;@/components/TemplateSelector&quot;;
+import EditorLayout from &quot;@/components/EditorLayout&quot;;
+import CampoLivre from &quot;@/components/CampoLivre&quot;;
+import AssistenteJuridico from &quot;@/components/AssistenteJuridico&quot;;
+import Extrator from &quot;@/components/Extrator&quot;;
+import Scanner from &quot;@/components/Scanner&quot;;
+import InAppBrowser from &quot;@/components/InAppBrowser&quot;;
+import AbrirOnline from &quot;@/components/AbrirOnline&quot;;
+
+const vfs = new VirtualFileSystem();
+</pre>
+</div>
+<div class="block" id="b17">
+  <div class="block-h">
+    <span>App</span>
+    <div>
+      <small>L1836–L1898</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre17').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre17">function App() {
+  const [projects, setProjects] = useState&lt;Project[]&gt;(loadProjects);
+  const [currentProject, setCurrentProject] = useState&lt;Project | null&gt;(null);
+  const [showCampoLivre,      setShowCampoLivre]      = useState(false);
+  const [showAssistenteJur,   setShowAssistenteJur]   = useState(false);
+  const [showExtrator,        setShowExtrator]        = useState(false);
+  const [showScanner,         setShowScanner]         = useState(false);
+  const [showBrowser,         setShowBrowser]         = useState(false);
+  const [showOnline,          setShowOnline]          = useState(false);
+  const [lightMode, setLightMode] = useState(() =&gt; localStorage.getItem(&quot;sk-light-mode&quot;) === &quot;1&quot;);
+
+  useEffect(() =&gt; {
+    localStorage.setItem(&quot;sk-light-mode&quot;, lightMode ? &quot;1&quot; : &quot;0&quot;);
+  }, [lightMode]);
+
+  // Botão Voltar do Android — fecha o painel aberto em vez de sair do app
+  useEffect(() =&gt; {
+    (window as any).androidBack = () =&gt; {
+      if (showOnline)        { setShowOnline(false);        return true; }
+      if (showBrowser)       { setShowBrowser(false);       return true; }
+      if (showCampoLivre)    { setShowCampoLivre(false);    return true; }
+      if (showAssistenteJur) { setShowAssistenteJur(false); return true; }
+      if (showExtrator)      { setShowExtrator(false);      return true; }
+      if (showScanner)       { setShowScanner(false);       return true; }
+      if (currentProject)    { setCurrentProject(null);     return true; }
+      return false;
+    };
+  }, [showOnline, showBrowser, showCampoLivre, showAssistenteJur, showExtrator, showScanner, currentProject]);
+
+  const zipInputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+  useEffect(() =&gt; {
+    const all = loadProjects();
+    setProjects(all);
+    const id = getCurrentProjectId();
+    if (id) {
+      const p = all.find(x =&gt; x.id === id);
+      if (p &amp;&amp; Object.keys(p.files).length &gt; 0) {
+        vfs.clear();
+        vfs.fromJSON(p.files);
+        setCurrentProject(p);
+      }
+    }
+  }, []);
+
+  const saveCurrentProject = useCallback((proj: Project, name?: string) =&gt; {
+    const updated: Project = {
+      ...proj,
+      name: name || proj.name,
+      files: vfs.toJSON(),
+      updatedAt: Date.now(),
+    };
+    setCurrentProject(updated);
+    setProjects(prev =&gt; {
+      const next = upsertProject(prev, updated);
+      saveProjects(next);
+      return next;
+    });
+    return updated;
+  }, []);
+
+  useEffect(() =&gt; {
+    if (!currentProject) return;</pre>
+</div>
+<div class="block" id="b18">
+  <div class="block-h">
+    <span>save →</span>
+    <div>
+      <small>L1899–L1972</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre18').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre18">    const save = () =&gt; saveCurrentProject(currentProject);
+    const unsub = vfs.onChange(save);
+    const interval = setInterval(save, 8000);
+    return () =&gt; { unsub(); clearInterval(interval); };
+  }, [currentProject, saveCurrentProject]);
+
+  const handleStart = useCallback((files: Record&lt;string, string&gt;, name: string) =&gt; {
+    const project = createProject(name, files);
+    vfs.clear();
+    vfs.fromJSON(files);
+    setCurrentProject(project);
+    setCurrentProjectId(project.id);
+    setProjects(prev =&gt; {
+      const next = [project, ...prev];
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleOpenProject = useCallback((project: Project) =&gt; {
+    // Salva o projeto atual antes de trocar
+    setCurrentProject(prev =&gt; {
+      if (prev) {
+        const updated: Project = { ...prev, files: vfs.toJSON(), updatedAt: Date.now() };
+        setProjects(all =&gt; { const next = upsertProject(all, updated); saveProjects(next); return next; });
+      }
+      return prev;
+    });
+    vfs.clear();
+    vfs.fromJSON(project.files);
+    setCurrentProject(project);
+    setCurrentProjectId(project.id);
+  }, []);
+
+  const handleNewProject = useCallback(() =&gt; {
+    setCurrentProject(null);
+    setCurrentProjectId(null);
+    vfs.clear();
+  }, []);
+
+  const handleImportZip = useCallback(() =&gt; zipInputRef.current?.click(), []);
+
+  const handleZipFile = useCallback(async (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const imported = await importFromZip(file);
+      handleStart(imported, file.name.replace(/\.zip$/, &quot;&quot;));
+    } catch (err: any) { alert(`Erro ao importar: ${err.message}`); }
+    e.target.value = &quot;&quot;;
+  }, [handleStart]);
+
+  const handleDeleteProject = useCallback((id: string) =&gt; {
+    setProjects(prev =&gt; {
+      const next = prev.filter(p =&gt; p.id !== id);
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleDuplicateProject = useCallback((project: Project) =&gt; {
+    const dup = duplicateProject(project);
+    setProjects(prev =&gt; {
+      const next = [dup, ...prev];
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleSaveProject = useCallback((name: string) =&gt; {
+    if (!currentProject) return;
+    saveCurrentProject(currentProject, name);
+  }, [currentProject, saveCurrentProject]);
+</pre>
+</div>
+<div class="block" id="b19">
+  <div class="block-h">
+    <span>toggleBtn →</span>
+    <div>
+      <small>L1973–L2497</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre19').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre19">  const toggleBtn = (
+    &lt;button
+      onClick={() =&gt; setLightMode(v =&gt; !v)}
+      style={{
+        position: &quot;fixed&quot;, top: 8, right: 8, zIndex: 99999,
+        width: 26, height: 26, borderRadius: &quot;50%&quot;,
+        background: lightMode ? &quot;#1c2714&quot; : &quot;#e8f5e0&quot;,
+        border: lightMode ? &quot;1px solid #4a7c3f&quot; : &quot;1px solid #6ab04c&quot;,
+        fontSize: 13, cursor: &quot;pointer&quot;,
+        display: &quot;flex&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot;,
+        boxShadow: &quot;0 1px 6px rgba(0,0,0,0.25)&quot;,
+        opacity: 0.85,
+      }}
+      title={lightMode ? &quot;Modo escuro&quot; : &quot;Modo claro&quot;}
+    &gt;
+      {lightMode ? &quot;🌙&quot; : &quot;☀️&quot;}
+    &lt;/button&gt;
+  );
+
+  const filterStyle = lightMode
+    ? { filter: &quot;invert(1) hue-rotate(180deg)&quot;, minHeight: &quot;100dvh&quot; }
+    : { minHeight: &quot;100dvh&quot; };
+
+  if (showCampoLivre) {
+    return &lt;div style={filterStyle}&gt;{toggleBtn}&lt;CampoLivre onBack={() =&gt; setShowCampoLivre(false)} /&gt;&lt;/div&gt;;
+  }
+
+  if (showAssistenteJur) {
+    return &lt;div style={filterStyle}&gt;{toggleBtn}&lt;AssistenteJuridico onBack={() =&gt; setShowAssistenteJur(false)} /&gt;&lt;/div&gt;;
+  }
+
+  if (showExtrator) {
+    return &lt;Extrator onBack={() =&gt; setShowExtrator(false)} /&gt;;
+  }
+
+  if (showScanner) {
+    return &lt;Scanner onBack={() =&gt; setShowScanner(false)} /&gt;;
+  }
+
+  if (showBrowser) {
+    return &lt;InAppBrowser onBack={() =&gt; setShowBrowser(false)} /&gt;;
+  }
+
+  if (showOnline) {
+    return &lt;AbrirOnline files={currentProject ? vfs.toJSON() : {}} projectName={currentProject?.name ?? &quot;projeto&quot;} onBack={() =&gt; setShowOnline(false)} /&gt;;
+  }
+
+  if (!currentProject) {
+    return (
+      &lt;div style={filterStyle}&gt;
+        {toggleBtn}
+        &lt;input ref={zipInputRef} type=&quot;file&quot; onChange={handleZipFile} className=&quot;hidden&quot; /&gt;
+        &lt;TemplateSelector
+          projects={projects}
+          onSelect={(t: Template) =&gt; handleStart(t.files, t.name)}
+          onOpenProject={handleOpenProject}
+          onImportZip={handleImportZip}
+          onCreateFromAI={(files, name) =&gt; handleStart(files, name)}
+          onDeleteProject={handleDeleteProject}
+          onDuplicateProject={handleDuplicateProject}
+          onOpenCampoLivre={() =&gt; setShowCampoLivre(true)}
+          onOpenAssistenteJuridico={() =&gt; setShowAssistenteJur(true)}
+          onOpenExtrator={() =&gt; setShowExtrator(true)}
+          onOpenScanner={() =&gt; setShowScanner(true)}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div style={filterStyle}&gt;
+      {toggleBtn}
+      &lt;EditorLayout
+        vfs={vfs}
+        projectName={currentProject.name}
+        onNewProject={handleNewProject}
+        onSaveProject={handleSaveProject}
+        onOpenCampoLivre={() =&gt; setShowCampoLivre(true)}
+        onOpenAssistenteJuridico={() =&gt; setShowAssistenteJur(true)}
+        onOpenExtrator={() =&gt; setShowExtrator(true)}
+        onOpenScanner={() =&gt; setShowScanner(true)}
+        onOpenBrowser={() =&gt; setShowBrowser(true)}
+        onOpenOnline={() =&gt; setShowOnline(true)}
+        onBackToProjects={() =&gt; {
+          if (currentProject) {
+            const updated: Project = { ...currentProject, files: vfs.toJSON(), updatedAt: Date.now() };
+            setProjects(prev =&gt; { const next = upsertProject(prev, updated); saveProjects(next); return next; });
+          }
+          setCurrentProject(null);
+          setCurrentProjectId(null);
+        }}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+
+===== ARQUIVO: Sk1/vite.config.apk.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+
+export default defineConfig({
+  base: &quot;./&quot;,
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+    },
+    dedupe: [&quot;react&quot;, &quot;react-dom&quot;],
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist-apk&quot;),
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        format: &quot;iife&quot;,
+        entryFileNames: &quot;assets/app.js&quot;,
+        assetFileNames: &quot;assets/[name][extname]&quot;,
+        inlineDynamicImports: true,
+      },
+    },
+  },
+});
+
+===== ARQUIVO: Sk1/vite.config.standalone.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+
+export default defineConfig({
+  base: &quot;./&quot;,
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+      &quot;@assets&quot;: path.resolve(import.meta.dirname, &quot;..&quot;, &quot;..&quot;, &quot;attached_assets&quot;),
+    },
+    dedupe: [&quot;react&quot;, &quot;react-dom&quot;],
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist-standalone&quot;),
+    emptyOutDir: true,
+  },
+});
+
+===== ARQUIVO: Sk1/vite.config.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;
+
+const rawPort = process.env.PORT;
+const port = rawPort ? Number(rawPort) : 3000;
+
+const basePath = process.env.BASE_PATH ?? &quot;/&quot;;
+
+export default defineConfig({
+  base: basePath,
+  plugins: [
+    react(),
+    tailwindcss(),
+    runtimeErrorOverlay(),
+    ...(process.env.NODE_ENV !== &quot;production&quot; &amp;&amp;
+    process.env.REPL_ID !== undefined
+      ? [
+          await import(&quot;@replit/vite-plugin-cartographer&quot;).then((m) =&gt;
+            m.cartographer({
+              root: path.resolve(import.meta.dirname, &quot;..&quot;),
+            }),
+          ),
+          await import(&quot;@replit/vite-plugin-dev-banner&quot;).then((m) =&gt;
+            m.devBanner(),
+          ),
+        ]
+      : []),
+  ],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+      &quot;@assets&quot;: path.resolve(import.meta.dirname, &quot;..&quot;, &quot;..&quot;, &quot;attached_assets&quot;),
+    },
+    dedupe: [&quot;react&quot;, &quot;react-dom&quot;],
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist/public&quot;),
+    emptyOutDir: true,
+  },
+  server: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+    fs: {
+      strict: true,
+      deny: [&quot;**/.*&quot;],
+    },
+    proxy: {
+      // WebSocket do terminal — tem que vir ANTES do /api geral
+      [`${basePath}api/ws/terminal`]: {
+        target: &quot;ws://localhost:8080&quot;,
+        ws: true,
+        changeOrigin: true,
+        rewrite: (path: string) =&gt; path.replace(basePath, &quot;/&quot;),
+      },
+      // Chamadas HTTP /api/*
+      [`${basePath}api`]: {
+        target: &quot;http://localhost:8080&quot;,
+        changeOrigin: true,
+        rewrite: (path: string) =&gt; path.replace(basePath, &quot;/&quot;),
+      },
+    },
+  },
+  preview: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+  },
+});
+
+===== ARQUIVO: Sk1/tsconfig.json =====
+{
+  &quot;extends&quot;: &quot;../../tsconfig.base.json&quot;,
+  &quot;include&quot;: [&quot;src/**/*&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;build&quot;, &quot;dist&quot;, &quot;**/*.test.ts&quot;],
+  &quot;compilerOptions&quot;: {
+    &quot;noEmit&quot;: true,
+    &quot;jsx&quot;: &quot;preserve&quot;,
+    &quot;lib&quot;: [&quot;esnext&quot;, &quot;dom&quot;, &quot;dom.iterable&quot;],
+    &quot;resolveJsonModule&quot;: true,
+    &quot;allowImportingTsExtensions&quot;: true,
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    &quot;types&quot;: [&quot;node&quot;, &quot;vite/client&quot;],
+    &quot;paths&quot;: {}
+  }
+}
+
+===== ARQUIVO: Sk1/package.json =====
+{
+  &quot;name&quot;: &quot;@workspace/code-editor&quot;,
+  &quot;version&quot;: &quot;0.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite --config vite.config.ts --host 0.0.0.0&quot;,
+    &quot;build&quot;: &quot;vite build --config vite.config.ts&quot;,
+    &quot;serve&quot;: &quot;vite preview --config vite.config.ts --host 0.0.0.0&quot;,
+    &quot;typecheck&quot;: &quot;tsc -p tsconfig.json --noEmit&quot;,
+    &quot;build:web&quot;: &quot;vite build --config vite.config.apk.ts&quot;,
+    &quot;cap:init&quot;: &quot;npx cap init \&quot;SK Code Editor\&quot; com.skcodeeditor.app --web-dir dist&quot;,
+    &quot;cap:add:android&quot;: &quot;npx cap add android&quot;,
+    &quot;cap:sync&quot;: &quot;npx cap sync android&quot;,
+    &quot;cap:open&quot;: &quot;npx cap open android&quot;,
+    &quot;build:apk&quot;: &quot;npm run build:web &amp;&amp; npx cap sync android&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@capacitor/android&quot;: &quot;^8.3.0&quot;,
+    &quot;@capacitor/cli&quot;: &quot;^8.3.0&quot;,
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.1.5&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.7&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.3&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.0&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.0&quot;,
+    &quot;@replit/vite-plugin-cartographer&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-dev-banner&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-runtime-error-modal&quot;: &quot;catalog:&quot;,
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.15&quot;,
+    &quot;@tailwindcss/vite&quot;: &quot;catalog:&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;catalog:&quot;,
+    &quot;@types/file-saver&quot;: &quot;^2.0.7&quot;,
+    &quot;@types/jsonwebtoken&quot;: &quot;^9.0.5&quot;,
+    &quot;@types/node&quot;: &quot;^20.0.0&quot;,
+    &quot;@types/node-fetch&quot;: &quot;^2.6.11&quot;,
+    &quot;@types/qrcode-terminal&quot;: &quot;^0.12.2&quot;,
+    &quot;@types/react&quot;: &quot;catalog:&quot;,
+    &quot;@types/react-dom&quot;: &quot;catalog:&quot;,
+    &quot;@types/socket.io-client&quot;: &quot;^3.0.0&quot;,
+    &quot;@types/write-file-atomic&quot;: &quot;^4.0.3&quot;,
+    &quot;@types/ws&quot;: &quot;^8.5.10&quot;,
+    &quot;@types/yargs&quot;: &quot;^17.0.32&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;catalog:&quot;,
+    &quot;@workspace/api-client-react&quot;: &quot;workspace:*&quot;,
+    &quot;class-variance-authority&quot;: &quot;catalog:&quot;,
+    &quot;clsx&quot;: &quot;catalog:&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;framer-motion&quot;: &quot;catalog:&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;lucide-react&quot;: &quot;catalog:&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;react&quot;: &quot;catalog:&quot;,
+    &quot;react-day-picker&quot;: &quot;^9.11.1&quot;,
+    &quot;react-dom&quot;: &quot;catalog:&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.55.0&quot;,
+    &quot;react-icons&quot;: &quot;^5.6.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.9&quot;,
+    &quot;recharts&quot;: &quot;^2.15.2&quot;,
+    &quot;sonner&quot;: &quot;^2.0.7&quot;,
+    &quot;tailwind-merge&quot;: &quot;catalog:&quot;,
+    &quot;tailwindcss&quot;: &quot;catalog:&quot;,
+    &quot;ts-node&quot;: &quot;^10.9.2&quot;,
+    &quot;tw-animate-css&quot;: &quot;^1.4.0&quot;,
+    &quot;typescript&quot;: &quot;^5.3.0&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;vite&quot;: &quot;catalog:&quot;,
+    &quot;vitest&quot;: &quot;^3.0.0&quot;,
+    &quot;wouter&quot;: &quot;^3.3.5&quot;,
+    &quot;zod&quot;: &quot;catalog:&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@capacitor/core&quot;: &quot;^8.3.0&quot;,
+    &quot;@isomorphic-git/lightning-fs&quot;: &quot;^4.6.2&quot;,
+    &quot;@monaco-editor/react&quot;: &quot;^4.7.0&quot;,
+    &quot;@xterm/addon-fit&quot;: &quot;^0.11.0&quot;,
+    &quot;@xterm/addon-serialize&quot;: &quot;0.13.0&quot;,
+    &quot;@xterm/addon-web-links&quot;: &quot;^0.12.0&quot;,
+    &quot;@xterm/headless&quot;: &quot;5.5.0&quot;,
+    &quot;@xterm/xterm&quot;: &quot;^6.0.0&quot;,
+    &quot;chalk&quot;: &quot;4.1.2&quot;,
+    &quot;chokidar&quot;: &quot;3.6.0&quot;,
+    &quot;default-shell&quot;: &quot;2.2.0&quot;,
+    &quot;file-saver&quot;: &quot;^2.0.5&quot;,
+    &quot;fossil-delta&quot;: &quot;1.0.2&quot;,
+    &quot;highlight.js&quot;: &quot;^11.11.1&quot;,
+    &quot;jszip&quot;: &quot;^3.10.1&quot;,
+    &quot;jsonwebtoken&quot;: &quot;9.0.3&quot;,
+    &quot;node-fetch&quot;: &quot;3.3.2&quot;,
+    &quot;node-pty&quot;: &quot;1.2.0-beta.10&quot;,
+    &quot;open&quot;: &quot;8.4.2&quot;,
+    &quot;os-locale&quot;: &quot;8.0.0&quot;,
+    &quot;qrcode-terminal&quot;: &quot;0.12.0&quot;,
+    &quot;react-markdown&quot;: &quot;^10.1.0&quot;,
+    &quot;rehype-highlight&quot;: &quot;^7.0.2&quot;,
+    &quot;remark-gfm&quot;: &quot;^4.0.1&quot;,
+    &quot;socket.io-client&quot;: &quot;4.8.3&quot;,
+    &quot;write-file-atomic&quot;: &quot;7.0.0&quot;,
+    &quot;yargs&quot;: &quot;17.7.2&quot;
+  },
+  &quot;engines&quot;: {
+    &quot;node&quot;: &quot;&gt;=18.0.0&quot;
+  }
+}
+
+===== ARQUIVO: Sk1/capacitor.config.ts =====
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.skcodeeditor.app',
+  appName: 'SK Code Editor',
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https',
+    cleartext: false,
+  },
+  android: {
+    buildOptions: {
+      releaseType: 'APK',
+    },
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 0,
+    },
+  },
+};
+
+export default config;
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/vite.config.ts =====
+import { defineConfig } from &quot;vite&quot;;
+import react from &quot;@vitejs/plugin-react&quot;;
+import tailwindcss from &quot;@tailwindcss/vite&quot;;
+import path from &quot;path&quot;;
+import runtimeErrorOverlay from &quot;@replit/vite-plugin-runtime-error-modal&quot;;
+
+const rawPort = process.env.PORT;
+const port = rawPort ? Number(rawPort) : 5000;
+// Em dev, sempre servir em &quot;/&quot; para o health-check do Replit funcionar.
+// BASE_PATH só é usado no build de produção/deploy.
+const basePath = process.env.NODE_ENV === &quot;production&quot;
+  ? (process.env.BASE_PATH ?? &quot;/&quot;)
+  : &quot;/&quot;;
+
+export default defineConfig({
+  base: basePath,
+  plugins: [
+    react(),
+    tailwindcss(),
+    runtimeErrorOverlay(),
+    ...(process.env.NODE_ENV !== &quot;production&quot; &amp;&amp;
+    process.env.REPL_ID !== undefined
+      ? [
+          await import(&quot;@replit/vite-plugin-cartographer&quot;).then((m) =&gt;
+            m.cartographer({
+              root: path.resolve(import.meta.dirname, &quot;..&quot;),
+            }),
+          ),
+          await import(&quot;@replit/vite-plugin-dev-banner&quot;).then((m) =&gt;
+            m.devBanner(),
+          ),
+        ]
+      : []),
+  ],
+  resolve: {
+    alias: {
+      &quot;@&quot;: path.resolve(import.meta.dirname, &quot;src&quot;),
+      &quot;@assets&quot;: path.resolve(import.meta.dirname, &quot;src&quot;, &quot;assets&quot;),
+    },
+    dedupe: [&quot;react&quot;, &quot;react-dom&quot;],
+  },
+  root: path.resolve(import.meta.dirname),
+  build: {
+    outDir: path.resolve(import.meta.dirname, &quot;dist/public&quot;),
+    emptyOutDir: true,
+    minify: &quot;esbuild&quot;,
+    target: &quot;esnext&quot;,
+    sourcemap: false,
+    chunkSizeWarningLimit: 4000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          &quot;vendor-react&quot;: [&quot;react&quot;, &quot;react-dom&quot;],
+          &quot;vendor-monaco&quot;: [&quot;@monaco-editor/react&quot;],
+          &quot;vendor-lucide&quot;: [&quot;lucide-react&quot;],
+        },
+      },
+    },
+  },
+  server: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+    watch: {
+      ignored: [&quot;**/dist/**&quot;, &quot;**/.git/**&quot;, &quot;**/node_modules/**&quot;],
+    },
+    // Headers COOP/COEP (necessários pro WebContainer / Terminal Real) NÃO
+    // são adicionados aqui porque quebrariam o preview embedado do Replit.
+    // Em vez disso, o service worker (public/sw.js) os adiciona em runtime,
+    // funcionando tanto em dev quanto em produção (PWA instalado / APK).
+    proxy: {
+      &quot;/api&quot;: {
+        target: &quot;http://localhost:8080&quot;,
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+    fs: {
+      strict: true,
+      deny: [&quot;**/.*&quot;],
+    },
+  },
+  preview: {
+    port,
+    host: &quot;0.0.0.0&quot;,
+    allowedHosts: true,
+  },
+});
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/tsconfig.json =====
+{
+  &quot;include&quot;: [&quot;src/**/*&quot;, &quot;vite.config.ts&quot;],
+  &quot;exclude&quot;: [&quot;node_modules&quot;, &quot;build&quot;, &quot;dist&quot;, &quot;**/*.test.ts&quot;],
+  &quot;compilerOptions&quot;: {
+    &quot;noEmit&quot;: true,
+    &quot;target&quot;: &quot;ESNext&quot;,
+    &quot;module&quot;: &quot;ESNext&quot;,
+    &quot;jsx&quot;: &quot;react-jsx&quot;,
+    &quot;lib&quot;: [&quot;esnext&quot;, &quot;dom&quot;, &quot;dom.iterable&quot;],
+    &quot;resolveJsonModule&quot;: true,
+    &quot;allowImportingTsExtensions&quot;: true,
+    &quot;moduleResolution&quot;: &quot;bundler&quot;,
+    &quot;allowSyntheticDefaultImports&quot;: true,
+    &quot;esModuleInterop&quot;: true,
+    &quot;isolatedModules&quot;: true,
+    &quot;skipLibCheck&quot;: true,
+    &quot;strict&quot;: false,
+    &quot;types&quot;: [&quot;node&quot;, &quot;vite/client&quot;],
+    &quot;paths&quot;: {
+      &quot;@/*&quot;: [&quot;./src/*&quot;]
+    }
+  }
+}
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/server.cjs =====
+'use strict';
+
+const http = require('http');
+const url = require('url');
+
+const PORT = parseInt(process.env.PORT || '8080', 10);
+const GEMINI_KEY = process.env.GEMINI_API_KEY || '';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/openai';
+
+// CORS headers</pre>
+</div>
+<div class="block" id="b20">
+  <div class="block-h">
+    <span>setCors</span>
+    <div>
+      <small>L2498–L2504</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre20').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre20">function setCors(res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+}
+
+// Read body</pre>
+</div>
+<div class="block" id="b21">
+  <div class="block-h">
+    <span>readBody</span>
+    <div>
+      <small>L2505–L2514</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre21').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre21">function readBody(req) {
+  return new Promise((resolve, reject) =&gt; {
+    let data = '';
+    req.on('data', (c) =&gt; { data += c; });
+    req.on('end', () =&gt; resolve(data));
+    req.on('error', reject);
+  });
+}
+
+// Proxy to Gemini</pre>
+</div>
+<div class="block" id="b22">
+  <div class="block-h">
+    <span>handleAIChat</span>
+    <div>
+      <small>L2515–L2576</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre22').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre22">async function handleAIChat(req, res) {
+  setCors(res);
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204); res.end(); return;
+  }
+  if (req.method !== 'POST') {
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
+  }
+
+  if (!GEMINI_KEY) {
+    res.writeHead(503, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Chave Gemini não configurada. Adicione GEMINI_API_KEY nos Secrets.' }));
+    return;
+  }
+
+  try {
+    const raw = await readBody(req);
+    const { system, messages } = JSON.parse(raw);
+
+    const openaiMessages = [];
+    if (system) openaiMessages.push({ role: 'system', content: system });
+    for (const m of (messages || [])) {
+      openaiMessages.push({ role: m.role, content: m.content });
+    }
+
+    const payload = JSON.stringify({
+      model: GEMINI_MODEL,
+      messages: openaiMessages,
+      max_tokens: 8192,
+      temperature: 0.7,
+    });
+
+    const resp = await fetch(`${GEMINI_BASE}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GEMINI_KEY}`,
+      },
+      body: payload,
+    });
+
+    const respBody = await resp.text();
+    if (!resp.ok) {
+      res.writeHead(resp.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: respBody }));
+      return;
+    }
+
+    const data = JSON.parse(respBody);
+    const content = data.choices?.[0]?.message?.content || '';
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ content }));
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: String(err) }));
+  }
+}
+
+// Health</pre>
+</div>
+<div class="block" id="b23">
+  <div class="block-h">
+    <span>handleHealth</span>
+    <div>
+      <small>L2577–L2808</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre23').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre23">async function handleHealth(req, res) {
+  setCors(res);
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ ok: true, gemini: !!GEMINI_KEY, model: GEMINI_MODEL }));
+}
+
+// Server
+const server = http.createServer(async (req, res) =&gt; {
+  const parsed = new url.URL(req.url, `http://localhost:${PORT}`);
+
+  if (parsed.pathname === '/api/ai/chat') return handleAIChat(req, res);
+  if (parsed.pathname === '/api/healthz' || parsed.pathname === '/api/health') return handleHealth(req, res);
+
+  if (parsed.pathname.startsWith('/api/')) {
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Not found' }));
+    return;
+  }
+
+  res.writeHead(404); res.end('Not found');
+});
+
+server.listen(PORT, '0.0.0.0', () =&gt; {
+  console.log(`[SK-Server] http://0.0.0.0:${PORT}`);
+  console.log(`[SK-Server] Gemini: ${GEMINI_KEY ? 'configurado (' + GEMINI_MODEL + ')' : 'sem chave'}`);
+});
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/replit.nix =====
+{pkgs}: {
+  deps = [
+    pkgs.unzip
+  ];
+}
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/pnpm-workspace.yaml =====
+packages:
+  - &quot;.&quot;
+
+catalog:
+  &quot;@replit/vite-plugin-cartographer&quot;: &quot;^0.6.0&quot;
+  &quot;@replit/vite-plugin-dev-banner&quot;: &quot;^0.1.2&quot;
+  &quot;@replit/vite-plugin-runtime-error-modal&quot;: &quot;^0.0.6&quot;
+  &quot;@tailwindcss/vite&quot;: &quot;^4.0.0&quot;
+  &quot;@tanstack/react-query&quot;: &quot;^5.60.5&quot;
+  &quot;@types/node&quot;: &quot;^22.9.0&quot;
+  &quot;@types/react&quot;: &quot;^18.3.12&quot;
+  &quot;@types/react-dom&quot;: &quot;^18.3.1&quot;
+  &quot;@vitejs/plugin-react&quot;: &quot;^4.3.2&quot;
+  &quot;class-variance-authority&quot;: &quot;^0.7.1&quot;
+  &quot;clsx&quot;: &quot;^2.1.1&quot;
+  &quot;framer-motion&quot;: &quot;^11.11.17&quot;
+  &quot;lucide-react&quot;: &quot;^0.462.0&quot;
+  &quot;react&quot;: &quot;^18.3.1&quot;
+  &quot;react-dom&quot;: &quot;^18.3.1&quot;
+  &quot;tailwind-merge&quot;: &quot;^2.5.4&quot;
+  &quot;tailwindcss&quot;: &quot;^4.0.0&quot;
+  &quot;vite&quot;: &quot;^5.4.10&quot;
+  &quot;zod&quot;: &quot;^3.23.8&quot;
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/package.json =====
+{
+  &quot;name&quot;: &quot;@workspace/sk-editor&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;private&quot;: true,
+  &quot;type&quot;: &quot;module&quot;,
+  &quot;main&quot;: &quot;electron/main.cjs&quot;,
+  &quot;scripts&quot;: {
+    &quot;dev&quot;: &quot;vite --config vite.config.ts --host 0.0.0.0&quot;,
+    &quot;build&quot;: &quot;vite build --config vite.config.ts&quot;,
+    &quot;serve&quot;: &quot;vite preview --config vite.config.ts --host 0.0.0.0&quot;,
+    &quot;typecheck&quot;: &quot;tsc -p tsconfig.json --noEmit&quot;,
+    &quot;build:zips&quot;: &quot;node scripts/build-zips.mjs&quot;,
+    &quot;electron:build&quot;: &quot;pnpm build &amp;&amp; electron-builder --linux AppImage --win nsis --x64&quot;,
+    &quot;electron:build:linux&quot;: &quot;pnpm build &amp;&amp; electron-builder --linux AppImage --x64&quot;,
+    &quot;electron:build:win&quot;: &quot;pnpm build &amp;&amp; electron-builder --win nsis --x64&quot;
+  },
+  &quot;build&quot;: {
+    &quot;appId&quot;: &quot;com.skeditor.v3&quot;,
+    &quot;productName&quot;: &quot;SK Editor v3&quot;,
+    &quot;copyright&quot;: &quot;Copyright © 2026 SK Editor v3 — Sem Replit&quot;,
+    &quot;asar&quot;: true,
+    &quot;directories&quot;: {
+      &quot;output&quot;: &quot;dist/electron&quot;
+    },
+    &quot;files&quot;: [
+      &quot;electron/**/*&quot;,
+      &quot;dist/public/**/*&quot;,
+      &quot;!dist/public/downloads/**/*&quot;,
+      &quot;public/icon-512.png&quot;,
+      &quot;public/icon-192.png&quot;
+    ],
+    &quot;win&quot;: {
+      &quot;target&quot;: [
+        {
+          &quot;target&quot;: &quot;zip&quot;,
+          &quot;arch&quot;: [
+            &quot;x64&quot;
+          ]
+        }
+      ],
+      &quot;icon&quot;: &quot;public/icon-512.png&quot;
+    },
+    &quot;executableName&quot;: &quot;SK-Editor-v3&quot;,
+    &quot;linux&quot;: {
+      &quot;target&quot;: [
+        {
+          &quot;target&quot;: &quot;AppImage&quot;,
+          &quot;arch&quot;: [
+            &quot;x64&quot;
+          ]
+        }
+      ],
+      &quot;icon&quot;: &quot;public/icon-512.png&quot;,
+      &quot;category&quot;: &quot;Development&quot;,
+      &quot;executableName&quot;: &quot;SK-Editor-v3&quot;
+    },
+    &quot;nsis&quot;: {
+      &quot;oneClick&quot;: false,
+      &quot;perMachine&quot;: false,
+      &quot;allowToChangeInstallationDirectory&quot;: true,
+      &quot;deleteAppDataOnUninstall&quot;: false
+    }
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@hookform/resolvers&quot;: &quot;^3.10.0&quot;,
+    &quot;@radix-ui/react-accordion&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-alert-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-aspect-ratio&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-avatar&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-checkbox&quot;: &quot;^1.1.5&quot;,
+    &quot;@radix-ui/react-collapsible&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-context-menu&quot;: &quot;^2.2.7&quot;,
+    &quot;@radix-ui/react-dialog&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-dropdown-menu&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-hover-card&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-label&quot;: &quot;^2.1.3&quot;,
+    &quot;@radix-ui/react-menubar&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-navigation-menu&quot;: &quot;^1.2.6&quot;,
+    &quot;@radix-ui/react-popover&quot;: &quot;^1.1.7&quot;,
+    &quot;@radix-ui/react-progress&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-radio-group&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-scroll-area&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-select&quot;: &quot;^2.1.7&quot;,
+    &quot;@radix-ui/react-separator&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-slider&quot;: &quot;^1.2.4&quot;,
+    &quot;@radix-ui/react-slot&quot;: &quot;^1.2.0&quot;,
+    &quot;@radix-ui/react-switch&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-tabs&quot;: &quot;^1.1.4&quot;,
+    &quot;@radix-ui/react-toast&quot;: &quot;^1.2.7&quot;,
+    &quot;@radix-ui/react-toggle&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-toggle-group&quot;: &quot;^1.1.3&quot;,
+    &quot;@radix-ui/react-tooltip&quot;: &quot;^1.2.0&quot;,
+    &quot;@replit/vite-plugin-cartographer&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-dev-banner&quot;: &quot;catalog:&quot;,
+    &quot;@replit/vite-plugin-runtime-error-modal&quot;: &quot;catalog:&quot;,
+    &quot;@tailwindcss/typography&quot;: &quot;^0.5.15&quot;,
+    &quot;@tailwindcss/vite&quot;: &quot;catalog:&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;catalog:&quot;,
+    &quot;@types/file-saver&quot;: &quot;^2.0.7&quot;,
+    &quot;@types/node&quot;: &quot;catalog:&quot;,
+    &quot;@types/react&quot;: &quot;catalog:&quot;,
+    &quot;@types/react-dom&quot;: &quot;catalog:&quot;,
+    &quot;@vitejs/plugin-react&quot;: &quot;catalog:&quot;,
+    &quot;class-variance-authority&quot;: &quot;catalog:&quot;,
+    &quot;clsx&quot;: &quot;catalog:&quot;,
+    &quot;cmdk&quot;: &quot;^1.1.1&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;electron&quot;: &quot;^42.4.0&quot;,
+    &quot;electron-builder&quot;: &quot;^26.15.3&quot;,
+    &quot;embla-carousel-react&quot;: &quot;^8.6.0&quot;,
+    &quot;framer-motion&quot;: &quot;catalog:&quot;,
+    &quot;input-otp&quot;: &quot;^1.4.2&quot;,
+    &quot;lucide-react&quot;: &quot;catalog:&quot;,
+    &quot;next-themes&quot;: &quot;^0.4.6&quot;,
+    &quot;react&quot;: &quot;catalog:&quot;,
+    &quot;react-day-picker&quot;: &quot;^9.11.1&quot;,
+    &quot;react-dom&quot;: &quot;catalog:&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.55.0&quot;,
+    &quot;react-icons&quot;: &quot;^5.4.0&quot;,
+    &quot;react-resizable-panels&quot;: &quot;^2.1.7&quot;,
+    &quot;recharts&quot;: &quot;^2.15.2&quot;,
+    &quot;sonner&quot;: &quot;^2.0.7&quot;,
+    &quot;tailwind-merge&quot;: &quot;catalog:&quot;,
+    &quot;tailwindcss&quot;: &quot;catalog:&quot;,
+    &quot;tw-animate-css&quot;: &quot;^1.4.0&quot;,
+    &quot;vaul&quot;: &quot;^1.1.2&quot;,
+    &quot;vite&quot;: &quot;catalog:&quot;,
+    &quot;wouter&quot;: &quot;^3.3.5&quot;,
+    &quot;zod&quot;: &quot;catalog:&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@isomorphic-git/lightning-fs&quot;: &quot;^4.6.2&quot;,
+    &quot;@monaco-editor/react&quot;: &quot;^4.7.0&quot;,
+    &quot;@neondatabase/serverless&quot;: &quot;^1.1.0&quot;,
+    &quot;@webcontainer/api&quot;: &quot;^1.6.4&quot;,
+    &quot;@xterm/addon-fit&quot;: &quot;^0.11.0&quot;,
+    &quot;@xterm/addon-web-links&quot;: &quot;^0.12.0&quot;,
+    &quot;@xterm/xterm&quot;: &quot;^6.0.0&quot;,
+    &quot;express&quot;: &quot;^5.2.1&quot;,
+    &quot;file-saver&quot;: &quot;^2.0.5&quot;,
+    &quot;highlight.js&quot;: &quot;^11.11.1&quot;,
+    &quot;jszip&quot;: &quot;^3.10.1&quot;,
+    &quot;react-markdown&quot;: &quot;^10.1.0&quot;,
+    &quot;rehype-highlight&quot;: &quot;^7.0.2&quot;,
+    &quot;remark-gfm&quot;: &quot;^4.0.1&quot;,
+    &quot;sql.js&quot;: &quot;^1.14.1&quot;
+  }
+}
+===== ARQUIVO: SK-Editor-v3-Source (1)/src/main.tsx =====
+import { createRoot } from &quot;react-dom/client&quot;;
+import App from &quot;./App&quot;;
+import &quot;./index.css&quot;;
+
+createRoot(document.getElementById(&quot;root&quot;)!).render(&lt;App /&gt;);
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/src/App.tsx =====
+import { useState, useCallback, useRef, useEffect } from &quot;react&quot;;
+import { VirtualFileSystem } from &quot;@/lib/virtual-fs&quot;;
+import { Template } from &quot;@/lib/templates&quot;;
+import { importFromZip } from &quot;@/lib/zip-service&quot;;
+import {
+  Project, loadProjects, saveProjects, createProject,
+  upsertProject, duplicateProject, getCurrentProjectId, setCurrentProjectId,
+  reloadProjectsFromIDB, migrateProjectsToIDB,
+} from &quot;@/lib/projects&quot;;
+import TemplateSelector from &quot;@/components/TemplateSelector&quot;;
+import EditorLayout from &quot;@/components/EditorLayout&quot;;
+import CampoLivre from &quot;@/components/CampoLivre&quot;;
+import AssistenteJuridico from &quot;@/components/AssistenteJuridico&quot;;
+
+const vfs = new VirtualFileSystem();
+</pre>
+</div>
+<div class="block" id="b24">
+  <div class="block-h">
+    <span>App</span>
+    <div>
+      <small>L2809–L2866</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre24').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre24">function App() {
+  const [projects, setProjects] = useState&lt;Project[]&gt;(loadProjects);
+  const [currentProject, setCurrentProject] = useState&lt;Project | null&gt;(null);
+  const [showCampoLivre,      setShowCampoLivre]      = useState(false);
+  const [showAssistenteJur,   setShowAssistenteJur]   = useState(false);
+  const [lightMode, setLightMode] = useState(() =&gt; localStorage.getItem(&quot;sk-light-mode&quot;) === &quot;1&quot;);
+
+  useEffect(() =&gt; {
+    localStorage.setItem(&quot;sk-light-mode&quot;, lightMode ? &quot;1&quot; : &quot;0&quot;);
+  }, [lightMode]);
+
+  const zipInputRef = useRef&lt;HTMLInputElement&gt;(null);
+
+  useEffect(() =&gt; {
+    const all = loadProjects();
+    setProjects(all);
+    const id = getCurrentProjectId();
+    if (id) {
+      const p = all.find(x =&gt; x.id === id);
+      if (p &amp;&amp; Object.keys(p.files).length &gt; 0) {
+        vfs.clear();
+        vfs.fromJSON(p.files);
+        setCurrentProject(p);
+      }
+    }
+    // Migração async: carrega arquivos do IndexedDB (projetos grandes)
+    migrateProjectsToIDB();
+    reloadProjectsFromIDB(all).then(updated =&gt; {
+      setProjects(updated);
+      if (id) {
+        const upd = updated.find(p =&gt; p.id === id);
+        if (upd &amp;&amp; Object.keys(upd.files).length &gt; 0) {
+          vfs.clear();
+          vfs.fromJSON(upd.files);
+          setCurrentProject(upd);
+        }
+      }
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const saveCurrentProject = useCallback((proj: Project, name?: string) =&gt; {
+    const updated: Project = {
+      ...proj,
+      name: name || proj.name,
+      files: vfs.toJSON(),
+      updatedAt: Date.now(),
+    };
+    setCurrentProject(updated);
+    setProjects(prev =&gt; {
+      const next = upsertProject(prev, updated);
+      saveProjects(next);
+      return next;
+    });
+    return updated;
+  }, []);
+
+  useEffect(() =&gt; {
+    if (!currentProject) return;</pre>
+</div>
+<div class="block" id="b25">
+  <div class="block-h">
+    <span>save →</span>
+    <div>
+      <small>L2867–L2948</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre25').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre25">    const save = () =&gt; saveCurrentProject(currentProject);
+    const unsub = vfs.onChange(save);
+    const interval = setInterval(save, 8000);
+    return () =&gt; { unsub(); clearInterval(interval); };
+  }, [currentProject, saveCurrentProject]);
+
+  const handleStart = useCallback((files: Record&lt;string, string&gt;, name: string) =&gt; {
+    const project = createProject(name, files);
+    vfs.clear();
+    vfs.fromJSON(files);
+    setCurrentProject(project);
+    setCurrentProjectId(project.id);
+    setProjects(prev =&gt; {
+      const next = [project, ...prev];
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleOpenProject = useCallback((project: Project) =&gt; {
+    // Salva o projeto atual antes de trocar
+    setCurrentProject(prev =&gt; {
+      if (prev) {
+        const updated: Project = { ...prev, files: vfs.toJSON(), updatedAt: Date.now() };
+        setProjects(all =&gt; { const next = upsertProject(all, updated); saveProjects(next); return next; });
+      }
+      return prev;
+    });
+    vfs.clear();
+    vfs.fromJSON(project.files);
+    setCurrentProject(project);
+    setCurrentProjectId(project.id);
+  }, []);
+
+  const handleNewProject = useCallback(() =&gt; {
+    setCurrentProject(null);
+    setCurrentProjectId(null);
+    vfs.clear();
+  }, []);
+
+  const handleImportZip = useCallback(() =&gt; zipInputRef.current?.click(), []);
+
+  const handleZipFile = useCallback(async (e: React.ChangeEvent&lt;HTMLInputElement&gt;) =&gt; {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const imported = await importFromZip(file);
+      const count = Object.keys(imported).length;
+      if (count === 0) {
+        alert(&quot;Nenhum arquivo de código encontrado no ZIP.\n\nPossíveis motivos:\n• O ZIP contém apenas imagens ou arquivos binários\n• Os arquivos estão em formato que não pode ser lido\n• O ZIP está vazio ou corrompido&quot;);
+        return;
+      }
+      handleStart(imported, file.name.replace(/\.(zip|tar\.gz|tgz|tar)$/i, &quot;&quot;));
+      setTimeout(() =&gt; {
+        alert(`✓ ${count} arquivo(s) importado(s) com sucesso!\n\nNode_modules, arquivos binários e pastas de build foram ignorados automaticamente para manter o projeto organizado.\n\nAbra a Jasmim (✨) para pedir ajuda para entender ou modificar o projeto.`);
+      }, 800);
+    } catch (err: any) { alert(`Erro ao importar: ${err.message}`); }
+    e.target.value = &quot;&quot;;
+  }, [handleStart]);
+
+  const handleDeleteProject = useCallback((id: string) =&gt; {
+    setProjects(prev =&gt; {
+      const next = prev.filter(p =&gt; p.id !== id);
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleDuplicateProject = useCallback((project: Project) =&gt; {
+    const dup = duplicateProject(project);
+    setProjects(prev =&gt; {
+      const next = [dup, ...prev];
+      saveProjects(next);
+      return next;
+    });
+  }, []);
+
+  const handleSaveProject = useCallback((name: string) =&gt; {
+    if (!currentProject) return;
+    saveCurrentProject(currentProject, name);
+  }, [currentProject, saveCurrentProject]);
+</pre>
+</div>
+<div class="block" id="b26">
+  <div class="block-h">
+    <span>toggleBtn →</span>
+    <div>
+      <small>L2949–L3063</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre26').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre26">  const toggleBtn = (
+    &lt;button
+      onClick={() =&gt; setLightMode(v =&gt; !v)}
+      style={{
+        position: &quot;fixed&quot;, top: 8, right: 8, zIndex: 99999,
+        width: 26, height: 26, borderRadius: &quot;50%&quot;,
+        background: lightMode ? &quot;#1c2714&quot; : &quot;#e8f5e0&quot;,
+        border: lightMode ? &quot;1px solid #4a7c3f&quot; : &quot;1px solid #6ab04c&quot;,
+        fontSize: 13, cursor: &quot;pointer&quot;,
+        display: &quot;flex&quot;, alignItems: &quot;center&quot;, justifyContent: &quot;center&quot;,
+        boxShadow: &quot;0 1px 6px rgba(0,0,0,0.25)&quot;,
+        opacity: 0.85,
+      }}
+      title={lightMode ? &quot;Modo escuro&quot; : &quot;Modo claro&quot;}
+    &gt;
+      {lightMode ? &quot;🌙&quot; : &quot;☀️&quot;}
+    &lt;/button&gt;
+  );
+
+  const filterStyle = lightMode
+    ? { filter: &quot;invert(1) hue-rotate(180deg)&quot;, minHeight: &quot;100dvh&quot; }
+    : { minHeight: &quot;100dvh&quot; };
+
+  if (showCampoLivre) {
+    return &lt;div style={filterStyle}&gt;{toggleBtn}&lt;CampoLivre onBack={() =&gt; setShowCampoLivre(false)} /&gt;&lt;/div&gt;;
+  }
+
+  if (showAssistenteJur) {
+    return &lt;div style={filterStyle}&gt;{toggleBtn}&lt;AssistenteJuridico onBack={() =&gt; setShowAssistenteJur(false)} /&gt;&lt;/div&gt;;
+  }
+
+  if (!currentProject) {
+    return (
+      &lt;div style={filterStyle}&gt;
+        {toggleBtn}
+        &lt;input ref={zipInputRef} type=&quot;file&quot; accept=&quot;.zip,.tar,.tar.gz,.tgz&quot; onChange={handleZipFile} className=&quot;hidden&quot; /&gt;
+        &lt;TemplateSelector
+          projects={projects}
+          onSelect={(t: Template) =&gt; handleStart(t.files, t.name)}
+          onOpenProject={handleOpenProject}
+          onImportZip={handleImportZip}
+          onCreateFromAI={(files, name) =&gt; handleStart(files, name)}
+          onDeleteProject={handleDeleteProject}
+          onDuplicateProject={handleDuplicateProject}
+          onOpenCampoLivre={() =&gt; setShowCampoLivre(true)}
+          onOpenAssistenteJuridico={() =&gt; setShowAssistenteJur(true)}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+
+  return (
+    &lt;div style={filterStyle}&gt;
+      {toggleBtn}
+      &lt;EditorLayout
+        vfs={vfs}
+        projectName={currentProject.name}
+        onNewProject={handleNewProject}
+        onSaveProject={handleSaveProject}
+        onOpenCampoLivre={() =&gt; setShowCampoLivre(true)}
+        onOpenAssistenteJuridico={() =&gt; setShowAssistenteJur(true)}
+        onBackToProjects={() =&gt; {
+          if (currentProject) {
+            const updated: Project = { ...currentProject, files: vfs.toJSON(), updatedAt: Date.now() };
+            setProjects(prev =&gt; { const next = upsertProject(prev, updated); saveProjects(next); return next; });
+          }
+          setCurrentProject(null);
+          setCurrentProjectId(null);
+        }}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/electron/main.cjs =====
+'use strict';
+
+const { app, BrowserWindow, shell, ipcMain, dialog } = require('electron');
+const http = require('http');
+const fs = require('fs');
+const fsp = require('fs/promises');
+const path = require('path');
+const { spawn } = require('child_process');
+const os = require('os');
+
+const DIST = path.join(__dirname, '..', 'dist', 'public');
+const PROJECTS_DIR = path.join(os.homedir(), 'SKEditorV3', 'projetos');
+const SETTINGS_FILE = path.join(os.homedir(), 'SKEditorV3', 'settings.json');
+
+// Processos de servidor em execução (npm run dev, etc.)
+const runningServers = new Map(); // projectKey -&gt; { proc, port, command }
+
+const MIME = {
+  '.html': 'text/html; charset=utf-8', '.js': 'application/javascript',
+  '.mjs': 'application/javascript', '.css': 'text/css',
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif', '.svg': 'image/svg+xml', '.json': 'application/json',
+  '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf',
+  '.ico': 'image/x-icon', '.txt': 'text/plain',
+  '.webmanifest': 'application/manifest+json', '.map': 'application/json',
+  '.wasm': 'application/wasm', '.zip': 'application/zip',
+};
+
+// ─── Detecção de porta nos logs do servidor ───────────────────────────────────
+const PORT_PATTERNS = [
+  /localhost:(\d{4,5})/i, /127\.0\.0\.1:(\d{4,5})/i,
+  /0\.0\.0\.0:(\d{4,5})/i, /\bport[:\s]+(\d{4,5})/i,
+  /listening.*?:(\d{4,5})/i, /started.*?:(\d{4,5})/i,
+  /running.*?:(\d{4,5})/i, /ready.*?:(\d{4,5})/i,
+  /Local:\s+https?:\/\/[^:]+:(\d{4,5})/i,
+  /:(\d{4,5})\b/,
+];
+</pre>
+</div>
+<div class="block" id="b27">
+  <div class="block-h">
+    <span>detectPort</span>
+    <div>
+      <small>L3064–L3075</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre27').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre27">function detectPort(text) {
+  for (const p of PORT_PATTERNS) {
+    const m = text.match(p);
+    if (m) {
+      const port = parseInt(m[1], 10);
+      if (port &gt;= 1024 &amp;&amp; port &lt;= 65535) return port;
+    }
+  }
+  return null;
+}
+
+// ─── Proxy HTTP para servidor do usuário ─────────────────────────────────────</pre>
+</div>
+<div class="block" id="b28">
+  <div class="block-h">
+    <span>proxyRequest</span>
+    <div>
+      <small>L3076–L3108</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre28').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre28">function proxyRequest(req, res, targetPort, targetPath) {
+  const options = {
+    hostname: '127.0.0.1',
+    port: targetPort,
+    path: targetPath || '/',
+    method: req.method,
+    headers: { ...req.headers, host: `127.0.0.1:${targetPort}` },
+  };
+
+  const proxyReq = http.request(options, (proxyRes) =&gt; {
+    // Remove headers que bloqueiam iframe
+    const headers = { ...proxyRes.headers };
+    delete headers['x-frame-options'];
+    delete headers['content-security-policy'];
+    headers['access-control-allow-origin'] = '*';
+
+    res.writeHead(proxyRes.statusCode, headers);
+    proxyRes.pipe(res);
+  });
+
+  proxyReq.on('error', (err) =&gt; {
+    res.writeHead(502);
+    res.end(`Servidor não está rodando na porta ${targetPort}. Erro: ${err.message}`);
+  });
+
+  if (req.method !== 'GET' &amp;&amp; req.method !== 'HEAD') {
+    req.pipe(proxyReq);
+  } else {
+    proxyReq.end();
+  }
+}
+
+// ─── Servidor HTTP local (estático + API) ────────────────────────────────────</pre>
+</div>
+<div class="block" id="b29">
+  <div class="block-h">
+    <span>startServer</span>
+    <div>
+      <small>L3109–L3150</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre29').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre29">function startServer() {
+  return new Promise((resolve) =&gt; {
+    const server = http.createServer((req, res) =&gt; {
+      const rawUrl = req.url || '/';
+      const url = rawUrl.split('?')[0];
+
+      // Sempre adicionar COOP/COEP (necessário pro WebContainer)
+      res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+      res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+
+      // ── /api/proxy/:port/* — proxy para servidor do usuário ───────────────
+      const proxyMatch = url.match(/^\/api\/proxy\/(\d+)(\/.*)?$/);
+      if (proxyMatch) {
+        const targetPort = parseInt(proxyMatch[1], 10);
+        const targetPath = proxyMatch[2] || '/';
+        proxyRequest(req, res, targetPort, targetPath);
+        return;
+      }
+
+      // ── /api/exec-stream — executa comando com SSE streaming ─────────────
+      if (url === '/api/exec-stream' &amp;&amp; req.method === 'POST') {
+        let body = '';
+        req.on('data', d =&gt; { body += d; });
+        req.on('end', () =&gt; {
+          let parsed;
+          try { parsed = JSON.parse(body); } catch {
+            res.writeHead(400); res.end('JSON inválido'); return;
+          }
+
+          const { command, cwd: cwdParam, projectKey } = parsed;
+          if (!command) { res.writeHead(400); res.end('command obrigatório'); return; }
+
+          const cwd = cwdParam || os.homedir();
+
+          // SSE headers
+          res.setHeader('Content-Type', 'text/event-stream');
+          res.setHeader('Cache-Control', 'no-cache');
+          res.setHeader('Connection', 'keep-alive');
+          res.setHeader('X-Accel-Buffering', 'no');
+          res.writeHead(200);
+</pre>
+</div>
+<div class="block" id="b30">
+  <div class="block-h">
+    <span>send →</span>
+    <div>
+      <small>L3151–L3174</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre30').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre30">          const send = (type, data) =&gt; {
+            try { res.write(`data: ${JSON.stringify({ type, data })}\n\n`); } catch {}
+          };
+
+          // Normaliza comandos
+          const normalized = command
+            .replace(/^pip\s+/, 'pip3 ')
+            .replace(/^python\s+/, 'python3 ');
+
+          const isInstall = /^(npm\s+install|yarn\s+install|pnpm\s+install|pip3\s+install)/.test(normalized.trim());
+          const maxTimeout = isInstall ? 600000 : 120000;
+
+          const extraPaths = ['/usr/local/bin', '/usr/bin', '/bin', path.join(os.homedir(), '.local', 'bin')];
+          const PATH = [...new Set([...(process.env.PATH || '').split(':'), ...extraPaths])].join(':');
+
+          const proc = spawn('sh', ['-c', normalized], {
+            cwd,
+            env: { ...process.env, PATH, TERM: 'xterm-256color', NPM_CONFIG_UPDATE_NOTIFIER: 'false' },
+            stdio: ['pipe', 'pipe', 'pipe'],
+          });
+
+          let detectedPort = null;
+          let clientDisconnected = false;
+</pre>
+</div>
+<div class="block" id="b31">
+  <div class="block-h">
+    <span>handleData →</span>
+    <div>
+      <small>L3175–L3340</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre31').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre31">          const handleData = (chunk) =&gt; {
+            const text = chunk.toString('utf8');
+            send('stdout', text);
+
+            // Detecta porta para abrir preview
+            if (detectedPort === null) {
+              const port = detectPort(text);
+              if (port) {
+                detectedPort = port;
+                send('server_detected', { port });
+
+                // Guarda processo como servidor em execução
+                if (projectKey) {
+                  const old = runningServers.get(projectKey);
+                  if (old) { try { old.proc.kill('SIGTERM'); } catch {} }
+                  runningServers.set(projectKey, { proc, port, command: normalized });
+                }
+              }
+            }
+
+            // Auto-responde perguntas interativas
+            const autoReply = [
+              /port.*in use.*use.*instead/i, /\?\s*(y\/n|\[y\/n\])/i,
+              /Would you like/i, /\(Y\/n\)/i,
+            ];
+            if (autoReply.some(p =&gt; p.test(text))) {
+              try { proc.stdin.write('y\n'); } catch {}
+              send('stdout', '\n[auto] Respondendo &quot;y&quot; automaticamente.\n');
+            }
+          };
+
+          proc.stdout.on('data', handleData);
+          proc.stderr.on('data', (chunk) =&gt; {
+            const text = chunk.toString('utf8');
+            send('stderr', text);
+            if (detectedPort === null) {
+              const port = detectPort(text);
+              if (port) { detectedPort = port; send('server_detected', { port }); }
+            }
+          });
+
+          proc.on('error', (err) =&gt; send('stderr', `\nErro: ${err.message}\n`));
+
+          proc.on('close', (code) =&gt; {
+            if (detectedPort === null) {
+              send('exit', { exitCode: code ?? 0 });
+              if (!clientDisconnected) res.end();
+            } else {
+              send('server_stopped', { exitCode: code ?? 0 });
+              if (!clientDisconnected) res.end();
+            }
+          });
+
+          const timer = setTimeout(() =&gt; {
+            if (detectedPort === null) {
+              try { proc.kill('SIGTERM'); } catch {}
+            }
+          }, maxTimeout);
+
+          proc.on('close', () =&gt; clearTimeout(timer));
+
+          req.on('close', () =&gt; {
+            clientDisconnected = true;
+            if (detectedPort === null) {
+              try { proc.kill('SIGTERM'); } catch {}
+              clearTimeout(timer);
+            }
+          });
+        });
+        return;
+      }
+
+      // ── /api/exec-stop — para servidor em execução ───────────────────────
+      if (url === '/api/exec-stop' &amp;&amp; req.method === 'POST') {
+        let body = '';
+        req.on('data', d =&gt; { body += d; });
+        req.on('end', () =&gt; {
+          try {
+            const { projectKey } = JSON.parse(body);
+            const srv = runningServers.get(projectKey);
+            if (srv) {
+              try { srv.proc.kill('SIGTERM'); } catch {}
+              runningServers.delete(projectKey);
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: true }));
+            } else {
+              res.writeHead(404, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, error: 'Servidor não encontrado' }));
+            }
+          } catch {
+            res.writeHead(400); res.end('JSON inválido');
+          }
+        });
+        return;
+      }
+
+      // ── /api/settings GET/POST — persiste configurações no disco ─────────
+      if (url === '/api/settings') {
+        if (req.method === 'GET') {
+          fsp.readFile(SETTINGS_FILE, 'utf8')
+            .then(raw =&gt; {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(raw);
+            })
+            .catch(() =&gt; {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end('{}');
+            });
+          return;
+        }
+        if (req.method === 'POST') {
+          let body = '';
+          req.on('data', d =&gt; { body += d; });
+          req.on('end', async () =&gt; {
+            try {
+              const dir = path.dirname(SETTINGS_FILE);
+              await fsp.mkdir(dir, { recursive: true });
+              await fsp.writeFile(SETTINGS_FILE, body, 'utf8');
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end('{&quot;ok&quot;:true}');
+            } catch (e) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ ok: false, error: e.message }));
+            }
+          });
+          return;
+        }
+      }
+
+      // ── /api/running-servers — lista servidores em execução ──────────────
+      if (url === '/api/running-servers' &amp;&amp; req.method === 'GET') {
+        const list = [];
+        runningServers.forEach((v, k) =&gt; {
+          list.push({ projectKey: k, port: v.port, command: v.command });
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(list));
+        return;
+      }
+
+      // ── Arquivos estáticos (app React) ───────────────────────────────────
+      let filePath = path.join(DIST, url === '/' ? 'index.html' : url);
+
+      fs.stat(filePath, (err, stat) =&gt; {
+        if (err || !stat.isFile()) {
+          filePath = path.join(DIST, 'index.html');
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        } else {
+          const ext = path.extname(filePath).toLowerCase();
+          res.setHeader('Content-Type', MIME[ext] || 'application/octet-stream');
+          res.setHeader('Cache-Control', 'max-age=3600');
+        }
+        const stream = fs.createReadStream(filePath);
+        stream.on('error', () =&gt; { res.statusCode = 404; res.end('Not found'); });
+        stream.pipe(res);
+      });
+    });
+
+    server.listen(0, '127.0.0.1', () =&gt; resolve(server.address().port));
+  });
+}
+
+// ─── Terminal Real via IPC (sem timeout) ────────────────────────────────────
+const sessions = new Map();
+let sessionCounter = 0;
+</pre>
+</div>
+<div class="block" id="b32">
+  <div class="block-h">
+    <span>getShell</span>
+    <div>
+      <small>L3341–L3361</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre32').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre32">function getShell() {
+  if (process.platform === 'win32') {
+    return { cmd: process.env.ComSpec || 'cmd.exe', args: [] };
+  }
+  const sh = process.env.SHELL || '/bin/bash';
+  return { cmd: sh, args: ['--norc', '--noprofile'] };
+}
+
+ipcMain.handle('terminal:spawn', (event) =&gt; {
+  const id = ++sessionCounter;
+  const { cmd, args } = getShell();
+
+  const proc = spawn(cmd, args, {
+    cwd: os.homedir(),
+    env: { ...process.env, TERM: 'xterm-256color', COLORTERM: 'truecolor' },
+    stdio: ['pipe', 'pipe', 'pipe'],
+    detached: false,
+  });
+
+  sessions.set(id, proc);
+</pre>
+</div>
+<div class="block" id="b33">
+  <div class="block-h">
+    <span>send →</span>
+    <div>
+      <small>L3362–L3403</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre33').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre33">  const send = (data) =&gt; {
+    try { event.sender.send(`terminal:data:${id}`, data); } catch {}
+  };
+
+  proc.stdout.on('data', d =&gt; send(d.toString('utf8')));
+  proc.stderr.on('data', d =&gt; send(d.toString('utf8')));
+
+  proc.on('exit', (code) =&gt; {
+    try { event.sender.send(`terminal:exit:${id}`, code ?? 0); } catch {}
+    sessions.delete(id);
+  });
+
+  proc.on('error', (err) =&gt; {
+    send(`\r\n[Erro ao iniciar shell: ${err.message}]\r\n`);
+    sessions.delete(id);
+  });
+
+  return { id, shell: cmd, home: os.homedir(), platform: process.platform };
+});
+
+ipcMain.on('terminal:write', (_event, { id, data }) =&gt; {
+  const proc = sessions.get(id);
+  if (proc &amp;&amp; proc.stdin.writable) proc.stdin.write(data);
+});
+
+ipcMain.on('terminal:kill', (_event, { id }) =&gt; {
+  const proc = sessions.get(id);
+  if (proc) { try { proc.kill('SIGTERM'); } catch {} }
+  sessions.delete(id);
+});
+
+ipcMain.handle('terminal:info', () =&gt; ({
+  platform: process.platform,
+  home: os.homedir(),
+  shell: getShell().cmd,
+  arch: process.arch,
+  nodeVersion: process.version,
+  projectsDir: PROJECTS_DIR,
+}));
+
+// ─── Filesystem — Projetos no disco do PC ───────────────────────────────────
+</pre>
+</div>
+<div class="block" id="b34">
+  <div class="block-h">
+    <span>ensureProjectsDir</span>
+    <div>
+      <small>L3404–L3494</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre34').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre34">async function ensureProjectsDir() {
+  try { await fsp.mkdir(PROJECTS_DIR, { recursive: true }); } catch {}
+}
+
+ipcMain.handle('fs:saveProject', async (_event, { name, files }) =&gt; {
+  await ensureProjectsDir();
+  const safe = name.replace(/[^a-zA-Z0-9_\-\.áéíóúâêîôûãõàèìòùçÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ ]/g, '_').slice(0, 80);
+  const file = path.join(PROJECTS_DIR, `${safe}.mjp.json`);
+  const data = JSON.stringify({ name, files, updatedAt: Date.now() }, null, 2);
+  await fsp.writeFile(file, data, 'utf8');
+  return { ok: true, path: file };
+});
+
+ipcMain.handle('fs:loadProject', async (_event, { name }) =&gt; {
+  await ensureProjectsDir();
+  const safe = name.replace(/[^a-zA-Z0-9_\-\.áéíóúâêîôûãõàèìòùçÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ ]/g, '_').slice(0, 80);
+  const file = path.join(PROJECTS_DIR, `${safe}.mjp.json`);
+  try {
+    const raw = await fsp.readFile(file, 'utf8');
+    return { ok: true, data: JSON.parse(raw) };
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
+});
+
+ipcMain.handle('fs:listProjects', async () =&gt; {
+  await ensureProjectsDir();
+  try {
+    const entries = await fsp.readdir(PROJECTS_DIR);
+    const projects = [];
+    for (const entry of entries) {
+      if (!entry.endsWith('.mjp.json')) continue;
+      try {
+        const raw = await fsp.readFile(path.join(PROJECTS_DIR, entry), 'utf8');
+        const parsed = JSON.parse(raw);
+        projects.push({
+          name: parsed.name,
+          updatedAt: parsed.updatedAt,
+          fileCount: Object.keys(parsed.files || {}).length,
+          filePath: path.join(PROJECTS_DIR, entry),
+        });
+      } catch {}
+    }
+    return { ok: true, projects: projects.sort((a, b) =&gt; (b.updatedAt || 0) - (a.updatedAt || 0)) };
+  } catch (e) {
+    return { ok: false, projects: [], error: e.message };
+  }
+});
+
+ipcMain.handle('fs:deleteProject', async (_event, { name }) =&gt; {
+  const safe = name.replace(/[^a-zA-Z0-9_\-\.áéíóúâêîôûãõàèìòùçÁÉÍÓÚÂÊÎÔÛÃÕÀÈÌÒÙÇ ]/g, '_').slice(0, 80);
+  const file = path.join(PROJECTS_DIR, `${safe}.mjp.json`);
+  try { await fsp.unlink(file); return { ok: true }; } catch (e) { return { ok: false, error: e.message }; }
+});
+
+ipcMain.handle('fs:exportZip', async (event, { name, files, platform }) =&gt; {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const defaultName = `${name.replace(/[^a-zA-Z0-9_\-]/g, '_')}-${platform || 'deploy'}.zip`;
+  const { filePath, canceled } = await dialog.showSaveDialog(win, {
+    title: 'Salvar ZIP de Deploy',
+    defaultPath: path.join(os.homedir(), 'Desktop', defaultName),
+    filters: [{ name: 'Arquivo ZIP', extensions: ['zip'] }],
+  });
+  if (canceled || !filePath) return { ok: false, canceled: true };
+  try {
+    const zipData = Buffer.from(files, 'base64');
+    await fsp.writeFile(filePath, zipData);
+    return { ok: true, path: filePath };
+  } catch (e) {
+    return { ok: false, error: e.message }; }
+});
+
+ipcMain.handle('fs:openProjectsDir', async () =&gt; {
+  await ensureProjectsDir();
+  shell.openPath(PROJECTS_DIR);
+  return { ok: true, path: PROJECTS_DIR };
+});
+
+ipcMain.handle('fs:openPath', async (_event, { filePath: fp }) =&gt; {
+  shell.openPath(fp);
+  return { ok: true };
+});
+
+ipcMain.handle('fs:revealInExplorer', async (_event, { filePath: fp }) =&gt; {
+  shell.showItemInFolder(fp);
+  return { ok: true };
+});
+
+// ─── Janela principal ────────────────────────────────────────────────────────
+let mainWindow = null;
+</pre>
+</div>
+<div class="block" id="b35">
+  <div class="block-h">
+    <span>createWindow</span>
+    <div>
+      <small>L3495–L3555</small>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText(document.getElementById('pre35').textContent)">📋 Copiar</button>
+    </div>
+  </div>
+  <pre id="pre35">async function createWindow() {
+  const port = await startServer();
+  await ensureProjectsDir();
+
+  mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    title: 'SK Editor v3 — Sem Replit',
+    icon: path.join(__dirname, '..', 'public', 'icon-512.png'),
+    backgroundColor: '#0d1117',
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: false,
+      preload: path.join(__dirname, 'preload.cjs'),
+      webSecurity: true,
+    },
+    show: false,
+  });
+
+  mainWindow.maximize();
+  mainWindow.show();
+
+  mainWindow.webContents.setWindowOpenHandler(({ url }) =&gt; {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  mainWindow.loadURL(`http://127.0.0.1:${port}`);
+
+  mainWindow.on('closed', () =&gt; {
+    // Para todos os servidores em execução
+    runningServers.forEach((srv) =&gt; { try { srv.proc.kill('SIGTERM'); } catch {} });
+    runningServers.clear();
+    sessions.forEach((proc) =&gt; { try { proc.kill(); } catch {} });
+    sessions.clear();
+    mainWindow = null;
+  });
+}
+
+app.whenReady().then(createWindow);
+app.on('window-all-closed', () =&gt; { app.quit(); });
+app.on('activate', () =&gt; { if (mainWindow === null) createWindow(); });
+
+===== ARQUIVO: SK-Editor-v3-Source (1)/db-local/package.json =====
+{
+  &quot;name&quot;: &quot;sk-db-manager&quot;,
+  &quot;version&quot;: &quot;1.0.0&quot;,
+  &quot;description&quot;: &quot;SK Database Manager Local&quot;,
+  &quot;main&quot;: &quot;server.js&quot;,
+  &quot;scripts&quot;: {
+    &quot;start&quot;: &quot;node server.js&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;pg&quot;: &quot;^8.13.3&quot;
+  }
+}
+
+</pre>
+</div>
+</body>
+</html>
